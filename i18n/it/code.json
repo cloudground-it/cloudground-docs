@@ -48,10 +48,6 @@
   "cg.meta.verified": {
     "message": "Ultima verifica"
   },
-  "cg.localeSwitch.label": {
-    "message": "Read this page in English",
-    "description": "ARIA label of the IT / EN switch, naming the other language"
-  },
   "cg.feedback.question": {
     "message": "Questa pagina ti è stata utile?"
   },
@@ -265,7 +261,7 @@
     "description": "The ARIA label for the main navigation"
   },
   "theme.navbar.mobileLanguageDropdown.label": {
-    "message": "Linguaggio",
+    "message": "Lingua",
     "description": "The label for the mobile language switcher dropdown"
   },
   "theme.TOCCollapsible.toggleButtonLabel": {

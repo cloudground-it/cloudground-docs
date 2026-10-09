@@ -11,10 +11,6 @@
   "cg.meta.verified": {
     "message": "Last verified"
   },
-  "cg.localeSwitch.label": {
-    "message": "Leggi questa pagina in italiano",
-    "description": "ARIA label of the IT / EN switch, naming the other language"
-  },
   "cg.feedback.question": {
     "message": "Was this page useful?"
   },
@@ -273,7 +269,7 @@
     "description": "The ARIA label for the main navigation"
   },
   "theme.navbar.mobileLanguageDropdown.label": {
-    "message": "Languages",
+    "message": "Language",
     "description": "The label for the mobile language switcher dropdown"
   },
   "theme.TOCCollapsible.toggleButtonLabel": {

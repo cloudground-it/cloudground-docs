@@ -138,7 +138,7 @@ const config: Config = {
         {type: 'docSidebar', sidebarId: 'cli', position: 'left', label: 'CLI'},
         {type: 'docSidebar', sidebarId: 'api', position: 'left', label: 'API'},
         {href: `${REPO}/releases`, position: 'left', label: 'Novità'},
-        {type: 'custom-localeSwitch', position: 'right'},
+        {type: 'localeDropdown', position: 'right', className: 'cg-locale'},
         {href: REPO, position: 'right', label: 'GitHub ↗', className: 'cg-nav-github'},
       ],
     },
