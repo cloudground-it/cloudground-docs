@@ -1,0 +1,85 @@
+---
+title: Installazione
+slug: /installation
+sidebar_position: 2
+heading: Installa
+heading_accent: CloudGround.
+description: Un comando su un server Ubuntu appena creato. Alla fine il pannello risponde sulla porta 8443 e ti dà un link monouso per creare l'amministratore.
+meta:
+  time: '[X] minuti'
+  level: Base
+  requires: Accesso root
+  verified: '[DATA]'
+---
+
+:::warning[Server dedicato]
+
+L'installer prende in mano nginx, PHP, MariaDB, il firewall e SSH. Non installarlo su un server che
+ospita già altro: usa un server nuovo, o uno che puoi ricreare.
+
+:::
+
+## Requisiti {#requisiti}
+
+<table>
+  <thead>
+    <tr><th>Voce</th><th>Minimo</th><th>Consigliato</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Sistema</td><td>Ubuntu 24.04 LTS</td><td>Ubuntu 26.04 LTS</td></tr>
+    <tr><td>CPU</td><td>[MIN CPU]</td><td>[CPU CONSIGLIATE]</td></tr>
+    <tr><td>Memoria</td><td>[MIN RAM]</td><td>[RAM CONSIGLIATA]</td></tr>
+    <tr><td>Porte</td><td colSpan={2}><code>22 · 80 · 443 · 443/udp · 8443</code></td></tr>
+  </tbody>
+</table>
+
+## Lancia l'installer {#installa}
+
+Accedi come root. Il primo passo dell'installer controlla tutto il server e, se trova un problema, li
+elenca tutti insieme prima di toccare qualcosa.
+
+<Tabs groupId="ubuntu" defaultValue="26.04" queryString="ubuntu">
+<TabItem value="24.04" label="Ubuntu 24.04">
+
+```bash prompt
+# Ubuntu 24.04 — PHP arriva dal repository ondrej/php
+curl -fsSL [URL INSTALLER] -o install.sh
+bash install.sh
+```
+
+</TabItem>
+<TabItem value="26.04" label="Ubuntu 26.04">
+
+```bash prompt
+# Ubuntu 26.04 — PHP 8.5 dai pacchetti di Ubuntu
+curl -fsSL [URL INSTALLER] -o install.sh
+bash install.sh
+```
+
+</TabItem>
+</Tabs>
+
+## Cosa succede {#cosa-fa}
+
+<Steps>
+  <Step title="Controlla il server">Sistema, memoria, porte e pacchetti in conflitto, riportati tutti insieme.</Step>
+  <Step title="Installa i componenti">nginx, PHP, MariaDB e Redis, con le impostazioni misurate del progetto.</Step>
+  <Step title="Verifica la release">I binari si installano solo se la firma corrisponde e la versione non è più vecchia.</Step>
+  <Step title="Avvia il pannello">Il pannello gira senza privilegi. Le operazioni da root le fa un agente separato.</Step>
+  <Step title="Ti dà il link">Un indirizzo monouso, valido 24 ore, per creare l'amministratore.</Step>
+</Steps>
+
+:::note[Link perso]
+
+Il link per creare l'amministratore vale 24 ore. Se lo perdi, generane uno nuovo dal server con
+`cgctl recover-admin --email tu@esempio.it`.
+
+:::
+
+## E adesso {#dopo}
+
+<Cards>
+  <Card label="01 · Iniziare" title="Dai un dominio al pannello">Con il suo certificato.</Card>
+  <Card to="/sites" label="02 · Siti" title="Crea il primo sito">WordPress, PHP, Laravel, statico.</Card>
+  <Card to="/backups" label="04 · Backup" title="Collega i backup">S3, R2 o un altro server.</Card>
+</Cards>

@@ -1,0 +1,30 @@
+{
+  "title": {
+    "message": "cloudground",
+    "description": "The title in the navbar"
+  },
+  "logo.alt": {
+    "message": "CloudGround",
+    "description": "The alt text of navbar logo"
+  },
+  "item.label.Guida": {
+    "message": "Guide",
+    "description": "Navbar item with label Guida"
+  },
+  "item.label.CLI": {
+    "message": "CLI",
+    "description": "Navbar item with label CLI"
+  },
+  "item.label.API": {
+    "message": "API",
+    "description": "Navbar item with label API"
+  },
+  "item.label.Novità": {
+    "message": "What's new",
+    "description": "Navbar item with label Novità"
+  },
+  "item.label.GitHub ↗": {
+    "message": "GitHub ↗",
+    "description": "Navbar item with label GitHub ↗"
+  }
+}

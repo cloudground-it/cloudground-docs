@@ -1,0 +1,10 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.guide.category.Iniziare": {
+    "message": "Iniziare",
+    "description": "The label for category 'Iniziare' in sidebar 'guide'"
+  }
+}

@@ -1,0 +1,85 @@
+---
+title: Installation
+slug: /installation
+sidebar_position: 2
+heading: Install
+heading_accent: CloudGround.
+description: One command on a freshly created Ubuntu server. When it finishes, the panel answers on port 8443 and gives you a one-time link to create the administrator.
+meta:
+  time: '[X] minutes'
+  level: Basic
+  requires: Root access
+  verified: '[DATA]'
+---
+
+:::warning[Dedicated server]
+
+The installer takes over nginx, PHP, MariaDB, the firewall and SSH. Do not install it on a server that
+already hosts something else: use a new server, or one you can rebuild.
+
+:::
+
+## Requirements {#requisiti}
+
+<table>
+  <thead>
+    <tr><th>Item</th><th>Minimum</th><th>Recommended</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>System</td><td>Ubuntu 24.04 LTS</td><td>Ubuntu 26.04 LTS</td></tr>
+    <tr><td>CPU</td><td>[MIN CPU]</td><td>[CPU CONSIGLIATE]</td></tr>
+    <tr><td>Memory</td><td>[MIN RAM]</td><td>[RAM CONSIGLIATA]</td></tr>
+    <tr><td>Ports</td><td colSpan={2}><code>22 · 80 · 443 · 443/udp · 8443</code></td></tr>
+  </tbody>
+</table>
+
+## Run the installer {#installa}
+
+Sign in as root. The installer's first step checks the whole server and, if it finds problems, lists
+them all together before it changes anything.
+
+<Tabs groupId="ubuntu" defaultValue="26.04" queryString="ubuntu">
+<TabItem value="24.04" label="Ubuntu 24.04">
+
+```bash prompt
+# Ubuntu 24.04 — PHP comes from the ondrej/php repository
+curl -fsSL [URL INSTALLER] -o install.sh
+bash install.sh
+```
+
+</TabItem>
+<TabItem value="26.04" label="Ubuntu 26.04">
+
+```bash prompt
+# Ubuntu 26.04 — PHP 8.5 from the Ubuntu packages
+curl -fsSL [URL INSTALLER] -o install.sh
+bash install.sh
+```
+
+</TabItem>
+</Tabs>
+
+## What happens {#cosa-fa}
+
+<Steps>
+  <Step title="Checks the server">System, memory, ports and conflicting packages, reported all together.</Step>
+  <Step title="Installs the components">nginx, PHP, MariaDB and Redis, with the project's measured settings.</Step>
+  <Step title="Verifies the release">The binaries are installed only if the signature matches and the version is not older.</Step>
+  <Step title="Starts the panel">The panel runs without privileges. Root operations are done by a separate agent.</Step>
+  <Step title="Gives you the link">A one-time address, valid for 24 hours, to create the administrator.</Step>
+</Steps>
+
+:::note[Lost link]
+
+The link to create the administrator is valid for 24 hours. If you lose it, generate a new one on the
+server with `cgctl recover-admin --email you@example.com`.
+
+:::
+
+## What next {#dopo}
+
+<Cards>
+  <Card label="01 · Getting started" title="Give the panel a domain">With its certificate.</Card>
+  <Card to="/sites" label="02 · Sites" title="Create the first site">WordPress, PHP, Laravel, static.</Card>
+  <Card to="/backups" label="04 · Backups" title="Connect the backups">S3, R2 or another server.</Card>
+</Cards>
