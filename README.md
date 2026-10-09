@@ -26,7 +26,51 @@ the project.
 3. **Written from scratch.** Nothing is copied from another project's documentation.
 4. Italian and English, with the same page in both languages.
 
+## Run it
+
+Docusaurus 3, Italian by default and English under `/en/`. Node 20 or later.
+
+```sh
+npm ci
+npm start              # Italian, live reload on http://localhost:3000
+npm run start:en       # English (one locale at a time in dev mode)
+npm run build          # both locales into build/
+npm run serve          # serve build/ to check it as it will be published
+npm run typecheck
+```
+
+English pages live under `i18n/en/docusaurus-plugin-content-docs/current/`, with the same paths
+as `docs/`; interface strings are in `i18n/<locale>/code.json`.
+
+## Writing a page
+
+Front matter drives the page header:
+
+```yaml
+title: Installazione            # sidebar and <title>
+heading: Installa               # big title (defaults to title)
+heading_accent: CloudGround.    # serif italic accent, in blue
+description: One or two lines.  # the lead under the title
+meta:                           # optional strip: time, level, requirements, last verified
+  time: '[X] minuti'
+  level: Base
+  requires: Accesso root
+  verified: '[DATA]'
+```
+
+Available in every page without an import: `<Tabs>`/`<TabItem>`, `<Steps>`/`<Step title>`,
+`<Cards>`/`<Card to label title>`. Admonitions: `:::warning[Title]` and `:::danger` draw an ink
+bar, `:::note`, `:::info` and `:::tip` a blue one. Code blocks have line numbers
+(`noLineNumbers` turns them off); `prompt` in the meta draws a root `#` before each command and
+leaves comments out of Copy.
+
+## Design
+
+The theme implements `design/reference/docs.dc.html`. Fonts are self-hosted from
+`static/fonts/` (Archivo, Instrument Serif, Geist Mono — SIL Open Font License, texts alongside).
+Search is local (built at build time); there is no analytics and no external service.
+
 ## Status
 
-Initialised on 2026-10-09. The site generator (Docusaurus) and the content come with
-Phase 9 of the CloudGround rewrite plan.
+Initialised on 2026-10-09. The site generator is in place with two example pages per language;
+the content comes with Phase 9 of the CloudGround rewrite plan.
