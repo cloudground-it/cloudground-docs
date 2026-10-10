@@ -3,8 +3,8 @@ title: Ruoli e permessi
 description: Cosa può fare ogni ruolo, cosa può fare un token API e in che ordine il pannello controlla una richiesta.
 type: reference
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 3
 ---
 
@@ -73,9 +73,10 @@ assegnati.
 | Backup: eliminare, conservazione, provare il repository | sì | no | no |
 | File: elenco | sì | sì | vede |
 | File: leggere, scrivere, caricare, scaricare | sì | sì | no |
-| Database: query, esportare, importare | sì | sì | vede i dettagli |
-| DB Studio: tabelle, righe, query di lettura | sì | sì | sì, con un utente del database in sola lettura |
-| DB Studio: modificare, alterare, esportare, importare | sì | sì | no |
+| Database e utenti database: creare, eliminare, privilegi, password | sì | sì | vede |
+| Quarry dal pannello: tabelle e struttura | sì | sì | sì |
+| Quarry dal pannello: righe, editor SQL, ricerca, esportare, importare | sì | sì | no |
+| Quarry dal pannello: scritture nell'editor SQL | sì, con **Consenti scritture** | sì, con **Consenti scritture** | no |
 | WordPress: accesso a wp-admin, aggiornamenti, object cache | sì | sì | vede i plugin |
 | Accesso SFTP e chiavi "solo SFTP" | sì | sì | vede le chiavi |
 | Shell del sito e chiavi "shell" | sì, da una sessione | no | no |
@@ -102,7 +103,10 @@ Non ci sono token limitati a un'area. Solo un amministratore crea token.
 
 Un token non raggiunge mai le rotte solo per sessioni: il proprio account (password, 2FA, sessioni,
 profilo), gli utenti, i token e la shell dei siti. Non può nemmeno aggiungere una chiave di tipo
-"shell". Questi rifiuti rispondono **403**.
+"shell". Questi rifiuti rispondono **403**. Un token non apre nemmeno Quarry.
+
+Un utente database che accede a Quarry con la sua password non ha un ruolo del pannello: decidono i
+suoi privilegi in MariaDB (vedi [Come funziona Quarry](/explanation/quarry#mariadb-decides)).
 
 Il pannello revoca i token di un account quando la sua password cambia o viene reimpostata, quando
 spegne la verifica in due passaggi, quando viene disattivato, declassato o eliminato, e con

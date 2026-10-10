@@ -1,0 +1,197 @@
+---
+title: Usa Quarry
+description: Apri il database di un sito in Quarry, dal pannello o con la password di un utente database, poi sfoglia, cerca, modifica, esegui SQL, simula una scrittura, esporta e importa.
+type: how-to
+prerequisites:
+  - Un sito con almeno un database
+  - Un account del pannello che raggiunge il sito, oppure un utente database e la sua password
+version: unreleased
+last_verified: unverified
+sidebar_position: 10
+---
+
+Quarry è il gestore di database di CloudGround. Gira sull'indirizzo del pannello, in `/quarry`, come
+servizio a sé: lo apri dal pannello, oppure accedi con nome e password di un utente database. Per
+capire come funzionano i due ingressi e i suoi limiti, leggi [Come funziona Quarry](/explanation/quarry).
+
+## Aprilo dal pannello {#from-the-panel}
+
+1. Apri il sito e scegli la scheda **Database**.
+2. Sulla riga del database, premi **Apri in Quarry**.
+
+Quarry si apre in una nuova scheda, con l'accesso fatto per questo sito, su quel database. Il link
+funziona una volta sola e per 60 secondi: se Quarry dice *this link to Quarry has expired or was
+used*, premi di nuovo **Apri in Quarry**.
+
+Cosa puoi fare dipende dal tuo ruolo nel pannello:
+
+- **amministratore**, oppure **operatore** assegnato al sito: tutto quello che c'è in questa pagina.
+  Le istruzioni nell'editor SQL leggono soltanto finché non attivi **Consenti scritture**;
+- **sola lettura**: l'elenco delle tabelle e la loro struttura. Righe, editor SQL, ricerca,
+  esportazione e importazione non sono disponibili.
+
+## Accedi con un utente database {#sign-in}
+
+1. Apri `https://<server-ip>:8443/quarry`, oppure `https://<panel-domain>/quarry` quando il pannello
+   ha un dominio.
+2. Scrivi l'**Utente database** e la sua **Password**.
+3. In **Database**, se vuoi, scrivi il database da aprire per primo.
+4. Premi **Accedi**.
+
+`<server-ip>` è l'indirizzo del server, `<panel-domain>` il [dominio del pannello](/server/panel-domain).
+
+- Possono accedere solo gli utenti database creati dal pannello: quelli della scheda **Database** di
+  un sito e gli utenti principali creati con i siti. Mai `root`, né gli account del server.
+- Vedi i database che questo utente può aprire, e MariaDB decide ogni azione in base ai privilegi
+  dell'utente. Una scrittura di un utente in sola lettura fallisce con l'errore del server,
+  `ERROR 1142 … command denied`.
+- Ogni rifiuto dice *Utente database o password errati.*, qualunque sia il motivo. Le password
+  sbagliate rallentano i tentativi successivi; non bloccano mai l'utente: vedi
+  [la protezione dell'accesso](/explanation/sign-in-protection#quarry).
+
+## Orientati {#layout}
+
+- La **barra laterale** elenca i database che questa sessione può aprire; sotto ognuno, le sue
+  **Tabelle**, **Viste** e **Routine**. **Filtra le tabelle** restringe l'elenco. Le routine sono solo
+  elencate: Quarry non le esegue né le modifica mai.
+- La barra in alto mostra dove sei (sito › database › tabella) e come è stata aperta la sessione:
+  **utente database**, **dal pannello** o **dal pannello, sola lettura**.
+- Un **database** ha le schede **Struttura** (le sue tabelle), **SQL**, **Cerca**, **Esporta** e
+  **Importa**.
+- Una **tabella** ha **Sfoglia**, **Struttura**, **SQL**, **Cerca**, **Inserisci**, **Esporta**,
+  **Importa** e **Operazioni**. Una vista non ha **Inserisci** né **Importa**.
+
+## Sfoglia una tabella {#browse}
+
+1. Apri la tabella, oppure premi **Sfoglia** sulla sua riga. Vedi 25 righe per pagina.
+2. Per vederne di più alla volta, cambia **Righe per pagina**: 25, 50, 100, 250 o 500. La paginazione
+   mostra *Righe X–Y di N*.
+3. Per ordinare, fai clic sul nome di una colonna: crescente, decrescente, poi niente. Maiusc+clic
+   aggiunge una colonna, fino a quattro.
+4. Per filtrare, scegli una colonna, un operatore (`=`, `≠`, `<`, `≤`, `>`, `≥`, *contiene*, *inizia
+   con*, `IS NULL`, `IS NOT NULL`) e un valore, poi premi **Aggiungi filtro**. Fino a 16 filtri, che
+   devono valere tutti. **Azzera** toglie filtri e ordinamento.
+
+I valori di testo oltre 4096 byte compaiono tagliati, le colonne binarie in esadecimale. Su una
+tabella di oltre un milione di righe senza filtri, il totale è la stima del server. **Query generata**
+mostra la `SELECT` che ha prodotto la pagina.
+
+## Cerca nel database {#search}
+
+1. Apri la scheda **Cerca** del database, scrivi il **Testo da cercare** e premi **Cerca**.
+2. Quarry elenca le tabelle le cui colonne di testo lo contengono, con quante righe. Aprine una per
+   sfogliare solo quelle righe.
+
+La ricerca si ferma dopo 200 tabelle o 150 secondi, e lo dice. La scheda **Cerca** di una tabella
+cerca solo in quella tabella.
+
+## Modifica le righe {#edit}
+
+1. In **Sfoglia**, fai doppio clic su una cella per modificarne la riga, oppure premi **Inserisci
+   riga** (la scheda **Inserisci** fa lo stesso).
+2. Quarry mostra l'SQL della modifica. Conferma per eseguirla.
+
+Ogni modifica gira in una transazione, annullata se non tocca esattamente una riga. Le righe di una
+tabella senza chiave primaria, le colonne binarie e i valori troppo lunghi si cambiano solo con
+l'editor SQL.
+
+## Cambia la struttura {#alter}
+
+La scheda **Struttura** mostra colonne, indici, chiavi esterne e l'**Istruzione CREATE**. Premi
+**Aggiungi colonna** o **Aggiungi indice**, compila i campi e premi **Anteprima SQL**: Quarry mostra
+l'`ALTER` prima di eseguirlo. Su una tabella grande può richiedere tempo e bloccare le scritture.
+
+## Esegui SQL {#sql}
+
+1. Apri la scheda **SQL** e scrivi un'istruzione.
+2. Premi **Esegui**, oppure Ctrl/Cmd+Invio.
+
+- Un'istruzione alla volta. Vedi al massimo 5000 righe o 8 MiB, e un'istruzione si ferma dopo 60
+  secondi.
+- Dal pannello, un'istruzione legge soltanto finché non attivi **Consenti scritture**; allora Quarry
+  chiede conferma.
+- Come utente database, l'istruzione gira come quell'utente: è MariaDB a decidere cosa può fare.
+- **Spiega** mostra come MariaDB eseguirebbe l'istruzione (`EXPLAIN`), senza eseguirla.
+- **Cronologia** elenca le tue istruzioni solo in questo browser: il pannello non le salva.
+
+## Simula una scrittura {#simulate}
+
+**Simula** esegue un `UPDATE`, `DELETE`, `INSERT` (anche `INSERT … SELECT`) o `REPLACE` in una
+transazione annullata sempre, e ti dice quante righe cambierebbe. Per un `UPDATE` o un `DELETE` su una
+sola tabella mostra anche fino a 25 delle righe corrispondenti, come sono adesso. Nelle tabelle non
+cambia nulla, quindi Simula non ha bisogno di **Consenti scritture**.
+
+Quarry risponde **Non simulata**, con il motivo, quando l'istruzione:
+
+- legge soltanto (`SELECT`, `WITH`, `SHOW` …): eseguila, oppure usa **Spiega**;
+- fa commit da sola o non si può annullare: `CREATE`, `ALTER`, `DROP`, `TRUNCATE`, `RENAME`, `LOCK`,
+  `SET`, `GRANT`, le istruzioni di transazione, `LOAD`, `CALL` e simili;
+- contiene più di un'istruzione, o un commento eseguibile (`/*! … */`);
+- chiama una funzione che non è tra quelle predefinite di MariaDB (*Simulate supports built-in
+  functions only*), o una di quelle predefinite che aspettano, bloccano o fanno avanzare un contatore
+  (`SLEEP`, `BENCHMARK`, le funzioni di lock, `LOAD_FILE`, `LAST_INSERT_ID`, le funzioni delle
+  sequenze …);
+- raggiunge una tabella che non è InnoDB (MyISAM, Aria, MEMORY …), una vista, una sequenza, una
+  tabella con un trigger, o il nome di una routine memorizzata;
+- blocca righe che non cambia (`FOR UPDATE`, `FOR SHARE`, `LOCK IN SHARE MODE`), assegna una
+  variabile, o scrive `INTO` qualcosa che non è la sua tabella;
+- gira in una sessione il cui `sql_mode` contiene `ANSI_QUOTES` o `NO_BACKSLASH_ESCAPES`.
+
+L'intera simulazione ha 60 secondi, e aspetta al massimo 5 secondi una riga bloccata dal sito in
+produzione. Dopo, un contatore `AUTO_INCREMENT` può essere andato avanti, come dopo qualsiasi
+scrittura annullata. Il perché di questi rifiuti: [Simula](/explanation/quarry#simulate).
+
+## Esporta {#export}
+
+1. Apri la scheda **Esporta** del database, o di una tabella.
+2. Scegli il **Formato**: `sql`, con le tabelle da includere (vuoto per tutto il database), oppure
+   `csv`, per una tabella.
+3. Premi **Avvia esportazione**. Un'attività scrive il file in `shared/exports/` del sito.
+4. In **Esportazioni**, premi **Scarica**.
+
+Un'esportazione si ferma a 16 GiB. Con l'accesso come utente database, l'esportazione gira come
+quell'utente, e l'elenco mostra solo i file che hai creato in questa sessione.
+
+## Importa {#import}
+
+1. Apri la scheda **Importa** e scegli un file `.sql` o `.csv`. Premi **Carica**: il file viene
+   inviato a pezzi da 8 MiB, fino a 16 GiB, in **File da importare**.
+2. Premi **Importa** sulla sua riga.
+   - Un file `.sql`: scrivi il nome del database per confermare.
+   - Un file `.csv`: scegli la **Tabella per gli import CSV**. La sua prima riga indica le colonne,
+     `\N` è NULL, e tutte le righe entrano in un'unica transazione.
+
+:::danger[Nessun punto di ripristino come utente database]
+
+Aperto dal pannello, un import `.sql` salva prima il database, e lo rimette al suo posto se l'import
+fallisce. Con l'accesso come utente database, il file gira come quell'utente, un'istruzione alla
+volta, senza punto di ripristino: se un'istruzione fallisce, ciò che è stato eseguito prima resta.
+Esporta prima il database se potrebbe servirti.
+
+:::
+
+Con l'accesso come utente database, vedi e importi solo i file che hai caricato in questa sessione, e
+un caricamento con un nome già presente viene rifiutato: rinomina il tuo file.
+
+## Svuota o elimina una tabella {#operations}
+
+Nella scheda **Operazioni** della tabella, premi **Svuota tabella** (tutte le righe se ne vanno, la
+struttura resta) oppure **Elimina tabella**, e scrivi il nome della tabella per confermare. Nessuna
+delle due si può annullare. Se viene eseguita dipende dai privilegi dell'utente.
+
+## Esci e sessioni {#sessions}
+
+Il menu nella barra in alto ha **Esci da Quarry**. Una sessione finisce anche:
+
+- dopo 30 minuti senza uso, e 12 ore dopo l'inizio;
+- quando la password dell'utente viene reimpostata, o l'utente o il sito vengono eliminati;
+- quando il pannello si riavvia;
+- se aperta dal pannello: quando finisce la tua sessione del pannello, o il tuo account non raggiunge
+  più il sito.
+
+Quarry dice allora *La sessione di Quarry è terminata*, con il motivo. Accedi, o aprilo dal pannello,
+di nuovo.
+
+## Prossimo passo {#next}
+
+Per capire i due ingressi e cosa protegge Simula, leggi [Come funziona Quarry](/explanation/quarry).

@@ -3,8 +3,8 @@ title: Site isolation
 description: What keeps a site apart from the others on the same server, from its system user to its sandboxed PHP, and why the boundary is not open_basedir.
 type: explanation
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 5
 ---
 
@@ -22,8 +22,11 @@ The folder's skeleton (the root, `releases/`, `.ssh/` and the `current` link) st
 the site's, the site could swap a release for a symbolic link and point `current`, and nginx's served
 folder with it, anywhere. The server re-asserts this ownership before every release and rollback.
 
-The site's database, `site_<id>`, has a user of the same name with rights on that database only, and
-at most 50 connections. Its password is generated at random when the site is created.
+A site's databases and database users are its own. The agent keeps its own record of which name is
+which site's and refuses every other; a user is granted privileges only on its own site's databases,
+with at most 50 connections, and `_` and `%` are escaped in the grants: MariaDB would read them as
+wildcards, which also reach other sites' databases with similar names. Quarry runs as accounts limited
+the same way (see [How Quarry works](/explanation/quarry#mariadb-decides)).
 
 ## One PHP per site, in a sandbox {#one-php-per-site}
 

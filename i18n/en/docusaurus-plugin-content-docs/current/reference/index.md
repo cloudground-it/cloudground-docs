@@ -12,4 +12,5 @@ hide_table_of_contents: true
   <Card to="/reference/roles-and-permissions" title="Roles and permissions" />
   <Card to="/reference/cache-behaviour" title="Cache behaviour" />
   <Card to="/reference/server-layout" title="Paths, ports and services" />
+  <Card to="/reference/database-names-and-passwords" title="Database names and passwords" />
 </Cards>

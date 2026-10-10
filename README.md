@@ -13,7 +13,7 @@ keeps the types apart.
 | --- | --- | --- |
 | `docs/tutorials/` | install CloudGround, the first site | tutorial |
 | `docs/sites/` | create sites, settings, domains and certificates, routing, scheduled tasks | how-to |
-| `docs/data/` | cache, staging and Safe Push, backups and restore tests, releases, databases, DB Studio | how-to |
+| `docs/data/` | cache, staging and Safe Push, backups and restore tests, releases, databases, Quarry | how-to |
 | `docs/access/` | SFTP and SSH keys, the site shell, users and roles, two-step verification, API tokens, firewall | how-to |
 | `docs/server/` | panel domain, services, logs, alerts and notifications, updates | how-to |
 | `docs/reference/` | site types, site settings, roles and permissions, cache behaviour, paths and ports | reference |

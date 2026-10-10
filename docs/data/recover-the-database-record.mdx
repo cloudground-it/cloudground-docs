@@ -1,0 +1,88 @@
+---
+title: Recupera il registro dei database
+description: Ricostruisci, dal server, il registro dell'agent che dice quale database e quale utente database appartengono a quale sito, quando il suo file è andato perso o è danneggiato.
+type: how-to
+prerequisites:
+  - Accesso root al server via SSH
+version: unreleased
+last_verified: unverified
+sidebar_position: 11
+---
+
+L'agent tiene un suo registro di quale database e quale utente database appartengono a quale sito, in
+`/var/lib/cloudground-agent/databases.json`. Rifiuta ogni database o utente che il registro non assegna
+al sito. Se il file viene cancellato, spostato o si danneggia, `panel-agent adopt-databases` lo
+ricostruisce dai registri del pannello e da ciò che MariaDB contiene, senza creare, eliminare o
+concedere nulla.
+
+## Quando serve {#when}
+
+- La scheda **Database** o Quarry risponde *`"<name>"` is not a database of `<domain>`* per un
+  database che la scheda elenca. Senza il suo file, l'agent ricostruisce il registro solo dai nomi
+  `site_<id>`, quindi mancano tutti i nomi che hai scelto tu.
+- Ogni richiesta sui database fallisce con *the agent's record of the sites' databases is not
+  available*, seguito dal motivo, per esempio che il file è danneggiato. L'agent non ricostruisce mai
+  sopra un file che non riesce a leggere.
+
+## Ferma l'agent {#stop}
+
+L'agent in esecuzione tiene il registro in memoria e scriverebbe il suo sopra quello ricostruito. Da
+root:
+
+```bash prompt
+systemctl stop cloudground-agent
+```
+
+{/* TODO(verify): i siti continuano a rispondere mentre l'agent è fermo (nginx e il PHP-FPM di ogni sito sono unità a sé); il pannello non può cambiare nulla finché l'agent non torna. */}
+
+Se l'agent ha detto che il file è danneggiato, spostalo prima da parte, così il comando parte da un
+registro nuovo:
+
+```bash prompt
+mv /var/lib/cloudground-agent/databases.json /var/lib/cloudground-agent/databases.json.damaged
+```
+
+## Guarda cosa verrebbe adottato {#dry-run}
+
+```bash prompt
+panel-agent adopt-databases --dry-run
+```
+
+Il comando legge i registri del pannello (in sola lettura), elenca i database e gli utenti
+`localhost` del server, e stampa una riga per ogni nome, poi un conteggio:
+
+```text
+adopted database shop_data for site 3
+kept database site_3 (site 3)
+refused database old_data (site 3): the server has no database of that name
+1 adopted, 1 already recorded, 1 refused
+dry run: nothing was written
+```
+
+- **adopted**: il nome è del sito nei registri del pannello, il server lo ha, e nessun altro sito lo
+  reclama. I privilegi di un utente vengono con lui, sui database adottati per lo stesso sito.
+- **kept**: il registro dà già il nome allo stesso sito.
+- **refused**: con il motivo. Un nome riservato, il `site_<n>` di un altro sito, un nome che due siti
+  reclamano, un nome che il registro dà a un altro sito, o uno che il server non ha non viene mai
+  adottato.
+
+## Scrivi il registro e avvia l'agent {#adopt}
+
+```bash prompt
+panel-agent adopt-databases
+systemctl start cloudground-agent
+```
+
+Senza `--dry-run` il comando scrive il registro. Se non ci riesce, dice *the record was not written*
+con il motivo, ed esce con 1.
+
+- Il comando funziona solo da root, e si rifiuta finché il socket dell'agent risponde: *the agent is
+  running: stop it first*.
+- I registri del pannello vengono letti da `/var/lib/cloudground/state.db`; indica un altro file con
+  `--state <path>`. Un file di un pannello troppo vecchio per registrare i nomi scelti viene rifiutato,
+  con quello che devi fare.
+- Nulla raggiunge questo comando dal pannello o dall'API: gira solo sul server.
+
+## Prossimo passo {#next}
+
+Controlla la scheda **Database** del sito: vedi [Gestisci i database](/data/manage-databases).

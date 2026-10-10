@@ -59,8 +59,8 @@ sulla stessa email ogni tentativo aspetta prima di essere valutato, da 1 a 60 se
   `Sec-Fetch-Site`, deve essere `same-origin` o `none`. Altrimenti: **403**. I client fuori dal
   browser, come `cgctl` e `curl`, non mandano questi header.
 - Il corpo è al massimo 4 MiB. Fanno eccezione: accesso, setup, password e profilo (8 KiB), un
-  certificato personalizzato (256 KiB), un caricamento di file o una modifica in blocco di DB Studio
-  (16 MiB), un pezzo di importazione di DB Studio (8 MiB). Oltre: **413**.
+  certificato personalizzato (256 KiB), un caricamento di file o una modifica in blocco di Quarry
+  (16 MiB), un pezzo di caricamento di Quarry (8 MiB). Oltre: **413**.
 - Un campo JSON sconosciuto è un errore: **400** `malformed request`.
 
 ## Ruoli {#roles}

@@ -1,0 +1,85 @@
+---
+title: Recover the database record
+description: Rebuild, from the server, the agent's record of which database and which database user belong to which site, when its file was lost or damaged.
+type: how-to
+prerequisites:
+  - Root access to the server over SSH
+version: unreleased
+last_verified: unverified
+sidebar_position: 11
+---
+
+The agent keeps its own record of which database and which database user belong to which site, in
+`/var/lib/cloudground-agent/databases.json`. It refuses any database or user the record does not
+give to the site. If the file is deleted, moved away or damaged, `panel-agent adopt-databases` rebuilds
+it from the panel's records and from what MariaDB has, without creating, dropping or granting
+anything.
+
+## When you need it {#when}
+
+- The **Database** tab or Quarry answers *`"<name>"` is not a database of `<domain>`* for a database
+  the tab lists. Without its file, the agent rebuilds the record from the `site_<id>` names only, so
+  every name you chose is missing.
+- Every database request fails with *the agent's record of the sites' databases is not available*,
+  followed by the reason, for example that the file is damaged. The agent never rebuilds over a file
+  it cannot read.
+
+## Stop the agent {#stop}
+
+The running agent holds the record in memory and would write its own over the rebuilt one. As root:
+
+```bash prompt
+systemctl stop cloudground-agent
+```
+
+{/* TODO(verify): the sites keep serving while the agent is stopped (nginx and each site's PHP-FPM are their own units); the panel cannot change anything until it is back. */}
+
+If the agent said the file is damaged, move it aside first, so the command starts from a fresh
+record:
+
+```bash prompt
+mv /var/lib/cloudground-agent/databases.json /var/lib/cloudground-agent/databases.json.damaged
+```
+
+## See what would be adopted {#dry-run}
+
+```bash prompt
+panel-agent adopt-databases --dry-run
+```
+
+The command reads the panel's records (read only), lists the server's databases and `localhost`
+users, and prints one line for each name, then a count:
+
+```text
+adopted database shop_data for site 3
+kept database site_3 (site 3)
+refused database old_data (site 3): the server has no database of that name
+1 adopted, 1 already recorded, 1 refused
+dry run: nothing was written
+```
+
+- **adopted**: the name is the site's in the panel's records, the server has it, and no other site
+  claims it. A user's privileges come with it, on the databases adopted for the same site.
+- **kept**: the record already gives the name to the same site.
+- **refused**: with the reason. A reserved name, another site's `site_<n>`, a name two sites claim,
+  a name the record gives to another site, or one the server does not have is never adopted.
+
+## Write the record and start the agent {#adopt}
+
+```bash prompt
+panel-agent adopt-databases
+systemctl start cloudground-agent
+```
+
+Without `--dry-run` the command writes the record. If it cannot, it says *the record was not
+written* and the reason, and exits with 1.
+
+- The command works only as root, and refuses while the agent's socket answers: *the agent is
+  running: stop it first*.
+- The panel's records are read from `/var/lib/cloudground/state.db`; name another file with
+  `--state <path>`. A file from a panel too old to record chosen names is refused, with what to do.
+- Nothing reaches this command from the panel or the API: it runs only on the server.
+
+## Next step {#next}
+
+Check the site's **Database** tab: see [Manage databases](/data/manage-databases).

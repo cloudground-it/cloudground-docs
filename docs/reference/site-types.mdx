@@ -3,8 +3,8 @@ title: Tipi di sito
 description: I sei tipi di sito, cosa crea il pannello per ognuno e con quali valori predefiniti.
 type: reference
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 1
 ---
 
@@ -16,7 +16,7 @@ Il tipo si sceglie alla creazione e non cambia. Nell'API è il campo `type`.
 | --- | --- | --- | --- | --- | --- | --- |
 | Nome nel pannello | WordPress | WooCommerce | PHP | Laravel | Statico | Reverse proxy |
 | PHP | sì | sì | sì | sì | no | no |
-| Database | sì | sì | sì | sì | no | no |
+| Database alla creazione | sì | sì | facoltativo | sì | facoltativo | no |
 | Cache di pagina alla creazione | attiva | attiva | attiva | attiva | no | no |
 | Profilo predefinito | Bilanciato | E-commerce | Bilanciato | Bilanciato | Bilanciato | Bilanciato |
 | Cartella pubblica predefinita | radice del rilascio | radice del rilascio | radice del rilascio | `public` | radice del rilascio | — |
@@ -28,8 +28,13 @@ Per un sito statico o reverse proxy la cache di pagina resta spenta anche se la 
 ## Cosa crea la creazione {#what-creation-makes}
 
 Per ogni tipo: l'utente di sistema `cg-site-<id>`, la cartella `/srv/sites/<dominio>` con `releases/`,
-`current`, `shared/uploads`, `logs` e `tmp/sessions`, e il vhost. Per i tipi con PHP anche il database
-`site_<id>` con l'utente `site_<id>` e un servizio PHP-FPM solo per il sito.
+`current`, `shared/uploads`, `logs` e `tmp/sessions`, e il vhost. Per i tipi con PHP anche un servizio
+PHP-FPM solo per il sito. L'accesso SFTP parte spento.
+
+WordPress, WooCommerce e Laravel ricevono anche il loro database principale e il suo utente, con tutti
+i privilegi su di esso; un sito PHP o statico solo se lo chiedi alla creazione. I nomi li scegli tu o li
+propone il pannello: vedi [nomi e password dei database](/reference/database-names-and-passwords).
+Altri database e utenti si aggiungono dopo, a qualsiasi sito, dalla scheda **Database**.
 
 | Tipo | Contenuto del primo rilascio |
 | --- | --- |

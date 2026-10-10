@@ -81,7 +81,7 @@ The body:
   the page's language, and use the terms of the product glossary (`ui/i18n/GLOSSARY.md` in the
   product repo): *ripristino di prova* / *restore test*, *svuotare la cache* / *purge the cache*,
   *attività* / *task*, *amministratore / operatore / sola lettura*. Product names stay as they
-  are: CloudGround, Safe Push, Performance Guard, Velocity Engine, DB Studio, cgctl.
+  are: CloudGround, Safe Push, Performance Guard, Velocity Engine, Quarry, cgctl.
 - **No third-party product names** in comparisons, and no comparisons with other panels or
   hosts. Name third-party software only where the reader must type or recognise it (WordPress,
   Laravel, nginx, PHP-FPM, MariaDB, Redis, restic, Let's Encrypt).

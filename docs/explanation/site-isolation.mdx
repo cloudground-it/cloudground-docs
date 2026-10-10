@@ -3,8 +3,8 @@ title: L'isolamento dei siti
 description: Cosa separa un sito dagli altri sullo stesso server, dal suo utente di sistema al PHP chiuso in una sandbox, e perché il confine non è open_basedir.
 type: explanation
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 5
 ---
 
@@ -22,8 +22,11 @@ Lo scheletro della cartella (la radice, `releases/`, `.ssh/` e il link `current`
 del sito, il sito potrebbe sostituire un rilascio con un link simbolico e puntare `current`, e con lui la
 cartella servita da nginx, dove vuole. Il server rimette questi permessi prima di ogni rilascio e rollback.
 
-Il database del sito, `site_<id>`, ha un utente con lo stesso nome che ha permessi solo su quel database,
-con al massimo 50 connessioni. La password è generata a caso alla creazione.
+I database e gli utenti database di un sito sono solo suoi. L'agent tiene un suo registro di quale nome
+è di quale sito e rifiuta tutti gli altri; un utente riceve privilegi solo sui database del suo sito, con
+al massimo 50 connessioni, e nei privilegi `_` e `%` sono protetti: MariaDB li leggerebbe come jolly,
+che raggiungono anche i database di altri siti con nomi simili. Quarry gira con account limitati allo
+stesso modo (vedi [Come funziona Quarry](/explanation/quarry#mariadb-decides)).
 
 ## Un PHP per sito, in una sandbox {#one-php-per-site}
 

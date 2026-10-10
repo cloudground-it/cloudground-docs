@@ -1,57 +1,139 @@
 ---
 title: Manage databases
-description: Find a site's database, export it to a .sql file, import one, and run a query from the console.
+description: Add and delete a site's databases and database users, choose what each user may do on each database, and reset a user's password.
 type: how-to
 prerequisites:
-  - A site with a database the panel manages
-  - To export, import or write, an administrator account, or an operator assigned to the site
-version: a7d92ba
-last_verified: 2026-10-10
+  - To change anything, an administrator account, or an operator assigned to the site
+version: unreleased
+last_verified: unverified
 sidebar_position: 9
 ---
 
-Every PHP site has its own MariaDB database on this server, created with the site: it is called
-`site_<id>`, like its user, where `<id>` is the site's number. A site can use an external
-database: then the panel does not manage it and the **Database** tab does not apply.
+A site has zero or more MariaDB databases and zero or more database users. Each user signs in with
+its own password and reaches only the databases you give it, with all privileges or read only. You
+manage both from the site's **Database** tab.
 
-## Find the database {#find}
+## What a new site starts with {#defaults}
 
-Open the site and choose the **Database** tab. The **Database** panel shows **Name** and
-**User**. To work on the tables press **Open DB Studio**: see [Use DB Studio](/data/use-db-studio).
+| Type | Databases at creation |
+| --- | --- |
+| WordPress, WooCommerce, Laravel | one database and one user, the **primary** ones: the site's configuration uses them |
+| PHP, Static | none, unless you turn on **Create a database too** when you create the site |
+| Reverse proxy | none |
 
-## Export the database {#export}
+The primary database and the primary user carry the **Primary** badge. They cannot be deleted while
+the site exists, and the primary user always keeps all privileges on the primary database. You add
+more databases and users whenever the site needs them.
 
-1. In the **Tools** panel, press **Export .sql**.
-2. When the task ends, find the file in **Files**, under `shared/exports/`, with a name like
-   `site_<id>-<yyyymmdd-hhmmss>.sql` (date and time in UTC).
+## Look at the databases {#look}
 
-The file belongs to the site user, so you can also download it over SFTP.
+Open the site and choose the **Database** tab. It has two sections:
 
-## Import a .sql file {#import}
+- **Databases**: each database with **Access** (which users reach it, and how), **Tables** and
+  **Size**. A dash means the sizes could not be read.
+- **Database users**: each user with its **Access** on each database.
 
-1. Upload the file to the site, for example into `shared/imports/` from the **Files** tab or over
-   SFTP.
-2. In the **Import** panel, type the file's path relative to the site folder, for example
-   `shared/imports/dump.sql`.
-3. Press **Import**, type the site's domain to confirm, and confirm.
+Read-only accounts see both sections and can open Quarry, but change nothing.
 
-Before importing, the panel saves the database as it is. The file's statements run on top of the
-current database: tables the file does not touch stay. If the import fails, the database goes
-back exactly to what it was.
+## Add a database {#add-a-database}
+
+1. In **Databases**, press **Add database**.
+2. In **Name**, type the name, for example `shop_data`. The
+   [name rules](/reference/database-names-and-passwords#names) apply.
+3. Press **Create database**.
+
+The database is created by a task (*Creating the database …*). It is empty, and no user can reach
+it until you give one access: see [change a user's privileges](#privileges).
+
+## Add a database user {#add-a-user}
+
+1. In **Database users**, press **Add user**.
+2. In **User**, type the name, for example `reporting`. The same rules as for databases apply.
+3. Leave **Password** empty to have a strong one generated, or type your own: see the
+   [password rules](/reference/database-names-and-passwords#passwords).
+4. Under **Privileges**, choose for each database **None**, **Read only** or **All privileges**.
+5. Press **Create user**.
+
+When the panel generated the password, the **Save the password** dialog shows the user and the
+password once. Copy them, then press **I have saved it**: the panel cannot show the password again.
+
+The user signs in from this server only (`<user>@localhost`), with at most 50 connections at a time.
+
+## Change a user's privileges {#privileges}
+
+1. In **Database users**, press **Privileges** on the user's row.
+2. For each database choose **None**, **Read only** or **All privileges**.
+3. Press **Save**.
+
+**Read only** grants `SELECT, SHOW VIEW`; **All privileges** grants `ALL PRIVILEGES` on that
+database. The primary user cannot lose all privileges on the primary database.
+
+## Reset a user's password {#reset-password}
+
+1. On the user's row, open the **⋯** menu and choose **Reset password**.
+2. Choose **Generate a strong password**, or **Choose a password** and type it.
+3. Press **Reset password**. A generated password is shown once, as for a new user.
+
+What happens to the site's configuration depends on the user:
+
+- the primary user of a WordPress or WooCommerce site: the panel writes the new password into
+  `wp-config.php` at the same time. If that fails, the old password comes back and the error says
+  so;
+- the primary user of any other site: the panel never writes a `.env` file. Put the new password in
+  the site's configuration yourself, or the site stops reaching its database;
+- any other user: only the user changes. Applications that sign in as that user need the new
+  password.
+
+A password reset also ends the Quarry sessions signed in as that user.
+
+## Delete a database or a user {#delete}
+
+1. On the row, open the **⋯** menu and choose **Delete**.
+2. Type the name to confirm, and confirm.
+
+- Deleting a **database** deletes every table in it, and takes away every user's access to it. Its
+  backups stay in the repository: the retention policy removes them later.
+- Deleting a **user** stops every application that signs in as that user.
+
+The menu item is disabled for the primary database and the primary user.
+
+## Open a database in Quarry {#open-in-quarry}
+
+On a database's row, press **Open in Quarry**. Quarry opens in a new tab, already signed in for this
+site: see [Use Quarry](/data/use-quarry).
+
+## WordPress tools {#wordpress-tools}
+
+On a WordPress or WooCommerce site, **WordPress tools** in the **Databases** section opens three
+tools that work on the primary database through wp-cli:
+
+- **Autoloaded options**: how much data WordPress loads on every request, and the 20 largest
+  options. Over 800 KB slows every uncached request.
+- **Search and replace**: replaces a text in all the site's tables, keeping serialized data valid;
+  GUIDs are left alone. Press **Count replacements** first, then **Replace**.
+- **Expired transients**: press **Find expired transients**, then confirm to delete them.
+
+After a replacement or a clean-up the site's cache is refreshed.
+
+## With cgctl {#with-cgctl}
 
 ```bash
-cgctl --wait database import <site-id> <domain> shared/imports/dump.sql
+cgctl database list <site-id>
+cgctl --wait database create <site-id> shop_data
+cgctl database user-create <site-id> reporting shop_data:read site_7:all
 ```
 
-## Run a query {#query}
+- `<site-id>` is the site's number.
+- `database user-create` takes the user's name, then one `<database>:all` or `<database>:read`
+  for each database it may reach. It always generates the password, which appears once in the
+  answer.
 
-1. Type the statement in the **SQL console** and press **Run**.
-2. For a statement that changes data, turn on **Allow writes** and confirm.
-
-Without **Allow writes** the statement runs as a user that can only read. The console runs one
-statement at a time, shows at most 5000 rows or 8 MiB of data, and stops a statement after 60
-seconds.
+Deleting, privileges and password resets are routes of the [API](/api):
+`DELETE /api/sites/<id>/databases/<name>?confirm=<name>`,
+`PUT /api/sites/<id>/database-users/<name>/grants`,
+`POST /api/sites/<id>/database-users/<name>/password` and
+`DELETE /api/sites/<id>/database-users/<name>?confirm=<name>`.
 
 ## Next step {#next}
 
-[Use DB Studio](/data/use-db-studio) to browse and edit the tables.
+[Use Quarry](/data/use-quarry) to browse and edit the tables.

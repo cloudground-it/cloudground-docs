@@ -3,8 +3,8 @@ title: Roles and permissions
 description: What each role can do, what an API token can do, and in what order the panel checks a request.
 type: reference
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 3
 ---
 
@@ -73,9 +73,10 @@ only.
 | Backups: delete, retention, test the repository | yes | no | no |
 | Files: list | yes | yes | sees |
 | Files: read, write, upload, download | yes | yes | no |
-| Database: query, export, import | yes | yes | sees the details |
-| DB Studio: tables, rows, read queries | yes | yes | yes, through a read-only database user |
-| DB Studio: edit, alter, export, import | yes | yes | no |
+| Databases and database users: create, delete, privileges, passwords | yes | yes | sees |
+| Quarry from the panel: tables and structure | yes | yes | yes |
+| Quarry from the panel: rows, SQL editor, search, export, import | yes | yes | no |
+| Quarry from the panel: writes in the SQL editor | yes, with **Allow writes** | yes, with **Allow writes** | no |
 | WordPress: wp-admin sign-in, updates, object cache | yes | yes | sees the plugins |
 | SFTP access and "SFTP only" keys | yes | yes | sees the keys |
 | Site shell and "shell" keys | yes, from a session | no | no |
@@ -102,7 +103,10 @@ tokens limited to one area. Only an administrator creates tokens.
 
 A token never reaches the session-only routes: your own account (password, 2FA, sessions, profile),
 users, tokens and the site shell. Nor can it add a key of type "shell". These refusals answer
-**403**.
+**403**. A token cannot open Quarry either.
+
+A database user signed in to Quarry with its own password has no panel role: its MariaDB privileges
+decide (see [How Quarry works](/explanation/quarry#mariadb-decides)).
 
 The panel revokes an account's tokens when its password is changed or reset, when it turns two-step
 verification off, when it is disabled, demoted or deleted, and with `panel-api recover-admin`.

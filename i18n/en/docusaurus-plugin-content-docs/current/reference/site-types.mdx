@@ -3,8 +3,8 @@ title: Site types
 description: The six site types, what the panel makes for each and with which defaults.
 type: reference
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 1
 ---
 
@@ -17,7 +17,7 @@ field.
 | --- | --- | --- | --- | --- | --- | --- |
 | Name in the panel | WordPress | WooCommerce | PHP | Laravel | Static | Reverse proxy |
 | PHP | yes | yes | yes | yes | no | no |
-| Database | yes | yes | yes | yes | no | no |
+| Database at creation | yes | yes | optional | yes | optional | no |
 | Page cache at creation | on | on | on | on | no | no |
 | Default profile | Balanced | Commerce | Balanced | Balanced | Balanced | Balanced |
 | Default public folder | release root | release root | release root | `public` | release root | — |
@@ -29,8 +29,13 @@ For a static or reverse proxy site the page cache stays off even when the reques
 ## What creation makes {#what-creation-makes}
 
 For every type: the system user `cg-site-<id>`, the folder `/srv/sites/<domain>` with `releases/`,
-`current`, `shared/uploads`, `logs` and `tmp/sessions`, and the vhost. For the types with PHP, also
-the database `site_<id>` with the user `site_<id>`, and a PHP-FPM service of the site's own.
+`current`, `shared/uploads`, `logs` and `tmp/sessions`, and the vhost. For the types with PHP, also a
+PHP-FPM service of the site's own. SFTP access starts off.
+
+WordPress, WooCommerce and Laravel also get their primary database and its user, with all privileges
+on it; a PHP or static site only if you ask for one at creation. You choose the names, or the panel
+proposes them: see [database names and passwords](/reference/database-names-and-passwords). More
+databases and users are added later, to any site, from the **Database** tab.
 
 | Type | Content of the first release |
 | --- | --- |

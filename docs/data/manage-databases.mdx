@@ -1,57 +1,142 @@
 ---
 title: Gestisci i database
-description: Trova il database di un sito, esportalo in un file .sql, importane uno ed esegui una query dalla console.
+description: Aggiungi ed elimina i database e gli utenti database di un sito, scegli cosa può fare ogni utente su ogni database e reimposta la password di un utente.
 type: how-to
 prerequisites:
-  - Un sito con un database gestito dal pannello
-  - Per esportare, importare o scrivere, un account amministratore oppure operatore assegnato al sito
-version: a7d92ba
-last_verified: 2026-10-10
+  - Per cambiare qualcosa, un account amministratore oppure operatore assegnato al sito
+version: unreleased
+last_verified: unverified
 sidebar_position: 9
 ---
 
-Ogni sito PHP ha un proprio database MariaDB su questo server, creato insieme al sito: si
-chiama `site_<id>`, come il suo utente, dove `<id>` è il numero del sito. Un sito può usare un
-database esterno: in quel caso il pannello non lo gestisce e la scheda **Database** non serve.
+Un sito ha zero o più database MariaDB e zero o più utenti database. Ogni utente accede con la sua
+password e raggiunge solo i database che gli assegni, con tutti i privilegi o in sola lettura. Gestisci
+entrambi dalla scheda **Database** del sito.
 
-## Trova il database {#find}
+## Con cosa parte un sito nuovo {#defaults}
 
-Apri il sito e scegli la scheda **Database**. Il riquadro **Database** mostra **Nome** e
-**Utente**. Per lavorare sulle tabelle premi **Apri DB Studio**: vedi
-[Usa DB Studio](/data/use-db-studio).
+| Tipo | Database alla creazione |
+| --- | --- |
+| WordPress, WooCommerce, Laravel | un database e un utente, quelli **principali**: li usa la configurazione del sito |
+| PHP, Statico | nessuno, a meno che tu non attivi **Crea anche un database** quando crei il sito |
+| Reverse proxy | nessuno |
 
-## Esporta il database {#export}
+Il database principale e l'utente principale hanno il badge **Principale**. Non si possono eliminare
+finché il sito esiste, e l'utente principale tiene sempre tutti i privilegi sul database principale.
+Aggiungi altri database e utenti quando il sito ne ha bisogno.
 
-1. Nel riquadro **Strumenti**, premi **Esporta .sql**.
-2. Quando l'attività finisce, trovi il file in **File**, sotto `shared/exports/`, con un nome come
-   `site_<id>-<aaaammgg-hhmmss>.sql` (data e ora in UTC).
+## Guarda i database {#look}
 
-Il file appartiene all'utente del sito, quindi lo scarichi anche via SFTP.
+Apri il sito e scegli la scheda **Database**. Ha due sezioni:
 
-## Importa un file .sql {#import}
+- **Database**: ogni database con **Accesso** (quali utenti lo raggiungono, e come), **Tabelle** e
+  **Dimensione**. Un trattino vuol dire che non è stato possibile leggere le dimensioni.
+- **Utenti database**: ogni utente con il suo **Accesso** su ogni database.
 
-1. Carica il file nel sito, per esempio in `shared/imports/` dalla scheda **File** o via SFTP.
-2. Nel riquadro **Importa**, scrivi il percorso del file relativo alla cartella del sito, per
-   esempio `shared/imports/dump.sql`.
-3. Premi **Importa**, scrivi il dominio del sito per confermare e conferma.
+Gli account in sola lettura vedono entrambe le sezioni e possono aprire Quarry, ma non cambiano nulla.
 
-Prima di importare, il pannello salva il database com'è. Le istruzioni del file girano sopra il
-database attuale: le tabelle che il file non tocca restano. Se l'importazione fallisce, il
-database torna esattamente com'era prima.
+## Aggiungi un database {#add-a-database}
+
+1. In **Database**, premi **Aggiungi database**.
+2. In **Nome**, scrivi il nome, per esempio `shop_data`. Valgono le
+   [regole dei nomi](/reference/database-names-and-passwords#names).
+3. Premi **Crea database**.
+
+Il database viene creato da un'attività (*Creazione del database …*). È vuoto, e nessun utente lo
+raggiunge finché non gli dai accesso: vedi [cambia i privilegi di un utente](#privileges).
+
+## Aggiungi un utente database {#add-a-user}
+
+1. In **Utenti database**, premi **Aggiungi utente**.
+2. In **Utente**, scrivi il nome, per esempio `reporting`. Valgono le stesse regole dei database.
+3. Lascia vuota la **Password** per farne generare una robusta, oppure scrivi la tua: vedi le
+   [regole delle password](/reference/database-names-and-passwords#passwords).
+4. In **Privilegi**, scegli per ogni database **Nessuno**, **Sola lettura** o **Tutti i privilegi**.
+5. Premi **Crea utente**.
+
+Se la password l'ha generata il pannello, la finestra **Salva la password** mostra utente e password
+una sola volta. Copiali, poi premi **L'ho salvata**: il pannello non può mostrare di nuovo la password.
+
+L'utente accede solo da questo server (`<utente>@localhost`), con al massimo 50 connessioni alla
+volta.
+
+## Cambia i privilegi di un utente {#privileges}
+
+1. In **Utenti database**, premi **Privilegi** sulla riga dell'utente.
+2. Per ogni database scegli **Nessuno**, **Sola lettura** o **Tutti i privilegi**.
+3. Premi **Salva**.
+
+**Sola lettura** concede `SELECT, SHOW VIEW`; **Tutti i privilegi** concede `ALL PRIVILEGES` su quel
+database. L'utente principale non può perdere tutti i privilegi sul database principale.
+
+## Reimposta la password di un utente {#reset-password}
+
+1. Sulla riga dell'utente, apri il menu **⋯** e scegli **Reimposta password**.
+2. Scegli **Genera una password robusta**, oppure **Scegli una password** e scrivila.
+3. Premi **Reimposta password**. Una password generata compare una sola volta, come per un utente
+   nuovo.
+
+Cosa succede alla configurazione del sito dipende dall'utente:
+
+- l'utente principale di un sito WordPress o WooCommerce: il pannello scrive la nuova password in
+  `wp-config.php` nello stesso momento. Se non ci riesce, torna la password di prima e l'errore lo
+  dice;
+- l'utente principale di qualsiasi altro sito: il pannello non scrive mai un file `.env`. Metti tu la
+  nuova password nella configurazione del sito, altrimenti il sito non raggiunge più il suo database;
+- qualsiasi altro utente: cambia solo l'utente. Le applicazioni che accedono con quell'utente hanno
+  bisogno della nuova password.
+
+Reimpostare la password chiude anche le sessioni di Quarry aperte con quell'utente.
+
+## Elimina un database o un utente {#delete}
+
+1. Sulla riga, apri il menu **⋯** e scegli **Elimina**.
+2. Scrivi il nome per confermare, e conferma.
+
+- Eliminare un **database** elimina tutte le sue tabelle e toglie a ogni utente l'accesso a quel
+  database. I suoi backup restano nel repository: li rimuove più avanti la politica di conservazione.
+- Eliminare un **utente** ferma ogni applicazione che accede con quell'utente.
+
+La voce del menu è disattivata per il database principale e per l'utente principale.
+
+## Apri un database in Quarry {#open-in-quarry}
+
+Sulla riga di un database, premi **Apri in Quarry**. Quarry si apre in una nuova scheda, con l'accesso
+già fatto per questo sito: vedi [Usa Quarry](/data/use-quarry).
+
+## Strumenti WordPress {#wordpress-tools}
+
+Su un sito WordPress o WooCommerce, **Strumenti WordPress** nella sezione **Database** apre tre
+strumenti che lavorano sul database principale tramite wp-cli:
+
+- **Opzioni in autoload**: quanti dati WordPress carica a ogni richiesta, e le 20 opzioni più grandi.
+  Oltre 800 KB rallentano ogni richiesta non in cache.
+- **Cerca e sostituisci**: sostituisce un testo in tutte le tabelle del sito, mantenendo validi i
+  dati serializzati; i GUID non vengono toccati. Premi prima **Conta le sostituzioni**, poi
+  **Sostituisci**.
+- **Transient scaduti**: premi **Cerca i transient scaduti**, poi conferma per eliminarli.
+
+Dopo una sostituzione o una pulizia la cache del sito viene aggiornata.
+
+## Con cgctl {#with-cgctl}
 
 ```bash
-cgctl --wait database import <site-id> <dominio> shared/imports/dump.sql
+cgctl database list <site-id>
+cgctl --wait database create <site-id> shop_data
+cgctl database user-create <site-id> reporting shop_data:read site_7:all
 ```
 
-## Esegui una query {#query}
+- `<site-id>` è il numero del sito.
+- `database user-create` prende il nome dell'utente, poi un `<database>:all` o `<database>:read`
+  per ogni database che può raggiungere. Genera sempre la password, che compare una sola volta nella
+  risposta.
 
-1. Scrivi l'istruzione nella **Console SQL** e premi **Esegui**.
-2. Per un'istruzione che modifica i dati, attiva **Consenti scritture** e conferma.
-
-Senza **Consenti scritture** l'istruzione gira con un utente che può solo leggere. La console
-esegue un'istruzione alla volta, mostra al massimo 5000 righe o 8 MiB di dati e ferma
-un'istruzione dopo 60 secondi.
+Eliminazione, privilegi e reimpostazione della password sono route dell'[API](/api):
+`DELETE /api/sites/<id>/databases/<name>?confirm=<name>`,
+`PUT /api/sites/<id>/database-users/<name>/grants`,
+`POST /api/sites/<id>/database-users/<name>/password` e
+`DELETE /api/sites/<id>/database-users/<name>?confirm=<name>`.
 
 ## Prossimo passo {#next}
 
-[Usa DB Studio](/data/use-db-studio) per sfogliare e modificare le tabelle.
+[Usa Quarry](/data/use-quarry) per sfogliare e modificare le tabelle.

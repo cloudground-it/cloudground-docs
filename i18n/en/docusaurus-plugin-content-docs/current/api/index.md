@@ -58,7 +58,7 @@ email, every attempt waits before it is evaluated, 1 to 60 seconds.
   `Sec-Fetch-Site`, it must be `same-origin` or `none`. Otherwise: **403**. Clients outside the
   browser, such as `cgctl` and `curl`, send neither header.
 - The body is 4 MiB at most. The exceptions: sign-in, setup, passwords and profile (8 KiB), a custom
-  certificate (256 KiB), a file upload or a DB Studio edit batch (16 MiB), a DB Studio import chunk
+  certificate (256 KiB), a file upload or a Quarry edit batch (16 MiB), a Quarry upload chunk
   (8 MiB). Beyond: **413**.
 - An unknown JSON field is an error: **400** `malformed request`.
 

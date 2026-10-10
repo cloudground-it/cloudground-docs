@@ -16,5 +16,6 @@ hide_table_of_contents: true
   <Card to="/data/deploy-a-release" title="Pubblica un rilascio" />
   <Card to="/data/roll-back-a-release" title="Torna a un rilascio precedente" />
   <Card to="/data/manage-databases" title="Gestisci i database" />
-  <Card to="/data/use-db-studio" title="Usa DB Studio" />
+  <Card to="/data/use-quarry" title="Usa Quarry" />
+  <Card to="/data/recover-the-database-record" title="Recupera il registro dei database" />
 </Cards>

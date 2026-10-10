@@ -1,0 +1,195 @@
+---
+title: Use Quarry
+description: Open a site's database in Quarry, from the panel or with a database user's own password, then browse, search, edit, run SQL, simulate a write, export and import.
+type: how-to
+prerequisites:
+  - A site with at least one database
+  - A panel account that reaches the site, or a database user and its password
+version: unreleased
+last_verified: unverified
+sidebar_position: 10
+---
+
+Quarry is CloudGround's database manager. It runs on the panel's own address, at `/quarry`, as a
+service of its own: you open it from the panel, or sign in with a database user's name and password.
+To see how its two ways in and its limits work, read [How Quarry works](/explanation/quarry).
+
+## Open it from the panel {#from-the-panel}
+
+1. Open the site and choose the **Database** tab.
+2. On the database's row, press **Open in Quarry**.
+
+Quarry opens in a new tab, signed in for this site, on that database. The link works once and for
+60 seconds: if Quarry says *this link to Quarry has expired or was used*, press **Open in Quarry**
+again.
+
+What you can do follows your panel role:
+
+- **administrator**, or **operator** assigned to the site: everything on this page. Statements in
+  the SQL editor only read until you turn on **Allow writes**;
+- **read-only**: the list of tables and their structure. Rows, the SQL editor, search, export and
+  import are not available.
+
+## Sign in with a database user {#sign-in}
+
+1. Open `https://<server-ip>:8443/quarry`, or `https://<panel-domain>/quarry` when the panel has a
+   domain.
+2. Type the **Database user** and its **Password**.
+3. In **Database**, optionally type the database to open first.
+4. Press **Sign in**.
+
+`<server-ip>` is the server's address, `<panel-domain>` the [panel's domain](/server/panel-domain).
+
+- Only the database users the panel made can sign in: those of a site's **Database** tab and the
+  primary users made with the sites. Never `root`, nor the server's own accounts.
+- You see the databases this user may open, and MariaDB decides every action by the user's
+  privileges. A read-only user's write fails with the server's error, `ERROR 1142 … command denied`.
+- Any refusal reads *Wrong database user or password.*, whatever the reason. Wrong passwords slow
+  further attempts down; they never lock the user out: see
+  [sign-in protection](/explanation/sign-in-protection#quarry).
+
+## Find your way {#layout}
+
+- The **sidebar** lists the databases this session may open; under each one, its **Tables**,
+  **Views** and **Routines**. **Filter tables** narrows the list. Routines are listed only: Quarry
+  never runs or changes them.
+- The top bar shows where you are (site › database › table) and how the session was opened:
+  **database user**, **from the panel** or **from the panel, read-only**.
+- A **database** has the tabs **Structure** (its tables), **SQL**, **Search**, **Export** and
+  **Import**.
+- A **table** has **Browse**, **Structure**, **SQL**, **Search**, **Insert**, **Export**, **Import**
+  and **Operations**. A view has no **Insert** nor **Import**.
+
+## Browse a table {#browse}
+
+1. Open the table, or press **Browse** on its row. You see 25 rows a page.
+2. To see more at once, change **Rows per page**: 25, 50, 100, 250 or 500. The pager shows
+   *Rows X–Y of N*.
+3. To sort, click a column's name: ascending, descending, then off. Shift-click adds a column, up to
+   four.
+4. To filter, choose a column, an operator (`=`, `≠`, `<`, `≤`, `>`, `≥`, *contains*, *starts with*,
+   `IS NULL`, `IS NOT NULL`) and a value, then press **Add filter**. Up to 16 filters, all of which
+   must match. **Clear** removes filters and sorting.
+
+Text values over 4096 bytes appear cut, binary columns as hexadecimal. On a table of more than a
+million rows without filters, the total is the server's estimate. **Generated query** shows the
+`SELECT` that produced the page.
+
+## Search the database {#search}
+
+1. Open the database's **Search** tab, type the **Text to find** and press **Search**.
+2. Quarry lists the tables whose text columns contain it, with how many rows. Open one to browse
+   just those rows.
+
+The search stops after 200 tables or 150 seconds, and says so. A table's own **Search** tab looks in
+that table only.
+
+## Edit rows {#edit}
+
+1. In **Browse**, double-click a cell to edit its row, or press **Insert row** (the **Insert** tab
+   does the same).
+2. Quarry shows the change's SQL. Confirm to run it.
+
+Every change runs in a transaction, and is rolled back unless it touches exactly one row. Rows of a
+table without a primary key, binary columns and values too long to edit are changed only with the
+SQL editor.
+
+## Change the structure {#alter}
+
+The **Structure** tab shows columns, indexes, foreign keys and the **CREATE statement**. Press **Add
+column** or **Add index**, fill in the fields and press **Preview SQL**: Quarry shows the `ALTER`
+before it runs. On a large table it can take a while and lock writes.
+
+## Run SQL {#sql}
+
+1. Open the **SQL** tab and type a statement.
+2. Press **Run**, or Ctrl/Cmd+Enter.
+
+- One statement at a time. You see at most 5000 rows or 8 MiB, and a statement stops after 60
+  seconds.
+- From the panel, a statement only reads until you turn on **Allow writes**; then Quarry asks to
+  confirm.
+- As a database user, the statement runs as that user: MariaDB decides what it may do.
+- **Explain** shows how MariaDB would run the statement (`EXPLAIN`), without running it.
+- **History** lists your statements in this browser only: the panel does not store them.
+
+## Simulate a write {#simulate}
+
+**Simulate** runs an `UPDATE`, `DELETE`, `INSERT` (also `INSERT … SELECT`) or `REPLACE` in a
+transaction that is always rolled back, and tells you how many rows it would change. For an
+`UPDATE` or a `DELETE` of one table it also shows up to 25 of the matching rows, as they are now.
+Nothing in the tables changes, so Simulate needs no **Allow writes**.
+
+Quarry answers **Not simulated**, with the reason, when the statement:
+
+- only reads (`SELECT`, `WITH`, `SHOW` …): run it, or use **Explain**;
+- commits by itself or cannot be undone: `CREATE`, `ALTER`, `DROP`, `TRUNCATE`, `RENAME`, `LOCK`,
+  `SET`, `GRANT`, transaction statements, `LOAD`, `CALL` and the like;
+- holds more than one statement, or an executable comment (`/*! … */`);
+- calls a function that is not one of MariaDB's built-ins (*Simulate supports built-in functions
+  only*), or one of the built-ins that wait, lock or move a counter (`SLEEP`, `BENCHMARK`, the lock
+  functions, `LOAD_FILE`, `LAST_INSERT_ID`, the sequence functions …);
+- reaches a table that is not InnoDB (MyISAM, Aria, MEMORY …), a view, a sequence, a table with a
+  trigger, or a name of a stored routine;
+- locks rows it does not change (`FOR UPDATE`, `FOR SHARE`, `LOCK IN SHARE MODE`), assigns a
+  variable, or writes `INTO` anything but its own table;
+- runs in a session whose `sql_mode` includes `ANSI_QUOTES` or `NO_BACKSLASH_ESCAPES`.
+
+The whole simulation has 60 seconds, and waits at most 5 seconds for a row the live site has locked.
+After it, an `AUTO_INCREMENT` counter may have moved on, as after any rolled-back write. Why these
+refusals: [Simulate](/explanation/quarry#simulate).
+
+## Export {#export}
+
+1. Open the **Export** tab of the database, or of a table.
+2. Choose the **Format**: `sql`, with the tables to include (empty for the whole database), or
+   `csv`, for one table.
+3. Press **Start export**. A task writes the file into the site's `shared/exports/`.
+4. In **Exports**, press **Download**.
+
+An export stops at 16 GiB. Signed in as a database user, the export runs as that user, and the list
+shows only the files you made in this session.
+
+## Import {#import}
+
+1. Open the **Import** tab and choose a `.sql` or `.csv` file. Press **Upload**: the file goes in
+   8 MiB pieces, up to 16 GiB, into **Files to import**.
+2. Press **Import** on its row.
+   - A `.sql` file: type the database's name to confirm.
+   - A `.csv` file: choose the **Table for CSV imports**. Its first row names the columns, `\N` is
+     NULL, and every row goes in in one transaction.
+
+:::danger[No rollback point as a database user]
+
+Opened from the panel, a `.sql` import first saves the database, and puts it back if the import
+fails. Signed in as a database user, the file runs as that user, statement by statement, with no
+rollback point: if a statement fails, what ran before it stays. Export the database first if you may
+need it back.
+
+:::
+
+Signed in as a database user, you see and import only the files you uploaded in this session, and an
+upload under a name already there is refused: rename your file.
+
+## Empty or drop a table {#operations}
+
+In the table's **Operations** tab, press **Empty table** (every row goes, the structure stays) or
+**Drop table**, and type the table's name to confirm. Neither can be undone. Whether it runs is up to
+the user's privileges.
+
+## Sign out and sessions {#sessions}
+
+The menu in the top bar has **Sign out of Quarry**. A session also ends:
+
+- after 30 minutes without use, and 12 hours after it began;
+- when the user's password is reset, or the user or the site is deleted;
+- when the panel restarts;
+- opened from the panel: when your panel session ends, or your account no longer reaches the site.
+
+Quarry then says *The Quarry session has ended*, with the reason. Sign in, or open it from the panel,
+again.
+
+## Next step {#next}
+
+To understand the two ways in and what Simulate protects, read
+[How Quarry works](/explanation/quarry).

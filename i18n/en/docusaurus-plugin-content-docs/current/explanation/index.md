@@ -15,4 +15,6 @@ hide_table_of_contents: true
   <Card to="/explanation/staging-and-safe-push" title="Staging, Safe Push and Performance Guard" />
   <Card to="/explanation/backups-and-restore-tests" title="Backups and restore tests" />
   <Card to="/explanation/releases-and-rollback" title="Releases and rollback" />
+  <Card to="/explanation/quarry" title="How Quarry works" />
+  <Card to="/explanation/sign-in-protection" title="Sign-in protection" />
 </Cards>

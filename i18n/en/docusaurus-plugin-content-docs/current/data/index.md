@@ -16,5 +16,6 @@ hide_table_of_contents: true
   <Card to="/data/deploy-a-release" title="Deploy a release" />
   <Card to="/data/roll-back-a-release" title="Roll back a release" />
   <Card to="/data/manage-databases" title="Manage databases" />
-  <Card to="/data/use-db-studio" title="Use DB Studio" />
+  <Card to="/data/use-quarry" title="Use Quarry" />
+  <Card to="/data/recover-the-database-record" title="Recover the database record" />
 </Cards>
