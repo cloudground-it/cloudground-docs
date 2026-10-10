@@ -1,0 +1,67 @@
+---
+title: Elimina un sito
+description: Elimina un sito con tutto quello che il pannello ha creato per lui, compresa la sua copia di staging.
+type: how-to
+prerequisites:
+  - Un account amministratore
+version: unreleased
+last_verified: unverified
+sidebar_position: 6
+---
+
+:::danger[Non si può annullare]
+
+L'eliminazione cancella i file del sito, il suo database e la sua copia di staging. Se ti servono,
+fai prima un backup e verifica che il ripristino di prova sia passato.
+
+:::
+
+## Elimina dal pannello {#from-the-panel}
+
+1. Apri il sito.
+2. Apri il menu **Altro** (i tre puntini accanto a **Apri sito**) e scegli **Elimina**.
+3. Scrivi il dominio del sito per confermare e scegli **Elimina**.
+
+Lo stato del sito diventa **in eliminazione** e parte l'attività **Eliminazione sito**. Quando finisce,
+il sito sparisce dalla lista. Una seconda richiesta di eliminazione dello stesso sito si unisce all'attività
+già avviata.
+
+Con cgctl:
+
+```bash
+cgctl --wait sites delete <id>
+```
+
+## Cosa viene eliminato {#what-goes}
+
+Nell'ordine in cui il server lo toglie:
+
+1. il vhost, la zona della cache di pagina e la password dello staging: il sito smette di rispondere;
+2. tutti i processi del sito: il PHP, le attività pianificate in corso, i comandi wp-cli;
+3. il servizio PHP del sito e la sua configurazione;
+4. le attività pianificate;
+5. il database e il suo utente;
+6. il certificato Let's Encrypt e il certificato personalizzato;
+7. la shell SSH del sito, poi il suo utente di sistema e il suo gruppo;
+8. la cache di pagina, i log e la cartella del sito.
+
+Il server esegue ogni passo anche se uno fallisce, e alla fine riporta tutti gli errori insieme.
+Rilanciare l'eliminazione è sicuro: ogni passo toglie solo quello che c'è ancora.
+
+Nel pannello spariscono anche i rilasci, i backup, le attività pianificate e le assegnazioni agli
+operatori del sito.
+
+{/* TODO(verify): l'eliminazione non sembra cancellare le snapshot dal repository off-site (nessun forget nel codice). Verificare sul server e dire qui se restano nel repository. */}
+
+## Se l'eliminazione fallisce {#if-it-fails}
+
+Il sito resta nella lista con lo stato **errore** e l'attività dice quale passo non è riuscito. Correggi
+la causa e scegli di nuovo **Elimina**.
+
+Eliminare un sito di produzione elimina prima la sua copia di staging. Se annulli l'attività tra le due,
+la produzione resta e torna allo stato di prima.
+
+## Prossimo passo {#next}
+
+[Il ciclo di vita di un sito](/explanation/site-lifecycle) spiega cosa succede tra la creazione e
+l'eliminazione.

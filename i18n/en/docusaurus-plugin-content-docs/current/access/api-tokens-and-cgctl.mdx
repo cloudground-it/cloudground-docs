@@ -1,0 +1,96 @@
+---
+title: API tokens and cgctl
+description: Create an API token for scripts, set cgctl up to use it, and revoke it when it is no longer needed.
+type: how-to
+prerequisites:
+  - An administrator account and its password
+  - Root access to the server, or a computer that reaches the panel over HTTPS
+version: unreleased
+last_verified: unverified
+sidebar_position: 5
+---
+
+`cgctl` is the panel's command-line client, installed on the server in `/usr/local/bin`. For scripts
+it uses an **API token**: a `cgt_…` credential that acts as the administrator who created it, with no
+password and no code on every call.
+
+A token can do everything its owner can, except manage accounts, users, tokens and the site shell:
+those need a session signed in with a password. So a stolen token cannot create another token or an
+administrator.
+
+## Create a token {#create-a-token}
+
+Tokens are created signed in with the password, because a token cannot create others. On the server,
+as root:
+
+```bash prompt
+export CLOUDGROUND_EMAIL='<email>'
+read -rs CLOUDGROUND_PASSWORD && export CLOUDGROUND_PASSWORD
+cgctl tokens create "<name>" 90
+```
+
+- `<name>` is a label of 1 to 64 characters, to recognise the token in the list.
+- `90` is the lifetime in days, 1 to 365. Without a lifetime, or with `0`, the token never expires.
+- If your account has two-step verification, add `CLOUDGROUND_TOTP='<code>'` with a code from the
+  app.
+
+The answer holds the `token` field, with the `cgt_…` value. **Copy it now: the panel never shows it
+again.** The panel keeps only a fingerprint of it.
+
+## Set cgctl up {#configure-cgctl}
+
+On the server, write the token into cgctl's configuration file, readable by root only:
+
+```bash prompt
+install -m 0600 /dev/null /etc/cloudground/cgctl.env
+echo "CLOUDGROUND_TOKEN=cgt_…" > /etc/cloudground/cgctl.env
+cgctl status
+```
+
+Without `CLOUDGROUND_URL`, cgctl talks to the panel on the local socket
+`unix:///run/cloudground/api.sock`. Environment variables win over the file: for a single command,
+`CLOUDGROUND_TOKEN=cgt_… cgctl status` is enough. Instead of the token you can name a file that holds
+it, with `CLOUDGROUND_TOKEN_FILE`.
+
+## Use cgctl from another computer {#remote}
+
+Copy `cgctl` to your computer and give it the panel's HTTPS address:
+
+```bash
+export CLOUDGROUND_URL='https://<panel-domain>'
+export CLOUDGROUND_TOKEN='cgt_…'
+cgctl sites list
+```
+
+cgctl verifies the certificate. On the `https://<ip>:8443` address, whose certificate is
+self-signed, it needs `CLOUDGROUND_INSECURE=1`: better to [give the panel a
+domain](/server/panel-domain). `http://` is accepted only to an address local to the computer.
+
+## Wait for a task to finish {#wait}
+
+Many commands start a background task. With `--wait` cgctl follows it to the end and exits with code
+0 only if it succeeded:
+
+```bash
+cgctl --wait backup run <site-id>
+```
+
+The full list of commands, variables and exit codes is in the [CLI reference](/cli).
+
+## List and revoke tokens {#revoke}
+
+```bash prompt
+cgctl tokens list
+cgctl tokens revoke <token-id>
+```
+
+These commands also need email and password. Any administrator can revoke any token. The panel
+revokes an account's tokens by itself when its password is changed or reset, when it turns two-step
+verification off, when it is disabled, demoted or deleted, and with `panel-api recover-admin`.
+
+Creation, revocation and every action taken with a token appear in the **Audit log**, with the
+token's name.
+
+## Next step {#next}
+
+Limit who can reach the server with the [firewall](./firewall.mdx).

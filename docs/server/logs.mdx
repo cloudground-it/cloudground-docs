@@ -1,0 +1,62 @@
+---
+title: Leggi i log
+description: Leggi dal pannello i log del server, dei servizi e di ogni sito, e trovali sul disco.
+type: how-to
+prerequisites:
+  - Per i log del server, un account amministratore o in sola lettura
+  - Per i log di un sito, un account che vede quel sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 3
+---
+
+I log sono di due tipi: quelli del server, nella pagina **Log**, e quelli di ogni sito, nella sua
+scheda **Log**. Il pannello mostra le ultime righe; premi **Aggiorna** per rileggerle.
+
+## I log del server {#server-logs}
+
+Apri **Log** dal menu. Le schede sono:
+
+| Scheda | Cosa contiene | Dove si trova |
+| --- | --- | --- |
+| **Nginx access** | Il log generale degli accessi di nginx. | `/var/log/nginx/access.log` |
+| **Nginx error** | Gli errori di nginx. | `/var/log/nginx/error.log` |
+| **PHP-FPM** | Il journal dei processi PHP di tutti i siti. | journal, `cloudground-php-*.service` |
+| **MariaDB** | Gli errori del database. | `/var/log/mysql/error.log` |
+| **API** | Il pannello. | journal, `cloudground-api.service` |
+| **Agent** | L'agente che fa le operazioni da root. | journal, `cloudground-agent.service` |
+
+Gli operatori non vedono questa pagina: i log del server riguardano tutti i siti.
+
+## I log di un sito {#site-logs}
+
+Apri il sito e vai alla scheda **Log**. Le schede sono **Accessi**, **Errori** ed **Errori PHP**, con
+le ultime 200 righe. Sul disco sono in `/var/log/cloudground/<dominio>/`:
+
+| Scheda | File |
+| --- | --- |
+| **Accessi** | `access.log` |
+| **Errori** | `error.log` |
+| **Errori PHP** | `php-error.log` |
+
+Un file che non esiste ancora appare come *(log is empty or not created yet)*.
+
+## Dal server {#on-the-server}
+
+Come root, i log nel journal si leggono con `journalctl`:
+
+```bash prompt
+journalctl -u cloudground-api -u cloudground-agent -n 100
+```
+
+## Dall'API {#from-the-api}
+
+`GET /api/logs?source=<sorgente>&lines=<n>` legge un log del server; `source` è `nginx-access`,
+`nginx-error`, `php-error`, `mariadb`, `api` o `agent`, e `lines` va da 1 a 2000 (200 se manca).
+`GET /api/sites/<id>/logs?source=<tipo>` legge un log del sito; `source` è `access`, `error` o `php`.
+Una riga più lunga di 8 KiB viene tagliata.
+
+## Prossimo passo {#next}
+
+Non aspettare di leggere un log per accorgerti di un problema: configura
+[avvisi e notifiche](./alerts-and-notifications.mdx).

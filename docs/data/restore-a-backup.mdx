@@ -1,0 +1,61 @@
+---
+title: Ripristina un backup
+description: Riporta un sito allo stato di uno snapshot, tutto, solo i file o solo il database, con uno snapshot di sicurezza preso prima.
+type: how-to
+prerequisites:
+  - Un sito con almeno un backup
+  - Un account amministratore oppure operatore assegnato al sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 5
+---
+
+Un ripristino sostituisce il sito in produzione con il contenuto di uno snapshot. Prima di
+toccare qualcosa, il pannello fa un nuovo backup del sito e lo verifica: se quel backup non supera
+il ripristino di prova, il ripristino si ferma e il sito resta com'era.
+
+:::danger[Il ripristino sostituisce i dati attuali]
+
+Quello che è cambiato sul sito dopo lo snapshot scompare dal sito. Resta solo nello snapshot di
+sicurezza preso all'inizio del ripristino.
+
+:::
+
+## Ripristina dal pannello {#restore}
+
+1. Apri il sito e scegli la scheda **Backup**.
+2. Scegli uno snapshot con la prova *riuscito* e premi **Ripristina** sulla sua riga.
+3. In **Cosa ripristinare** scegli:
+   - **Tutto (file e database)**;
+   - **Solo i file**;
+   - **Solo il database**.
+4. Premi **Continua**, scrivi il dominio del sito per confermare e premi **Ripristina**.
+5. Segui l'attività *Ripristino avviato* fino alla fine.
+
+Lo snapshot di sicurezza compare nell'elenco dei backup: se ti serve tornare indietro, ripristina
+quello.
+
+## Cosa cambia sul sito {#what-changes}
+
+- **File**: la cartella del sito viene sostituita con quella dello snapshot in un solo passo, senza
+  un momento in cui il sito non ha file. Poi PHP del sito riparte e nginx ricarica la
+  configurazione. Se il sito non riparte, il pannello rimette la cartella di prima.
+- **Database**: il database viene svuotato e ricreato dal dump dello snapshot. Le tabelle create
+  dopo lo snapshot non restano. Se l'importazione fallisce, il database torna com'era.
+- Alla fine la cache di pagina del sito viene svuotata. Con *Solo il database*, anche la object
+  cache viene svuotata, così il sito non serve dati vecchi.
+
+## Da riga di comando {#cli}
+
+```bash
+cgctl --wait backup restore <backup-id> <dominio> files
+```
+
+`<backup-id>` è il campo `id` di un backup nell'elenco `GET /api/sites/<site-id>/backups`;
+`<dominio>` è il dominio del sito, come conferma. L'ultima parola è `full` (il valore se la ometti),
+`files` o `database`.
+
+## Prossimo passo {#next}
+
+Per capire perché un backup che conta si può sempre ripristinare, leggi
+[Backup e ripristini di prova](/explanation/backups-and-restore-tests).

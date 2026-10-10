@@ -1,0 +1,95 @@
+---
+title: The lifecycle of a site
+description: A site's states from creation to deletion, what happens when a step fails, and how the panel keeps the configuration in line with the server.
+type: explanation
+prerequisites: []
+version: unreleased
+last_verified: unverified
+sidebar_position: 4
+---
+
+A site lives in two places. The panel keeps the **record**: the domain, the type and the settings you
+want. The server keeps **what runs**: the system user, the files, PHP, the vhost. The lifecycle is how
+the two stay in agreement, even when something stops halfway.
+
+## The states {#the-states}
+
+```mermaid
+stateDiagram-v2
+    state "provisioning" as provisioning
+    state "active" as active
+    state "deleting" as deleting
+    state "error" as error
+
+    [*] --> provisioning: Create site
+    provisioning --> active: creation succeeds
+    provisioning --> [*]: a step fails, the server undoes everything
+    provisioning --> error: no answer from the server, or panel restarted
+    active --> active: settings, certificates, routing
+    active --> deleting: Delete
+    error --> deleting: Delete
+    deleting --> [*]: the server removed everything
+    deleting --> error: a deletion step fails
+```
+
+**Provisioning.** The panel stores the record and queues the **Site creation** task. The server
+creates, in order: the user, the folder, the database, the first release with the application, the
+vhost and PHP, and for WordPress the cron. Each step has its undo. When a step fails, the server undoes
+the steps already done in reverse order, and the panel removes the record: nothing is left half made.
+
+**Error, rather than vanishing.** When the panel gets no answer, because the server does not respond
+or the task times out, it does not know what was created. The site may exist and serve pages. So the
+panel keeps the record in **error**: removing it would leave a site no page shows, whose domain could
+never be created again. A deletion cleans everything up.
+
+**Active.** The site answers. Every change goes through the desired configuration (below).
+
+**Deleting.** The server removes the routing first, so the site stops answering, then its processes,
+PHP, scheduled tasks, database, certificates, user and finally the files. Each step removes only what
+is still there, so a repeated deletion succeeds. When a step fails, the others still run and the site
+ends in **error** with every reason.
+
+A task cut short by a panel restart puts a site left **provisioning** or **deleting** in **error**. A
+creation cancelled before it started removes the record; a deletion cancelled before it started gives
+the site its previous status back.
+
+## Desired and applied {#desired-and-applied}
+
+The record carries a **desired generation**, which goes up with every change of the configuration,
+and an **applied generation**, which says how far the server has put it into practice.
+
+```mermaid
+flowchart LR
+    patch["Change<br/>(PATCH, certificate, routing)"] -->|desired generation + 1| record[(Record in the panel)]
+    record -->|task on the site| render["The server rewrites<br/>vhost, PHP, cron"]
+    render -->|succeeded| applied["applied generation =<br/>desired"]
+    render -->|failed| back["previous values back,<br/>error stored"]
+    drift["Managed file changed<br/>outside the panel"] -->|check every 5 minutes| event["Configuration changed<br/>outside the panel"]
+    event -->|Restore| render
+    event -->|Keep| keep["the current file becomes<br/>the expected one"]
+```
+
+- Every change is a task holding the site's lock: two changes of the same site never overlap, and
+  each task reads the site again as it is when it starts.
+- When the server cannot apply it, the panel puts the previous values back, but only for the fields
+  no later change has already set.
+- The server does not rewrite a file that has not changed, and does not reload nginx when no nginx
+  file changed. A PHP service whose configuration comes out the same keeps running, with its cache.
+
+## Managed files and outside changes {#managed-files-and-drift}
+
+Every file the server writes for a site (the vhost, the cache zone, the PHP configuration and
+service, the staging password, the WordPress connector) is recorded with its SHA-256 fingerprint.
+Every 5 minutes the panel compares the fingerprints with the files on disk. A file changed outside the
+panel shows on the dashboard under **Configuration changed outside the panel**, and the panel
+overwrites nothing by itself. An administrator chooses:
+
+- **Restore**: the server rewrites the site's configuration as the record has it;
+- **Keep**: the file's current version becomes the expected one.
+
+Every 5 minutes the panel also renders the sites' configuration again after a panel upgrade or when
+the number of sites changes, because the memory for PHP workers is shared among the sites.
+
+## Next step {#next}
+
+[Site isolation](./site-isolation.mdx): what keeps one site apart from the others.

@@ -1,0 +1,77 @@
+---
+title: SFTP e chiavi SSH
+description: Attiva l'accesso SFTP di un sito, scegli la password e aggiungi le chiavi SSH di chi ci lavora.
+type: how-to
+prerequisites:
+  - Un sito
+  - Un account amministratore, o operatore assegnato al sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 1
+---
+
+Ogni sito ha un proprio utente di sistema, `cg-site-<id>`, chiuso dentro la cartella del sito. Con
+SFTP trasferisci file con quell'utente: niente shell, nessun accesso agli altri siti. Un sito nuovo
+parte con l'accesso SFTP **disattivato**, chiavi comprese.
+
+## Attiva l'accesso SFTP {#enable-sftp}
+
+1. Apri il sito e vai alla scheda **SFTP / SSH**.
+2. In **Accesso SFTP**, scrivi una **Password SFTP** di almeno 12 caratteri.
+3. Premi **Attiva SFTP**.
+
+Il riquadro **Dati di connessione** mostra quello che serve al client: **Host**, **Porta**,
+**Utente**, **Cartella** e il **Comando** pronto da copiare:
+
+```bash
+sftp cg-site-<id>@<host>
+```
+
+`<host>` è l'indirizzo con cui hai aperto il pannello. Se SSH sul server non ascolta sulla porta 22,
+il comando contiene anche `-P <porta>`. Dentro la sessione la cartella del sito è la radice `/`.
+
+Per cambiare la password, scrivine una nuova e premi **Cambia password**.
+
+## Aggiungi una chiave SSH {#add-a-key}
+
+Le chiavi sono il modo consigliato per chi sviluppa: niente password da condividere.
+
+1. Nella sezione **Chiavi SSH**, incolla in **Chiave pubblica** una sola riga, nella forma
+   `<tipo> <base64> [commento]`.
+2. Lascia il **Tipo** su **Solo SFTP**.
+3. Premi **Aggiungi chiave**.
+
+Il pannello accetta i tipi `ssh-ed25519`, `ssh-rsa`, `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`,
+`ecdsa-sha2-nistp521`, `sk-ssh-ed25519@openssh.com` e `sk-ecdsa-sha2-nistp256@openssh.com`. Rifiuta
+più righe insieme, le opzioni prima del tipo (`command="…"`) e una chiave già presente. Il commento
+diventa l'etichetta della chiave.
+
+Ogni chiave compare con la sua impronta `SHA256:…`, la stessa che stampa `ssh-keygen -lf`: confrontala
+con quella della chiave che hai ricevuto.
+
+:::note[Le chiavi seguono l'accesso SFTP]
+
+Una chiave funziona solo mentre l'accesso SFTP è attivo. Se disattivi l'accesso, si fermano sia la
+password sia le chiavi.
+
+:::
+
+## Rimuovi una chiave {#remove-a-key}
+
+Premi l'icona del cestino accanto alla chiave e conferma. La chiave smette di funzionare al
+prossimo accesso.
+
+## Disattiva l'accesso SFTP {#disable-sftp}
+
+In **Accesso SFTP** premi **Disattiva**. Il pannello blocca l'utente del sito per password e per
+chiave. Le chiavi restano nell'elenco e tornano a funzionare quando riattivi l'accesso.
+
+## Da cgctl o dall'API {#from-the-api}
+
+L'API espone le stesse operazioni: `POST /api/sites/<id>/sftp` con `{"enable": true, "password": "…"}`
+o `{"enable": false}`, e `GET`, `POST`, `DELETE` su `/api/sites/<id>/ssh-keys`. `cgctl` non ha un
+comando dedicato.
+
+## Prossimo passo {#next}
+
+Per wp-cli, composer e git dentro il sito, attiva [la shell del sito](./site-shell.mdx).

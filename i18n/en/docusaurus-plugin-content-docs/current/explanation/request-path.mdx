@@ -1,0 +1,85 @@
+---
+title: The path of a request
+description: What happens to a visit, from nginx to the page cache and, only when needed, to PHP-FPM, OPcache, the object cache and MariaDB.
+type: explanation
+prerequisites: []
+version: unreleased
+last_verified: unverified
+sidebar_position: 3
+---
+
+A page served from the cache never touches PHP: nginx reads it from disk. This page follows a
+request to a PHP site (WordPress, WooCommerce, PHP, Laravel) and shows where it stops. The exact
+values are in the [cache reference](/reference/cache-behaviour).
+
+## The path {#diagram}
+
+```mermaid
+flowchart TD
+  req(["HTTPS request on :443"]) --> tls["nginx<br/>TLS, HTTP/2, HTTP/3 when available"]
+  tls --> asset{"Static file?<br/>css, js, images, fonts"}
+  asset -- "yes" --> disk["Served from disk<br/>with a 30-day browser cache"]
+  asset -- "no" --> skip{"Skip the cache?<br/>POST, query string, session<br/>cookie, excluded path"}
+  skip -- "yes" --> php
+  skip -- "no" --> lookup{"Page in the cache?"}
+  lookup -- "fresh" --> hit["HIT<br/>served from disk"]
+  lookup -- "expired, but within<br/>the stale window" --> stale["STALE or UPDATING<br/>served at once, refreshed behind"]
+  lookup -- "missing" --> lock["One request goes to PHP,<br/>the others wait up to 5 s"]
+  stale -.-> php
+  lock --> php["The site's PHP-FPM"]
+  php --> opc["OPcache<br/>code already compiled"]
+  opc --> oc["APCu object cache<br/>when on"]
+  oc --> maria[("MariaDB")]
+  maria --> resp["Response"]
+  resp --> store{"Sets a cookie,<br/>or says no-store / private?"}
+  store -- "no" --> save["Stored in the cache<br/>for the profile's lifetime"]
+  store -- "yes" --> nosave["Not stored"]
+```
+
+## nginx and the page cache {#page-cache}
+
+The page cache is nginx's FastCGI cache, one per site, on disk under
+`/var/cache/cloudground/<domain>`. A page's key is scheme, method, host and address. Every response
+from PHP, when the page cache is on, carries the `X-CloudGround-Cache` header with the status nginx
+gave the request: `HIT`, `MISS`, `BYPASS`, `EXPIRED`, `STALE`, `UPDATING` or `REVALIDATED`.
+
+Three mechanisms keep the load on PHP low:
+
+- **Coalescing.** When a hundred visitors ask for the same expired page at the same moment, only one
+  reaches PHP. The others wait for its answer, up to 5 seconds.
+- **Stale-while-revalidate.** A page that has just expired is served at once as it was, and nginx
+  regenerates it in the background. The same happens when PHP answers with an error or not at all.
+- **Tracking parameters.** An address with only parameters such as `utm_*`, `fbclid` or `gclid`
+  uses the same entry as the page without them: a campaign does not send every click to PHP.
+
+## When the cache stays out of it {#bypass}
+
+Each site type has its own rules for skipping the cache: a `POST`, a query string that is not only
+tracking, a session cookie (for WordPress the login, WooCommerce's cart), a path such as `/wp-admin`
+or `/checkout`. A request with an `Authorization` header always skips the cache.
+
+The most important rule holds for all of them: **a response that sets a cookie is never cached.**
+A page generated for a visitor with a session is never served to someone else.
+
+## PHP {#php}
+
+When the request reaches PHP, the site's own PHP-FPM process serves it, holding only that site's
+data:
+
+- **OPcache** keeps the compiled PHP code in memory. It checks whether a file changed at most every
+  60 seconds; after a release the panel reloads PHP so the new code shows at once.
+- **Object cache** (WordPress, when you turn it on) keeps the results of repeated queries in APCu:
+  it speeds up wp-admin, the cart and every page the page cache cannot serve.
+- **MariaDB** runs on the same server, configured for its memory and CPUs.
+
+PHP compresses its own response, so the cache stores the page already compressed and serves it
+without compressing it again.
+
+## The other site types {#other-types}
+
+A static site has no PHP: nginx serves the files from disk. A reverse proxy passes every request to
+its upstream. Neither has a page cache.
+
+## Next step {#next}
+
+To take a page or a whole site out of the cache, follow [purge the cache](/data/purge-the-cache).

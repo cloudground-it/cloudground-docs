@@ -1,0 +1,82 @@
+---
+title: The site shell
+description: Open an SSH terminal inside a site, for wp-cli, composer and git, under the same restrictions as the site's PHP.
+type: how-to
+prerequisites:
+  - A site with SFTP access on
+  - An administrator account, signed in to the panel with a session
+  - An SSH public key
+version: unreleased
+last_verified: unverified
+sidebar_position: 2
+---
+
+The site shell is `bash` in the site's folder, as the site's user. It has `wp`, `composer`, `git` and
+`php`, and `node` when the server has it. Files you create get the right owner at once. The shell
+runs in the same sandbox and with the same CPU and memory limits as the site's PHP: other sites and
+the server's configuration are not there, and there is no `sudo`.
+
+:::warning[A shell key holds the site]
+
+A shell runs any command as the site's user: whoever holds a key of type **Shell** can read and change
+the site's files and its database credentials. Give shell keys only to people you would trust with
+those files.
+
+:::
+
+## Turn on the shell {#turn-on-the-shell}
+
+Only an administrator can do this, and only from a session in the panel: an API token is not enough.
+
+1. Open the site and go to the **SFTP / SSH** tab.
+2. Check that **SFTP access** is on: the shell signs in only while it is.
+3. In the **SSH shell** section, switch on **Allow a shell for “shell” keys**.
+4. Read the warning, which lists the keys that will open a shell, and confirm.
+
+**Connection details** now also shows **Shell user** (`cg-shell-<id>`) and **Shell command**.
+
+## Add a shell key {#add-a-shell-key}
+
+1. In the **SSH keys** section, paste the public key into **Public key**.
+2. Choose the **Type** **Shell**.
+3. Press **Add key**.
+
+A **Shell** key works for SFTP too. While the shell is off it works for SFTP only, and the list shows
+it as *shell · off*.
+
+## Connect {#connect}
+
+Use the **Shell command** from the connection details:
+
+```bash
+ssh cg-shell-<id>@<host>
+```
+
+With SSH on a port other than 22 the command carries `-p <port>`. The session starts in the site's
+`current` folder when there is one, otherwise in the site's folder. A single command works too:
+`ssh cg-shell-<id>@<host> wp plugin list`.
+
+The shell takes keys only, never a password. A site has at most 8 sessions open at once. Everything a
+session starts, `nohup` included, ends with the session.
+
+## From a checkout to a release {#checkout-to-release}
+
+The `~/src` folder belongs to the site user: clone your repository there and publish it as a release
+with `cgctl`, on the server:
+
+```bash prompt
+cgctl deploy <site-id> /srv/sites/<domain>/src/<app>
+```
+
+The release is promoted and rolled back like any other. The panel runs nothing from the checkout: no
+`git` hooks, no `composer`.
+
+## Turn off the shell {#turn-off-the-shell}
+
+Switch off **Allow a shell for “shell” keys** and confirm. Open sessions end at once. The keys keep
+their type and open a shell again when you turn it back on. **Disable** on SFTP access also ends the
+open shells.
+
+## Next step {#next}
+
+Decide who can do what in the panel: [users and roles](./users-and-roles.mdx).

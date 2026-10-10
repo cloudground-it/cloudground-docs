@@ -1,0 +1,65 @@
+---
+title: Delete a site
+description: Delete a site with everything the panel made for it, its staging copy included.
+type: how-to
+prerequisites:
+  - An administrator account
+version: unreleased
+last_verified: unverified
+sidebar_position: 6
+---
+
+:::danger[This cannot be undone]
+
+Deletion removes the site's files, its database and its staging copy. If you need them, take a backup
+first and check that its restore test passed.
+
+:::
+
+## Delete from the panel {#from-the-panel}
+
+1. Open the site.
+2. Open the **More** menu (the three dots next to **Visit**) and choose **Delete**.
+3. Type the site's domain to confirm and choose **Delete**.
+
+The site's status becomes **deleting** and the **Site deletion** task starts. When it ends, the site
+leaves the list. A second deletion request for the same site joins the task already running.
+
+With cgctl:
+
+```bash
+cgctl --wait sites delete <id>
+```
+
+## What goes {#what-goes}
+
+In the order the server removes it:
+
+1. the vhost, the page-cache zone and the staging password: the site stops answering;
+2. every process of the site: its PHP, running scheduled tasks, wp-cli commands;
+3. the site's PHP service and its configuration;
+4. the scheduled tasks;
+5. the database and its user;
+6. the Let's Encrypt certificate and the custom certificate;
+7. the site's SSH shell, then its system user and its group;
+8. the page cache, the logs and the site's folder.
+
+The server runs every step even when one fails, and reports all the errors together at the end.
+Running the deletion again is safe: each step removes only what is still there.
+
+The site's releases, backups, scheduled tasks and operator assignments also leave the panel.
+
+{/* TODO(verify): deletion does not seem to remove the snapshots from the off-site repository (no forget in the code). Check on the server and say here whether they stay in the repository. */}
+
+## If deletion fails {#if-it-fails}
+
+The site stays in the list as **error** and the task names the step that did not work. Fix the cause
+and choose **Delete** again.
+
+Deleting a production site deletes its staging copy first. If you cancel the task between the two,
+production stays and gets its previous status back.
+
+## Next step {#next}
+
+[The lifecycle of a site](/explanation/site-lifecycle) explains what happens between creation and
+deletion.

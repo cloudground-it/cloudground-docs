@@ -1,0 +1,72 @@
+---
+title: Users and roles
+description: Add the people who use the panel, choose their role and assign sites to operators.
+type: how-to
+prerequisites:
+  - An administrator account, signed in to the panel with a session
+version: unreleased
+last_verified: unverified
+sidebar_position: 3
+---
+
+Every account has one of three roles:
+
+| Role | In short |
+| --- | --- |
+| **Administrator** | Full access to the server. |
+| **Operator** | Assigned sites only. |
+| **Read-only** | Sees everything, changes nothing. |
+
+The full table of what each role can do is in [roles and permissions](/reference/roles-and-permissions).
+
+## Add a user {#add-a-user}
+
+1. Open **Users** and press **Add user**.
+2. Fill in **First name** and **Last name** (optional), **Email** and a **Password** of at least 12
+   characters.
+3. Choose the **Role**.
+4. For an **Operator**, choose at least one site in **Assigned sites**.
+5. Press **Add user**.
+
+The email is the name the person signs in with, and it is unique. Give the person the password over
+a safe channel: they can change it from **Security**.
+
+## Change the role or the sites {#change-role-or-sites}
+
+1. In **Users**, open the row's **Actions** menu and choose **Edit user**.
+2. Change **Role** or **Assigned sites**.
+3. Press **Save**.
+
+Role, sites and name change together: when the panel refuses the change, nothing changes. Taking the
+administrator role away from someone revokes their API tokens.
+
+## Disable an account {#disable-an-account}
+
+In **Edit user** switch on **Account disabled** and press **Save**. The person can no longer sign
+in, their sessions close and their API tokens are revoked. Switch it off to enable the account
+again.
+
+## Reset someone else's password {#reset-a-password}
+
+From the **Actions** menu choose **Reset password**, type the new password and press **Reset
+password**. That account's sessions and API tokens close. You change your own password from
+**Security**, not here.
+
+## Delete a user {#delete-a-user}
+
+From the **Actions** menu choose **Delete** and confirm. The account's sessions, tokens, site
+assignments and two-step verification go with it.
+
+## What the panel does not allow {#limits}
+
+- You cannot change your own role, or disable or delete your own account.
+- The panel always keeps at least one enabled administrator: it refuses to demote, disable or delete
+  the last one.
+- There is no operator without sites: the panel asks for at least one.
+- Users and tokens are managed only from a session in the panel, never with an API token.
+
+Every change lands in the **Audit log**.
+
+## Next step {#next}
+
+Protect the accounts with [two-step verification](./two-step-verification.mdx).

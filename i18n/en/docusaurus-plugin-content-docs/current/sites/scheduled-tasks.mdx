@@ -1,0 +1,58 @@
+---
+title: Scheduled tasks
+description: Add a command that runs on a schedule to a site, run it straight away and read its output.
+type: how-to
+prerequisites:
+  - An administrator account, or an operator assigned to the site
+version: unreleased
+last_verified: unverified
+sidebar_position: 5
+---
+
+A scheduled task is a command of the site that runs on a cron schedule. It runs as the site's user, in
+its folder, with the same protections as its PHP.
+
+## Add a task {#add-a-task}
+
+1. Open the site, then **More** and **Cron**.
+2. Under **New scheduled task**, type the **Schedule (cron)** or pick one from **Presets**: **Every 15
+   minutes**, **Hourly**, **Daily at 3am**, **Sundays at 3am**.
+3. In **Command**, type the command, for example `php current/artisan schedule:run`.
+4. In **Description**, say what it is for, if you like.
+5. Choose **Add**.
+
+{/* TODO(verify): that `php` in the task's PATH is the CLI of the site's PHP version, not another installed one. */}
+
+The command starts in the site's folder (`/srv/sites/<domain>`), which is also its `HOME`. Its output,
+errors included, goes to `logs/cron-<id>.log` in the site's folder, which keeps the last 500 lines. A
+scheduled run that lasts more than 6 hours is stopped together with everything it started.
+
+On WordPress and WooCommerce sites, WordPress's own cron already runs from the system every 5
+minutes: you do not need to add it.
+
+## The schedule {#the-schedule}
+
+Five fields separated by spaces: minute (0–59), hour (0–23), day of month (1–31), month (1–12), day
+of week (0–7). Each field is `*`, a number `N`, a range `N-M`, or a comma-separated list; `*` and a
+range take a step, as in `*/15` or `0-30/10`.
+
+The panel refuses names (`mon`, `jan`), shortcuts such as `@daily` and the `N/S` form. It also refuses
+a command that, written into the cron line, exceeds 998 bytes, and says how many bytes to cut.
+
+## Run now {#run-now}
+
+Choose **Run now** next to the task. The command runs once, for at most 300 seconds, and a window
+shows its status and output (the last 64 KiB). If the task is already running, the panel refuses to
+start another run.
+
+## Pause, edit, remove {#pause-edit-remove}
+
+- The **Run on schedule** switch pauses it: the task stays in the list but no longer runs.
+- **Edit task** (the pencil) opens it in the form again; choose **Save**.
+- **Remove** (the bin) deletes it, after you confirm.
+
+With cgctl you can run a task by its number: `cgctl cron run <id>`.
+
+## Next step {#next}
+
+[Delete a site when you no longer need it](./delete-a-site.mdx).

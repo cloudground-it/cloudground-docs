@@ -1,0 +1,60 @@
+---
+title: Attività pianificate
+description: Aggiungi a un sito un comando che gira a orari fissi, eseguilo subito e leggi il suo output.
+type: how-to
+prerequisites:
+  - Un account amministratore oppure operatore assegnato al sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 5
+---
+
+Un'attività pianificata è un comando del sito che gira secondo una pianificazione cron. Gira come
+l'utente del sito, nella sua cartella e con le stesse protezioni del suo PHP.
+
+## Aggiungi un'attività {#add-a-task}
+
+1. Apri il sito, poi **Altro** e **Cron**.
+2. In **Nuova attività pianificata**, scrivi la **Pianificazione (cron)** o scegline una da
+   **Preimpostazioni**: **Ogni 15 minuti**, **Ogni ora**, **Ogni giorno alle 3**, **Ogni domenica alle 3**.
+3. In **Comando** scrivi il comando, per esempio `php current/artisan schedule:run`.
+4. In **Descrizione** scrivi, se vuoi, a cosa serve.
+5. Scegli **Aggiungi**.
+
+{/* TODO(verify): che `php` nel PATH dell'attività sia la CLI della versione PHP del sito, e non un'altra installata. */}
+
+Il comando parte dalla cartella del sito (`/srv/sites/<dominio>`), che è anche la sua `HOME`. Il suo
+output, insieme agli errori, finisce in `logs/cron-<id>.log` nella cartella del sito, che tiene le
+ultime 500 righe. Un'esecuzione pianificata che dura più di 6 ore viene fermata con tutto quello che ha
+avviato.
+
+Sui siti WordPress e WooCommerce il cron di WordPress gira già da sistema ogni 5 minuti: non serve
+aggiungerlo.
+
+## La pianificazione {#the-schedule}
+
+Cinque campi separati da spazi: minuto (0–59), ora (0–23), giorno del mese (1–31), mese (1–12), giorno
+della settimana (0–7). Ogni campo è `*`, un numero `N`, un intervallo `N-M`, o una lista separata da
+virgole; `*` e un intervallo accettano un passo, come `*/15` o `0-30/10`.
+
+Il pannello rifiuta i nomi (`mon`, `jan`), le scorciatoie come `@daily` e la forma `N/S`. Rifiuta
+anche un comando che, scritto nella riga di cron, supera 998 byte, e dice quanti byte togliere.
+
+## Esegui subito {#run-now}
+
+Scegli **Esegui ora** accanto all'attività. Il comando gira una volta, al massimo 300 secondi, e una
+finestra mostra lo stato e l'output (gli ultimi 64 KiB). Se l'attività sta già girando, il pannello
+rifiuta di avviarne un'altra.
+
+## Sospendi, modifica, rimuovi {#pause-edit-remove}
+
+- L'interruttore **Esegui secondo la pianificazione** la sospende: l'attività resta nella lista ma non
+  gira più.
+- **Modifica attività** (la matita) la riapre nel modulo; scegli **Salva**.
+- **Rimuovi** (il cestino) la cancella, dopo la conferma.
+
+Con cgctl puoi eseguire un'attività per numero: `cgctl cron run <id>`.
+
+## Prossimo passo {#next}
+
+[Elimina un sito quando non serve più](./delete-a-site.mdx).

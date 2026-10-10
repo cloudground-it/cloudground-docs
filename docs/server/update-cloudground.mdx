@@ -1,0 +1,79 @@
+---
+title: Aggiorna CloudGround
+description: Installa una nuova release dal pannello, che la verifica e torna indietro da solo se non parte, oppure rilanciando l'installer.
+type: how-to
+prerequisites:
+  - Un account amministratore
+version: unreleased
+last_verified: unverified
+sidebar_position: 5
+---
+
+Il pannello installa solo release firmate. Se la nuova versione non parte bene entro 60 secondi,
+rimette quella di prima da solo.
+
+## Controlla se c'è una nuova versione {#check}
+
+Quando c'è una release più recente, la dashboard mostra **È disponibile CloudGround `<versione>`**,
+con la versione che stai usando e il link **Novità**. Il pannello controlla quando lo apri e tiene
+la risposta per sei ore.
+
+Per non controllare più, apri **Impostazioni**, riquadro **Aggiornamenti del pannello**, spegni
+**Controlla gli aggiornamenti quando apri il pannello** e premi **Salva**. Il controllo non installa
+mai nulla da solo.
+
+## Aggiorna dal pannello {#update-from-the-panel}
+
+1. Nella dashboard premi **Aggiorna ora**. In alternativa, in **Impostazioni**, riquadro
+   **Aggiornamenti del pannello**, premi **Aggiorna ora** e conferma.
+2. Il pannello dice **Aggiornamento avviato: il pannello si riavvierà.**
+
+{/* TODO(verify): cosa mostra l'interfaccia durante il riavvio e quando torna disponibile. */}
+
+Cosa succede, in ordine:
+
+1. L'agent scarica il manifesto firmato e controlla la firma. Rifiuta una versione che non è più
+   recente dell'ultima mai installata su questo server.
+2. Scarica `panel-api`, `panel-agent`, `cgctl` e le unità systemd, e controlla l'hash di ognuno.
+3. Mette i nuovi file al posto dei vecchi, tenendo una copia dei vecchi.
+4. Un processo di guardia, che gira con la versione vecchia, riavvia agent e pannello e aspetta fino
+   a 60 secondi che rispondano con i nuovi binari.
+5. Se rispondono, l'aggiornamento è fatto. Se no, la guardia rimette i vecchi binari e le vecchie
+   unità e riavvia di nuovo.
+
+Con l'API la richiesta è `POST /api/panel/update`, con `{"version": "<versione>"}` o `{}` per la più
+recente.
+
+:::note[Build senza aggiornamenti]
+
+Una build fatta con `make dist` senza `UPDATE_URL` e `UPDATE_PUBKEY` non può aggiornarsi da sola: il
+pannello risponde **this build has no update origin compiled in**. In quel caso aggiorna con
+l'installer.
+
+:::
+
+## Controlla com'è andata {#check-the-result}
+
+```bash prompt
+cat /var/lib/cloudground-agent/update-result.json
+journalctl -u cloudground-update-guard
+```
+
+Il file dice a quale versione sei passato, oppure `rolled_back` e il motivo. Il journal mostra ogni
+passo della guardia.
+
+## Aggiorna con l'installer {#update-with-the-installer}
+
+Rilancia l'installer con la nuova build: trova il pannello già attivo e lo aggiorna sul posto,
+senza toccare siti, segreti e certificati.
+
+```bash prompt
+CLOUDGROUND_LOCAL_BUILD=/root/cloudground/dist bash /root/cloudground/installer/install.sh
+```
+
+Prima copia sul server le nuove cartelle `dist/` e `installer/`, come nel
+[tutorial di installazione](/tutorials/install#copy-the-release).
+
+## Prossimo passo {#next}
+
+Per sapere come l'installer verifica una release, leggi [cosa fa l'installer](/explanation/installation#binaries).

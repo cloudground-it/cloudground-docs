@@ -1,0 +1,56 @@
+---
+title: Run a restore test
+description: Check that a snapshot can really be restored, without touching the site, and read the result.
+type: how-to
+prerequisites:
+  - A site with at least one backup
+  - An administrator account, or an operator assigned to the site
+version: unreleased
+last_verified: unverified
+sidebar_position: 6
+---
+
+The panel already runs a restore test after every backup, and after every restart it runs again
+the ones left *pending*. Start one by hand when you want to check an older snapshot again, for
+example after a problem with the repository.
+
+## Start the test {#run}
+
+1. Open the site and choose the **Backups** tab.
+2. Press **Test restore** on the snapshot's row. The task *Test restore started* begins.
+3. When the task ends, the **Restore test** column shows *passed* or *failed*.
+
+```bash
+cgctl --wait backup verify <backup-id>
+```
+
+A test cannot be canceled: once started, it runs to its result.
+
+## What it checks {#checks}
+
+The test restores the snapshot into a separate folder, never onto the site, and passes only if
+every one of these checks passes:
+
+1. restic restores the snapshot's files;
+2. if the site has a managed database, the linked database snapshot exists and its dump can be
+   read;
+3. the restored files hold the site folder, with the `current` link pointing at a release that is
+   in the snapshot, and at least one file;
+4. the start of the dump is SQL, and the dump imports into a temporary database creating at least
+   one table (for WordPress, the options table); the temporary database is then dropped;
+5. `restic check` reads and checks 10% of the repository's data.
+
+How long the test takes, up to step 4, is the **Estimated restore time**.
+
+## If the test fails {#failed}
+
+- The task fails and its message says which check did not pass.
+- The snapshot stays *failed*: it does not count as a restore point, and retention does not touch
+  the newest backup that *passed*.
+- Take a new backup with **Back up now** and see whether its test passes.
+
+{/* TODO(verify): whether a failed restore test inside a scheduled backup raises an alert in the panel (background tasks may be quiet). */}
+
+## Next step {#next}
+
+[Restore a backup](/data/restore-a-backup) that passed its test.

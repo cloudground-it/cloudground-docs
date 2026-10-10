@@ -1,0 +1,66 @@
+---
+title: Svuota la cache
+description: Togli dalla cache di pagina un indirizzo o tutto il sito, dal pannello o con cgctl, e riempila di nuovo.
+type: how-to
+prerequisites:
+  - Un sito con la cache di pagina attiva
+  - Un account amministratore, o operatore del sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 1
+---
+
+Su WordPress e WooCommerce non serve quasi mai: il connettore svuota da sé le pagine che una
+modifica cambia (l'elenco è nel [riferimento della cache](/reference/cache-behaviour#automatic-purges)).
+Svuota a mano quando cambi qualcosa che il pannello non vede, per esempio un file del tema caricato
+via SFTP, o su un sito PHP o Laravel.
+
+## Svuota un indirizzo {#purge-one-url}
+
+1. Apri la pagina del sito e vai nella scheda **Cache**.
+2. Nel riquadro **Svuota la cache**, scrivi l'indirizzo completo in **Svuota un URL**, per esempio
+   `https://<dominio>/blog/articolo/`.
+3. Premi **Svuota**.
+
+Il pannello conferma con **URL rimosso dalla cache**. Vengono tolte le voci `GET` e `HEAD`, in HTTP
+e HTTPS, per il dominio del sito e per tutti i suoi alias.
+
+## Svuota tutto il sito {#purge-everything}
+
+Nella scheda **Cache** premi **Svuota tutto**. Il pannello conferma con **Cache svuotata**.
+
+Lo stesso comando, **Svuota la cache**, è nella sezione **Azioni** della scheda **Panoramica** del
+sito e nel menu di ogni sito nell'elenco dei siti.
+
+## Con cgctl {#with-cgctl}
+
+```bash prompt
+cgctl purge <id-sito>                                   # tutto il sito
+cgctl purge <id-sito> https://<dominio>/blog/articolo/  # uno o più indirizzi
+```
+
+`<id-sito>` è il numero del sito, che vedi con `cgctl sites list`. La risposta dice quante voci sono
+state tolte, in `removed`. Per configurare cgctl, vedi [token API e cgctl](/access/api-tokens-and-cgctl).
+
+## Riempi di nuovo la cache {#warm-the-cache}
+
+Dopo uno svuotamento totale, il primo visitatore di ogni pagina la trova vuota. Puoi riempirla subito
+a partire dalla sitemap del sito: nella scheda **Panoramica**, sezione **Azioni**, premi **Riscalda
+la cache**. Su WordPress lo stesso comando è anche nella scheda **WordPress**, riquadro
+**Riscaldamento cache**, pulsante **Riscalda ora**.
+
+Con cgctl: `cgctl warm <id-sito>`. Il pannello lo fa da sé dopo una pubblicazione dallo staging, un
+rollback e una migrazione.
+
+## Controlla il risultato {#check}
+
+```bash
+curl -sI https://<dominio>/blog/articolo/ | grep -i x-cloudground-cache
+```
+
+Subito dopo lo svuotamento la risposta dice `MISS`; la richiesta successiva dice `HIT`.
+
+## Prossimo passo {#next}
+
+Per sapere quali pagine restano sempre fuori dalla cache, leggi il
+[comportamento della cache](/reference/cache-behaviour).

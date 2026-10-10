@@ -1,0 +1,70 @@
+---
+title: Back up a site
+description: How scheduled backups start, how to take one now, how long they stay in the repository, and how to delete one.
+type: how-to
+prerequisites:
+  - A connected backup repository
+  - An administrator account, or an operator assigned to the site
+version: unreleased
+last_verified: unverified
+sidebar_position: 4
+---
+
+Every backup is two snapshots in the repository: the site's database dump, then its files. Right
+after it is taken, the backup goes through a [restore test](/data/run-a-restore-test): until the
+test ends it is *pending*, and it counts only once it has *passed*.
+
+## Scheduled backups {#scheduled}
+
+A production site starts with backups on: one a day, kept for 30 days. Every 5 minutes the panel
+checks which sites are due and starts their backup. There is nothing else to do.
+
+- They run only for active sites, and only with a repository and password set.
+- Staging copies have no scheduled backups.
+- A scheduled backup that fails is tried again at the next check.
+- The panel has no setting yet to change the frequency or the retention.
+
+## Take a backup now {#back-up-now}
+
+1. Open the site and choose the **Backups** tab.
+2. Press **Back up now**. The task *Backup started* begins.
+3. The new snapshot appears at the top of the list. The **Restore test** column goes from
+   *pending* to *passed* (or *failed*) when the test ends.
+
+At the top of the tab are **Last backup**, **Last restore test** and **Estimated restore time**,
+which is how long the last backup's test took.
+
+```bash
+cgctl --wait backup run <site-id>
+```
+
+## What a backup holds {#contents}
+
+- The site's database, if the panel manages it on this server. The dump streams straight into
+  restic and is never written to disk.
+- The whole site folder, `/srv/sites/<domain>`: releases, `shared/` (configuration and uploaded
+  files), SFTP keys and the site's `logs/` folder.
+- Only `tmp/`, where PHP keeps temporary files and sessions, is left out.
+
+If even one file cannot be read, the backup fails and is not recorded: an incomplete backup does
+not count.
+
+## How long backups stay {#retention}
+
+Once a day the panel removes the site's snapshots older than 30 days from the repository. It never
+removes the newest backup that passed its restore test, nor one whose test has not run yet. The
+rule touches only that site's snapshots from this server.
+
+## Delete a backup {#delete}
+
+You need an administrator account.
+
+1. In the **Backups** tab, press the bin on the snapshot's row.
+2. Confirm. The snapshot is removed from the repository together with its database backup.
+
+The bin is disabled for the newest backup that passed its test, and for one whose test has not
+run yet. The space in the repository is freed by the daily clean-up.
+
+## Next step {#next}
+
+[Restore a backup](/data/restore-a-backup).

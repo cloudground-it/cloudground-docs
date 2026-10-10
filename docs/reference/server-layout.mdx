@@ -1,0 +1,101 @@
+---
+title: Percorsi, porte e servizi
+description: Le porte su cui il server ascolta, i servizi systemd, gli utenti di sistema e i percorsi che CloudGround usa.
+type: reference
+prerequisites: []
+version: unreleased
+last_verified: unverified
+sidebar_position: 5
+---
+
+I valori sono quelli di un'installazione fatta con l'installer. `<id>` è il numero del sito nel
+pannello, `<dominio>` il suo dominio.
+
+## Porte {#ports}
+
+| Porta | Chi ascolta | Da dove | Uso |
+| --- | --- | --- | --- |
+| 22/tcp | sshd | Internet | SSH per root, SFTP e shell dei siti |
+| 80/tcp | nginx | Internet | verifiche dei certificati, poi redirect a HTTPS |
+| 443/tcp | nginx | Internet | i siti e il dominio del pannello |
+| 443/udp | nginx | Internet | HTTP/3, quando nginx ha il modulo |
+| 8443/tcp | nginx | Internet | il pannello per IP, con il suo certificato autofirmato |
+| 3306/tcp | MariaDB | solo il server | i database dei siti |
+| 9080/tcp | panel-api | solo `127.0.0.1` | il connettore WordPress: svuotamento della cache e controllo di salute |
+
+Il firewall, se attivo, apre 22, 80, 443, 443/udp e 8443. Dal pannello non puoi chiudere la porta
+di SSH, 80, 443 e 8443.
+
+Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudground/api.sock`.
+
+## Servizi {#services}
+
+| Unità systemd | Gira come | Cosa fa |
+| --- | --- | --- |
+| `cloudground-api.service` | `cloudground` | l'API e l'interfaccia del pannello |
+| `cloudground-api.socket` | — | apre `/run/cloudground/api.sock` per l'API |
+| `cloudground-agent.service` | root, in sandbox | il lavoro privilegiato |
+| `cloudground-php-cg-site-<id>.service` | `cg-site-<id>` | il PHP-FPM di un sito, nella slice `cg-site-<id>.slice` |
+| `cloudground-update-guard.service` | root | temporanea, durante un aggiornamento del pannello |
+| `nginx.service` | root e `www-data` | il server web |
+| `mariadb.service` | `mysql` | i database |
+| `redis-server.service` | — | installato e spento |
+
+## Utenti e gruppi {#users}
+
+| Nome | Cos'è |
+| --- | --- |
+| `cloudground` | l'utente del pannello, senza shell |
+| `cg-site-<id>` | l'utente di sistema di un sito: possiede i suoi file, esegue il suo PHP, entra in SFTP |
+| `cg-shell-<id>` | l'accesso alla shell del sito, con lo stesso uid di `cg-site-<id>` |
+| `cg-sftp-off` | gruppo: i suoi membri non possono entrare né in SSH né in SFTP |
+| `site_<id>` | database e utente MariaDB di un sito |
+
+## Il pannello {#panel-paths}
+
+| Percorso | Contenuto |
+| --- | --- |
+| `/usr/local/bin/panel-api`, `panel-agent`, `cgctl` | i binari |
+| `/etc/cloudground/panel.env` | la configurazione del pannello e dell'agent |
+| `/etc/cloudground/cgctl.env` | la configurazione di cgctl |
+| `/etc/cloudground/agent.token` | il segreto condiviso tra pannello e agent |
+| `/etc/cloudground/certs/` | certificati del pannello (`panel.pem`, `panel-ip.pem`), di riserva (`fallback.pem`) e quelli caricati a mano (`custom/`) |
+| `/var/lib/cloudground/state.db` | il database del pannello |
+| `/var/lib/cloudground/secret.key` | la chiave che cifra i segreti del database: salvala insieme al database |
+| `/var/lib/cloudground-agent/` | lo spazio di lavoro dell'agent e `highest-release` |
+| `/run/cloudground/agent.sock` | il socket dell'agent |
+| `/var/log/cloudground-install.log` | il log dell'installer |
+
+## I siti {#site-paths}
+
+| Percorso | Contenuto |
+| --- | --- |
+| `/srv/sites/<dominio>/` | la cartella del sito |
+| `/srv/sites/<dominio>/current` | il collegamento al rilascio attivo, `releases/<id>` |
+| `/srv/sites/<dominio>/releases/` | i rilasci |
+| `/srv/sites/<dominio>/shared/` | ciò che resta tra un rilascio e l'altro: `wp-config.php`, `uploads` |
+| `/srv/sites/<dominio>/tmp/` | file temporanei e sessioni di PHP |
+| `/var/log/cloudground/<dominio>/` | `access.log`, `error.log`, `php-error.log` |
+| `/var/cache/cloudground/<dominio>/` | la cache di pagina |
+| `/etc/nginx/sites-enabled/<dominio>.conf` | il vhost |
+| `/etc/nginx/conf.d/cloudground-cache-<id>.conf` | la zona di cache del sito |
+| `/etc/nginx/conf.d/cloudground-global.conf` | impostazioni di nginx comuni a tutti i siti |
+| `/etc/cloudground-php/cg-site-<id>.conf` | la configurazione PHP-FPM del sito |
+| `/run/cloudground/php/cg-site-<id>/php.sock` | il socket PHP-FPM del sito |
+| `/etc/nginx/cloudground-auth/<dominio>.htpasswd` | la password di uno staging |
+| `/etc/cron.d/` e `/etc/cloudground/cron/` | le attività pianificate dei siti |
+| `/etc/letsencrypt/live/<dominio>/` | il certificato del sito |
+
+## Server {#server-paths}
+
+| Percorso | Contenuto |
+| --- | --- |
+| `/etc/mysql/mariadb.conf.d/99-cloudground.cnf` | la configurazione di MariaDB calcolata per il server |
+| `/etc/sysctl.d/60-cloudground.conf` | i parametri del kernel |
+| `/etc/ssh/sshd_config.d/10-cloudground-sftp.conf` | SFTP dei siti in chroot |
+| `/etc/logrotate.d/cloudground` | rotazione dei log dei siti |
+| `/var/log/mysql/slow.log` | le query lente di MariaDB, oltre 1 secondo |
+
+## Prossimo passo {#next}
+
+Per capire come questi pezzi lavorano insieme, leggi l'[architettura](/explanation/architecture).

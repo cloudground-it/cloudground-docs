@@ -1,0 +1,65 @@
+---
+title: Firewall
+description: Apri, blocca o limita a un indirizzo una porta TCP del server dalla pagina Firewall.
+type: how-to
+prerequisites:
+  - Un account amministratore
+  - Il firewall del server (ufw) attivo
+version: unreleased
+last_verified: unverified
+sidebar_position: 6
+---
+
+La pagina **Firewall**, nel gruppo **Server**, mostra se il firewall è attivo e le sue regole, così
+come le riporta il sistema. Gli amministratori aggiungono e rimuovono regole; gli account in sola
+lettura le vedono soltanto.
+
+Quando il firewall è attivo durante l'installazione, l'installer apre le porte 22, 80, 443 e 8443
+in TCP e la 443 in UDP. Il pannello non attiva il firewall da solo: se la pagina dice **inattivo**,
+le regole non hanno effetto.
+{/* TODO(verify): on the test box, check whether a fresh install leaves ufw active or inactive. */}
+
+## Apri una porta {#allow-a-port}
+
+1. Apri **Firewall**.
+2. In **Aggiungi o rimuovi una regola**, scegli l'**Azione** **Consenti la porta**.
+3. Scrivi la **Porta**, da 1 a 65535.
+4. Per aprirla a un solo indirizzo, scrivi l'IP o la rete (per esempio `203.0.113.7` o
+   `203.0.113.0/24`) in **Solo da questo IP**.
+5. Premi **Applica**.
+
+Dal pannello le regole sono sempre TCP.
+
+## Blocca una porta {#deny-a-port}
+
+Come sopra, con l'**Azione** **Blocca la porta**. Con **Solo da questo IP** blocchi la porta solo
+per quell'indirizzo.
+
+## Rimuovi una regola {#delete-a-rule}
+
+Scegli l'**Azione** **Rimuovi la regola**, con la stessa **Porta** e lo stesso **Solo da questo IP**
+della regola da togliere, e premi **Applica**. Il pannello rimuove la regola di consenso e quella di
+blocco con quella forma esatta, e non tocca le altre regole della porta.
+
+## Le porte che restano aperte {#essential-ports}
+
+Il pannello rifiuta qualsiasi regola che chiuderebbe fuori te o i siti:
+
+- le porte su cui ascolta SSH (di solito 22);
+- 80 e 443, dei siti;
+- 8443, del pannello.
+
+Per queste porte non puoi rimuovere la regola né bloccarle per tutti. Puoi invece bloccarle per un
+solo indirizzo, o aggiungere regole di consenso.
+
+## Dall'API {#from-the-api}
+
+`GET /api/firewall` legge lo stato. `POST /api/firewall/rule` con
+`{"action": "allow", "port": 3306, "proto": "tcp", "from": "203.0.113.7"}` applica una regola;
+`action` è `allow`, `deny` o `delete`, `proto` è `tcp` o `udp`. Ogni regola finisce nel **Registro
+attività**.
+
+## Prossimo passo {#next}
+
+Tieni pronto il modo di rientrare se perdi la password:
+[recupera l'accesso amministratore](./recover-admin-access.mdx).

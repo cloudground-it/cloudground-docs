@@ -1,0 +1,70 @@
+---
+title: Pubblica un rilascio
+description: Trasforma una cartella di codice in un rilascio del sito e rendilo attivo, senza un momento in cui il sito serve metà vecchio e metà nuovo.
+type: how-to
+prerequisites:
+  - Un sito attivo
+  - Un account amministratore oppure operatore assegnato al sito
+  - Un token API e cgctl, per creare il rilascio
+version: unreleased
+last_verified: unverified
+sidebar_position: 7
+---
+
+Il codice di un sito vive in rilasci che non cambiano più dopo essere stati creati. Pubblicare è
+fatto di due passi: **creare** il rilascio da una cartella, poi **attivarlo**. Per pubblicare
+dallo staging usa invece [Safe Push](/data/staging-and-safe-push).
+
+## Prepara il codice {#prepare}
+
+Metti il codice in una cartella dentro la cartella del sito, `/srv/sites/<dominio>`. Per esempio,
+dalla [shell del sito](/access/site-shell):
+
+```bash
+mkdir -p ~/src/app && cd ~/src/app
+git clone <repository> .
+```
+
+Il pannello rifiuta una cartella fuori da quella del sito, la cartella del sito stessa e
+`releases/`. I collegamenti nella cartella vengono seguiti solo se restano dentro il sito.
+
+## Crea il rilascio {#create}
+
+```bash
+cgctl --wait deploy <site-id> /srv/sites/<dominio>/src/app
+```
+
+La risposta contiene `release_id` e `deployment_id`. Il nuovo rilascio compare nella scheda
+**Rilasci** come *creato*: è pronto ma non ancora attivo. Durante la creazione il pannello:
+
+- copia la cartella in `releases/<release_id>`;
+- collega `wp-config.php` e `wp-content/uploads` a quelli in `shared/` del sito: configurazione e
+  file caricati non vengono mai dalla cartella pubblicata;
+- sui siti WordPress, aggiunge il plugin del pannello e, se la object cache è attiva, il suo
+  drop-in;
+- prepara una copia compressa dei file CSS, JS, MJS, SVG, JSON, XML, HTML, TXT e MAP tra 1 KiB e
+  10 MiB;
+- toglie i permessi di scrittura al gruppo e agli altri utenti.
+
+Se un passo fallisce, il rilascio non viene creato e la riga resta *non riuscito*.
+
+## Attiva il rilascio {#activate}
+
+1. Apri il sito e scegli la scheda **Rilasci**.
+2. Premi **Attiva** sulla riga del rilascio e conferma.
+
+Il collegamento `current` passa al nuovo rilascio in un solo passo: ogni richiesta vede il
+rilascio vecchio o quello nuovo. Poi PHP del sito ricarica il codice, la cache di pagina viene
+svuotata e riscaldata in background. Il rilascio che era attivo diventa *sostituito*.
+
+Dall'API, attiva un rilascio con `POST /api/deployments/<deployment_id>/promote`.
+
+## Quanti rilasci restano {#kept}
+
+Dopo ogni attivazione restano il rilascio attivo, quelli più recenti e i 5 più recenti tra quelli
+più vecchi. Gli altri vengono eliminati; le loro righe restano nella scheda **Rilasci**, ma non si
+possono più attivare.
+
+## Prossimo passo {#next}
+
+[Torna a un rilascio precedente](/data/roll-back-a-release) se il nuovo non va.

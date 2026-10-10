@@ -1,0 +1,75 @@
+---
+title: Impostazioni del sito
+description: Ogni campo che PATCH /api/sites/<id> accetta, con valori ammessi, valore predefinito, effetto e chi lo può cambiare.
+type: reference
+prerequisites: []
+version: unreleased
+last_verified: unverified
+sidebar_position: 2
+---
+
+`PATCH /api/sites/<id>` cambia una o più impostazioni di un sito. Ogni campo è facoltativo, cambiano solo
+i campi presenti, e `null` vale come assente. Il corpo è JSON (`Content-Type: application/json`).
+
+## Campi {#fields}
+
+**Chi** è il ruolo che può mandare il campo: *gestione* vuol dire un amministratore, o un operatore
+assegnato al sito.
+
+| Campo | Tipo | Siti | Valori ammessi | Predefinito | Effetto | Chi |
+| --- | --- | --- | --- | --- | --- | --- |
+| `aliases` | lista di stringhe | di produzione (non staging) | nomi host semplici, diversi dal dominio, senza doppioni, al massimo 50, nessuno di un altro sito; `[]` li toglie | nessuno | i nomi a cui il sito risponde oltre al dominio; un certificato Let's Encrypt viene riemesso per i nomi nuovi | amministratore |
+| `profile` | stringa | tutti | `balanced`, `commerce`, `maximum` | `commerce` per WooCommerce, altrimenti `balanced` | durata della cache di pagina, regole di bypass, gestore dei processi PHP | gestione |
+| `cache_enabled` | booleano | tutti | `true`, `false` | attiva, tranne statici e reverse proxy | accende o spegne la cache di pagina | gestione |
+| `cache_ttl_sec` | intero | tutti | da 0 a 31536000 | 0 | quanto resta in cache una pagina; 0 è la durata del profilo | gestione |
+| `php_workers` | intero | tutti | da 0 a 64 | 0 | il numero massimo di worker PHP; 0 li dimensiona in automatico | gestione |
+| `hsts` | booleano | tutti | `true` solo con un certificato valido per almeno altri 14 giorni | spento | aggiunge `Strict-Transport-Security: max-age=31536000` | gestione |
+| `php_version` | stringa | con PHP | una versione installata; la versione attuale del sito passa anche se non è più installata | scelta alla creazione | la versione di PHP-FPM del sito | gestione |
+| `memory_limit_mb` | intero | con PHP | da 64 a 4096 | 256, 512 per WooCommerce | `memory_limit` di PHP | gestione |
+| `upload_max_mb` | intero | con PHP | da 1 a 2048 | 64 | `upload_max_filesize` e `post_max_size` | gestione |
+| `max_execution_seconds` | intero | con PHP | da 10 a 600 | 120 | `max_execution_time`; il limite reale di una richiesta è questo più 10 s, almeno 120 s | gestione |
+| `public_root` | stringa | tutti tranne reverse proxy | vuoto, o un percorso relativo di segmenti fatti di lettere, cifre, `-` e `_`, senza link simbolici né file lungo il percorso | `public` per Laravel, altrimenti vuoto | la cartella servita, dentro il rilascio attivo (`current/<public_root>`) | gestione |
+| `proxy_upstream` | stringa | reverse proxy | un URL `http` o `https` senza credenziali, query o frammento; salvato in forma normalizzata | scelto alla creazione | dove vanno le richieste | amministratore |
+| `object_cache` | booleano | WordPress, WooCommerce | `true`, `false` | spenta | installa e attiva la object cache APCu, o la spegne | gestione |
+
+Un altro campo nel corpo rende la richiesta malformata.
+
+## Profili {#profiles}
+
+| Profilo | Durata in cache | Servita scaduta fino a | Gestore dei processi PHP |
+| --- | --- | --- | --- |
+| `balanced` (Bilanciato) | 600 s | 7200 s | `ondemand`, tranne WooCommerce |
+| `commerce` (E-commerce) | 300 s | 3600 s | `dynamic` |
+| `maximum` (Massimo) | 86400 s | 3 giorni | `dynamic` |
+
+`cache_ttl_sec` diverso da 0 sostituisce la durata del profilo.
+
+## Worker PHP {#php-workers}
+
+Con `php_workers` a 0, il massimo dei worker è la memoria del sito divisa per 80 MB, al massimo tre per
+CPU. Con un valore, è quel valore. In entrambi i casi il risultato sta tra 2 e 64.
+
+La memoria del sito è un quarto della memoria del server divisa tra i siti, almeno 160 MB.
+
+Il controllo del budget scatta quando la richiesta contiene `php_workers` o `memory_limit_mb` e il numero
+di worker del sito, dopo la modifica, è maggiore di 0: worker × limite di memoria (256 MB, o 512 per
+WooCommerce, se il limite non è impostato) non può superare la memoria del server. `"allow_over_budget":
+true` salta il controllo; lo può mandare solo un amministratore.
+
+## Risposte {#answers}
+
+| Codice | Quando |
+| --- | --- |
+| `202` | `{"site": …, "task": …}`, più `"warnings"` quando c'è qualcosa da sapere |
+| `400` | corpo malformato o campo sconosciuto; nessun campo; un valore fuori regola (`{"error": …, "fields": {<campo>: <messaggio>}}`); budget di PHP superato |
+| `403` | `aliases` o `proxy_upstream` (con `fields`), oppure `allow_over_budget`, da chi non è amministratore |
+| `404` | il sito non esiste o è fuori dalla portata di un operatore |
+| `409` | `hsts: true` senza un certificato valido per almeno altri 14 giorni; un alias di un altro sito |
+| `503` | il pannello si sta riavviando: riprova tra un momento |
+
+La modifica è salvata subito e applicata dall'attività **Impostazioni sito**. Se l'attività fallisce, il
+pannello rimette i valori di prima dei campi che nessuna richiesta successiva ha cambiato.
+
+## Prossimo passo {#next}
+
+[Cambia le impostazioni di un sito](/sites/change-site-settings), passo per passo.

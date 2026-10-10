@@ -1,0 +1,75 @@
+---
+title: SFTP and SSH keys
+description: Turn on a site's SFTP access, choose its password and add the SSH keys of the people who work on it.
+type: how-to
+prerequisites:
+  - A site
+  - An administrator account, or an operator assigned to the site
+version: unreleased
+last_verified: unverified
+sidebar_position: 1
+---
+
+Every site has its own system user, `cg-site-<id>`, confined to the site's folder. SFTP moves files
+as that user: no shell, no access to other sites. A new site starts with SFTP access **off**, keys
+included.
+
+## Turn on SFTP access {#enable-sftp}
+
+1. Open the site and go to the **SFTP / SSH** tab.
+2. In **SFTP access**, type an **SFTP password** of at least 12 characters.
+3. Press **Enable SFTP**.
+
+The **Connection details** box shows what the client needs: **Host**, **Port**, **Username**,
+**Folder** and the **Command**, ready to copy:
+
+```bash
+sftp cg-site-<id>@<host>
+```
+
+`<host>` is the address you opened the panel with. When SSH on the server does not listen on port
+22, the command also carries `-P <port>`. Inside the session the site's folder is the root `/`.
+
+To change the password, type a new one and press **Change password**.
+
+## Add an SSH key {#add-a-key}
+
+Keys are the recommended way for developers: no password to share.
+
+1. In the **SSH keys** section, paste a single line into **Public key**, in the form
+   `<type> <base64> [comment]`.
+2. Leave **Type** on **SFTP only**.
+3. Press **Add key**.
+
+The panel accepts the types `ssh-ed25519`, `ssh-rsa`, `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`,
+`ecdsa-sha2-nistp521`, `sk-ssh-ed25519@openssh.com` and `sk-ecdsa-sha2-nistp256@openssh.com`. It
+refuses several lines at once, options before the type (`command="…"`) and a key that is already
+there. The comment becomes the key's label.
+
+Each key is listed with its `SHA256:…` fingerprint, the same one `ssh-keygen -lf` prints: compare it
+with the fingerprint of the key you were given.
+
+:::note[Keys follow SFTP access]
+
+A key works only while SFTP access is on. Turning access off stops both the password and the keys.
+
+:::
+
+## Remove a key {#remove-a-key}
+
+Press the bin icon next to the key and confirm. The key stops working from the next sign-in.
+
+## Turn off SFTP access {#disable-sftp}
+
+In **SFTP access** press **Disable**. The panel locks the site user out, by password and by key. The
+keys stay in the list and work again when you turn access back on.
+
+## From cgctl or the API {#from-the-api}
+
+The API offers the same operations: `POST /api/sites/<id>/sftp` with `{"enable": true, "password": "…"}`
+or `{"enable": false}`, and `GET`, `POST`, `DELETE` on `/api/sites/<id>/ssh-keys`. `cgctl` has no
+command for them.
+
+## Next step {#next}
+
+For wp-cli, composer and git inside the site, turn on [the site shell](./site-shell.mdx).

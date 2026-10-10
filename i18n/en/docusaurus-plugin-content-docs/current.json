@@ -3,8 +3,32 @@
     "message": "Next",
     "description": "The label for version current"
   },
-  "sidebar.guide.category.Iniziare": {
-    "message": "Getting started",
-    "description": "The label for category 'Iniziare' in sidebar 'guide'"
+  "sidebar.guide.category.Tutorial": {
+    "message": "Tutorials",
+    "description": "The label for category 'Tutorial' in sidebar 'guide'"
+  },
+  "sidebar.guide.category.Guide · Siti": {
+    "message": "How-to · Sites",
+    "description": "The label for category 'Guide · Siti' in sidebar 'guide'"
+  },
+  "sidebar.guide.category.Guide · Dati": {
+    "message": "How-to · Data",
+    "description": "The label for category 'Guide · Dati' in sidebar 'guide'"
+  },
+  "sidebar.guide.category.Guide · Accesso e sicurezza": {
+    "message": "How-to · Access and security",
+    "description": "The label for category 'Guide · Accesso e sicurezza' in sidebar 'guide'"
+  },
+  "sidebar.guide.category.Guide · Server": {
+    "message": "How-to · Server",
+    "description": "The label for category 'Guide · Server' in sidebar 'guide'"
+  },
+  "sidebar.guide.category.Riferimento": {
+    "message": "Reference",
+    "description": "The label for category 'Riferimento' in sidebar 'guide'"
+  },
+  "sidebar.guide.category.Spiegazioni": {
+    "message": "Explanation",
+    "description": "The label for category 'Spiegazioni' in sidebar 'guide'"
   }
 }

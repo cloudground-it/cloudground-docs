@@ -1,0 +1,71 @@
+---
+title: Crea un sito
+description: Crea un sito WordPress, WooCommerce, PHP, Laravel, statico o reverse proxy dal pannello o con cgctl.
+type: how-to
+prerequisites:
+  - Un account amministratore
+  - Un dominio il cui record DNS A o AAAA punta al server, se vuoi il certificato subito
+version: unreleased
+last_verified: unverified
+sidebar_position: 1
+---
+
+Un sito nuovo nasce con il suo utente di sistema, la sua cartella, il suo PHP e il suo vhost. Solo un
+amministratore può crearlo.
+
+## Dal pannello {#from-the-panel}
+
+1. Apri **Siti** e scegli **Nuovo sito**.
+2. In **Dominio** scrivi il nome del sito, per esempio `example.com`. Il pannello lo porta in
+   minuscolo.
+3. In **Tipo** scegli il tipo di sito. Le differenze sono nel [riferimento dei tipi di sito](/reference/site-types).
+4. In **PHP** lascia **Versione predefinita** o scegli una delle versioni installate sul server. Il
+   campo non c'è per i siti statici e reverse proxy.
+5. In **Profilo prestazioni** lascia **Consigliato** o scegli **Bilanciato**, **E-commerce** o
+   **Massimo**.
+6. Compila i campi del tipo che hai scelto:
+   - **WordPress** e **WooCommerce**: **Titolo del sito** (facoltativo; vuoto, vale il dominio),
+     **Email amministratore**, **Utente amministratore** e **Password amministratore**, di almeno
+     12 caratteri. Sono le credenziali per entrare in WordPress.
+   - **Reverse proxy**: **URL upstream**, per esempio `http://127.0.0.1:3000`. Deve essere un URL
+     `http` o `https`, senza credenziali, query o frammento.
+7. Scegli **Crea sito**.
+
+Il sito compare nella lista con lo stato **in creazione**. Quando l'attività **Creazione sito** finisce,
+lo stato diventa **attivo**.
+
+Se nelle **Impostazioni** del pannello c'è l'**Email per Let's Encrypt**, la creazione chiede anche il
+certificato. Se il DNS non punta ancora al server, il sito nasce lo stesso: l'attività lo scrive tra i
+suoi messaggi e il sito usa un certificato provvisorio finché non ne emetti uno dalla scheda **SSL**.
+
+## Con cgctl {#with-cgctl}
+
+```bash
+cgctl --wait sites create example.com wordpress \
+  '{"admin_email":"tu@example.com","admin_user":"admin","admin_password":"<password>","title":"Il mio sito"}'
+```
+
+- `<password>` è la password dell'amministratore di WordPress, di almeno 12 caratteri.
+- Il terzo argomento è JSON con i campi facoltativi: `profile`, `php_version`, `cache_enabled`,
+  `object_cache`, `aliases`, e `proxy_upstream` per un reverse proxy.
+- `--wait` aspetta la fine dell'attività ed esce con 0 solo se è riuscita.
+
+Per un reverse proxy:
+
+```bash
+cgctl --wait sites create app.example.com proxy '{"proxy_upstream":"http://127.0.0.1:3000"}'
+```
+
+## Se la creazione fallisce {#if-it-fails}
+
+- **Il dominio è già usato** da un altro sito, come dominio o come alias: la richiesta è rifiutata
+  prima di creare qualcosa.
+- **La versione di PHP non è installata**: scegli una di quelle elencate in **PHP**.
+- **Un passo della creazione fallisce**: il server annulla i passi già fatti e il sito sparisce dalla
+  lista. Il messaggio dell'attività dice quale passo è fallito.
+- **Il pannello perde il contatto con il server durante la creazione**: il sito resta nella lista con
+  lo stato **errore**. Eliminalo e crealo di nuovo.
+
+## Prossimo passo {#next}
+
+[Dai al sito un certificato e i suoi alias](./domains-and-certificates.mdx).

@@ -1,0 +1,53 @@
+---
+title: Roll back a release
+description: Put back online the release that was live before the current one, or another release that has been live.
+type: how-to
+prerequisites:
+  - A site with at least two releases that have been live
+  - An administrator account, or an operator assigned to the site
+version: unreleased
+last_verified: unverified
+sidebar_position: 8
+---
+
+A rollback changes only which release serves the site: the releases are already on the server, so
+it is immediate. The database and uploaded files do not change: for those you need a
+[restore](/data/restore-a-backup).
+
+## Go back to the previous release {#previous}
+
+1. Open the site and choose the **Releases** tab.
+2. Press **Instant rollback** and confirm.
+
+The site goes back to the release that was live just before the current one. The current one
+becomes *rolled back*, the previous one *live*. If no earlier release has been live, the panel
+refuses the rollback.
+
+```bash
+cgctl --wait rollback <site-id>
+```
+
+## Go back to a given release {#specific}
+
+Press **Activate** on the row of a *superseded* or *rolled back* release and confirm. From the API:
+
+```bash
+curl --unix-socket /run/cloudground/api.sock -X POST \
+  -H 'Content-Type: application/json' -H 'Authorization: Bearer <token>' \
+  -d '{"deployment_id": <id>}' http://localhost/api/sites/<site-id>/rollback
+```
+
+A release can be put back online only if it has been live. A release that Safe Push rolled back
+because it made the site worse can no longer be activated.
+
+## The automatic rollback {#automatic}
+
+After a Safe Push, Performance Guard checks production again. If the measured pages answer with a
+different status or with errors, the panel goes back to the previous release by itself and marks
+the new one as regressed. If the automatic rollback fails, the release stays *live* with the note
+*Regressed after its promotion; the automatic rollback failed* and an alert in the panel: roll back
+by hand in that case.
+
+## Next step {#next}
+
+To understand a release's states, read [Releases and rollback](/explanation/releases-and-rollback).

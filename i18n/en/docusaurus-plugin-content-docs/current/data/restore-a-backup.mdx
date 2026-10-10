@@ -1,0 +1,60 @@
+---
+title: Restore a backup
+description: Bring a site back to the state of a snapshot, everything, files only or database only, with a safety snapshot taken first.
+type: how-to
+prerequisites:
+  - A site with at least one backup
+  - An administrator account, or an operator assigned to the site
+version: unreleased
+last_verified: unverified
+sidebar_position: 5
+---
+
+A restore replaces the production site with the contents of a snapshot. Before it touches
+anything, the panel takes a new backup of the site and checks it: if that backup fails its restore
+test, the restore stops and the site stays as it was.
+
+:::danger[A restore replaces the current data]
+
+Whatever changed on the site after the snapshot disappears from the site. It survives only in the
+safety snapshot taken at the start of the restore.
+
+:::
+
+## Restore from the panel {#restore}
+
+1. Open the site and choose the **Backups** tab.
+2. Pick a snapshot whose test *passed* and press **Restore** on its row.
+3. In **What to restore** choose:
+   - **Everything (files and database)**;
+   - **Files only**;
+   - **Database only**.
+4. Press **Continue**, type the site's domain to confirm, and press **Restore**.
+5. Follow the task *Restore started* to its end.
+
+The safety snapshot appears in the list of backups: if you need to go back, restore that one.
+
+## What changes on the site {#what-changes}
+
+- **Files**: the site folder is swapped for the snapshot's in one step, with no moment where the
+  site has no files. Then the site's PHP restarts and nginx reloads its configuration. If the site
+  does not come back, the panel puts the previous folder back.
+- **Database**: the database is emptied and recreated from the snapshot's dump. Tables created
+  after the snapshot do not stay. If the import fails, the database goes back to what it was.
+- At the end the site's page cache is emptied. With *Database only*, the object cache is flushed
+  too, so the site does not serve stale data.
+
+## From the command line {#cli}
+
+```bash
+cgctl --wait backup restore <backup-id> <domain> files
+```
+
+`<backup-id>` is the `id` field of a backup in the list `GET /api/sites/<site-id>/backups`;
+`<domain>` is the site's domain, as confirmation. The last word is `full` (the value when you
+leave it out), `files` or `database`.
+
+## Next step {#next}
+
+To see why a backup that counts can always be restored, read
+[Backups and restore tests](/explanation/backups-and-restore-tests).

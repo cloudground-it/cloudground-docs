@@ -1,0 +1,92 @@
+---
+title: Tipi di sito
+description: I sei tipi di sito, cosa crea il pannello per ognuno e con quali valori predefiniti.
+type: reference
+prerequisites: []
+version: unreleased
+last_verified: unverified
+sidebar_position: 1
+---
+
+Il tipo si sceglie alla creazione e non cambia. Nell'API è il campo `type`.
+
+## In sintesi {#summary}
+
+| | `wordpress` | `woocommerce` | `php` | `laravel` | `static` | `proxy` |
+| --- | --- | --- | --- | --- | --- | --- |
+| Nome nel pannello | WordPress | WooCommerce | PHP | Laravel | Statico | Reverse proxy |
+| PHP | sì | sì | sì | sì | no | no |
+| Database | sì | sì | sì | sì | no | no |
+| Cache di pagina alla creazione | attiva | attiva | attiva | attiva | no | no |
+| Profilo predefinito | Bilanciato | E-commerce | Bilanciato | Bilanciato | Bilanciato | Bilanciato |
+| Cartella pubblica predefinita | radice del rilascio | radice del rilascio | radice del rilascio | `public` | radice del rilascio | — |
+| Object cache | sì | sì | no | no | no | no |
+| Attività pianificate di sistema | cron di WordPress ogni 5 minuti | cron di WordPress ogni 5 minuti | — | — | — | — |
+
+Per un sito statico o reverse proxy la cache di pagina resta spenta anche se la richiesta la chiede.
+
+## Cosa crea la creazione {#what-creation-makes}
+
+Per ogni tipo: l'utente di sistema `cg-site-<id>`, la cartella `/srv/sites/<dominio>` con `releases/`,
+`current`, `shared/uploads`, `logs` e `tmp/sessions`, e il vhost. Per i tipi con PHP anche il database
+`site_<id>` con l'utente `site_<id>` e un servizio PHP-FPM solo per il sito.
+
+| Tipo | Contenuto del primo rilascio |
+| --- | --- |
+| `wordpress` | WordPress installato con wp-cli, con l'amministratore indicato, i permalink `/%postname%/`, il connector del pannello in `wp-content/mu-plugins/` e `DISABLE_WP_CRON` attivo |
+| `woocommerce` | come `wordpress`, più il plugin WooCommerce installato e attivato |
+| `php` | un `index.php` di prova |
+| `laravel` | un `index.php` di prova in `public/` |
+| `static` | un `index.html` di prova |
+| `proxy` | niente: le richieste vanno all'URL upstream |
+
+`wp-config.php` sta in `shared/` (permessi 0600) e il rilascio ci punta con un link relativo; lo stesso
+per `wp-content/uploads`, che punta a `shared/uploads`.
+
+## Campi della creazione {#creation-fields}
+
+| Campo | Tipi | Regola |
+| --- | --- | --- |
+| `domain` | tutti | obbligatorio; un nome host semplice, portato in minuscolo |
+| `type` | tutti | obbligatorio; uno dei sei |
+| `aliases` | tutti | nomi host semplici, nessuno usato da un altro sito |
+| `profile` | tutti | `balanced`, `commerce` o `maximum` |
+| `php_version` | con PHP | una versione installata; assente, la predefinita del server se installata, altrimenti la più recente |
+| `cache_enabled` | con PHP | assente, attiva |
+| `object_cache` | `wordpress`, `woocommerce` | assente, spenta |
+| `title` | `wordpress`, `woocommerce` | facoltativo; vuoto, il dominio |
+| `admin_email` | `wordpress`, `woocommerce` | obbligatorio; un indirizzo valido |
+| `admin_user` | `wordpress`, `woocommerce` | obbligatorio |
+| `admin_password` | `wordpress`, `woocommerce` | obbligatorio; almeno 12 byte |
+| `proxy_upstream` | `proxy` | obbligatorio; un URL `http` o `https` senza credenziali, query o frammento |
+
+## PHP per tipo {#php-by-type}
+
+| | WooCommerce | Tutti gli altri tipi con PHP |
+| --- | --- | --- |
+| `memory_limit` predefinito | 512 MB | 256 MB |
+| `upload_max_filesize` e `post_max_size` | 64 MB | 64 MB |
+| `max_execution_time` | 120 s | 120 s |
+| OPcache | 128 MB, 16 MB di stringhe, 20000 file | 64 MB, 8 MB di stringhe, 10000 file |
+| APCu | 64 MB | 32 MB |
+
+Il gestore dei processi è `ondemand` (nessun worker inattivo) per un sito con profilo Bilanciato che non è
+WooCommerce, `dynamic` per tutti gli altri.
+
+## Regole di bypass della cache {#cache-bypass}
+
+Una richiesta con uno di questi cookie, o sotto uno di questi percorsi, non viene servita dalla cache di
+pagina. Una `POST` non lo è mai, e nemmeno una risposta che imposta un cookie.
+
+| Tipo | Cookie | Percorsi |
+| --- | --- | --- |
+| `wordpress` | `wordpress_logged_in_`, `wp-postpass_`, `comment_author_`, `woocommerce_cart_hash`, `woocommerce_items_in_cart`, `wp_woocommerce_session_` | `/wp-admin`, `/wp-login.php`, `/wp-cron.php`, `/xmlrpc.php`, `/wp-json/`, `/feed` |
+| `woocommerce` | quelli di `wordpress` | quelli di `wordpress` più `/cart`, `/checkout`, `/my-account`, `/addons`, `/wc-api`, `/?wc-ajax=` |
+| `php` | quelli di `wordpress` più `PHPSESSID` | quelli di `wordpress` |
+| `laravel` | `_session=`, `XSRF-TOKEN=`, `remember_web_` | `/login`, `/logout`, `/register`, `/password/`, `/forgot-password`, `/reset-password`, `/email/verify`, `/admin`, `/nova`, `/horizon`, `/telescope`, `/sanctum/`, `/livewire/`, `/broadcasting/` |
+
+Con il profilo E-commerce, un sito `wordpress` o `php` prende anche i percorsi di WooCommerce.
+
+## Prossimo passo {#next}
+
+[Le impostazioni di un sito](./site-settings.mdx), campo per campo.

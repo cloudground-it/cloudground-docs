@@ -1,0 +1,64 @@
+---
+title: Recupera l'accesso amministratore
+description: Rientra nel pannello dal server quando hai perso la password o il telefono della verifica in due passaggi.
+type: how-to
+prerequisites:
+  - Accesso root al server via SSH
+version: unreleased
+last_verified: unverified
+sidebar_position: 7
+---
+
+Se nessuno riesce più ad accedere al pannello, l'accesso root al server è la credenziale. Il comando
+`panel-api recover-admin` apre direttamente il database del pannello: funziona con il pannello
+acceso, spento o con l'installazione mai completata.
+
+## Elenca gli account {#list-the-accounts}
+
+Collegati al server come root ed esegui:
+
+```bash prompt
+panel-api recover-admin
+```
+
+Il comando elenca ogni account con il suo ruolo e ti chiede quale reimpostare. Non sceglie mai da
+solo.
+
+## Reimposta la password {#reset-the-password}
+
+```bash prompt
+panel-api recover-admin --email <email>
+```
+
+Il comando genera una password nuova di 24 caratteri e la stampa **una sola volta**, insieme
+all'account. Non la scrivi tu: così non finisce nella cronologia della shell. Accedi con quella
+password e cambiala da **Sicurezza**.
+
+La reimpostazione chiude tutte le sessioni dell'account e revoca i suoi token API. Se l'account
+aveva la verifica in due passaggi, resta attiva e il comando te lo ricorda.
+
+## Hai perso anche il telefono {#lost-device}
+
+```bash prompt
+panel-api recover-admin --email <email> --disable-2fa
+```
+
+Spegne anche la verifica in due passaggi e dice se era attiva. Dopo l'accesso, attivala di nuovo da
+**Sicurezza** con il telefono nuovo.
+
+## Casi particolari {#special-cases}
+
+- **Nessun account esiste ancora.** Con `--email` il comando crea quell'amministratore; senza, si
+  ferma e chiede `--email`.
+- **L'account è disattivato.** Se non resta nessun amministratore attivo, il comando riattiva
+  l'amministratore che reimposti. Un altro account disattivato resta disattivato, e il comando lo dice.
+- **Il database non è nel posto predefinito.** Indica il file con `--state <percorso>`; quello
+  predefinito è `/var/lib/cloudground/state.db`.
+
+Il comando funziona solo come root, e ogni passo finisce nel **Registro attività** con l'autore
+`root (console)`.
+
+## Prossimo passo {#next}
+
+Ora che puoi rientrare, proteggi l'account con la
+[verifica in due passaggi](./two-step-verification.mdx).

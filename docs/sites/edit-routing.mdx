@@ -1,0 +1,82 @@
+---
+title: Modifica il routing
+description: Cambia i blocchi location del vhost di un sito dalla scheda Vhost, con il controllo di nginx prima che la modifica diventi attiva.
+type: how-to
+prerequisites:
+  - Un account amministratore, entrato nel pannello con la password (un token API non basta)
+version: unreleased
+last_verified: unverified
+sidebar_position: 4
+---
+
+Il routing è il blocco di `location` che decide cosa serve ogni URL del sito: un front controller, le
+route lato client di una SPA, vere pagine 404, un `/api` in proxy, i redirect. È l'unica parte del vhost
+che puoi modificare. TLS, certificati, log, limiti, la cache di pagina e le sue regole di bypass, gli
+header di sicurezza e il collegamento a PHP-FPM restano del pannello.
+
+## Apri l'editor {#open-the-editor}
+
+1. Apri il sito.
+2. Apri **Altro** e scegli **Vhost**. La voce c'è solo per gli amministratori.
+
+La scheda **Routing e vhost** mostra in sola lettura la parte del vhost gestita dal pannello, sopra e
+sotto l'editor. Nell'editor c'è il routing attuale: all'inizio è quello predefinito del tipo di sito.
+
+| Tipo di sito | Routing predefinito |
+| --- | --- |
+| WordPress, WooCommerce, PHP, Laravel | `location / { try_files $uri $uri/ /index.php?$args; }` |
+| Statico | `location / { try_files $uri $uri/ /index.html =404; }` |
+| Reverse proxy | `location /` con `proxy_pass` verso l'upstream, gli header `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto`, i websocket e un timeout di lettura di 60 s |
+
+## Cambia il routing {#change-the-routing}
+
+1. Scrivi i blocchi nell'editor.
+2. Scegli **Salva**.
+
+Il pannello controlla il blocco con le sue regole, poi scrive il vhost e fa verificare la configurazione
+a nginx (`nginx -t`). Se nginx la accetta, la ricarica e mostra **Routing salvato e attivo**. Se la
+rifiuta, rimette i file di prima, mostra l'errore con la riga del blocco e il sito continua a servire con
+il routing precedente.
+
+Per esempio, il routing di una SPA che ha anche un'API servita dalla sua app sulla porta 3000:
+
+```nginx
+location / {
+    try_files $uri $uri/ /index.html =404;
+}
+
+location /api/ {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_set_header Host $host;
+}
+```
+
+## Torna al routing predefinito {#restore-the-default}
+
+Scegli **Ripristina predefinito** e conferma. I tuoi blocchi vengono sostituiti dal routing del tipo di
+sito.
+
+## Cosa il pannello rifiuta {#what-the-panel-refuses}
+
+Il blocco può servire solo il sito stesso. Il pannello rifiuta, indicando la riga:
+
+- le direttive fuori dalla sua lista: tra le altre `include`, i log, TLS, la cache, i moduli di
+  scripting, `fastcgi_pass` e ogni altro `*_pass` che non sia `proxy_pass`;
+- `root` e `alias` fuori da `<cartella del sito>/current` o `<cartella del sito>/releases/<nome>`,
+  oppure su una cartella nascosta come `.git`;
+- un `proxy_pass` verso un socket Unix, con una variabile, o verso una porta di un servizio di sistema su
+  questa macchina o su una rete privata (80, 443, 8443, 3306, 6379, 5252, 9080 e ogni porta in ascolto
+  di un utente che non è un sito). Un'app del sito stesso, avviata dal suo utente, è raggiungibile;
+- i percorsi costruiti con valori del client (`$args`, `$http_*`, `$cookie_*`, `$request_uri`) e ogni
+  segmento `..`;
+- le variabili `cg_*`, che sono della cache del pannello.
+
+Un blocco `location` o `if` che aggiunge un suo `add_header` riceve comunque gli header di sicurezza del
+pannello.
+
+Una copia di staging prende il routing della produzione, con i percorsi `root` e `alias` spostati nella
+sua cartella.
+
+## Prossimo passo {#next}
+
+[Pianifica un'attività per il sito](./scheduled-tasks.mdx).

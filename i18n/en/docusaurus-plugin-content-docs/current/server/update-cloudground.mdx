@@ -1,0 +1,79 @@
+---
+title: Update CloudGround
+description: Install a new release from the panel, which verifies it and steps back by itself if it does not start, or by running the installer again.
+type: how-to
+prerequisites:
+  - An administrator account
+version: unreleased
+last_verified: unverified
+sidebar_position: 5
+---
+
+The panel installs only signed releases. If the new version does not start properly within 60
+seconds, it puts the previous one back by itself.
+
+## Check for a new version {#check}
+
+When a newer release exists, the dashboard shows **CloudGround `<version>` is available**, with the
+version you are running and a **What's new** link. The panel checks when you open it and keeps the
+answer for six hours.
+
+To stop checking, open **Settings**, card **Panel updates**, switch off **Check for updates when the
+panel is opened** and press **Save**. The check never installs anything by itself.
+
+## Update from the panel {#update-from-the-panel}
+
+1. On the dashboard press **Update now**. Or, in **Settings**, card **Panel updates**, press
+   **Update now** and confirm.
+2. The panel says **Update started: the panel will restart.**
+
+{/* TODO(verify): what the interface shows during the restart and when it is back. */}
+
+What happens, in order:
+
+1. The agent downloads the signed manifest and checks the signature. It refuses a version that is
+   not newer than the newest ever installed on this server.
+2. It downloads `panel-api`, `panel-agent`, `cgctl` and the systemd units, and checks each one's
+   hash.
+3. It puts the new files in place of the old ones, keeping a copy of the old ones.
+4. A guard process, running the old version, restarts the agent and the panel and waits up to 60
+   seconds for them to answer with the new binaries.
+5. If they do, the update is done. If not, the guard puts the old binaries and units back and
+   restarts again.
+
+With the API the request is `POST /api/panel/update`, with `{"version": "<version>"}` or `{}` for the
+newest.
+
+:::note[Builds without updates]
+
+A build made with `make dist` without `UPDATE_URL` and `UPDATE_PUBKEY` cannot update itself: the
+panel answers **this build has no update origin compiled in**. In that case update with the
+installer.
+
+:::
+
+## Check how it went {#check-the-result}
+
+```bash prompt
+cat /var/lib/cloudground-agent/update-result.json
+journalctl -u cloudground-update-guard
+```
+
+The file says which version you moved to, or `rolled_back` and why. The journal shows every step of
+the guard.
+
+## Update with the installer {#update-with-the-installer}
+
+Run the installer again with the new build: it finds the panel already running and upgrades it in
+place, without touching sites, secrets or certificates.
+
+```bash prompt
+CLOUDGROUND_LOCAL_BUILD=/root/cloudground/dist bash /root/cloudground/installer/install.sh
+```
+
+Copy the new `dist/` and `installer/` folders to the server first, as in the
+[installation tutorial](/tutorials/install#copy-the-release).
+
+## Next step {#next}
+
+To see how the installer verifies a release, read [what the installer does](/explanation/installation#binaries).

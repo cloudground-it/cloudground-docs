@@ -1,7 +1,16 @@
 ---
-title: Sites
-description: "Creating sites (WordPress, WooCommerce, PHP, Laravel, static, reverse proxy), domains and aliases, SSL, staging, deploys, files, SFTP and SSH keys, cron, databases."
+title: "How-to · Sites"
+description: "Create sites, change their settings, and manage domains, certificates, routing and scheduled tasks."
+type: index
+last_verified: unverified
 hide_table_of_contents: true
 ---
 
-The pages of this section are being written.
+<Cards>
+  <Card to="/sites/create-a-site" title="Create a site" />
+  <Card to="/sites/change-site-settings" title="Change a site's settings" />
+  <Card to="/sites/domains-and-certificates" title="Domains and certificates" />
+  <Card to="/sites/edit-routing" title="Edit the routing" />
+  <Card to="/sites/scheduled-tasks" title="Scheduled tasks" />
+  <Card to="/sites/delete-a-site" title="Delete a site" />
+</Cards>

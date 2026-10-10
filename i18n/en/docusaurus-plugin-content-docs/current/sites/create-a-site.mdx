@@ -1,0 +1,70 @@
+---
+title: Create a site
+description: Create a WordPress, WooCommerce, PHP, Laravel, static or reverse proxy site from the panel or with cgctl.
+type: how-to
+prerequisites:
+  - An administrator account
+  - A domain whose DNS A or AAAA record points at the server, if you want the certificate straight away
+version: unreleased
+last_verified: unverified
+sidebar_position: 1
+---
+
+A new site comes with its own system user, folder, PHP and vhost. Only an administrator can create
+one.
+
+## From the panel {#from-the-panel}
+
+1. Open **Sites** and choose **New site**.
+2. In **Domain**, type the site's name, for example `example.com`. The panel lowercases it.
+3. In **Type**, pick the kind of site. The differences are in the [site types reference](/reference/site-types).
+4. In **PHP**, keep **Default version** or pick one of the versions installed on the server. Static
+   and reverse proxy sites have no such field.
+5. In **Performance profile**, keep **Recommended** or pick **Balanced**, **Commerce** or
+   **Maximum**.
+6. Fill in the fields of the type you picked:
+   - **WordPress** and **WooCommerce**: **Site title** (optional; empty means the domain),
+     **Admin email**, **Admin username** and **Admin password**, at least 12 characters. They are
+     your WordPress sign-in.
+   - **Reverse proxy**: **Upstream URL**, for example `http://127.0.0.1:3000`. It must be an `http`
+     or `https` URL with no credentials, query or fragment.
+7. Choose **Create site**.
+
+The site appears in the list as **provisioning**. When the **Site creation** task ends, the status
+becomes **active**.
+
+If the panel's **Settings** have a **Let's Encrypt email**, creation also requests the certificate.
+If DNS does not point at the server yet, the site is created anyway: the task says so in its
+messages, and the site uses a temporary certificate until you issue one from the **SSL** tab.
+
+## With cgctl {#with-cgctl}
+
+```bash
+cgctl --wait sites create example.com wordpress \
+  '{"admin_email":"you@example.com","admin_user":"admin","admin_password":"<password>","title":"My site"}'
+```
+
+- `<password>` is the WordPress administrator's password, at least 12 characters.
+- The third argument is JSON with the optional fields: `profile`, `php_version`, `cache_enabled`,
+  `object_cache`, `aliases`, and `proxy_upstream` for a reverse proxy.
+- `--wait` waits for the task to end and exits 0 only if it succeeded.
+
+For a reverse proxy:
+
+```bash
+cgctl --wait sites create app.example.com proxy '{"proxy_upstream":"http://127.0.0.1:3000"}'
+```
+
+## If creation fails {#if-it-fails}
+
+- **The domain is already in use** by another site, as its domain or an alias: the request is
+  refused before anything is created.
+- **The PHP version is not installed**: pick one of those listed under **PHP**.
+- **A step of the creation fails**: the server undoes the steps already done and the site leaves
+  the list. The task's message names the step that failed.
+- **The panel loses contact with the server during creation**: the site stays in the list as
+  **error**. Delete it and create it again.
+
+## Next step {#next}
+
+[Give the site a certificate and its aliases](./domains-and-certificates.mdx).

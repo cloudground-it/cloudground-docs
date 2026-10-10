@@ -1,0 +1,73 @@
+---
+title: Verifica in due passaggi
+description: Aggiungi al tuo account un secondo fattore da un'app di autenticazione, sostituisci l'app o spegni la verifica.
+type: how-to
+prerequisites:
+  - Un account nel pannello
+  - Un'app di autenticazione sul telefono (codici a 6 cifre, standard TOTP)
+version: unreleased
+last_verified: unverified
+sidebar_position: 4
+---
+
+Con la verifica in due passaggi l'accesso chiede, dopo la password, un codice a 6 cifre dell'app di
+autenticazione. Il pannello ha accesso root al server: attivala su ogni account amministratore.
+
+## Attiva la verifica {#turn-it-on}
+
+1. Apri **Sicurezza** dal menu del tuo account.
+2. Nella sezione **Verifica in due passaggi**, scrivi la password in **Conferma con la password**.
+3. Premi **Configura la 2FA**.
+4. Inquadra il codice QR con l'app di autenticazione.
+5. Scrivi il **Codice a 6 cifre** che l'app mostra e premi **Verifica e attiva**.
+
+Se il codice non corrisponde, controlla che l'orologio del telefono sia esatto. Quando la verifica si
+attiva, il pannello chiude le tue altre sessioni; quella da cui l'hai attivata resta aperta.
+
+## Accedi con il codice {#sign-in}
+
+Dopo email e password, il pannello chiede il **Codice a 6 cifre**. Ogni codice vale una volta sola:
+se l'hai appena usato, aspetta quello successivo. Dopo 10 codici sbagliati in un'ora il pannello non
+ne controlla altri per quell'account fino allo scadere dell'ora.
+
+## Sostituisci l'app di autenticazione {#replace-the-app}
+
+Per passare a un altro telefono:
+
+1. In **Sicurezza**, scrivi la password in **Conferma con la password** e un **Codice attuale**
+   dell'app vecchia.
+2. Premi **Sostituisci l'app di autenticazione** e inquadra il nuovo codice QR.
+3. Conferma con un codice della nuova app e premi **Verifica e attiva**.
+
+Fino alla conferma l'app vecchia continua a funzionare: iniziare una sostituzione non spegne mai la
+verifica.
+
+## Spegni la verifica {#turn-it-off}
+
+1. In **Sicurezza**, scrivi la password in **Per disattivarla, inserisci la password** e un **Codice
+   attuale**.
+2. Premi **Disattiva 2FA** e conferma.
+
+Spegnere la verifica chiude le tue altre sessioni e **revoca i tuoi token API**.
+
+## Richiedila a tutti gli amministratori {#require-it}
+
+Un amministratore può renderla obbligatoria:
+
+1. Apri **Impostazioni**.
+2. Nella sezione **Accesso**, accendi **Richiedi la 2FA agli amministratori**.
+3. Premi **Salva**.
+
+Un amministratore senza verifica vede allora solo la propria pagina **Sicurezza** finché non la
+attiva: nessuno resta chiuso fuori. Vale anche per i token API di quell'amministratore. Operatori e
+account in sola lettura non sono obbligati.
+
+## Se perdi il telefono {#lost-device}
+
+Senza l'app non puoi spegnere la verifica dal pannello. Dal server, come root, usa
+`panel-api recover-admin --email <tua-email> --disable-2fa`: vedi
+[recupera l'accesso amministratore](./recover-admin-access.mdx).
+
+## Prossimo passo {#next}
+
+Per gli script, crea un [token API e usa cgctl](./api-tokens-and-cgctl.mdx).

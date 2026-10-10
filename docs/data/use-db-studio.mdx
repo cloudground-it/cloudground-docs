@@ -1,0 +1,87 @@
+---
+title: Usa DB Studio
+description: Sfoglia e modifica le tabelle di un sito, esegui SQL, esporta e importa file .sql e .csv, e pulisci un database WordPress, dal pannello.
+type: how-to
+prerequisites:
+  - Un sito con un database gestito dal pannello
+  - Per modificare, esportare o importare, un account amministratore oppure operatore assegnato al sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 10
+---
+
+DB Studio è il gestore di database del pannello. Usa lo stesso accesso, gli stessi ruoli e lo
+stesso registro attività del resto del pannello, e lavora solo sul database del sito. Aprilo
+dalla scheda **Database** del sito con **Apri DB Studio**. In alto trovi le sezioni
+**Panoramica**, **Tabelle**, **Editor SQL**, **Esporta / importa** e, sui siti WordPress,
+**WordPress**.
+
+Un account in sola lettura può sfogliare e leggere, ma ogni istruzione gira con un utente del
+database che può solo leggere.
+
+## Sfoglia una tabella {#browse}
+
+1. Scegli **Tabelle** e cerca la tabella con **Cerca tabelle**. Per le tabelle InnoDB il numero
+   di righe è una stima del server.
+2. Apri la tabella. La vista **Dati** mostra 50 righe per pagina; ordina per colonna e restringi
+   con **Aggiungi filtro**.
+3. La vista **Struttura** mostra colonne, indici, chiavi esterne e l'**Istruzione CREATE**.
+
+I valori di testo oltre 4096 byte e le colonne binarie compaiono tagliati.
+
+## Modifica le righe {#edit}
+
+1. Nella vista **Dati**, fai doppio clic su una cella per modificare la sua riga, oppure premi
+   **Inserisci riga**.
+2. Il pannello mostra l'SQL della modifica. Conferma per eseguirla.
+
+Ogni modifica gira in una transazione, e viene annullata se non tocca esattamente una riga. Le
+righe di una tabella senza chiave primaria, le colonne binarie e i valori troppo lunghi si
+modificano solo con l'**Editor SQL**.
+
+## Cambia la struttura {#alter}
+
+Nella vista **Struttura**, premi **Aggiungi colonna** o **Aggiungi indice**, compila i campi e
+premi **Anteprima SQL**. Il pannello mostra l'istruzione `ALTER` prima di eseguirla. Su una
+tabella grande può richiedere tempo e bloccare le scritture.
+
+## Esegui SQL {#sql}
+
+1. Scegli **Editor SQL** e scrivi un'istruzione. Ctrl/Cmd+Invio la esegue.
+2. Per modificare i dati, attiva **Consenti scritture** e conferma.
+
+L'editor esegue un'istruzione alla volta, mostra al massimo 5000 righe o 8 MiB e ferma
+un'istruzione dopo 60 secondi. La **Cronologia** resta solo in questo browser: il pannello non
+salva le istruzioni, che possono contenere segreti.
+
+## Esporta e importa {#transfer}
+
+Scegli **Esporta / importa**.
+
+- **Esporta**: scegli il **Formato**. In `sql` scegli le tabelle, o lascia vuoto per tutto il
+  database; in `csv` scegli una sola tabella. Premi **Avvia esportazione**. Il file compare in
+  **Esportazioni**, da dove lo scarichi con **Scarica**.
+- **Carica**: scegli un file `.sql` o `.csv`. Viene inviato a pezzi da 8 MiB, fino a 16 GiB, e
+  compare in **File da importare**.
+- **Importa** un file `.sql`: premi **Importa** sulla sua riga e scrivi il dominio del sito. Prima
+  viene salvato il database, che torna al suo posto se l'importazione fallisce.
+- **Importa** un file `.csv`: scegli la **Tabella per gli import CSV**, poi premi **Importa**. La
+  prima riga del file indica le colonne, `\N` è NULL, e tutte le righe entrano in un'unica
+  transazione.
+
+I file stanno nella cartella del sito, in `shared/exports/` e `shared/imports/`.
+
+## Strumenti WordPress {#wordpress}
+
+- **Opzioni in autoload**: quanti dati WordPress carica a ogni richiesta, e le 20 opzioni più
+  grandi. Oltre 800 KB rallentano ogni richiesta non in cache.
+- **Cerca e sostituisci**: sostituisce un testo in tutte le tabelle del sito tramite wp-cli, così
+  i dati serializzati restano validi; i GUID non vengono toccati. Premi prima **Conta le
+  sostituzioni**, poi **Sostituisci**.
+- **Transient scaduti**: premi **Cerca i transient scaduti**, poi conferma per eliminarli.
+
+Dopo una sostituzione o una pulizia, la cache del sito viene svuotata.
+
+## Prossimo passo {#next}
+
+Prima di una modifica grande, [fai il backup del sito](/data/back-up-a-site).

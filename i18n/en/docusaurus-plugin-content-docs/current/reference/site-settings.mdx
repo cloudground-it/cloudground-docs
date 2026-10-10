@@ -1,0 +1,76 @@
+---
+title: Site settings
+description: Every field PATCH /api/sites/<id> takes, with its allowed values, default, effect and who may change it.
+type: reference
+prerequisites: []
+version: unreleased
+last_verified: unverified
+sidebar_position: 2
+---
+
+`PATCH /api/sites/<id>` changes one or more settings of a site. Every field is optional, only the
+fields present change, and `null` counts as absent. The body is JSON (`Content-Type:
+application/json`).
+
+## Fields {#fields}
+
+**Who** is the role that may send the field: *manage* means an administrator, or an operator assigned
+to the site.
+
+| Field | Type | Sites | Allowed values | Default | Effect | Who |
+| --- | --- | --- | --- | --- | --- | --- |
+| `aliases` | list of strings | production (not staging) | plain host names, not the domain, no duplicates, at most 50, none another site's; `[]` removes them | none | the names the site answers for besides its domain; a Let's Encrypt certificate is reissued for new names | administrator |
+| `profile` | string | all | `balanced`, `commerce`, `maximum` | `commerce` for WooCommerce, else `balanced` | page-cache lifetime, bypass rules, PHP process manager | manage |
+| `cache_enabled` | boolean | all | `true`, `false` | on, except static and reverse proxy | turns the page cache on or off | manage |
+| `cache_ttl_sec` | integer | all | 0 to 31536000 | 0 | how long a page stays cached; 0 is the profile's lifetime | manage |
+| `php_workers` | integer | all | 0 to 64 | 0 | the maximum number of PHP workers; 0 sizes them automatically | manage |
+| `hsts` | boolean | all | `true` only with a certificate valid for at least another 14 days | off | adds `Strict-Transport-Security: max-age=31536000` | manage |
+| `php_version` | string | with PHP | an installed version; the site's current version passes even when no longer installed | chosen at creation | the site's PHP-FPM version | manage |
+| `memory_limit_mb` | integer | with PHP | 64 to 4096 | 256, 512 for WooCommerce | PHP's `memory_limit` | manage |
+| `upload_max_mb` | integer | with PHP | 1 to 2048 | 64 | `upload_max_filesize` and `post_max_size` | manage |
+| `max_execution_seconds` | integer | with PHP | 10 to 600 | 120 | `max_execution_time`; a request's real limit is this plus 10 s, at least 120 s | manage |
+| `public_root` | string | all but reverse proxy | empty, or a relative path of segments made of letters, digits, `-` and `_`, with no symbolic link or file along the path | `public` for Laravel, else empty | the folder served, inside the live release (`current/<public_root>`) | manage |
+| `proxy_upstream` | string | reverse proxy | an `http` or `https` URL with no credentials, query or fragment; stored normalised | chosen at creation | where requests go | administrator |
+| `object_cache` | boolean | WordPress, WooCommerce | `true`, `false` | off | installs and turns on the APCu object cache, or turns it off | manage |
+
+Any other field in the body makes the request malformed.
+
+## Profiles {#profiles}
+
+| Profile | Cache lifetime | Served stale for up to | PHP process manager |
+| --- | --- | --- | --- |
+| `balanced` (Balanced) | 600 s | 7200 s | `ondemand`, except WooCommerce |
+| `commerce` (Commerce) | 300 s | 3600 s | `dynamic` |
+| `maximum` (Maximum) | 86400 s | 3 days | `dynamic` |
+
+A `cache_ttl_sec` other than 0 replaces the profile's lifetime.
+
+## PHP workers {#php-workers}
+
+With `php_workers` at 0, the workers' maximum is the site's memory divided by 80 MB, at most three
+per CPU. With a value, it is that value. Either way the result stays between 2 and 64.
+
+The site's memory is a quarter of the server's memory shared among the sites, at least 160 MB.
+
+The budget check runs when the request carries `php_workers` or `memory_limit_mb` and the site's
+number of workers, after the change, is above 0: workers × memory limit (256 MB, or 512 for
+WooCommerce, when the limit is not set) may not exceed the server's memory. `"allow_over_budget":
+true` skips the check; only an administrator may send it.
+
+## Answers {#answers}
+
+| Code | When |
+| --- | --- |
+| `202` | `{"site": …, "task": …}`, plus `"warnings"` when there is something to know |
+| `400` | malformed body or unknown field; no field; a value against its rule (`{"error": …, "fields": {<field>: <message>}}`); PHP budget exceeded |
+| `403` | `aliases` or `proxy_upstream` (with `fields`), or `allow_over_budget`, from anyone but an administrator |
+| `404` | the site does not exist or is out of an operator's reach |
+| `409` | `hsts: true` without a certificate valid for at least another 14 days; an alias another site holds |
+| `503` | the panel is restarting: try again in a moment |
+
+The change is saved at once and applied by the **Site settings** task. If the task fails, the panel
+puts back the previous values of the fields no later request changed.
+
+## Next step {#next}
+
+[Change a site's settings](/sites/change-site-settings), step by step.

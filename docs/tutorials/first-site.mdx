@@ -1,0 +1,95 @@
+---
+title: Il primo sito
+description: Crea un sito WordPress, controlla che venga servito dalla cache di pagina e fai il suo primo backup, verificato da un ripristino di prova.
+type: tutorial
+prerequisites:
+  - CloudGround installato e il tuo account amministratore
+  - Un dominio il cui record DNS A punta all'indirizzo del server
+version: unreleased
+last_verified: unverified
+sidebar_position: 2
+heading: Il primo
+heading_accent: sito.
+meta:
+  level: Base
+---
+
+In questo tutorial metti online un sito WordPress su `<dominio>`, vedi la cache di pagina al lavoro
+e fai il primo backup. `<dominio>` è il dominio che hai puntato sul server, per esempio
+`blog.esempio.it`.
+
+## Imposta l'email per i certificati {#set-the-certificate-email}
+
+Con un'email impostata, il pannello chiede il certificato del sito appena lo crea.
+
+1. Apri **Impostazioni**.
+2. Nel riquadro **Certificati**, scrivi un indirizzo in **Email per Let's Encrypt**.
+3. Premi **Salva**.
+
+## Crea il sito {#create-the-site}
+
+1. Apri **Siti** e premi **Nuovo sito**. Si apre la finestra **Nuovo sito**.
+2. In **Dominio** scrivi `<dominio>`.
+3. In **Tipo** lascia **WordPress**.
+4. In **Profilo prestazioni** lascia **Consigliato (Bilanciato)**.
+5. Compila **Titolo del sito**, **Email amministratore** e **Utente amministratore**.
+6. In **Password amministratore** scegli una password di almeno 12 caratteri. È quella con cui
+   entrerai in WordPress.
+7. Premi **Crea sito**.
+
+Il sito compare nell'elenco con lo stato **in creazione**. Il pannello crea l'utente di sistema,
+il database, installa WordPress, scrive la configurazione di nginx e PHP e chiede il certificato.
+Quando ha finito lo stato diventa **attivo**.
+
+## Apri il sito {#open-the-site}
+
+Nell'elenco dei siti, premi il nome del sito: si apre la sua pagina. Premi **Apri sito ↗**. Il
+browser mostra la home page di WordPress, in HTTPS.
+
+Per entrare nell'amministrazione, torna alla pagina del sito e premi **Accedi a WordPress**: il
+pannello ti porta in wp-admin senza chiederti la password.
+
+## Guarda la cache al lavoro {#watch-the-cache}
+
+Dal tuo computer, chiedi due volte la home page e guarda l'header `X-CloudGround-Cache`:
+
+```bash
+curl -sI https://<dominio>/ | grep -i x-cloudground-cache
+curl -sI https://<dominio>/ | grep -i x-cloudground-cache
+```
+
+La prima risposta dice `MISS`: la pagina è stata generata da PHP e messa in cache. La seconda dice
+`HIT`: nginx l'ha servita dal disco, senza passare da PHP.
+
+## Collega il repository dei backup {#connect-the-repository}
+
+I backup vanno in un repository restic. Per questo tutorial usi una cartella sul server stesso.
+
+1. Apri **Impostazioni**, riquadro **Backup off-site (restic)**.
+2. In **Repository** scrivi `/var/backups/cloudground`.
+3. In **Password del repository** scegli una password lunga e conservala altrove: se la perdi,
+   perdi i backup.
+4. Premi **Salva**, poi **Prova la connessione**. Il pannello risponde **Repository raggiungibile: 0
+   snapshot**.
+
+:::warning[Solo per imparare]
+
+Un repository sullo stesso server non sopravvive alla perdita del server. Per i siti veri
+[collega un repository off-site](/data/connect-a-backup-repository).
+
+:::
+
+## Fai il primo backup {#take-the-first-backup}
+
+1. Apri la pagina del sito e vai nella scheda **Backup**.
+2. Premi **Esegui backup ora**.
+
+Il backup compare nell'elenco con **Ripristino di prova** a **in attesa**. Subito dopo il backup, il
+pannello lo ripristina da parte e controlla che file e database tornino davvero. Quando il
+ripristino di prova finisce, lo stato diventa **riuscito** e **Tempo di ripristino stimato** mostra
+quanto ci vorrebbe a ripristinarlo.
+
+## Prossimo passo {#next}
+
+Hai un sito in cache e con un backup verificato. Per capire cosa succede a ogni richiesta, leggi
+[il percorso di una richiesta](/explanation/request-path).

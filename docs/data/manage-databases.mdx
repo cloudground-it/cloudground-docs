@@ -1,0 +1,57 @@
+---
+title: Gestisci i database
+description: Trova il database di un sito, esportalo in un file .sql, importane uno ed esegui una query dalla console.
+type: how-to
+prerequisites:
+  - Un sito con un database gestito dal pannello
+  - Per esportare, importare o scrivere, un account amministratore oppure operatore assegnato al sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 9
+---
+
+Ogni sito PHP ha un proprio database MariaDB su questo server, creato insieme al sito: si
+chiama `site_<id>`, come il suo utente, dove `<id>` è il numero del sito. Un sito può usare un
+database esterno: in quel caso il pannello non lo gestisce e la scheda **Database** non serve.
+
+## Trova il database {#find}
+
+Apri il sito e scegli la scheda **Database**. Il riquadro **Database** mostra **Nome** e
+**Utente**. Per lavorare sulle tabelle premi **Apri DB Studio**: vedi
+[Usa DB Studio](/data/use-db-studio).
+
+## Esporta il database {#export}
+
+1. Nel riquadro **Strumenti**, premi **Esporta .sql**.
+2. Quando l'attività finisce, trovi il file in **File**, sotto `shared/exports/`, con un nome come
+   `site_<id>-<aaaammgg-hhmmss>.sql` (data e ora in UTC).
+
+Il file appartiene all'utente del sito, quindi lo scarichi anche via SFTP.
+
+## Importa un file .sql {#import}
+
+1. Carica il file nel sito, per esempio in `shared/imports/` dalla scheda **File** o via SFTP.
+2. Nel riquadro **Importa**, scrivi il percorso del file relativo alla cartella del sito, per
+   esempio `shared/imports/dump.sql`.
+3. Premi **Importa**, scrivi il dominio del sito per confermare e conferma.
+
+Prima di importare, il pannello salva il database com'è. Le istruzioni del file girano sopra il
+database attuale: le tabelle che il file non tocca restano. Se l'importazione fallisce, il
+database torna esattamente com'era prima.
+
+```bash
+cgctl --wait database import <site-id> <dominio> shared/imports/dump.sql
+```
+
+## Esegui una query {#query}
+
+1. Scrivi l'istruzione nella **Console SQL** e premi **Esegui**.
+2. Per un'istruzione che modifica i dati, attiva **Consenti scritture** e conferma.
+
+Senza **Consenti scritture** l'istruzione gira con un utente che può solo leggere. La console
+esegue un'istruzione alla volta, mostra al massimo 5000 righe o 8 MiB di dati e ferma
+un'istruzione dopo 60 secondi.
+
+## Prossimo passo {#next}
+
+[Usa DB Studio](/data/use-db-studio) per sfogliare e modificare le tabelle.

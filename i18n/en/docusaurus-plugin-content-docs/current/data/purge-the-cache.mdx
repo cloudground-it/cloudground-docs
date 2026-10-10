@@ -1,0 +1,64 @@
+---
+title: Purge the cache
+description: Remove one address or the whole site from the page cache, from the panel or with cgctl, and fill it again.
+type: how-to
+prerequisites:
+  - A site with the page cache on
+  - An administrator account, or an operator of the site
+version: unreleased
+last_verified: unverified
+sidebar_position: 1
+---
+
+On WordPress and WooCommerce you rarely need this: the connector purges the pages a change affects
+by itself (the list is in the [cache reference](/reference/cache-behaviour#automatic-purges)). Purge
+by hand when you change something the panel cannot see, such as a theme file uploaded over SFTP, or
+on a PHP or Laravel site.
+
+## Purge one address {#purge-one-url}
+
+1. Open the site's page and go to the **Cache** tab.
+2. In the **Purge the cache** card, type the full address in **Purge one URL**, for example
+   `https://<domain>/blog/post/`.
+3. Press **Purge**.
+
+The panel confirms with **URL purged**. The `GET` and `HEAD` entries are removed, over HTTP and
+HTTPS, for the site's domain and every alias.
+
+## Purge the whole site {#purge-everything}
+
+On the **Cache** tab press **Purge everything**. The panel confirms with **Cache purged**.
+
+The same command, **Purge the cache**, is in the **Actions** section of the site's **Overview** tab
+and in each site's menu in the site list.
+
+## With cgctl {#with-cgctl}
+
+```bash prompt
+cgctl purge <site-id>                               # the whole site
+cgctl purge <site-id> https://<domain>/blog/post/   # one or more addresses
+```
+
+`<site-id>` is the site's number, which `cgctl sites list` shows. The answer says how many entries
+were removed, in `removed`. To set cgctl up, see [API tokens and cgctl](/access/api-tokens-and-cgctl).
+
+## Fill the cache again {#warm-the-cache}
+
+After a full purge, the first visitor of each page finds it empty. You can fill it at once from the
+site's sitemap: on the **Overview** tab, **Actions** section, press **Warm the cache**. On WordPress
+the same command is also on the **WordPress** tab, **Cache warming** card, **Warm now** button.
+
+With cgctl: `cgctl warm <site-id>`. The panel does it by itself after a publish from staging, a
+rollback and a migration.
+
+## Check the result {#check}
+
+```bash
+curl -sI https://<domain>/blog/post/ | grep -i x-cloudground-cache
+```
+
+Right after the purge the answer says `MISS`; the next request says `HIT`.
+
+## Next step {#next}
+
+To see which pages always stay out of the cache, read the [cache behaviour](/reference/cache-behaviour).

@@ -1,0 +1,57 @@
+---
+title: Esegui un ripristino di prova
+description: Controlla che uno snapshot si possa davvero ripristinare, senza toccare il sito, e leggi il risultato.
+type: how-to
+prerequisites:
+  - Un sito con almeno un backup
+  - Un account amministratore oppure operatore assegnato al sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 6
+---
+
+Il pannello fa già un ripristino di prova dopo ogni backup, e dopo ogni riavvio rifà quelli
+rimasti *in attesa*. Lancialo a mano quando vuoi ricontrollare uno snapshot più vecchio, per
+esempio dopo un problema con il repository.
+
+## Lancia la prova {#run}
+
+1. Apri il sito e scegli la scheda **Backup**.
+2. Premi **Prova ripristino** sulla riga dello snapshot. Parte l'attività *Ripristino di prova
+   avviato*.
+3. Quando l'attività finisce, la colonna **Ripristino di prova** mostra *riuscito* o *fallito*.
+
+```bash
+cgctl --wait backup verify <backup-id>
+```
+
+Una prova non si può interrompere: una volta avviata arriva fino al risultato.
+
+## Cosa controlla {#checks}
+
+La prova ripristina lo snapshot in una cartella a parte, mai sul sito, e supera solo se tutti
+questi controlli passano:
+
+1. restic ripristina i file dello snapshot;
+2. se il sito ha un database gestito, lo snapshot del database collegato esiste e il suo dump si
+   legge;
+3. i file ripristinati contengono la cartella del sito, con il collegamento `current` che punta a
+   un rilascio presente nello snapshot, e almeno un file;
+4. l'inizio del dump è SQL, e il dump si importa in un database temporaneo creando almeno una
+   tabella (per WordPress, la tabella delle opzioni); il database temporaneo viene poi eliminato;
+5. `restic check` legge e controlla un 10% dei dati del repository.
+
+La durata della prova, fino al punto 4, è il **Tempo di ripristino stimato**.
+
+## Se la prova fallisce {#failed}
+
+- L'attività fallisce e il suo messaggio dice quale controllo non è passato.
+- Lo snapshot resta *fallito*: non conta come punto di ripristino, e la conservazione non tocca
+  il backup più recente che è *riuscito*.
+- Fai un nuovo backup con **Esegui backup ora** e guarda se la prova passa.
+
+{/* TODO(verify): se un ripristino di prova fallito dentro un backup pianificato fa comparire un avviso nel pannello (le attività in background potrebbero essere silenziose). */}
+
+## Prossimo passo {#next}
+
+[Ripristina un backup](/data/restore-a-backup) che ha superato la prova.

@@ -1,0 +1,70 @@
+---
+title: Alerts and notifications
+description: Read and dismiss the panel's alerts, and get them in a chat through a webhook.
+type: how-to
+prerequisites:
+  - An account in the panel to read alerts
+  - An administrator account to set the webhook up
+version: unreleased
+last_verified: unverified
+sidebar_position: 4
+---
+
+An alert says that something needs attention. Alerts are in the **Alerts** panel, which the bell at
+the top right opens, and at the top of the **Dashboard**. The panel works them out again every five
+minutes and right after every event that concerns them: a task that finished, a site that changed, a
+service that stopped.
+
+## What raises an alert {#what-raises-an-alert}
+
+| Kind | When | Level |
+| --- | --- | --- |
+| **Certificate** | A site's certificate renewal failed. | error |
+| **Certificate** | A site's certificate expires within 14 days. | warning; error under 3 days |
+| **Task** | A task failed in the last 24 hours: a backup, a restore test, a release, a site creation. | error |
+| **Service** | A service is stopped or failed. | error |
+| **Service** | Something is trying many wrong WordPress connector tokens. | error |
+| **Configuration** | Files the panel manages changed outside the panel. | warning |
+| Release | The site serves a release other than the one recorded, or a release did not finish its check after promotion. | warning |
+
+An operator sees only the alerts of its sites; the other roles see them all.
+
+## Dismiss an alert {#dismiss}
+
+In the **Alerts** panel, press **Dismiss** on the alert. Administrators and operators can do it; the
+alert goes away for everyone. When the condition changes (a different renewal error, a certificate
+going from warning to error) or comes back after it cleared, the alert shows again.
+
+An alert clears by itself when its condition ends: a service that starts again, a renewed
+certificate.
+
+## Changes made outside the panel {#drift}
+
+When someone edits by hand a file the panel manages (a site's nginx configuration, its PHP pool), the
+**Dashboard** shows the **Configuration changed outside the panel** section, with every file. The
+panel has overwritten nothing. An administrator chooses, file by file:
+
+- **Restore**: the panel writes the file again as it configured it;
+- **Keep**: the change stays and becomes the expected one.
+
+## Get notifications in a chat {#webhook}
+
+The panel can send alerts to a webhook that takes a `text` field, such as the incoming webhooks of
+Slack, Discord or Mattermost.
+
+1. Create an incoming webhook in your chat and copy its `https://` URL.
+2. In the panel open **Settings**.
+3. In the **Notifications** section, paste the URL into **Webhook**.
+4. Press **Save**.
+
+Every five minutes the panel sends each undismissed alert it has not notified in the last six hours,
+in the administrators' language, in the form `CloudGround ERROR on <site>: <text>`. Until you dismiss
+it, an alert therefore comes back every six hours. A failed send is tried again on the next round.
+
+The URL must be `https` and point to a public address: the panel refuses local and private addresses
+and follows no redirect. The URL is a credential: other accounts see it masked, and the panel never
+writes it to the logs. To stop notifications, empty the field and press **Save**.
+
+## Next step {#next}
+
+Keep the panel current: [update CloudGround](./update-cloudground.mdx).

@@ -1,0 +1,84 @@
+---
+title: Domini e certificati
+description: Aggiungi alias a un sito ed emetti il suo certificato Let's Encrypt, wildcard o personalizzato.
+type: how-to
+prerequisites:
+  - Un sito attivo
+  - Il record DNS A o AAAA del dominio e di ogni alias che punta al server
+  - L'**Email per Let's Encrypt** nelle **Impostazioni** del pannello
+version: unreleased
+last_verified: unverified
+sidebar_position: 3
+---
+
+Un sito risponde al suo dominio e ai suoi alias. Il dominio si sceglie alla creazione e non cambia; gli
+alias si aggiungono e si tolgono quando vuoi. Il certificato copre il dominio e gli alias.
+
+## Imposta l'email per Let's Encrypt {#set-the-acme-email}
+
+Una volta per server:
+
+1. Apri **Impostazioni**.
+2. In **Certificati**, scrivi l'**Email per Let's Encrypt**. Serve per la registrazione e per gli avvisi
+   di scadenza.
+3. Salva.
+
+Senza questa email il pannello non emette certificati e non li rinnova.
+
+## Emetti il certificato {#issue-the-certificate}
+
+1. Apri il sito e la scheda **SSL**.
+2. Scegli **Emetti / rinnova**.
+
+Il pannello avvia l'attività **Certificato**. Prima di chiedere il certificato, il server controlla che
+ogni nome arrivi davvero a lui: scrive un file di prova e lo legge da `http://<nome>/.well-known/acme-challenge/`.
+Se un nome non risponde, l'attività fallisce senza consumare un tentativo con Let's Encrypt e dice
+dove punta il suo DNS.
+
+Il riquadro **Certificato attuale** mostra chi l'ha emesso e quando scade. Il pannello rinnova da solo
+i certificati Let's Encrypt quando mancano 30 giorni alla scadenza. Se un rinnovo fallisce, il riquadro
+mostra **Ultimo rinnovo fallito** con il motivo.
+
+## Un certificato wildcard {#a-wildcard-certificate}
+
+Un wildcard copre `<dominio>` e `*.<dominio>`, e usa il DNS Cloudflare invece del file di prova.
+
+1. In **Impostazioni**, sotto **Certificati**, scrivi il **Token API Cloudflare**. Gli serve il
+   permesso Zone:DNS:Edit.
+2. Nella scheda **SSL** del sito scegli **Wildcard**.
+
+Il wildcard non chiede gli alias: copre solo il dominio e i suoi sottodomini.
+
+## Un certificato tuo {#your-own-certificate}
+
+1. Nella scheda **SSL**, sotto **Certificato personalizzato**, incolla la **Catena completa (PEM)** e la
+   **Chiave privata (PEM)**.
+2. Scegli **Installa**.
+
+Il server rifiuta un certificato che non corrisponde alla chiave, che non copre il dominio o che è già
+scaduto. Un certificato personalizzato ha la precedenza su quello di Let's Encrypt, e il pannello non lo
+rinnova. Per tornare a Let's Encrypt scegli **Torna a Let's Encrypt**.
+
+## Aggiungi un alias {#add-an-alias}
+
+Gli alias non hanno una scheda: li cambia un amministratore con l'API. Manda la lista completa;
+`[]` li toglie tutti.
+
+```bash
+curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
+  -X PATCH \
+  -H "Authorization: Bearer $CLOUDGROUND_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"aliases": ["www.example.com"]}'
+```
+
+- Ogni alias è un nome host semplice, diverso dal dominio del sito. Al massimo 50.
+- Nessun nome può appartenere a due siti: un alias già usato da un altro sito è rifiutato con `409`.
+- Se il sito ha un certificato Let's Encrypt, il pannello lo riemette da solo per i nomi nuovi. Se la
+  riemissione fallisce, il sito continua a usare il certificato di prima.
+- Se il sito ha un certificato personalizzato, la risposta avverte che potrebbe non coprire gli alias
+  nuovi: installane uno che li copra.
+
+## Prossimo passo {#next}
+
+[Decidi cosa serve ogni URL del sito](./edit-routing.mdx).

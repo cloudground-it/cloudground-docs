@@ -1,0 +1,85 @@
+---
+title: Domains and certificates
+description: Add aliases to a site and issue its Let's Encrypt, wildcard or custom certificate.
+type: how-to
+prerequisites:
+  - An active site
+  - The DNS A or AAAA record of the domain and of each alias pointing at the server
+  - The **Let's Encrypt email** in the panel's **Settings**
+version: unreleased
+last_verified: unverified
+sidebar_position: 3
+---
+
+A site answers for its domain and its aliases. You pick the domain when you create the site and it
+does not change; you add and remove aliases whenever you like. The certificate covers the domain and
+the aliases.
+
+## Set the Let's Encrypt email {#set-the-acme-email}
+
+Once per server:
+
+1. Open **Settings**.
+2. Under **Certificates**, type the **Let's Encrypt email**. It is used to register and for expiry
+   notices.
+3. Save.
+
+Without this email the panel neither issues nor renews certificates.
+
+## Issue the certificate {#issue-the-certificate}
+
+1. Open the site and its **SSL** tab.
+2. Choose **Issue / renew**.
+
+The panel starts the **Certificate** task. Before it asks for the certificate, the server checks that
+every name really reaches it: it writes a test file and reads it from `http://<name>/.well-known/acme-challenge/`.
+If a name does not answer, the task fails without spending a Let's Encrypt attempt and says where its
+DNS points.
+
+The **Current certificate** box shows who issued it and when it expires. The panel renews Let's
+Encrypt certificates by itself when 30 days are left. When a renewal fails, the box shows **Last
+renewal failed** with the reason.
+
+## A wildcard certificate {#a-wildcard-certificate}
+
+A wildcard covers `<domain>` and `*.<domain>`, and uses Cloudflare DNS instead of the test file.
+
+1. In **Settings**, under **Certificates**, type the **Cloudflare API token**. It needs the
+   Zone:DNS:Edit permission.
+2. In the site's **SSL** tab, choose **Wildcard**.
+
+A wildcard does not request the aliases: it covers only the domain and its subdomains.
+
+## Your own certificate {#your-own-certificate}
+
+1. In the **SSL** tab, under **Custom certificate**, paste the **Full chain (PEM)** and the **Private
+   key (PEM)**.
+2. Choose **Install**.
+
+The server refuses a certificate that does not match the key, does not cover the domain or has
+already expired. A custom certificate takes precedence over the Let's Encrypt one, and the panel does
+not renew it. To go back to Let's Encrypt, choose **Back to Let's Encrypt**.
+
+## Add an alias {#add-an-alias}
+
+Aliases have no tab: an administrator changes them with the API. Send the whole list; `[]` removes
+them all.
+
+```bash
+curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
+  -X PATCH \
+  -H "Authorization: Bearer $CLOUDGROUND_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"aliases": ["www.example.com"]}'
+```
+
+- Each alias is a plain host name, different from the site's domain. At most 50.
+- No name can belong to two sites: an alias another site already uses is refused with `409`.
+- When the site has a Let's Encrypt certificate, the panel reissues it for the new names by itself.
+  If the reissue fails, the site keeps serving its previous certificate.
+- When the site has a custom certificate, the answer warns that it may not cover the new aliases:
+  install one that does.
+
+## Next step {#next}
+
+[Decide what serves each URL of the site](./edit-routing.mdx).

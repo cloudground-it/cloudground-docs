@@ -1,0 +1,82 @@
+---
+title: Staging and Safe Push
+description: Make a private copy of a site, try changes there, and publish them to production with Safe Push, which blocks them if they make the site slower.
+type: how-to
+prerequisites:
+  - An active production site
+  - An administrator account, or an operator assigned to the site
+  - To publish database tables, a configured backup repository
+version: unreleased
+last_verified: unverified
+sidebar_position: 2
+---
+
+Staging is a copy of production at `staging.<domain>`, password-protected and not indexed. Safe
+Push publishes staging's code only after Performance Guard has measured both versions. The reason
+for each step is in [Staging, Safe Push and Performance Guard](/explanation/staging-and-safe-push).
+
+## Create staging {#create-staging}
+
+1. Open the production site and choose the **Staging** tab.
+2. Press **Create staging**. The task *Staging clone started* begins.
+3. When the task ends, the tab shows the staging domain and the **User** and **Password** that
+   protect it. Press **Visit** to open it, or **Open staging** to manage it as a site.
+
+A site has at most one staging copy, and a staging copy cannot be staged itself. A WordPress site
+with an external database cannot be cloned.
+
+{/* TODO(verify): whether staging.<domain> gets a certificate, and which DNS record it needs. */}
+
+## Compare staging and production {#compare}
+
+The **Staging vs production** section lists the files *added*, *modified* and *removed* on
+staging. Press **Refresh** after a change. The comparison skips `wp-content/uploads` and `.git`
+folders, and stops at 1000 files per list: beyond that the page says *List truncated*.
+
+## Publish all the code {#publish-everything}
+
+1. In the **Safe Push** panel, type in **Pages to measure** the paths to compare, separated by
+   spaces or commas (at most 10, each starting with `/`). The initial value is `/`.
+2. Press **Publish everything** and confirm.
+3. Follow the task. Performance Guard measures each page for about two minutes, then the release
+   is built, made live and verified.
+4. Open the **Releases** tab: the new release is *live*, or *blocked* with the reason. Press
+   **Guard: …** on its row to see the report.
+
+## Publish only some files {#publish-selection}
+
+1. In the list of differences, select the files to publish. To add a path that is not in the
+   list, type it in **Add a file or folder** and press **Add**.
+2. Press **Publish selection** and confirm.
+
+The release starts from production's code, with the chosen paths taken from staging.
+`wp-config.php` and paths under `wp-content/uploads` cannot be chosen: configuration and uploaded
+files always stay production's.
+
+## Publish database tables {#publish-tables}
+
+1. In the **Database tables** panel, select the tables (1 to 50).
+2. Press **Publish tables**, type the production domain to confirm, and confirm.
+
+Before it touches production, the panel takes a safety snapshot and checks it with a restore
+test. If the snapshot fails the test, production stays as it was. Tables marked *protected live
+data* cannot be published: users, and on a store orders, customers and sessions.
+
+## Recreate staging {#recreate}
+
+Press **Recreate staging** and type the staging domain to confirm. The current staging copy, files
+and database, is deleted and replaced by a fresh copy of production.
+
+## From the command line {#cli}
+
+```bash
+cgctl --wait staging create <site-id>
+cgctl --wait safe-push <site-id> / /shop/
+```
+
+`<site-id>` is the production site's number; the paths after it are the pages to measure. With
+no paths, Performance Guard measures `/` and `/?cloudground-probe=uncached`.
+
+## Next step {#next}
+
+If a published release misbehaves, [roll back a release](/data/roll-back-a-release).

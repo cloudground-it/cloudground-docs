@@ -1,0 +1,64 @@
+---
+title: Collega un repository di backup
+description: Indica al pannello dove salvare i backup cifrati di tutti i siti, con la password che li protegge, e controlla che il repository risponda.
+type: how-to
+prerequisites:
+  - Un account amministratore
+  - Uno spazio di archiviazione fuori da questo server (object storage compatibile S3, un server SFTP o un server REST per restic)
+version: unreleased
+last_verified: unverified
+sidebar_position: 3
+---
+
+Tutti i siti salvano i loro backup in un unico repository restic. I dati vengono cifrati sul
+server, con la password del repository, prima di partire.
+
+## Scegli l'indirizzo del repository {#repository-address}
+
+Il campo **Repository** accetta un indirizzo restic:
+
+| Destinazione | Forma dell'indirizzo |
+| --- | --- |
+| Object storage compatibile S3 | `s3:https://<endpoint>/<bucket>[/<cartella>]` |
+| Server SFTP | `sftp:<utente>@<host>:/<percorso>` |
+| Server REST per restic | `rest:https://<host>/<percorso>` |
+| Cartella su questo server | `/<percorso>` |
+
+Una cartella su questo server non è un backup off-site: se perdi il server, perdi anche i backup.
+
+{/* TODO(verify): quali credenziali usa restic per un repository sftp: (chiave SSH di root?) e se un indirizzo b2: nativo funziona: il pannello passa solo le chiavi S3, non quelle B2. */}
+
+## Salva le impostazioni {#save}
+
+1. Apri **Impostazioni** e trova il riquadro **Backup off-site (restic)**.
+2. Scrivi l'indirizzo in **Repository**.
+3. Scrivi la **Password del repository**. Conservane una copia fuori da questo server: senza la
+   password i backup non si possono leggere.
+4. Per un object storage S3, compila **S3 access key**, **S3 secret key** e **Regione** (lascia
+   vuota la regione se il servizio non la chiede).
+5. Premi **Salva**.
+
+Quando cambi il repository o la password, il pannello prova la coppia prima di salvarla. Se il
+repository non esiste ancora, viene creato. Se esiste già con un'altra password, il pannello
+rifiuta di salvare: i backup esistenti diventerebbero illeggibili.
+
+## Prova la connessione {#test}
+
+Premi **Prova la connessione**. Se il repository risponde, il pannello mostra *Repository
+raggiungibile* e il numero di snapshot che contiene.
+
+## Da riga di comando {#cli}
+
+```bash
+cgctl settings set backup_repository 's3:https://<endpoint>/<bucket>'
+cgctl settings set backup_s3_access_key '<access-key>'
+cgctl settings set backup_s3_secret_key '<secret-key>'
+cgctl settings set backup_password '<password>'
+```
+
+Ogni comando cambia una chiave. La prova della coppia parte quando repository e password sono
+entrambi impostati.
+
+## Prossimo passo {#next}
+
+[Fai il backup di un sito](/data/back-up-a-site).

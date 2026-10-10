@@ -1,0 +1,57 @@
+---
+title: Gestisci i servizi
+description: Controlla lo stato dei servizi di sistema che fanno girare i siti e riavvia quello che si è fermato.
+type: how-to
+prerequisites:
+  - Un account amministratore per riavviare; sola lettura per guardare
+version: unreleased
+last_verified: unverified
+sidebar_position: 2
+---
+
+La pagina **Servizi**, nel gruppo **Server**, elenca i servizi di sistema che fanno girare i siti:
+
+| Riga | Servizio di sistema |
+| --- | --- |
+| `nginx` | `nginx` |
+| `mariadb` | `mariadb` |
+| `redis` | `redis-server` |
+| **PHP dei siti** | ogni `cloudground-php-*.service`, uno per sito |
+
+Per ogni servizio vedi **Stato**, **All'avvio** (*si avvia al boot* o *avvio manuale*), **Memoria**,
+**Avviato** e **Versione**. La riga **PHP dei siti** riassume i processi PHP: quanti sono attivi e,
+se qualcuno è fermo, quale.
+
+## Leggi lo stato {#read-the-state}
+
+| Stato | Significato |
+| --- | --- |
+| **attivo** | Il servizio gira. |
+| **in errore** | Il servizio si è fermato con un errore. |
+| **disattivato** | Il servizio è spento e non parte al boot, di proposito. |
+| **fermo** | Il servizio non gira, ma è previsto che giri. |
+
+Un servizio **in errore** o **fermo** apre un avviso nella dashboard: vedi
+[avvisi e notifiche](./alerts-and-notifications.mdx).
+
+## Riavvia un servizio {#restart}
+
+1. Apri **Servizi**.
+2. Premi **Riavvia** sulla riga del servizio.
+3. Conferma.
+
+Il riavvio interrompe per qualche secondo le richieste in corso. Il pannello aspetta che il sistema
+abbia finito, al massimo 3 minuti: MariaDB può essere lento a ripartire.
+
+Un servizio **disattivato** non ha il pulsante **Riavvia**: è spento di proposito (Redis, per
+esempio, resta spento finché un sito non lo usa) e un riavvio lo accenderebbe. Anche la riga
+**PHP dei siti** non ha **Riavvia**.
+
+## Dall'API {#from-the-api}
+
+`GET /api/services` legge l'elenco; `POST /api/services/<nome>/restart` riavvia `nginx`, `mariadb`
+o `redis`. Ogni riavvio finisce nel **Registro attività**.
+
+## Prossimo passo {#next}
+
+Quando un servizio si ferma, il motivo è nei [log](./logs.mdx).

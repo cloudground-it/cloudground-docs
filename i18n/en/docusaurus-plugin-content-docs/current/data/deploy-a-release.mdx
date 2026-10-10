@@ -1,0 +1,69 @@
+---
+title: Deploy a release
+description: Turn a folder of code into a release of the site and make it live, with no moment where the site serves half old and half new.
+type: how-to
+prerequisites:
+  - An active site
+  - An administrator account, or an operator assigned to the site
+  - An API token and cgctl, to create the release
+version: unreleased
+last_verified: unverified
+sidebar_position: 7
+---
+
+A site's code lives in releases that never change once created. Deploying takes two steps:
+**create** the release from a folder, then **activate** it. To publish from staging, use
+[Safe Push](/data/staging-and-safe-push) instead.
+
+## Prepare the code {#prepare}
+
+Put the code in a folder inside the site folder, `/srv/sites/<domain>`. For example, from the
+[site shell](/access/site-shell):
+
+```bash
+mkdir -p ~/src/app && cd ~/src/app
+git clone <repository> .
+```
+
+The panel refuses a folder outside the site's, the site folder itself, and `releases/`. Links in
+the folder are followed only while they stay inside the site.
+
+## Create the release {#create}
+
+```bash
+cgctl --wait deploy <site-id> /srv/sites/<domain>/src/app
+```
+
+The answer holds `release_id` and `deployment_id`. The new release appears in the **Releases**
+tab as *created*: ready, not live yet. While creating it the panel:
+
+- copies the folder into `releases/<release_id>`;
+- links `wp-config.php` and `wp-content/uploads` to the ones in the site's `shared/`:
+  configuration and uploaded files never come from the deployed folder;
+- on WordPress sites, adds the panel's plugin and, when the object cache is on, its drop-in;
+- prepares a compressed copy of the CSS, JS, MJS, SVG, JSON, XML, HTML, TXT and MAP files between 1 KiB
+  and 10 MiB;
+- takes write permission away from the group and other users.
+
+If a step fails, no release is created and the row stays *failed*.
+
+## Activate the release {#activate}
+
+1. Open the site and choose the **Releases** tab.
+2. Press **Activate** on the release's row and confirm.
+
+The `current` link moves to the new release in one step: every request sees either the old
+release or the new one. Then the site's PHP reloads the code, and the page cache is purged and
+warmed in the background. The release that was live becomes *superseded*.
+
+From the API, activate a release with `POST /api/deployments/<deployment_id>/promote`.
+
+## How many releases stay {#kept}
+
+After every activation the panel keeps the live release, every newer one, and the 5 newest of the
+older ones. The rest are deleted; their rows stay in the **Releases** tab, but they can no longer
+be activated.
+
+## Next step {#next}
+
+[Roll back a release](/data/roll-back-a-release) if the new one misbehaves.

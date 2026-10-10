@@ -1,0 +1,113 @@
+---
+title: Install CloudGround
+description: From a freshly created Ubuntu server to a panel answering on port 8443, with your administrator account.
+type: tutorial
+prerequisites:
+  - A freshly created Ubuntu 24.04 or 26.04 LTS server, amd64, with at least 1 GB of RAM and 10 GB of free disk
+  - Root access over SSH
+  - Ports 80 and 443 free
+version: unreleased
+last_verified: unverified
+sidebar_position: 1
+heading: Install
+heading_accent: CloudGround.
+meta:
+  level: Basic
+---
+
+In this tutorial you install CloudGround on a new server and create the administrator account. At
+the end you open the panel in your browser.
+
+:::warning[Use a dedicated server]
+
+The installer takes over nginx, PHP, MariaDB, the firewall and the SSH configuration. Install it
+only on a new server, or on one you can rebuild.
+
+:::
+
+## Copy the release to the server {#copy-the-release}
+
+The repository is private, so there is no public download today. Build the release on your
+computer, in the product's source folder:
+
+```bash
+make dist
+```
+
+Copy the `dist/` folder with the binaries and the `installer/` folder to the server, side by side:
+
+```bash
+ssh root@<server-ip> mkdir -p /root/cloudground
+scp -r dist installer root@<server-ip>:/root/cloudground/
+```
+
+`<server-ip>` is the server's public address.
+
+{/* TODO(verify): once a public release exists, replace this step with the signed download (CLOUDGROUND_RELEASE_PUBKEY) and its URL. */}
+
+## Run the installer {#run-the-installer}
+
+Sign in to the server as root and run the installer, pointing it at the local build:
+
+```bash prompt
+ssh root@<server-ip>
+CLOUDGROUND_LOCAL_BUILD=/root/cloudground/dist bash /root/cloudground/installer/install.sh
+```
+
+The installer shows ten steps, each with its duration:
+
+```text
+  ✓   1/10  Checking the machine
+  ✓   2/10  Installing nginx, PHP, MariaDB, restic
+  ✓   3/10  Creating users, directories and secrets
+  ✓   4/10  Installing CloudGround binaries
+  ✓   5/10  Tuning kernel and nginx workers
+  ✓   6/10  Configuring nginx
+  ✓   7/10  Tuning MariaDB
+  ✓   8/10  Starting services
+  ✓   9/10  Opening the firewall
+  ✓  10/10  Log rotation and certificate renewal
+```
+
+If the first step finds problems (system, architecture, memory, disk, ports in use), it lists them
+all together and stops without touching anything. Fix them and run the same command again.
+
+## Open the setup link {#open-the-setup-link}
+
+At the end the installer prints an address like this one:
+
+```text
+  ✓  CloudGround is running
+
+     Open   https://<server-ip>:8443/setup/<token>
+
+     The link is valid for 24 hours and works once.
+```
+
+Open the link in your browser. The browser warns that the certificate is not valid: it is
+self-signed, which is expected on first boot. Accept the warning for this address.
+
+## Create the administrator account {#create-the-administrator}
+
+The **First sign-in** page asks for an email and a password.
+
+1. **First name** and **Last name** are optional.
+1. Type your email.
+1. Choose a password of at least 12 characters and repeat it in **Confirm password**.
+1. Press **Create account**.
+
+The panel creates the first administrator and signs you in. You see the dashboard, with no sites yet.
+
+## Check that it runs {#check-it-runs}
+
+On the server, check the panel's two services:
+
+```bash prompt
+systemctl is-active cloudground-agent cloudground-api
+```
+
+Both lines say `active`.
+
+## Next step {#next}
+
+The panel is ready. [Create your first site](./first-site.mdx).

@@ -1,0 +1,77 @@
+---
+title: Dai un dominio al pannello
+description: Fai rispondere il pannello su https://<dominio>, con un certificato Let's Encrypt che si rinnova da solo.
+type: how-to
+prerequisites:
+  - Un account amministratore
+  - Un dominio il cui record DNS A punta all'indirizzo del server
+  - La porta 80 raggiungibile da Internet
+version: unreleased
+last_verified: unverified
+sidebar_position: 1
+---
+
+Il pannello risponde sempre su `https://<ip-del-server>:8443`, con un certificato autofirmato. Con
+un dominio risponde anche su `https://<dominio>`, con un certificato valido. L'indirizzo per IP
+resta: se il dominio smette di funzionare, il pannello è ancora raggiungibile.
+
+## Imposta l'email per Let's Encrypt {#set-the-email}
+
+1. Apri **Impostazioni**.
+2. Nel riquadro **Certificati**, scrivi un indirizzo in **Email per Let's Encrypt**. Serve per la
+   registrazione e per gli avvisi di scadenza.
+3. Premi **Salva**.
+
+## Chiedi il certificato {#request-the-certificate}
+
+1. Nel riquadro **Dominio e HTTPS del pannello**, scrivi il dominio in **Dominio**, per esempio
+   `pannello.esempio.it`.
+2. Premi **Proteggi il pannello con Let's Encrypt**.
+
+Il pannello avvia un'attività: scrive la configurazione di nginx per il dominio, verifica che il
+dominio arrivi a questo server e chiede il certificato. Quando l'attività finisce, il riquadro dice
+**Il pannello risponde su `<dominio>`, con un certificato che si rinnova da solo.**
+
+Apri `https://<dominio>` e accedi.
+
+Con l'API, la stessa richiesta è `POST /api/panel/certificate` con `{"domain": "<dominio>"}`.
+
+## Sposta il pannello su un altro dominio {#move-the-panel}
+
+Scrivi il nuovo dominio in **Dominio** e premi **Sposta il pannello su questo dominio**. Prima punta
+il nuovo dominio sul server.
+
+## Il rinnovo {#renewal}
+
+Ogni 12 ore il pannello controlla il certificato e lo rinnova quando sta per scadere. Se il
+certificato non è cambiato non tocca nulla; se è cambiato, nginx lo carica senza interrompere le
+connessioni aperte.
+
+## Limita chi può raggiungere il pannello {#restrict-access}
+
+Le regole che scrivi in `/etc/cloudground/panel-access.conf` valgono sia per il dominio del pannello
+sia per la porta 8443, e il pannello non le sovrascrive. Per esempio, per lasciare entrare un solo
+indirizzo:
+
+```nginx
+allow <tuo-ip>;
+deny all;
+```
+
+Poi, sul server:
+
+```bash prompt
+nginx -t && systemctl reload nginx
+```
+
+:::warning[Non chiuderti fuori]
+
+Se il tuo indirizzo cambia, il pannello non ti risponde più. Tieni una via d'accesso SSH al server
+per togliere la regola.
+
+:::
+
+## Prossimo passo {#next}
+
+Il pannello è raggiungibile in HTTPS. Per tenerlo aggiornato, segui
+[aggiorna CloudGround](./update-cloudground.mdx).

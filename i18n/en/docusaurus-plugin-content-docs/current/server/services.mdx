@@ -1,0 +1,56 @@
+---
+title: Manage services
+description: Check the state of the system services that run the sites, and restart the one that stopped.
+type: how-to
+prerequisites:
+  - An administrator account to restart; read-only to look
+version: unreleased
+last_verified: unverified
+sidebar_position: 2
+---
+
+The **Services** page, in the **Server** group, lists the system services that run the sites:
+
+| Row | System service |
+| --- | --- |
+| `nginx` | `nginx` |
+| `mariadb` | `mariadb` |
+| `redis` | `redis-server` |
+| **Site PHP** | every `cloudground-php-*.service`, one per site |
+
+For each service you see **State**, **At boot** (*starts on boot* or *manual start*), **Memory**,
+**Started** and **Version**. The **Site PHP** row sums up the PHP processes: how many are running
+and, when one is not, which.
+
+## Read the state {#read-the-state}
+
+| State | Meaning |
+| --- | --- |
+| **running** | The service is running. |
+| **failed** | The service stopped with an error. |
+| **disabled** | The service is off and does not start on boot, on purpose. |
+| **stopped** | The service is not running, but it is meant to. |
+
+A **failed** or **stopped** service raises an alert on the dashboard: see
+[alerts and notifications](./alerts-and-notifications.mdx).
+
+## Restart a service {#restart}
+
+1. Open **Services**.
+2. Press **Restart** on the service's row.
+3. Confirm.
+
+A restart interrupts requests in flight for a few seconds. The panel waits for the system to finish,
+3 minutes at most: MariaDB can be slow to come back.
+
+A **disabled** service has no **Restart** button: it is off on purpose (Redis, for example, stays off
+until a site uses it) and a restart would turn it on. The **Site PHP** row has no **Restart** either.
+
+## From the API {#from-the-api}
+
+`GET /api/services` reads the list; `POST /api/services/<name>/restart` restarts `nginx`, `mariadb`
+or `redis`. Every restart lands in the **Audit log**.
+
+## Next step {#next}
+
+When a service stops, the reason is in the [logs](./logs.mdx).

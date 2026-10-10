@@ -1,0 +1,83 @@
+---
+title: Use DB Studio
+description: Browse and edit a site's tables, run SQL, export and import .sql and .csv files, and clean a WordPress database, from the panel.
+type: how-to
+prerequisites:
+  - A site with a database the panel manages
+  - To edit, export or import, an administrator account, or an operator assigned to the site
+version: unreleased
+last_verified: unverified
+sidebar_position: 10
+---
+
+DB Studio is the panel's database manager. It uses the same sign-in, roles and audit log as the
+rest of the panel, and works only on the site's own database. Open it from the site's
+**Database** tab with **Open DB Studio**. At the top are the sections **Overview**, **Tables**,
+**SQL editor**, **Export / import** and, on WordPress sites, **WordPress**.
+
+A read-only account can browse and read, but every statement runs as a database user that can
+only read.
+
+## Browse a table {#browse}
+
+1. Choose **Tables** and find the table with **Search tables**. For InnoDB tables the row count
+   is the server's estimate.
+2. Open the table. The **Data** view shows 50 rows a page; sort by a column and narrow with
+   **Add filter**.
+3. The **Structure** view shows columns, indexes, foreign keys and the **CREATE statement**.
+
+Text values over 4096 bytes and binary columns appear cut.
+
+## Edit rows {#edit}
+
+1. In the **Data** view, double-click a cell to edit its row, or press **Insert row**.
+2. The panel shows the change's SQL. Confirm to run it.
+
+Every change runs in a transaction, and is rolled back if it does not touch exactly one row. Rows
+of a table without a primary key, binary columns and values too long to edit are changed only
+with the **SQL editor**.
+
+## Change the structure {#alter}
+
+In the **Structure** view, press **Add column** or **Add index**, fill in the fields and press
+**Preview SQL**. The panel shows the `ALTER` statement before it runs. On a large table it can
+take a while and lock writes.
+
+## Run SQL {#sql}
+
+1. Choose **SQL editor** and type a statement. Ctrl/Cmd+Enter runs it.
+2. To change data, turn on **Allow writes** and confirm.
+
+The editor runs one statement at a time, shows at most 5000 rows or 8 MiB, and stops a statement
+after 60 seconds. The **History** stays in this browser only: the panel does not store
+statements, which can carry secrets.
+
+## Export and import {#transfer}
+
+Choose **Export / import**.
+
+- **Export**: choose the **Format**. With `sql` pick the tables, or leave it empty for the whole
+  database; with `csv` pick one table. Press **Start export**. The file appears in **Exports**,
+  where **Download** fetches it.
+- **Upload**: choose a `.sql` or `.csv` file. It is sent in 8 MiB pieces, up to 16 GiB, and appears
+  in **Files to import**.
+- **Import** a `.sql` file: press **Import** on its row and type the site's domain. The database
+  is saved first, and put back if the import fails.
+- **Import** a `.csv` file: choose the **Table for CSV imports**, then press **Import**. The
+  file's first row names the columns, `\N` is NULL, and every row goes in in one transaction.
+
+The files live in the site folder, in `shared/exports/` and `shared/imports/`.
+
+## WordPress tools {#wordpress}
+
+- **Autoloaded options**: how much data WordPress loads on every request, and the 20 largest
+  options. Over 800 KB slows every uncached request.
+- **Search and replace**: replaces a text in all the site's tables through wp-cli, so serialized
+  data stays valid; GUIDs are left alone. Press **Count replacements** first, then **Replace**.
+- **Expired transients**: press **Find expired transients**, then confirm to delete them.
+
+After a replacement or a clean-up, the site's cache is flushed.
+
+## Next step {#next}
+
+Before a large change, [back up the site](/data/back-up-a-site).

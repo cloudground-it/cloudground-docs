@@ -1,0 +1,53 @@
+---
+title: Torna a un rilascio precedente
+description: Rimetti online il rilascio che era attivo prima di quello attuale, o un altro rilascio che è già stato attivo.
+type: how-to
+prerequisites:
+  - Un sito con almeno due rilasci che sono stati attivi
+  - Un account amministratore oppure operatore assegnato al sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 8
+---
+
+Il rollback cambia solo quale rilascio serve il sito: i rilasci sono già sul server, quindi è
+immediato. Database e file caricati non cambiano: per quelli serve un
+[ripristino](/data/restore-a-backup).
+
+## Torna al rilascio di prima {#previous}
+
+1. Apri il sito e scegli la scheda **Rilasci**.
+2. Premi **Rollback immediato** e conferma.
+
+Il sito torna al rilascio che era attivo subito prima di quello attuale. Quello attuale diventa
+*annullato*, quello di prima *attivo*. Se non c'è un rilascio precedente che sia stato attivo, il
+pannello rifiuta il rollback.
+
+```bash
+cgctl --wait rollback <site-id>
+```
+
+## Torna a un rilascio preciso {#specific}
+
+Premi **Attiva** sulla riga di un rilascio *sostituito* o *annullato* e conferma. Dall'API:
+
+```bash
+curl --unix-socket /run/cloudground/api.sock -X POST \
+  -H 'Content-Type: application/json' -H 'Authorization: Bearer <token>' \
+  -d '{"deployment_id": <id>}' http://localhost/api/sites/<site-id>/rollback
+```
+
+Un rilascio si può rimettere online solo se è già stato attivo. Un rilascio che Safe Push ha
+annullato perché peggiorava il sito non si può più attivare.
+
+## Il rollback automatico {#automatic}
+
+Dopo un Safe Push, Performance Guard ricontrolla la produzione. Se le pagine misurate rispondono
+con uno stato diverso o con errori, il pannello torna da solo al rilascio di prima e segna quello
+nuovo come peggiorato. Se il rollback automatico non riesce, il rilascio resta *attivo* con la
+nota *Peggiorato dopo la promozione; il rollback automatico non è riuscito* e un avviso nel
+pannello: in quel caso fai il rollback a mano.
+
+## Prossimo passo {#next}
+
+Per capire gli stati di un rilascio, leggi [Rilasci e rollback](/explanation/releases-and-rollback).

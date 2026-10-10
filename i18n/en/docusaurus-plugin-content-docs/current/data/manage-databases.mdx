@@ -1,0 +1,57 @@
+---
+title: Manage databases
+description: Find a site's database, export it to a .sql file, import one, and run a query from the console.
+type: how-to
+prerequisites:
+  - A site with a database the panel manages
+  - To export, import or write, an administrator account, or an operator assigned to the site
+version: unreleased
+last_verified: unverified
+sidebar_position: 9
+---
+
+Every PHP site has its own MariaDB database on this server, created with the site: it is called
+`site_<id>`, like its user, where `<id>` is the site's number. A site can use an external
+database: then the panel does not manage it and the **Database** tab does not apply.
+
+## Find the database {#find}
+
+Open the site and choose the **Database** tab. The **Database** panel shows **Name** and
+**User**. To work on the tables press **Open DB Studio**: see [Use DB Studio](/data/use-db-studio).
+
+## Export the database {#export}
+
+1. In the **Tools** panel, press **Export .sql**.
+2. When the task ends, find the file in **Files**, under `shared/exports/`, with a name like
+   `site_<id>-<yyyymmdd-hhmmss>.sql` (date and time in UTC).
+
+The file belongs to the site user, so you can also download it over SFTP.
+
+## Import a .sql file {#import}
+
+1. Upload the file to the site, for example into `shared/imports/` from the **Files** tab or over
+   SFTP.
+2. In the **Import** panel, type the file's path relative to the site folder, for example
+   `shared/imports/dump.sql`.
+3. Press **Import**, type the site's domain to confirm, and confirm.
+
+Before importing, the panel saves the database as it is. The file's statements run on top of the
+current database: tables the file does not touch stay. If the import fails, the database goes
+back exactly to what it was.
+
+```bash
+cgctl --wait database import <site-id> <domain> shared/imports/dump.sql
+```
+
+## Run a query {#query}
+
+1. Type the statement in the **SQL console** and press **Run**.
+2. For a statement that changes data, turn on **Allow writes** and confirm.
+
+Without **Allow writes** the statement runs as a user that can only read. The console runs one
+statement at a time, shows at most 5000 rows or 8 MiB of data, and stops a statement after 60
+seconds.
+
+## Next step {#next}
+
+[Use DB Studio](/data/use-db-studio) to browse and edit the tables.

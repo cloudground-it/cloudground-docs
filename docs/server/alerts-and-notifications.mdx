@@ -1,0 +1,71 @@
+---
+title: Avvisi e notifiche
+description: Leggi e archivia gli avvisi del pannello, e ricevili in una chat con un webhook.
+type: how-to
+prerequisites:
+  - Un account nel pannello per leggere gli avvisi
+  - Un account amministratore per configurare il webhook
+version: unreleased
+last_verified: unverified
+sidebar_position: 4
+---
+
+Un avviso dice che qualcosa richiede attenzione. Gli avvisi sono nel pannello **Avvisi**, che apri
+con la campanella in alto a destra, e in cima alla **Dashboard**. Il pannello li ricalcola ogni
+cinque minuti e subito dopo ogni evento che li riguarda: un'attività finita, un sito cambiato, un
+servizio che si ferma.
+
+## Cosa genera un avviso {#what-raises-an-alert}
+
+| Tipo | Quando | Livello |
+| --- | --- | --- |
+| **Certificato** | Il rinnovo del certificato di un sito è fallito. | errore |
+| **Certificato** | Il certificato di un sito scade entro 14 giorni. | attenzione; errore sotto i 3 giorni |
+| **Attività** | Un'attività è fallita nelle ultime 24 ore: un backup, un ripristino di prova, un rilascio, la creazione di un sito. | errore |
+| **Servizio** | Un servizio è fermo o in errore. | errore |
+| **Servizio** | Qualcuno prova molti token sbagliati del connettore WordPress. | errore |
+| **Configurazione** | File gestiti dal pannello sono cambiati fuori dal pannello. | attenzione |
+| Rilascio | Il sito serve un rilascio diverso da quello registrato, o un rilascio non ha finito la verifica dopo la promozione. | attenzione |
+
+Un operatore vede solo gli avvisi dei suoi siti; gli altri ruoli li vedono tutti.
+
+## Archivia un avviso {#dismiss}
+
+Nel pannello **Avvisi**, premi **Archivia** sull'avviso. Amministratori e operatori possono farlo;
+l'avviso sparisce per tutti. Se la condizione cambia (un errore di rinnovo diverso, un certificato
+che passa da attenzione a errore) o se torna dopo essere sparita, l'avviso ricompare.
+
+Un avviso si chiude da solo quando la condizione finisce: un servizio che riparte, un certificato
+rinnovato.
+
+## Le modifiche fatte fuori dal pannello {#drift}
+
+Se qualcuno modifica a mano un file che il pannello gestisce (la configurazione nginx di un sito, il
+pool PHP), la **Dashboard** mostra la sezione **Configurazione modificata fuori dal pannello**, con
+ogni file. Il pannello non ha sovrascritto nulla. Un amministratore sceglie, file per file:
+
+- **Ripristina**: il pannello riscrive il file come lo ha configurato lui;
+- **Mantieni**: la modifica resta e diventa quella attesa.
+
+## Ricevi le notifiche in una chat {#webhook}
+
+Il pannello può mandare gli avvisi a un webhook che accetta un campo `text`, come quelli in entrata
+di Slack, Discord o Mattermost.
+
+1. Crea un webhook in entrata nella tua chat e copia il suo URL `https://`.
+2. Nel pannello apri **Impostazioni**.
+3. Nella sezione **Notifiche**, incolla l'URL in **Webhook**.
+4. Premi **Salva**.
+
+Ogni cinque minuti il pannello manda ogni avviso non archiviato che non ha notificato nelle ultime
+sei ore, nella lingua degli amministratori, nella forma `CloudGround ERRORE su <sito>: <testo>`. Finché
+non lo archivi, un avviso torna quindi ogni sei ore. Un invio fallito si riprova al giro successivo.
+
+L'URL deve essere `https` e puntare a un indirizzo pubblico: il pannello rifiuta gli indirizzi
+locali e privati e non segue i redirect. L'URL è una credenziale: gli altri account lo vedono
+mascherato, e il pannello non lo scrive mai nei log. Per spegnere le notifiche, svuota il campo e
+premi **Salva**.
+
+## Prossimo passo {#next}
+
+Tieni il pannello aggiornato: [aggiorna CloudGround](./update-cloudground.mdx).

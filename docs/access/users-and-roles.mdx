@@ -1,0 +1,71 @@
+---
+title: Utenti e ruoli
+description: Aggiungi le persone che usano il pannello, scegli il loro ruolo e assegna i siti agli operatori.
+type: how-to
+prerequisites:
+  - Un account amministratore, con accesso tramite sessione nel pannello
+version: unreleased
+last_verified: unverified
+sidebar_position: 3
+---
+
+Ogni account ha uno di tre ruoli:
+
+| Ruolo | In breve |
+| --- | --- |
+| **Amministratore** | Accesso completo al server. |
+| **Operatore** | Solo i siti assegnati. |
+| **Sola lettura** | Vede tutto, non modifica nulla. |
+
+La tabella completa di cosa può fare ogni ruolo è in [ruoli e permessi](/reference/roles-and-permissions).
+
+## Aggiungi un utente {#add-a-user}
+
+1. Apri **Utenti** e premi **Aggiungi utente**.
+2. Compila **Nome** e **Cognome** (facoltativi), **Email** e una **Password** di almeno 12 caratteri.
+3. Scegli il **Ruolo**.
+4. Per un **Operatore**, scegli almeno un sito in **Siti assegnati**.
+5. Premi **Aggiungi utente**.
+
+L'email è il nome con cui la persona accede, ed è unica. Comunica la password alla persona per un
+canale sicuro: potrà cambiarla da **Sicurezza**.
+
+## Cambia ruolo o siti {#change-role-or-sites}
+
+1. In **Utenti**, apri il menu **Azioni** della riga e scegli **Modifica utente**.
+2. Cambia **Ruolo** o **Siti assegnati**.
+3. Premi **Salva**.
+
+Ruolo, siti e nome cambiano insieme: se il pannello rifiuta la modifica, non cambia niente. Togliere
+il ruolo di amministratore a qualcuno revoca i suoi token API.
+
+## Disattiva un account {#disable-an-account}
+
+In **Modifica utente** accendi **Account disattivato** e premi **Salva**. La persona non può più
+accedere, le sue sessioni si chiudono e i suoi token API vengono revocati. Spegni l'interruttore per
+riattivarla.
+
+## Reimposta la password di un altro {#reset-a-password}
+
+Dal menu **Azioni** scegli **Reimposta password**, scrivi la nuova password e premi **Reimposta
+password**. Le sessioni e i token API di quell'account si chiudono. La tua password la cambi da
+**Sicurezza**, non da qui.
+
+## Elimina un utente {#delete-a-user}
+
+Dal menu **Azioni** scegli **Elimina** e conferma. Con l'account se ne vanno le sue sessioni, i suoi
+token, le assegnazioni dei siti e la verifica in due passaggi.
+
+## Cosa il pannello non permette {#limits}
+
+- Non puoi cambiare il tuo ruolo, disattivare o eliminare il tuo account.
+- Il pannello tiene sempre almeno un amministratore attivo: rifiuta di declassare, disattivare o
+  eliminare l'ultimo.
+- Un operatore senza siti non esiste: il pannello chiede almeno un sito.
+- Utenti e token si gestiscono solo da una sessione nel pannello, mai con un token API.
+
+Ogni modifica finisce nel **Registro attività**.
+
+## Prossimo passo {#next}
+
+Proteggi gli account con la [verifica in due passaggi](./two-step-verification.mdx).

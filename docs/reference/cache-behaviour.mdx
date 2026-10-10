@@ -1,0 +1,109 @@
+---
+title: Comportamento della cache
+description: Profili, durate, regole di bypass per tipo di sito, header, chiave e svuotamenti automatici della cache di pagina.
+type: reference
+prerequisites: []
+version: unreleased
+last_verified: unverified
+sidebar_position: 4
+---
+
+I valori di questa pagina sono quelli che il pannello scrive nella configurazione di nginx. Cambiano
+solo con nuove misure.
+
+## Quali siti hanno la cache {#which-sites}
+
+| Tipo | Cache di pagina |
+| --- | --- |
+| WordPress, WooCommerce, PHP, Laravel | sì, attiva alla creazione; si spegne con l'interruttore **Cache di pagina** |
+| Statico | no: i file vengono serviti dal disco |
+| Reverse proxy | no |
+
+## Profili {#profiles}
+
+Il **Profilo prestazioni** del sito decide le durate.
+
+| Profilo | Fresca | Servita scaduta fino a | Spazio su disco |
+| --- | --- | --- | --- |
+| Bilanciato (predefinito, tranne WooCommerce) | 600 s | 7200 s | 1024 MB |
+| E-commerce (predefinito per WooCommerce) | 300 s | 3600 s | 1024 MB |
+| Massimo | 86400 s | 259200 s | 4096 MB |
+
+- **Durata (TTL)** nella scheda **Cache** sostituisce la durata "fresca" del profilo; `0` usa quella
+  del profilo. Non cambia la finestra in cui la pagina scaduta viene ancora servita.
+- Le risposte `200` e `301` restano in cache per la durata; le `404` per 60 secondi.
+- Solo `GET` e `HEAD` vengono messi in cache.
+- Una pagina scaduta viene servita mentre si aggiorna, e anche quando PHP risponde con un errore,
+  un timeout o un `500`/`503`.
+- Richieste simultanee per la stessa pagina assente aspettano una sola rigenerazione, fino a 5 s.
+
+## Bypass per tipo di sito {#bypass}
+
+Una richiesta salta la cache se è un `POST`, se ha una query string che non sia solo
+tracciamento, se ha l'header `Authorization`, se porta uno dei cookie o se il percorso comincia con
+uno dei prefissi qui sotto.
+
+| Tipo | Cookie (il nome comincia con) | Percorsi |
+| --- | --- | --- |
+| WordPress | `wordpress_logged_in_`, `wp-postpass_`, `comment_author_`, `woocommerce_cart_hash`, `woocommerce_items_in_cart`, `wp_woocommerce_session_` | `/wp-admin`, `/wp-login.php`, `/wp-cron.php`, `/xmlrpc.php`, `/wp-json/`, `/feed` |
+| WooCommerce | quelli di WordPress | quelli di WordPress e quelli del commercio |
+| PHP | quelli di WordPress e `PHPSESSID` | quelli di WordPress |
+| Laravel | qualsiasi `*_session`, `XSRF-TOKEN`, `remember_web_` | `/login`, `/logout`, `/register`, `/password/`, `/forgot-password`, `/reset-password`, `/email/verify`, `/admin`, `/nova`, `/horizon`, `/telescope`, `/sanctum/`, `/livewire/`, `/broadcasting/` |
+
+I percorsi del commercio sono `/cart`, `/checkout`, `/my-account`, `/addons`, `/wc-api` e
+`/?wc-ajax=`. Li ha ogni sito WooCommerce, e un sito WordPress o PHP con il profilo E-commerce.
+Un sito Laravel non li ha mai.
+
+Un prefisso vale fino alla fine di un segmento del percorso: `/feed` esclude `/feed/` ma non
+`/feedback`.
+
+Una risposta che imposta un cookie (`Set-Cookie`), o con `Cache-Control: no-store` o `private`, non
+viene mai salvata, qualunque sia il tipo.
+
+## Parametri di tracciamento {#tracking}
+
+Una query string fatta solo di questi parametri usa la voce in cache della pagina senza parametri:
+`utm_*`, `fbclid`, `gclid`, `gbraid`, `wbraid`, `msclkid`, `dclid`, `mc_cid`, `mc_eid`, `_ga`, `_gl`,
+`igshid`, `yclid`, `twclid`, `ttclid`.
+
+## Header di risposta {#header}
+
+`X-CloudGround-Cache` compare sulle risposte di PHP dei siti con la cache attiva.
+
+| Valore | Significato |
+| --- | --- |
+| `HIT` | servita dalla cache |
+| `MISS` | non c'era: generata da PHP |
+| `BYPASS` | una regola di bypass l'ha mandata a PHP |
+| `EXPIRED` | era scaduta: rigenerata da PHP |
+| `STALE` | scaduta, servita com'era |
+| `UPDATING` | scaduta, servita com'era mentre un'altra richiesta la rigenera |
+| `REVALIDATED` | scaduta e confermata ancora valida |
+
+## Chiave e file {#storage}
+
+| Cosa | Valore |
+| --- | --- |
+| Cartella | `/var/cache/cloudground/<dominio>` |
+| Chiave | schema, metodo, host (minuscolo, senza porta) e indirizzo della richiesta |
+| File di una voce | l'MD5 della chiave, in due livelli di cartelle |
+| Una voce non letta per | una settimana, o la durata più la finestra stale se più lunga |
+
+## Svuotamenti automatici {#automatic-purges}
+
+Su WordPress e WooCommerce il connettore del pannello svuota da sé le pagine giuste:
+
+| Cosa cambia | Cosa viene svuotato |
+| --- | --- |
+| Un articolo o una pagina pubblicati, modificati o eliminati | il suo indirizzo, la home, gli archivi in cui compare e i feed |
+| Categorie o tag di un articolo | l'articolo e gli archivi dei termini aggiunti o tolti |
+| Un commento approvato | l'articolo e i feed dei commenti |
+| Prezzo, disponibilità o immagine di un prodotto | il prodotto e gli archivi in cui compare |
+| Tema, plugin, menu, widget, personalizzazioni, opzioni del sito, aggiornamenti | tutto il sito |
+
+Il pannello svuota tutto il sito anche dopo un aggiornamento di WordPress fatto dal pannello, un
+rilascio, un ripristino e una pubblicazione dallo staging.
+
+## Prossimo passo {#next}
+
+Per svuotare la cache a mano, segui [svuota la cache](/data/purge-the-cache).

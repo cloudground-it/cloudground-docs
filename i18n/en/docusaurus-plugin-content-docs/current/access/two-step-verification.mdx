@@ -1,0 +1,73 @@
+---
+title: Two-step verification
+description: Add a second factor from an authenticator app to your account, replace the app or turn the verification off.
+type: how-to
+prerequisites:
+  - An account in the panel
+  - An authenticator app on your phone (6-digit codes, the TOTP standard)
+version: unreleased
+last_verified: unverified
+sidebar_position: 4
+---
+
+With two-step verification, signing in asks for a 6-digit code from the authenticator app after the
+password. The panel has root on the server: turn it on for every administrator account.
+
+## Turn it on {#turn-it-on}
+
+1. Open **Security** from your account menu.
+2. In the **Two-step verification** section, type your password into **Confirm with your password**.
+3. Press **Set up 2FA**.
+4. Scan the QR code with the authenticator app.
+5. Type the **6-digit code** the app shows and press **Verify and enable**.
+
+If the code does not match, check that the phone's clock is right. When the verification turns on,
+the panel closes your other sessions; the one you turned it on from stays open.
+
+## Sign in with the code {#sign-in}
+
+After email and password, the panel asks for the **6-digit code**. Each code works once: if you have
+just used it, wait for the next one. After 10 wrong codes within an hour the panel checks no more
+codes for that account until the hour has passed.
+
+## Replace the authenticator app {#replace-the-app}
+
+To move to another phone:
+
+1. In **Security**, type your password into **Confirm with your password** and a **Current code**
+   from the old app.
+2. Press **Replace the authenticator app** and scan the new QR code.
+3. Confirm with a code from the new app and press **Verify and enable**.
+
+Until you confirm, the old app keeps working: starting a replacement never turns the verification
+off.
+
+## Turn it off {#turn-it-off}
+
+1. In **Security**, type your password into **To turn it off, enter your password** and a **Current
+   code**.
+2. Press **Disable 2FA** and confirm.
+
+Turning the verification off closes your other sessions and **revokes your API tokens**.
+
+## Require it for every administrator {#require-it}
+
+An administrator can make it mandatory:
+
+1. Open **Settings**.
+2. In the **Access** section, switch on **Require 2FA for administrators**.
+3. Press **Save**.
+
+An administrator without the verification then sees only their own **Security** page until they
+enrol: nobody is locked out. This holds for that administrator's API tokens too. Operators and
+read-only accounts are not required to enrol.
+
+## If you lose the phone {#lost-device}
+
+Without the app you cannot turn the verification off from the panel. On the server, as root, run
+`panel-api recover-admin --email <your-email> --disable-2fa`: see
+[recover administrator access](./recover-admin-access.mdx).
+
+## Next step {#next}
+
+For scripts, create an [API token and use cgctl](./api-tokens-and-cgctl.mdx).

@@ -1,0 +1,82 @@
+---
+title: La shell del sito
+description: Apri un terminale SSH dentro un sito, per wp-cli, composer e git, con le stesse restrizioni del PHP del sito.
+type: how-to
+prerequisites:
+  - Un sito con l'accesso SFTP attivo
+  - Un account amministratore, con accesso tramite sessione nel pannello
+  - Una chiave SSH pubblica
+version: unreleased
+last_verified: unverified
+sidebar_position: 2
+---
+
+La shell del sito è `bash` nella cartella del sito, con l'utente del sito. Ci trovi `wp`, `composer`,
+`git` e `php`, e `node` se il server lo ha. I file che crei hanno subito il proprietario giusto. La
+shell gira nello stesso sandbox e con gli stessi limiti di CPU e memoria del PHP del sito: gli altri
+siti e la configurazione del server non ci sono, e non c'è `sudo`.
+
+:::warning[Chi ha una chiave shell ha il sito]
+
+Una shell esegue qualsiasi comando come utente del sito: chi ha una chiave di tipo **Shell** può
+leggere e modificare i file del sito e le credenziali del suo database. Dai chiavi shell solo a chi
+ti fideresti a dare quei file.
+
+:::
+
+## Attiva la shell {#turn-on-the-shell}
+
+Solo un amministratore può farlo, e solo da una sessione nel pannello: un token API non basta.
+
+1. Apri il sito e vai alla scheda **SFTP / SSH**.
+2. Controlla che l'**Accesso SFTP** sia attivo: la shell accede solo mentre lo è.
+3. Nella sezione **Shell SSH**, accendi **Consenti la shell alle chiavi “shell”**.
+4. Leggi l'avviso, che elenca le chiavi che apriranno una shell, e conferma.
+
+I **Dati di connessione** mostrano ora anche **Utente shell** (`cg-shell-<id>`) e **Comando shell**.
+
+## Aggiungi una chiave shell {#add-a-shell-key}
+
+1. Nella sezione **Chiavi SSH**, incolla la chiave pubblica in **Chiave pubblica**.
+2. Scegli il **Tipo** **Shell**.
+3. Premi **Aggiungi chiave**.
+
+Una chiave **Shell** vale anche per SFTP. Finché la shell è spenta vale solo per SFTP, e nell'elenco
+compare come *shell · spenta*.
+
+## Collegati {#connect}
+
+Usa il **Comando shell** dei dati di connessione:
+
+```bash
+ssh cg-shell-<id>@<host>
+```
+
+Con SSH su una porta diversa dalla 22 il comando contiene `-p <porta>`. La sessione parte nella
+cartella `current` del sito, se esiste, altrimenti nella cartella del sito. Anche un comando singolo
+funziona: `ssh cg-shell-<id>@<host> wp plugin list`.
+
+La shell accetta solo chiavi, mai password. Ogni sito ha al massimo 8 sessioni aperte insieme.
+Tutto quello che una sessione avvia, anche con `nohup`, finisce con la sessione.
+
+## Dal checkout al rilascio {#checkout-to-release}
+
+La cartella `~/src` è dell'utente del sito: clona lì il tuo repository e pubblicalo come rilascio
+con `cgctl`, dal server:
+
+```bash prompt
+cgctl deploy <id-sito> /srv/sites/<dominio>/src/<app>
+```
+
+Il rilascio si promuove e si annulla come tutti gli altri. Il pannello non esegue niente del
+checkout: niente hook di `git`, niente `composer`.
+
+## Spegni la shell {#turn-off-the-shell}
+
+Spegni **Consenti la shell alle chiavi “shell”** e conferma. Le sessioni aperte terminano subito.
+Le chiavi mantengono il loro tipo e tornano ad aprire una shell quando la riaccendi. Anche
+**Disattiva** nell'accesso SFTP chiude le shell aperte.
+
+## Prossimo passo {#next}
+
+Decidi chi può fare cosa nel pannello: [utenti e ruoli](./users-and-roles.mdx).

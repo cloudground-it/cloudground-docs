@@ -1,0 +1,64 @@
+---
+title: Connect a backup repository
+description: Tell the panel where to keep the encrypted backups of every site, with the password that protects them, and check that the repository answers.
+type: how-to
+prerequisites:
+  - An administrator account
+  - Storage outside this server (S3-compatible object storage, an SFTP server, or a REST server for restic)
+version: unreleased
+last_verified: unverified
+sidebar_position: 3
+---
+
+Every site keeps its backups in one restic repository. The data is encrypted on the server, with
+the repository password, before it leaves.
+
+## Choose the repository address {#repository-address}
+
+The **Repository** field takes a restic address:
+
+| Destination | Address form |
+| --- | --- |
+| S3-compatible object storage | `s3:https://<endpoint>/<bucket>[/<folder>]` |
+| SFTP server | `sftp:<user>@<host>:/<path>` |
+| REST server for restic | `rest:https://<host>/<path>` |
+| Folder on this server | `/<path>` |
+
+A folder on this server is not an off-site backup: if you lose the server, you lose the backups
+too.
+
+{/* TODO(verify): which credentials restic uses for an sftp: repository (root's SSH key?), and whether a native b2: address works: the panel passes only the S3 keys, not B2's. */}
+
+## Save the settings {#save}
+
+1. Open **Settings** and find the **Off-site backups (restic)** panel.
+2. Type the address in **Repository**.
+3. Type the **Repository password**. Keep a copy of it outside this server: without the password
+   the backups cannot be read.
+4. For S3 object storage, fill in **S3 access key**, **S3 secret key** and **Region** (leave the
+   region empty if the service does not ask for one).
+5. Press **Save**.
+
+When you change the repository or the password, the panel tries the pair before saving it. If the
+repository does not exist yet, it is created. If it exists with another password, the panel
+refuses to save: the existing backups would become unreadable.
+
+## Test the connection {#test}
+
+Press **Test connection**. If the repository answers, the panel shows *Repository reachable* and
+the number of snapshots it holds.
+
+## From the command line {#cli}
+
+```bash
+cgctl settings set backup_repository 's3:https://<endpoint>/<bucket>'
+cgctl settings set backup_s3_access_key '<access-key>'
+cgctl settings set backup_s3_secret_key '<secret-key>'
+cgctl settings set backup_password '<password>'
+```
+
+Each command changes one key. The pair is tried once both repository and password are set.
+
+## Next step {#next}
+
+[Back up a site](/data/back-up-a-site).

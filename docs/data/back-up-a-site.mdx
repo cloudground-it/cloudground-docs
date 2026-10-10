@@ -1,0 +1,70 @@
+---
+title: Fai il backup di un sito
+description: Come partono i backup pianificati, come farne uno subito, quanto restano nel repository e come eliminarne uno.
+type: how-to
+prerequisites:
+  - Un repository di backup collegato
+  - Un account amministratore oppure operatore assegnato al sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 4
+---
+
+Ogni backup è fatto di due snapshot nel repository: il dump del database del sito, poi i suoi
+file. Appena fatto, il backup passa un [ripristino di prova](/data/run-a-restore-test): finché
+la prova non è finita è *in attesa*, e conta solo quando è *riuscito*.
+
+## I backup pianificati {#scheduled}
+
+Un sito di produzione nasce con i backup attivi: uno al giorno, conservati 30 giorni. Il pannello
+controlla ogni 5 minuti quali siti sono in scadenza e avvia il loro backup. Non serve fare altro.
+
+- Partono solo per i siti attivi, e solo con repository e password impostati.
+- Le copie di staging non hanno backup pianificati.
+- Un backup pianificato che fallisce viene ritentato al controllo successivo.
+- Il pannello non ha ancora un'impostazione per cambiare la frequenza o la durata.
+
+## Fai un backup adesso {#back-up-now}
+
+1. Apri il sito e scegli la scheda **Backup**.
+2. Premi **Esegui backup ora**. Parte l'attività *Backup avviato*.
+3. Il nuovo snapshot compare in cima all'elenco. La colonna **Ripristino di prova** passa da
+   *in attesa* a *riuscito* (o *fallito*) quando la prova finisce.
+
+In cima alla scheda trovi **Ultimo backup**, **Ultimo ripristino di prova** e **Tempo di
+ripristino stimato**, cioè quanto è durata la prova dell'ultimo backup.
+
+```bash
+cgctl --wait backup run <site-id>
+```
+
+## Cosa c'è in un backup {#contents}
+
+- Il database del sito, se il pannello lo gestisce su questo server. Il dump passa direttamente
+  a restic e non viene mai scritto su disco.
+- Tutta la cartella del sito, `/srv/sites/<dominio>`: rilasci, `shared/` (configurazione e file
+  caricati), chiavi SFTP e la cartella `logs/` del sito.
+- Resta fuori solo `tmp/`, dove PHP tiene file temporanei e sessioni.
+
+Se anche un solo file non si legge, il backup fallisce e non viene registrato: un backup
+incompleto non conta.
+
+## Quanto restano i backup {#retention}
+
+Una volta al giorno il pannello toglie dal repository gli snapshot del sito più vecchi di 30
+giorni. Non toglie mai il backup più recente che ha superato il ripristino di prova, né uno la cui
+prova non è ancora stata fatta. La regola tocca solo gli snapshot di quel sito e di questo server.
+
+## Elimina un backup {#delete}
+
+Serve un account amministratore.
+
+1. Nella scheda **Backup**, premi il cestino sulla riga dello snapshot.
+2. Conferma. Lo snapshot viene tolto dal repository insieme al backup del suo database.
+
+Il cestino è disattivato per il backup più recente che ha superato la prova e per uno la cui prova
+non è ancora stata fatta. Lo spazio nel repository si libera con la pulizia giornaliera.
+
+## Prossimo passo {#next}
+
+[Ripristina un backup](/data/restore-a-backup).

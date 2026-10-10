@@ -1,0 +1,94 @@
+---
+title: Your first site
+description: Create a WordPress site, check that the page cache serves it, and take its first backup, verified by a restore test.
+type: tutorial
+prerequisites:
+  - CloudGround installed and your administrator account
+  - A domain whose DNS A record points at the server's address
+version: unreleased
+last_verified: unverified
+sidebar_position: 2
+heading: Your first
+heading_accent: site.
+meta:
+  level: Basic
+---
+
+In this tutorial you put a WordPress site online on `<domain>`, watch the page cache at work and
+take the first backup. `<domain>` is the domain you pointed at the server, for example
+`blog.example.com`.
+
+## Set the certificate email {#set-the-certificate-email}
+
+With an email set, the panel requests the site's certificate as soon as it creates the site.
+
+1. Open **Settings**.
+2. In the **Certificates** card, type an address in **Let's Encrypt email**.
+3. Press **Save**.
+
+## Create the site {#create-the-site}
+
+1. Open **Sites** and press **New site**. The **New site** dialog opens.
+2. In **Domain** type `<domain>`.
+3. In **Type** keep **WordPress**.
+4. In **Performance profile** keep **Recommended (Balanced)**.
+5. Fill in **Site title**, **Admin email** and **Admin username**.
+6. In **Admin password** choose a password of at least 12 characters. You will sign in to WordPress
+   with it.
+7. Press **Create site**.
+
+The site appears in the list with the status **provisioning**. The panel creates the system user
+and the database, installs WordPress, writes the nginx and PHP configuration and requests the
+certificate. When it is done the status becomes **active**.
+
+## Open the site {#open-the-site}
+
+In the site list, press the site's name: its page opens. Press **Visit ↗**. The browser shows the
+WordPress home page, over HTTPS.
+
+To reach the dashboard, go back to the site's page and press **Log in to WordPress**: the panel
+takes you to wp-admin without asking for the password.
+
+## Watch the cache at work {#watch-the-cache}
+
+From your computer, request the home page twice and look at the `X-CloudGround-Cache` header:
+
+```bash
+curl -sI https://<domain>/ | grep -i x-cloudground-cache
+curl -sI https://<domain>/ | grep -i x-cloudground-cache
+```
+
+The first answer says `MISS`: PHP generated the page and it went into the cache. The second says
+`HIT`: nginx served it from disk, without reaching PHP.
+
+## Connect the backup repository {#connect-the-repository}
+
+Backups go to a restic repository. For this tutorial you use a folder on the server itself.
+
+1. Open **Settings**, card **Off-site backups (restic)**.
+2. In **Repository** type `/var/backups/cloudground`.
+3. In **Repository password** choose a long password and keep it somewhere else: losing it means
+   losing the backups.
+4. Press **Save**, then **Test connection**. The panel answers **Repository reachable: 0 snapshots**.
+
+:::warning[For learning only]
+
+A repository on the same server does not survive losing the server. For real sites,
+[connect an off-site repository](/data/connect-a-backup-repository).
+
+:::
+
+## Take the first backup {#take-the-first-backup}
+
+1. Open the site's page and go to the **Backups** tab.
+2. Press **Back up now**.
+
+The backup appears in the list with **Restore test** at **pending**. Right after the backup, the
+panel restores it to one side and checks that the files and the database really come back. When the
+restore test finishes, the status becomes **passed** and **Estimated restore time** shows how long
+restoring it would take.
+
+## Next step {#next}
+
+You have a cached site with a verified backup. To understand what happens on every request, read
+[the path of a request](/explanation/request-path).

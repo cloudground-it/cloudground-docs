@@ -1,0 +1,72 @@
+---
+title: Cambia le impostazioni di un sito
+description: Cambia profilo, cache, PHP, HSTS e object cache dalle schede del sito, e gli altri campi con una richiesta PATCH all'API.
+type: how-to
+prerequisites:
+  - Un account amministratore oppure operatore assegnato al sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 2
+---
+
+Ogni impostazione di un sito passa dalla stessa richiesta, `PATCH /api/sites/<id>`: le schede del
+pannello la usano, e puoi usarla anche tu. Ogni campo con il suo intervallo è nel
+[riferimento delle impostazioni](/reference/site-settings).
+
+## Dalle schede del sito {#from-the-site-tabs}
+
+Apri **Siti**, scegli il sito, poi la scheda:
+
+| Scheda | Cosa cambi | Pulsante |
+| --- | --- | --- |
+| **Cache** | **Profilo prestazioni**, **Cache di pagina**, **Durata (TTL)** in secondi (0 = quella del profilo) | **Applica** |
+| **PHP** (sotto **Altro**) | **Versione PHP**, **Limite di memoria**, **Dimensione massima upload**, **Tempo massimo di esecuzione** | **Applica** |
+| **SSL** | l'interruttore **HSTS** | — |
+| **WordPress** | l'interruttore **Object cache** | — |
+
+Ogni modifica avvia l'attività **Impostazioni sito**. Il server riscrive la configurazione del sito e
+la ricarica; se non ci riesce, il pannello rimette i valori di prima e l'attività mostra l'errore.
+
+:::warning[HSTS]
+
+Con HSTS attivo, per un anno i browser rifiutano qualsiasi connessione non HTTPS al dominio, anche se il
+certificato smette di funzionare. Il pannello lo attiva solo se il sito ha un certificato valido per
+almeno altri 14 giorni.
+
+:::
+
+## Con l'API {#with-the-api}
+
+Alcuni campi non hanno una scheda: `aliases`, `php_workers`, `public_root` e `proxy_upstream`. Per
+questi, e per qualsiasi altro campo, manda una richiesta `PATCH` con un token API. Sul server, da root:
+
+```bash
+curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
+  -X PATCH \
+  -H "Authorization: Bearer $CLOUDGROUND_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"php_workers": 8, "memory_limit_mb": 512}'
+```
+
+- `<id>` è il numero del sito: è nell'indirizzo della sua pagina nel pannello (`/sites/<id>`) e
+  nell'output di `cgctl sites list`.
+- `CLOUDGROUND_TOKEN` è un token API: vedi [Token API e cgctl](/access/api-tokens-and-cgctl).
+- Manda solo i campi che vuoi cambiare. Una richiesta senza campi è rifiutata.
+
+La risposta è `202` con il sito dopo la modifica e l'attività avviata. Se c'è qualcosa da sapere, per
+esempio che il certificato non copre più tutti gli alias, la risposta ha anche `warnings`.
+
+{/* TODO(verify): confermare sul server che il socket dell'API accetta un token Bearer da root con questa forma esatta. */}
+
+## Se la richiesta è rifiutata {#if-it-is-refused}
+
+- **400** con `fields`: un valore è fuori dall'intervallo. `fields` nomina ogni campo sbagliato con il
+  suo messaggio, e niente è cambiato.
+- **400** sul budget di PHP: worker × limite di memoria supera la memoria del server. Riduci uno dei
+  due. Un amministratore può forzare con `"allow_over_budget": true`.
+- **403**: `aliases` e `proxy_upstream` li cambia solo un amministratore.
+- **409** su `hsts`: il sito non ha un certificato, o scade entro 14 giorni. Emettilo prima.
+
+## Prossimo passo {#next}
+
+[Aggiungi un alias e il suo certificato](./domains-and-certificates.mdx).

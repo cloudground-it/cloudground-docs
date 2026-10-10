@@ -1,0 +1,86 @@
+---
+title: Staging e Safe Push
+description: Crea una copia privata di un sito, prova lì le modifiche e pubblicale in produzione con Safe Push, che le blocca se rendono il sito più lento.
+type: how-to
+prerequisites:
+  - Un sito di produzione attivo
+  - Un account amministratore oppure operatore assegnato al sito
+  - Per pubblicare tabelle del database, un repository di backup configurato
+version: unreleased
+last_verified: unverified
+sidebar_position: 2
+---
+
+Lo staging è una copia della produzione su `staging.<dominio>`, protetta da password e non
+indicizzata. Safe Push pubblica il codice dello staging solo dopo che Performance Guard ha
+misurato le due versioni. Il perché di ogni passaggio è in
+[Staging, Safe Push e Performance Guard](/explanation/staging-and-safe-push).
+
+## Crea lo staging {#create-staging}
+
+1. Apri il sito di produzione e scegli la scheda **Staging**.
+2. Premi **Crea staging**. Parte l'attività *Clonazione dello staging avviata*.
+3. Quando l'attività finisce, la scheda mostra il dominio dello staging, l'**Utente** e la
+   **Password** che lo proteggono. Premi **Apri sito** per aprirlo, o **Apri lo staging** per
+   gestirlo come un sito.
+
+Un sito ha al massimo una copia di staging, e uno staging non si può a sua volta clonare. Un sito
+WordPress con il database esterno non si può clonare.
+
+{/* TODO(verify): se staging.<dominio> riceve un certificato e quale record DNS serve per raggiungerlo. */}
+
+## Confronta staging e produzione {#compare}
+
+La sezione **Differenze tra staging e produzione** elenca i file *aggiunti*, *modificati* e
+*rimossi* sullo staging. Premi **Aggiorna** dopo una modifica. Il confronto salta
+`wp-content/uploads` e le cartelle `.git`, e si ferma a 1000 file per elenco: oltre, la pagina
+dice *Elenco troncato*.
+
+## Pubblica tutto il codice {#publish-everything}
+
+1. Nel riquadro **Safe Push**, scrivi in **Pagine da misurare** i percorsi da confrontare,
+   separati da spazi o virgole (al massimo 10, ognuno inizia con `/`). Il valore iniziale è `/`.
+2. Premi **Pubblica tutto** e conferma.
+3. Segui l'attività. Performance Guard misura ogni pagina per circa due minuti, poi il rilascio
+   viene costruito, attivato e verificato.
+4. Apri la scheda **Rilasci**: il nuovo rilascio è *attivo*, oppure *bloccato* con il motivo.
+   Premi **Guard: …** sulla riga per vedere il rapporto.
+
+## Pubblica solo alcuni file {#publish-selection}
+
+1. Nell'elenco delle differenze, seleziona i file da pubblicare. Per aggiungere un percorso che
+   non è nell'elenco, scrivilo in **Aggiungi un file o una cartella** e premi **Aggiungi**.
+2. Premi **Pubblica la selezione** e conferma.
+
+Il rilascio parte dal codice della produzione, con i percorsi scelti presi dallo staging.
+`wp-config.php` e i percorsi sotto `wp-content/uploads` non si possono scegliere: la
+configurazione e i file caricati restano sempre quelli della produzione.
+
+## Pubblica tabelle del database {#publish-tables}
+
+1. Nel riquadro **Tabelle del database**, seleziona le tabelle (da 1 a 50).
+2. Premi **Pubblica le tabelle**, scrivi il dominio di produzione per confermare e conferma.
+
+Prima di toccare la produzione, il pannello fa uno snapshot di sicurezza e lo verifica con un
+ripristino di prova. Se lo snapshot non supera la prova, la produzione resta com'era. Le tabelle
+segnate *dati live protetti* non si possono pubblicare: utenti, e sui negozi ordini, clienti e
+sessioni.
+
+## Ricrea lo staging {#recreate}
+
+Premi **Ricrea lo staging** e scrivi il dominio dello staging per confermare. Lo staging attuale,
+file e database, viene eliminato e sostituito da una nuova copia della produzione.
+
+## Da riga di comando {#cli}
+
+```bash
+cgctl --wait staging create <site-id>
+cgctl --wait safe-push <site-id> / /shop/
+```
+
+`<site-id>` è il numero del sito di produzione; i percorsi dopo l'id sono le pagine da misurare.
+Senza percorsi, Performance Guard misura `/` e `/?cloudground-probe=uncached`.
+
+## Prossimo passo {#next}
+
+Se un rilascio pubblicato non va, [torna a un rilascio precedente](/data/roll-back-a-release).

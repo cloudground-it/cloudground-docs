@@ -1,0 +1,72 @@
+---
+title: Change a site's settings
+description: Change the profile, cache, PHP, HSTS and object cache from the site's tabs, and the other fields with a PATCH request to the API.
+type: how-to
+prerequisites:
+  - An administrator account, or an operator assigned to the site
+version: unreleased
+last_verified: unverified
+sidebar_position: 2
+---
+
+Every setting of a site goes through the same request, `PATCH /api/sites/<id>`: the panel's tabs use
+it, and so can you. Every field with its range is in the [site settings reference](/reference/site-settings).
+
+## From the site's tabs {#from-the-site-tabs}
+
+Open **Sites**, pick the site, then the tab:
+
+| Tab | What you change | Button |
+| --- | --- | --- |
+| **Cache** | **Performance profile**, **Page cache**, **Lifetime (TTL)** in seconds (0 = the profile's) | **Apply** |
+| **PHP** (under **More**) | **PHP version**, **Memory limit**, **Max upload size**, **Max execution time** | **Apply** |
+| **SSL** | the **HSTS** switch | — |
+| **WordPress** | the **Object cache** switch | — |
+
+Each change starts the **Site settings** task. The server rewrites the site's configuration and
+reloads it; if that fails, the panel puts the previous values back and the task shows the error.
+
+:::warning[HSTS]
+
+With HSTS on, for a year browsers refuse any non-HTTPS connection to the domain, even if the
+certificate stops working. The panel turns it on only when the site has a certificate valid for at
+least another 14 days.
+
+:::
+
+## With the API {#with-the-api}
+
+Some fields have no tab: `aliases`, `php_workers`, `public_root` and `proxy_upstream`. For those, and
+for any other field, send a `PATCH` request with an API token. On the server, as root:
+
+```bash
+curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
+  -X PATCH \
+  -H "Authorization: Bearer $CLOUDGROUND_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"php_workers": 8, "memory_limit_mb": 512}'
+```
+
+- `<id>` is the site's number: it is in the address of its page in the panel (`/sites/<id>`) and in
+  the output of `cgctl sites list`.
+- `CLOUDGROUND_TOKEN` is an API token: see [API tokens and cgctl](/access/api-tokens-and-cgctl).
+- Send only the fields you want to change. A request naming no field is refused.
+
+The answer is `202` with the site after the change and the task it started. When there is something
+to know, for example that the certificate no longer covers every alias, the answer also carries
+`warnings`.
+
+{/* TODO(verify): confirm on the server that the API socket takes a Bearer token from root in exactly this form. */}
+
+## If the request is refused {#if-it-is-refused}
+
+- **400** with `fields`: a value is out of range. `fields` names each wrong field with its message,
+  and nothing changed.
+- **400** on the PHP budget: workers × memory limit exceeds the server's memory. Lower one of the
+  two. An administrator can force it with `"allow_over_budget": true`.
+- **403**: only an administrator changes `aliases` and `proxy_upstream`.
+- **409** on `hsts`: the site has no certificate, or it expires within 14 days. Issue it first.
+
+## Next step {#next}
+
+[Add an alias and its certificate](./domains-and-certificates.mdx).

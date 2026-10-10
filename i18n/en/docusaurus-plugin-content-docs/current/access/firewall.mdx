@@ -1,0 +1,63 @@
+---
+title: Firewall
+description: Open, block or limit to one address a TCP port of the server from the Firewall page.
+type: how-to
+prerequisites:
+  - An administrator account
+  - The server's firewall (ufw) active
+version: unreleased
+last_verified: unverified
+sidebar_position: 6
+---
+
+The **Firewall** page, in the **Server** group, shows whether the firewall is active and its rules, as
+the system reports them. Administrators add and remove rules; read-only accounts only see them.
+
+When the firewall is active during installation, the installer opens ports 22, 80, 443 and 8443 over
+TCP and 443 over UDP. The panel does not turn the firewall on by itself: when the page says
+**inactive**, rules have no effect.
+{/* TODO(verify): on the test box, check whether a fresh install leaves ufw active or inactive. */}
+
+## Open a port {#allow-a-port}
+
+1. Open **Firewall**.
+2. In **Add or remove a rule**, choose the **Action** **Allow port**.
+3. Type the **Port**, 1 to 65535.
+4. To open it to one address only, type the IP or the network (for example `203.0.113.7` or
+   `203.0.113.0/24`) into **Only from this IP**.
+5. Press **Apply**.
+
+From the panel, rules are always TCP.
+
+## Block a port {#deny-a-port}
+
+As above, with the **Action** **Deny port**. With **Only from this IP** you block the port for that
+address only.
+
+## Remove a rule {#delete-a-rule}
+
+Choose the **Action** **Delete rule**, with the same **Port** and the same **Only from this IP** as
+the rule to remove, and press **Apply**. The panel removes the allow and the deny rule of exactly
+that shape, and leaves the port's other rules alone.
+
+## The ports that stay open {#essential-ports}
+
+The panel refuses any rule that would lock you or the sites out:
+
+- the ports SSH listens on (usually 22);
+- 80 and 443, the sites';
+- 8443, the panel's.
+
+For these ports you cannot remove the rule or block them for everyone. You can block them for a
+single address, or add allow rules.
+
+## From the API {#from-the-api}
+
+`GET /api/firewall` reads the status. `POST /api/firewall/rule` with
+`{"action": "allow", "port": 3306, "proto": "tcp", "from": "203.0.113.7"}` applies a rule; `action`
+is `allow`, `deny` or `delete`, `proto` is `tcp` or `udp`. Every rule lands in the **Audit log**.
+
+## Next step {#next}
+
+Keep a way back in should you lose the password:
+[recover administrator access](./recover-admin-access.mdx).

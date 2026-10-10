@@ -1,0 +1,64 @@
+---
+title: Recover administrator access
+description: Get back into the panel from the server when you have lost the password or the phone with two-step verification.
+type: how-to
+prerequisites:
+  - Root access to the server over SSH
+version: unreleased
+last_verified: unverified
+sidebar_position: 7
+---
+
+When nobody can sign in to the panel any more, root access to the server is the credential. The
+`panel-api recover-admin` command opens the panel's database directly: it works with the panel
+running, stopped, or with the installation never finished.
+
+## List the accounts {#list-the-accounts}
+
+Connect to the server as root and run:
+
+```bash prompt
+panel-api recover-admin
+```
+
+The command lists every account with its role and asks you which one to reset. It never picks one
+by itself.
+
+## Reset the password {#reset-the-password}
+
+```bash prompt
+panel-api recover-admin --email <email>
+```
+
+The command generates a new 24-character password and prints it **once**, with the account. You do
+not type it: that way it never reaches the shell history. Sign in with that password and change it
+from **Security**.
+
+The reset closes all the account's sessions and revokes its API tokens. If the account had two-step
+verification, it stays on and the command reminds you.
+
+## You lost the phone too {#lost-device}
+
+```bash prompt
+panel-api recover-admin --email <email> --disable-2fa
+```
+
+It also turns two-step verification off and says whether it was on. Once signed in, turn it on again
+from **Security** with the new phone.
+
+## Special cases {#special-cases}
+
+- **No account exists yet.** With `--email` the command creates that administrator; without it, it
+  stops and asks for `--email`.
+- **The account is disabled.** When no enabled administrator is left, the command enables the
+  administrator you reset. Any other disabled account stays disabled, and the command says so.
+- **The database is not in the default place.** Name the file with `--state <path>`; the default is
+  `/var/lib/cloudground/state.db`.
+
+The command works only as root, and every step lands in the **Audit log** with the actor
+`root (console)`.
+
+## Next step {#next}
+
+Now that you can get back in, protect the account with
+[two-step verification](./two-step-verification.mdx).
