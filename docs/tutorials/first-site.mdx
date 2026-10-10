@@ -5,8 +5,8 @@ type: tutorial
 prerequisites:
   - CloudGround installato e il tuo account amministratore
   - Un dominio il cui record DNS A punta all'indirizzo del server
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 2
 heading: Il primo
 heading_accent: sito.
@@ -32,14 +32,24 @@ Con un'email impostata, il pannello chiede il certificato del sito appena lo cre
 2. In **Dominio** scrivi `<dominio>`.
 3. In **Tipo** lascia **WordPress**.
 4. In **Profilo prestazioni** lascia **Consigliato (Bilanciato)**.
-5. Compila **Titolo del sito**, **Email amministratore** e **Utente amministratore**.
+5. Compila **Titolo del sito** e **Email amministratore**, e lascia **Utente amministratore** su
+   `admin`.
 6. In **Password amministratore** scegli una password di almeno 12 caratteri. È quella con cui
    entrerai in WordPress.
-7. Premi **Crea sito**.
+7. Nella parte **Database** lascia il nome, l'utente e la password che propone il pannello.
+8. Premi **Crea sito**.
 
-Il sito compare nell'elenco con lo stato **in creazione**. Il pannello crea l'utente di sistema,
-il database, installa WordPress, scrive la configurazione di nginx e PHP e chiede il certificato.
-Quando ha finito lo stato diventa **attivo**.
+La finestra diventa il riepilogo del sito. In alto scorrono i passi della creazione: il pannello crea
+l'utente di sistema e il database, installa WordPress, scrive la configurazione di nginx e PHP e
+chiede il certificato. Sotto ci sono gli indirizzi del sito e del pannello, l'utente di WordPress e le
+credenziali del database.
+
+9. Premi **Scarica come .txt** e conserva il file in un posto sicuro: la password del database si vede
+   solo qui.
+10. Premi **Chiudi**.
+
+Il sito compare nell'elenco con lo stato **in creazione**. Quando ha finito lo stato diventa
+**attivo**.
 
 ## Apri il sito {#open-the-site}
 
@@ -66,10 +76,11 @@ La prima risposta dice `MISS`: la pagina è stata generata da PHP e messa in cac
 I backup vanno in un repository restic. Per questo tutorial usi una cartella sul server stesso.
 
 1. Apri **Impostazioni**, riquadro **Backup off-site (restic)**.
-2. In **Repository** scrivi `/var/backups/cloudground`.
-3. In **Password del repository** scegli una password lunga e conservala altrove: se la perdi,
-   perdi i backup.
-4. Premi **Salva**, poi **Prova la connessione**. Il pannello risponde **Repository raggiungibile: 0
+2. In **Destinazione dei backup** scegli **Questo server (una cartella locale)**.
+3. In **Cartella** scrivi `/var/backups/cloudground`.
+4. Accanto a **Password del repository** premi **Genera**, poi **Scarica**, e conserva il file
+   altrove: se perdi la password, perdi i backup.
+5. Premi **Salva**, poi **Prova la connessione**. Il pannello risponde **Repository raggiungibile: 0
    snapshot**.
 
 :::warning[Solo per imparare]

@@ -4,8 +4,8 @@ description: Every cgctl command, its options, the configuration variables and t
 type: reference
 prerequisites:
   - An API token, or an account's email and password
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 1
 ---
 
@@ -36,7 +36,7 @@ Options may stand anywhere on the line. Arguments that are IDs must be positive 
 | Command | Request | What it does |
 | --- | --- | --- |
 | `cgctl sites list` | `GET /api/sites` | Lists the sites. |
-| `cgctl sites create <domain> <type> [flags-json]` | `POST /api/sites` | Creates a site. `<type>` is `wordpress`, `woocommerce`, `static`, `php`, `laravel` or `proxy`. `flags-json` is a JSON object with the other creation fields; `domain` and `type` come from the arguments. |
+| `cgctl sites create <domain> <type> [flags-json] [database options] [--json]` | `POST /api/sites` | Creates a site and prints its summary (see [below](#sites-create)). `<type>` is `wordpress`, `woocommerce`, `static`, `php`, `laravel` or `proxy`. `flags-json` is a JSON object with the other creation fields; `domain` and `type` come from the arguments. |
 | `cgctl sites delete <site-id>` | `DELETE /api/sites/<id>` | Deletes a site. |
 | `cgctl cert issue <site-id>` | `POST /api/sites/<id>/certificate` | Requests the site's certificate. |
 | `cgctl purge <site-id> [url ...]` | `POST /api/sites/<id>/purge` | Purges the page cache: only the given URLs, or the whole site without URLs. |
@@ -47,6 +47,33 @@ For example, a WordPress site:
 ```bash
 cgctl --wait sites create example.com wordpress \
   '{"admin_email": "you@example.com", "admin_user": "admin", "admin_password": "<at least 12 characters>"}'
+```
+
+#### Create a site {#sites-create}
+
+| Option | Effect |
+| --- | --- |
+| `--with-database` | Also creates a database for a `php` or `static` site (`create_database: true`). WordPress, WooCommerce and Laravel always have one; a `proxy` never. |
+| `--db-name <name>` | The primary database's name. Without it, `site_<id>`. |
+| `--db-user <name>` | Its user's name. Without it, `site_<id>`. |
+| `--db-password-stdin` | Reads the database password from one line of standard input (at most 4 KiB; empty is an error). |
+| `--db-password-file <file>` | Reads the password from a file, without its trailing newline. |
+| `--db-password <password>` | The password on the command line. It works, but prints on standard error `cgctl: warning: --db-password puts the password where ps and the shell history show it; use --db-password-stdin or --db-password-file`. |
+| `--json` | Prints the API's JSON answer instead of the summary. |
+
+Without a password, the panel generates one. The options also take the form `--option=value`, and win
+over the same fields in `flags-json`. An unknown option, an option without its value, two of the
+password options together, an unreadable file or more than three positional arguments is a usage
+error (exit 2). The names and the password follow the [database rules](/reference/database-names-and-passwords).
+
+The summary, in plain text: the site and its state (`Being created: task <id>`, or with `--wait`
+`Created.`), then the URL and the panel link, WordPress's admin URL and user, the database's host,
+port, socket, name, user and password, and SFTP (off on a new site). It ends with a reminder that the
+password is shown only now: the API's answer is the only place it appears.
+
+```bash
+cgctl --wait sites create shop.example.com laravel \
+  --db-name shop --db-user shop_app --db-password-file /root/shop-db.pass
 ```
 
 ### Staging and releases {#staging-and-releases}
@@ -65,7 +92,10 @@ cgctl --wait sites create example.com wordpress \
 | `cgctl backup run <site-id>` | `POST /api/sites/<id>/backups` | Takes a backup now. |
 | `cgctl backup verify <backup-id>` | `POST /api/backups/<id>/verify` | Runs a restore test of the backup. |
 | `cgctl backup restore <backup-id> <domain> [full\|files\|database]` | `POST /api/backups/<id>/restore` | Restores the backup. `<domain>` is the confirmation and must be the site's domain; the default mode is `full`. |
-| `cgctl database import <site-id> <domain> <file.sql>` | `POST /api/sites/<id>/database/import` | Imports a SQL file. The path is relative to the site's folder; `<domain>` is the confirmation. |
+| `cgctl database list <site-id>` | `GET /api/sites/<id>/databases` | The site's databases, with sizes and tables, and the database users with their privileges. |
+| `cgctl database create <site-id> <name>` | `POST /api/sites/<id>/databases` | Creates a database of the site. |
+| `cgctl database user-create <site-id> <name> [database:all\|read ...]` | `POST /api/sites/<id>/database-users` | Creates a database user with the given privileges; the generated password appears once. |
+| `cgctl database import <site-id> <domain> <file.sql> [database]` | `POST /api/sites/<id>/database/import` | Imports a SQL file, into the primary database or the one named. The path is relative to the site's folder; `<domain>` is the confirmation. A rollback point is saved first. |
 | `cgctl cron run <cron-id>` | `POST /api/cron/<id>/run` | Runs a scheduled task now. |
 
 ### Server {#server}
@@ -91,16 +121,6 @@ and, with 2FA, `CLOUDGROUND_TOTP`): the API does not take a token to manage toke
 | `cgctl tokens create <name> [days]` | `POST /api/tokens` | Creates a token; `days` from 0 (never) to 365. The token is shown once. |
 | `cgctl tokens revoke <token-id>` | `DELETE /api/tokens/<id>` | Revokes a token. |
 
-:::warning[They do not work on the local socket]
-
-With the default `CLOUDGROUND_URL` (`unix:///run/cloudground/api.sock`) a sign-in with email and
-password, and so these three commands, answers
-`HTTP 401: authentication required`: the session cookie is `Secure` and cgctl does not send it back
-over `unix://`. On the server run them with `CLOUDGROUND_URL=https://127.0.0.1:8443`, or create
-tokens in the panel, under **Security**.
-
-:::
-
 ### On the server {#on-the-server}
 
 These commands run as root on the server and do not talk to the panel.
@@ -116,8 +136,7 @@ These commands run as root on the server and do not talk to the panel.
 1. With a token (`CLOUDGROUND_TOKEN` or `CLOUDGROUND_TOKEN_FILE`), every request carries
    `Authorization: Bearer <token>`.
 2. Without a token, `CLOUDGROUND_EMAIL` and `CLOUDGROUND_PASSWORD` (and `CLOUDGROUND_TOTP`) sign in
-   once for the command. Only over `https://`: on the `unix://` socket every command answers
-   `HTTP 401` (see [API tokens](#tokens)).
+   once for the command, on the `unix://` socket too.
 3. With neither, cgctl exits with 1 and explains how to get a token.
 
 ## Configuration {#configuration}
@@ -144,7 +163,8 @@ With `https://` cgctl verifies the certificate, except to a local address or wit
 
 ## Output and errors {#output}
 
-The API's answer goes to standard output, as indented JSON. Errors go to standard error as
+The API's answer goes to standard output, as indented JSON; `sites create` prints its
+[summary](#sites-create) instead. Errors go to standard error as
 `cgctl: HTTP <status>: <the API's error>`.
 
 ## Waiting for a task {#wait}

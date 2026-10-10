@@ -5,8 +5,8 @@ type: tutorial
 prerequisites:
   - CloudGround installed and your administrator account
   - A domain whose DNS A record points at the server's address
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 2
 heading: Your first
 heading_accent: site.
@@ -32,14 +32,23 @@ With an email set, the panel requests the site's certificate as soon as it creat
 2. In **Domain** type `<domain>`.
 3. In **Type** keep **WordPress**.
 4. In **Performance profile** keep **Recommended (Balanced)**.
-5. Fill in **Site title**, **Admin email** and **Admin username**.
+5. Fill in **Site title** and **Admin email**, and leave **Admin username** at `admin`.
 6. In **Admin password** choose a password of at least 12 characters. You will sign in to WordPress
    with it.
-7. Press **Create site**.
+7. In the **Database** part, keep the name, the user and the password the panel proposes.
+8. Press **Create site**.
 
-The site appears in the list with the status **provisioning**. The panel creates the system user
-and the database, installs WordPress, writes the nginx and PHP configuration and requests the
-certificate. When it is done the status becomes **active**.
+The dialog becomes the site's summary. At the top, the creation's steps run by: the panel creates the
+system user and the database, installs WordPress, writes the nginx and PHP configuration and requests
+the certificate. Below are the site's and the panel's addresses, the WordPress user and the database's
+credentials.
+
+9. Press **Download as .txt** and keep the file somewhere safe: the database password is shown only
+   here.
+10. Press **Close**.
+
+The site appears in the list with the status **provisioning**. When it is done the status becomes
+**active**.
 
 ## Open the site {#open-the-site}
 
@@ -66,10 +75,11 @@ The first answer says `MISS`: PHP generated the page and it went into the cache.
 Backups go to a restic repository. For this tutorial you use a folder on the server itself.
 
 1. Open **Settings**, card **Off-site backups (restic)**.
-2. In **Repository** type `/var/backups/cloudground`.
-3. In **Repository password** choose a long password and keep it somewhere else: losing it means
-   losing the backups.
-4. Press **Save**, then **Test connection**. The panel answers **Repository reachable: 0 snapshots**.
+2. In **Backup destination** pick **This server (a local folder)**.
+3. In **Folder** type `/var/backups/cloudground`.
+4. Next to **Repository password** press **Generate**, then **Download**, and keep the file somewhere
+   else: losing the password means losing the backups.
+5. Press **Save**, then **Test connection**. The panel answers **Repository reachable: 0 snapshots**.
 
 :::warning[For learning only]
 

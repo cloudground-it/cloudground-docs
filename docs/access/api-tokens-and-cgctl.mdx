@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - Un account amministratore con la sua password
   - Accesso root al server, o un computer che raggiunge il pannello in HTTPS
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 5
 ---
 
@@ -33,7 +33,6 @@ più.** Ne conserva solo un’impronta.
 Con cgctl, sul server come root:
 
 ```bash prompt
-export CLOUDGROUND_URL='https://127.0.0.1:8443'
 export CLOUDGROUND_EMAIL='<email>'
 read -rs CLOUDGROUND_PASSWORD && export CLOUDGROUND_PASSWORD
 cgctl tokens create "<nome>" 90
@@ -42,10 +41,6 @@ cgctl tokens create "<nome>" 90
 - `90` è la durata in giorni, da 1 a 365. Senza durata, o con `0`, il token non scade.
 - Se il tuo account ha la verifica in due passaggi, aggiungi `CLOUDGROUND_TOTP='<codice>'` con un
   codice dell'app.
-- `CLOUDGROUND_URL` serve perché sul socket locale l'accesso con la password non regge: il cookie di
-  sessione è `Secure` e cgctl non lo rimanda su `unix://`, quindi il comando risponde `HTTP 401:
-  authentication required`. Sull'indirizzo `https://127.0.0.1:8443` cgctl accetta il certificato
-  autofirmato perché è locale.
 
 La risposta contiene il campo `token`, con il valore `cgt_…`.
 

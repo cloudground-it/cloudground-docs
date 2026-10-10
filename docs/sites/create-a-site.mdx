@@ -1,17 +1,18 @@
 ---
 title: Crea un sito
-description: Crea un sito WordPress, WooCommerce, PHP, Laravel, statico o reverse proxy dal pannello o con cgctl.
+description: Crea un sito WordPress, WooCommerce, PHP, Laravel, statico o reverse proxy, con il suo database, dal pannello o con cgctl, e conserva il riepilogo che ricevi una sola volta.
 type: how-to
 prerequisites:
   - Un account amministratore
   - Un dominio il cui record DNS A o AAAA punta al server, se vuoi il certificato subito
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 1
 ---
 
-Un sito nuovo nasce con il suo utente di sistema, la sua cartella, il suo PHP e il suo vhost. Solo un
-amministratore può crearlo.
+Un sito nuovo nasce con il suo utente di sistema, la sua cartella, il suo vhost e, tranne i siti
+statici e reverse proxy, il suo PHP. I siti WordPress, WooCommerce e Laravel ricevono anche il loro
+database. Solo un amministratore può creare un sito.
 
 ## Dal pannello {#from-the-panel}
 
@@ -24,12 +25,64 @@ amministratore può crearlo.
 5. In **Profilo prestazioni** lascia **Consigliato** o scegli **Bilanciato**, **E-commerce** o
    **Massimo**.
 6. Compila i campi del tipo che hai scelto:
-   - **WordPress** e **WooCommerce**: **Titolo del sito** (facoltativo; vuoto, vale il dominio),
-     **Email amministratore**, **Utente amministratore** e **Password amministratore**, di almeno
-     12 caratteri. Sono le credenziali per entrare in WordPress.
+   - **WordPress** e **WooCommerce**, in **Amministratore di WordPress**: **Titolo del sito**
+     (facoltativo; vuoto, vale il dominio), **Email amministratore**, **Utente amministratore** e
+     **Password amministratore**, di almeno 12 caratteri (**Genera** ne crea una). Sono le
+     credenziali per entrare in WordPress.
    - **Reverse proxy**: **URL upstream**, per esempio `http://127.0.0.1:3000`. Deve essere un URL
      `http` o `https`, senza credenziali, query o frammento.
-7. Scegli **Crea sito**.
+7. Compila la parte **Database** (sotto).
+8. Controlla la riga in fondo, che dice cosa riceverà il sito, e scegli **Crea sito**.
+
+## Il database {#database}
+
+La parte **Database** dipende dal tipo:
+
+- **WordPress**, **WooCommerce** e **Laravel** hanno sempre un database: la loro configurazione lo
+  usa.
+- **PHP** e **Statico**: attiva **Crea anche un database** per avere un database MariaDB e un utente
+  con tutti i privilegi su di esso. Se resta spento, il sito parte senza; puoi aggiungerne uno dopo
+  dalla [scheda Database](/data/manage-databases).
+- **Reverse proxy**: nessun database.
+
+Quando il sito ne riceve uno, compila:
+
+1. **Nome del database** e **Utente del database**. Il pannello propone un nome dal dominio
+   (`blog.example.com` dà `blog_example`) e lo usa per entrambi, finché non li cambi.
+2. **Password del database**. Il pannello la riempie con una password generata; tienila, premi
+   **Genera** per averne un'altra, oppure scrivi la tua. **Mostra** la fa vedere.
+
+I nomi e la password seguono le [regole dei database](/reference/database-names-and-passwords): per
+esempio, un nome già usato su questo server, o una password con `'`, `"` o `\`, viene rifiutato sotto
+il suo campo.
+
+## Il riepilogo {#summary}
+
+Dopo **Crea sito**, la finestra diventa il riepilogo del sito. In alto compaiono i passi della
+creazione mentre girano: *fatto*, *in corso* o *non riuscito*. Sotto, tutto quello che serve per usare
+il sito:
+
+| Parte | Righe |
+| --- | --- |
+| **Sito** | **URL del sito**, **Nel pannello** |
+| **WordPress** | **URL di amministrazione**, **Utente amministratore** |
+| **Database** | **Host**, **Porta**, **Socket**, **Nome del database**, **Utente del database**, **Password del database** |
+| **SFTP** | spento, con l'utente di sistema del sito per attivarlo |
+
+:::warning[La password del database si vede solo qui]
+
+Il riepilogo è l'unico posto in cui il pannello mostra la password del database, scelta o generata.
+Prima di chiuderlo, premi **Scarica come .txt** o **Copia**. Se la perdi, impostane una nuova dalla
+[scheda Database](/data/manage-databases#reset-password).
+
+:::
+
+- **Scarica come .txt** salva tutto il riepilogo come `<dominio>-cloudground.txt`. Il file contiene
+  password: tienilo in un posto sicuro ed eliminalo dopo averle salvate altrove.
+- **Copia** copia lo stesso testo negli appunti.
+- **Chiudi** senza nessuno dei due chiede prima *Chiudere senza salvare?*; anche lasciare o ricaricare
+  la pagina chiede conferma.
+- **Apri il sito** va alla pagina del sito.
 
 Il sito compare nella lista con lo stato **in creazione**. Quando l'attività **Creazione sito** finisce,
 lo stato diventa **attivo**.
@@ -39,6 +92,11 @@ certificato. Se il DNS non punta ancora al server, il sito nasce lo stesso: l'at
 suoi messaggi (`Certificate pending (DNS may not point here yet)`) e il sito risponde con il
 certificato autofirmato di riserva del server (`CN=fallback.invalid`), che i browser rifiutano,
 finché non ne emetti uno dalla scheda **SSL**.
+
+## SFTP parte spento {#sftp}
+
+L'accesso SFTP di un sito nuovo è spento: nessuno può entrare in SFTP finché non lo attivi, con una
+sua password, dalla scheda **SFTP / SSH** del sito. Vedi [SFTP e chiavi SSH](/access/sftp-and-ssh-keys).
 
 ## Con cgctl {#with-cgctl}
 
@@ -52,7 +110,52 @@ cgctl --wait sites create example.com wordpress \
   `object_cache`, `aliases`, e `proxy_upstream` per un reverse proxy.
 - `--wait` aspetta la fine dell'attività ed esce con 0 solo se è riuscita.
 
-Per un reverse proxy:
+Le opzioni del database:
+
+| Opzione | Effetto |
+| --- | --- |
+| `--with-database` | Un database anche per un sito `php` o `static`. |
+| `--db-name <nome>` | Il nome del database. Senza, `site_<id>`. |
+| `--db-user <nome>` | Il nome dell'utente. Senza, `site_<id>`. |
+| `--db-password-stdin` | Legge la password da una riga dello standard input. |
+| `--db-password-file <file>` | Legge la password da un file. |
+| `--db-password <password>` | La password sulla riga di comando: cgctl avverte che `ps` e la cronologia della shell la mostrano. Preferisci le due sopra. |
+| `--json` | Stampa la risposta JSON dell'API invece del riepilogo. |
+
+Senza password il pannello ne genera una. Per esempio, un sito Laravel con la password in un file
+leggibile solo da root:
+
+```bash prompt
+cgctl --wait sites create shop.example.com laravel \
+  --db-name shop --db-user shop_app --db-password-file /root/shop-db.pass
+```
+
+cgctl stampa lo stesso riepilogo del pannello, una sola volta:
+
+```text
+shop.example.com (laravel, site 7)
+Created.
+
+Site
+  URL:         https://shop.example.com/
+  Panel:       /sites/7
+
+Database
+  Host:        127.0.0.1
+  Port:        3306
+  Socket:      /run/mysqld/mysqld.sock
+  Name:        shop
+  User:        shop_app
+  Password:    <password>
+
+SFTP
+  Off: turn it on from the site's SFTP tab (user cg-site-7).
+
+The database password is shown only now: keep it safe. A new one can be set from the site's Database tab.
+```
+
+Sul socket locale del server il link del pannello è solo il percorso; su `https://` è un indirizzo
+completo. Per un reverse proxy:
 
 ```bash
 cgctl --wait sites create app.example.com proxy '{"proxy_upstream":"http://127.0.0.1:3000"}'
@@ -62,6 +165,8 @@ cgctl --wait sites create app.example.com proxy '{"proxy_upstream":"http://127.0
 
 - **Il dominio è già usato** da un altro sito, come dominio o come alias: la richiesta è rifiutata
   prima di creare qualcosa.
+- **Un nome di database o di utente è già usato** su questo server, o non rispetta le regole: la
+  richiesta è rifiutata, indicando il campo, prima di creare qualcosa.
 - **La versione di PHP non è installata**: scegli una di quelle elencate in **PHP**.
 - **Un passo della creazione fallisce**: il server annulla i passi già fatti e il sito sparisce dalla
   lista. Il messaggio dell'attività dice quale passo è fallito.
