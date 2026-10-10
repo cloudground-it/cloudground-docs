@@ -43,7 +43,7 @@ scp -r dist installer root@<server-ip>:/root/cloudground/
 
 `<server-ip>` is the server's public address.
 
-{/* TODO(verify): once a public release exists, replace this step with the signed download (CLOUDGROUND_RELEASE_PUBKEY) and its URL. */}
+{/* TODO(verify): once a public release exists, replace this step with the signed download (CLOUDGROUND_RELEASE_PUBKEY) and its URL. On 2026-10-10 the installer's steps (a rerun with the same build), the First sign-in page's labels and the services were verified on the test server (a7d92ba); not a from-scratch install, the setup link or the first administrator's creation, because the server was already set up and could not be reinstalled from scratch. */}
 
 ## Run the installer {#run-the-installer}
 
@@ -54,22 +54,22 @@ ssh root@<server-ip>
 CLOUDGROUND_LOCAL_BUILD=/root/cloudground/dist bash /root/cloudground/installer/install.sh
 ```
 
-The installer shows ten steps, each with its duration:
+It checks the machine first, then shows nine steps, each with its duration (below without the times,
+which depend on the server):
 
 ```text
-  ✓   1/10  Checking the machine
-  ✓   2/10  Installing nginx, PHP, MariaDB, restic
-  ✓   3/10  Creating users, directories and secrets
-  ✓   4/10  Installing CloudGround binaries
-  ✓   5/10  Tuning kernel and nginx workers
-  ✓   6/10  Configuring nginx
-  ✓   7/10  Tuning MariaDB
-  ✓   8/10  Starting services
-  ✓   9/10  Opening the firewall
-  ✓  10/10  Log rotation and certificate renewal
+  ✓   1/9  Installing nginx, PHP, MariaDB, restic
+  ✓   2/9  Creating users, directories and secrets
+  ✓   3/9  Installing CloudGround binaries
+  ✓   4/9  Tuning kernel and nginx workers
+  ✓   5/9  Configuring nginx
+  ✓   6/9  Tuning MariaDB
+  ✓   7/9  Starting services
+  ✓   8/9  Opening the firewall
+  ✓   9/9  Log rotation and certificate renewal
 ```
 
-If the first step finds problems (system, architecture, memory, disk, ports in use), it lists them
+If the machine check finds problems (system, architecture, memory, disk, ports in use), it lists them
 all together and stops without touching anything. Fix them and run the same command again.
 
 ## Open the setup link {#open-the-setup-link}
@@ -82,6 +82,8 @@ At the end the installer prints an address like this one:
      Open   https://<server-ip>:8443/setup/<token>
 
      The link is valid for 24 hours and works once.
+     Your browser will warn about the certificate — it is self-signed
+     until you issue a real one. That is expected on first boot.
 ```
 
 Open the link in your browser. The browser warns that the certificate is not valid: it is

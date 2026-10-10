@@ -4,8 +4,8 @@ description: Dove risponde l'API del pannello, come ci si autentica, quali richi
 type: reference
 prerequisites:
   - Un account nel pannello, o un token API
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 1
 ---
 

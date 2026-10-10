@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - A connected backup repository
   - An administrator account, or an operator assigned to the site
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 4
 ---
 
@@ -22,7 +22,25 @@ checks which sites are due and starts their backup. There is nothing else to do.
 - They run only for active sites, and only with a repository and password set.
 - Staging copies have no scheduled backups.
 - A scheduled backup that fails is tried again at the next check.
-- The panel has no setting yet to change the frequency or the retention.
+
+To change the schedule, in the site's **Backups** tab, **Schedule** card:
+
+1. In **Frequency** pick **Off**, **Every hour**, **Every day** or **Every week**.
+2. In **Keep** type how many days to keep the snapshots (0 to 3650; 0 keeps them all). Only an
+   administrator changes this field.
+3. Press **Save**.
+
+With the API it is `PUT /api/sites/<site-id>/backups/policy` with `enabled`, `schedule` (`hourly`,
+`daily`, `weekly`) and `retention_days`.
+
+:::warning[Sites that do not pass the restore test]
+
+On `a7d92ba` a reverse proxy site (empty folder) and a PHP or Laravel site whose database has no
+tables yet fail every restore test (`the restored tree is empty`, `the dump imported no tables`):
+their backups never count, and the panel tries a new one, with a new alert, every 5 minutes. For
+such a site set **Frequency** to **Off** until it has content.
+
+:::
 
 ## Take a backup now {#back-up-now}
 
@@ -51,8 +69,8 @@ not count.
 
 ## How long backups stay {#retention}
 
-Once a day the panel removes the site's snapshots older than 30 days from the repository. It never
-removes the newest backup that passed its restore test, nor one whose test has not run yet. The
+Once a day the panel removes the site's snapshots older than the days in **Keep** from the
+repository (30 at first; with 0 it removes nothing). It never removes the newest backup that passed its restore test, nor one whose test has not run yet. The
 rule touches only that site's snapshots from this server.
 
 ## Delete a backup {#delete}

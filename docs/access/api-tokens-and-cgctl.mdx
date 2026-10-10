@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - Un account amministratore con la sua password
   - Accesso root al server, o un computer che raggiunge il pannello in HTTPS
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 5
 ---
 
@@ -20,22 +20,34 @@ può crearne un altro né creare un amministratore.
 
 ## Crea un token {#create-a-token}
 
-I token si creano accedendo con la password, perché un token non può crearne altri. Sul server,
-come root:
+I token si creano accedendo con la password, perché un token non può crearne altri.
+
+1. Nel pannello apri **Sicurezza** (il menu del tuo account), riquadro **Token API**.
+2. Scrivi il **Nome**, un'etichetta da 1 a 64 caratteri per riconoscere il token nell'elenco.
+3. In **Scadenza** scegli **30 giorni**, **90 giorni**, **365 giorni** o **non scade**.
+4. Premi **Crea token**.
+
+Il pannello mostra il valore `cgt_…` una volta sola. **Copialo subito: il pannello non lo mostra
+più.** Ne conserva solo un’impronta.
+
+Con cgctl, sul server come root:
 
 ```bash prompt
+export CLOUDGROUND_URL='https://127.0.0.1:8443'
 export CLOUDGROUND_EMAIL='<email>'
 read -rs CLOUDGROUND_PASSWORD && export CLOUDGROUND_PASSWORD
 cgctl tokens create "<nome>" 90
 ```
 
-- `<nome>` è un'etichetta da 1 a 64 caratteri, per riconoscere il token nell'elenco.
 - `90` è la durata in giorni, da 1 a 365. Senza durata, o con `0`, il token non scade.
 - Se il tuo account ha la verifica in due passaggi, aggiungi `CLOUDGROUND_TOTP='<codice>'` con un
   codice dell'app.
+- `CLOUDGROUND_URL` serve perché sul socket locale l'accesso con la password non regge: il cookie di
+  sessione è `Secure` e cgctl non lo rimanda su `unix://`, quindi il comando risponde `HTTP 401:
+  authentication required`. Sull'indirizzo `https://127.0.0.1:8443` cgctl accetta il certificato
+  autofirmato perché è locale.
 
-La risposta contiene il campo `token`, con il valore `cgt_…`. **Copialo subito: il pannello non lo
-mostra più.** Il pannello ne conserva solo un’impronta.
+La risposta contiene il campo `token`, con il valore `cgt_…`.
 
 ## Configura cgctl {#configure-cgctl}
 
@@ -85,7 +97,9 @@ cgctl tokens list
 cgctl tokens revoke <id-token>
 ```
 
-Anche questi comandi richiedono email e password. Qualsiasi amministratore può revocare qualsiasi
+Anche questi comandi richiedono email e password, e come `tokens create` vanno lanciati con
+`CLOUDGROUND_URL='https://127.0.0.1:8443'`. Dal pannello, **Revoca** sulla riga del token in
+**Sicurezza** fa lo stesso. Qualsiasi amministratore può revocare qualsiasi
 token. Il pannello revoca da solo i token di un account quando la sua password cambia o viene
 reimpostata, quando spegne la verifica in due passaggi, quando viene disattivato, declassato o
 eliminato, e con `panel-api recover-admin`.

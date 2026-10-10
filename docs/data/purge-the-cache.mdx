@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - Un sito con la cache di pagina attiva
   - Un account amministratore, o operatore del sito
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 1
 ---
 
@@ -49,8 +49,8 @@ a partire dalla sitemap del sito: nella scheda **Panoramica**, sezione **Azioni*
 la cache**. Su WordPress lo stesso comando è anche nella scheda **WordPress**, riquadro
 **Riscaldamento cache**, pulsante **Riscalda ora**.
 
-Con cgctl: `cgctl warm <id-sito>`. Il pannello lo fa da sé dopo una pubblicazione dallo staging, un
-rollback e una migrazione.
+Con cgctl: `cgctl warm <id-sito>`. Il pannello lo fa da sé dopo l'attivazione di un rilascio, una
+pubblicazione dallo staging e una migrazione; dopo un rollback svuota la cache ma non la riscalda.
 
 ## Controlla il risultato {#check}
 

@@ -2,7 +2,7 @@
 title: "Guide · Accesso e sicurezza"
 description: "Accesso ai siti via SFTP e SSH, utenti e ruoli, verifica in due passaggi, token API e firewall."
 type: index
-last_verified: unverified
+last_verified: 2026-10-10
 hide_table_of_contents: true
 ---
 

@@ -6,8 +6,8 @@ prerequisites:
   - An active site
   - An administrator account, or an operator assigned to the site
   - An API token and cgctl, to create the release
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 7
 ---
 
@@ -17,18 +17,27 @@ A site's code lives in releases that never change once created. Deploying takes 
 
 ## Prepare the code {#prepare}
 
-Put the code in a folder inside the site folder, `/srv/sites/<domain>`. For example, from the
-[site shell](/access/site-shell):
+Put the code in a folder inside the site folder, `/srv/sites/<domain>`. The simplest is a checkout
+in `~/src`, which exists while the [site shell](/access/site-shell) is on:
 
 ```bash
 mkdir -p ~/src/app && cd ~/src/app
 git clone <repository> .
 ```
 
-The panel refuses a folder outside the site's, the site folder itself, and `releases/`. Links in
-the folder are followed only while they stay inside the site.
+Over SFTP you can write only in `shared/`, `logs/`, `tmp/` and, with the shell on, `src/`: the site
+folder itself belongs to root. The panel refuses a folder outside the site's, the site folder itself,
+and `releases/`. A link on the folder's path (such as `current`) is followed while it stays inside
+the site; links inside the folder are copied as links, never followed.
 
 ## Create the release {#create}
+
+1. Open the site and choose the **Releases** tab.
+2. In the **New release** card choose **A checkout in ~/src** and the folder in **Checkout**, or
+   **Another folder of the site** and type the path in **Folder**.
+3. Press **Create release**.
+
+With cgctl:
 
 ```bash
 cgctl --wait deploy <site-id> /srv/sites/<domain>/src/app

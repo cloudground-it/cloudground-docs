@@ -3,8 +3,8 @@ title: Percorsi, porte e servizi
 description: Le porte su cui il server ascolta, i servizi systemd, gli utenti di sistema e i percorsi che CloudGround usa.
 type: reference
 prerequisites: []
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 5
 ---
 
@@ -62,8 +62,9 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `/etc/cloudground/certs/` | certificati del pannello (`panel.pem`, `panel-ip.pem`), di riserva (`fallback.pem`) e quelli caricati a mano (`custom/`) |
 | `/var/lib/cloudground/state.db` | il database del pannello |
 | `/var/lib/cloudground/secret.key` | la chiave che cifra i segreti del database: salvala insieme al database |
-| `/var/lib/cloudground-agent/` | lo spazio di lavoro dell'agent e `highest-release` |
+| `/var/lib/cloudground-agent/` | lo spazio di lavoro dell'agent e, dopo il primo aggiornamento, `highest-release` |
 | `/run/cloudground/agent.sock` | il socket dell'agent |
+| `/run/cloudground/shell.sock` | il socket con cui l'agent riceve le sessioni della shell dei siti |
 | `/var/log/cloudground-install.log` | il log dell'installer |
 
 ## I siti {#site-paths}
@@ -93,6 +94,8 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `/etc/mysql/mariadb.conf.d/99-cloudground.cnf` | la configurazione di MariaDB calcolata per il server |
 | `/etc/sysctl.d/60-cloudground.conf` | i parametri del kernel |
 | `/etc/ssh/sshd_config.d/10-cloudground-sftp.conf` | SFTP dei siti in chroot |
+| `/etc/ssh/sshd_config.d/11-cloudground-shell.conf` | gli accessi `cg-shell-*` della shell dei siti, solo con chiave |
+| `/var/cache/cloudground/restic/` | la cache di restic per il repository dei backup |
 | `/etc/logrotate.d/cloudground` | rotazione dei log dei siti |
 | `/var/log/mysql/slow.log` | le query lente di MariaDB, oltre 1 secondo |
 

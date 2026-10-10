@@ -2,7 +2,7 @@
 title: "Guide · Dati"
 description: "Cache, staging, backup, ripristini, rilasci e database."
 type: index
-last_verified: unverified
+last_verified: 2026-10-10
 hide_table_of_contents: true
 ---
 

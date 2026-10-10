@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - An administrator account
   - A domain whose DNS A or AAAA record points at the server, if you want the certificate straight away
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 1
 ---
 
@@ -35,7 +35,9 @@ becomes **active**.
 
 If the panel's **Settings** have a **Let's Encrypt email**, creation also requests the certificate.
 If DNS does not point at the server yet, the site is created anyway: the task says so in its
-messages, and the site uses a temporary certificate until you issue one from the **SSL** tab.
+messages (`Certificate pending (DNS may not point here yet)`), and the site answers with the
+server's self-signed fallback certificate (`CN=fallback.invalid`), which browsers refuse, until you
+issue one from the **SSL** tab.
 
 ## With cgctl {#with-cgctl}
 

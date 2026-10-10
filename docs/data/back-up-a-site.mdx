@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - Un repository di backup collegato
   - Un account amministratore oppure operatore assegnato al sito
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 4
 ---
 
@@ -22,7 +22,25 @@ controlla ogni 5 minuti quali siti sono in scadenza e avvia il loro backup. Non 
 - Partono solo per i siti attivi, e solo con repository e password impostati.
 - Le copie di staging non hanno backup pianificati.
 - Un backup pianificato che fallisce viene ritentato al controllo successivo.
-- Il pannello non ha ancora un'impostazione per cambiare la frequenza o la durata.
+
+Per cambiare la pianificazione, nella scheda **Backup** del sito, riquadro **Pianificazione**:
+
+1. In **Frequenza** scegli **Disattivato**, **Ogni ora**, **Ogni giorno** o **Ogni settimana**.
+2. In **Conserva** scrivi per quanti giorni tenere gli snapshot (da 0 a 3650; 0 li tiene tutti). Solo
+   un amministratore cambia questo campo.
+3. Premi **Salva**.
+
+Con l'API è `PUT /api/sites/<site-id>/backups/policy` con `enabled`, `schedule` (`hourly`, `daily`,
+`weekly`) e `retention_days`.
+
+:::warning[Siti che non passano il ripristino di prova]
+
+Su `a7d92ba` un sito reverse proxy (cartella vuota) e un sito PHP o Laravel il cui database non ha
+ancora tabelle falliscono ogni ripristino di prova (`the restored tree is empty`, `the dump imported
+no tables`): i loro backup non contano mai, e il pannello ne tenta uno nuovo, con un nuovo avviso, ogni
+5 minuti. Per un sito così imposta **Frequenza** su **Disattivato** finché non ha contenuti.
+
+:::
 
 ## Fai un backup adesso {#back-up-now}
 
@@ -51,8 +69,9 @@ incompleto non conta.
 
 ## Quanto restano i backup {#retention}
 
-Una volta al giorno il pannello toglie dal repository gli snapshot del sito più vecchi di 30
-giorni. Non toglie mai il backup più recente che ha superato il ripristino di prova, né uno la cui
+Una volta al giorno il pannello toglie dal repository gli snapshot del sito più vecchi dei giorni
+in **Conserva** (30 all'inizio; con 0 non toglie niente). Non toglie mai il backup più recente che
+ha superato il ripristino di prova, né uno la cui
 prova non è ancora stata fatta. La regola tocca solo gli snapshot di quel sito e di questo server.
 
 ## Elimina un backup {#delete}

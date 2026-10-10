@@ -2,7 +2,7 @@
 title: "Spiegazioni"
 description: "Come funziona CloudGround e perché è fatto così."
 type: index
-last_verified: unverified
+last_verified: 2026-10-10
 hide_table_of_contents: true
 ---
 

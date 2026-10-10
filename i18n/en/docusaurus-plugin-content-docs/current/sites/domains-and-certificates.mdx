@@ -42,6 +42,8 @@ renewal failed** with the reason.
 
 ## A wildcard certificate {#a-wildcard-certificate}
 
+{/* TODO(verify): issuing a wildcard certificate through Cloudflare DNS. Not verified on 2026-10-10: the test server has no Cloudflare token or zone; only checked that without a token the request answers 412 `set cloudflare_api_token in settings first`. */}
+
 A wildcard covers `<domain>` and `*.<domain>`, and uses Cloudflare DNS instead of the test file.
 
 1. In **Settings**, under **Certificates**, type the **Cloudflare API token**. It needs the
@@ -62,8 +64,13 @@ not renew it. To go back to Let's Encrypt, choose **Back to Let's Encrypt**.
 
 ## Add an alias {#add-an-alias}
 
-Aliases have no tab: an administrator changes them with the API. Send the whole list; `[]` removes
-them all.
+Only an administrator changes the aliases.
+
+1. Open the site, **Overview** tab, **Domains and folder** card.
+2. In **Aliases** type each name and press Enter; the × on a name removes it.
+3. Choose **Apply**.
+
+With the API, send the whole list; `[]` removes them all:
 
 ```bash
 curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
@@ -74,11 +81,13 @@ curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
 ```
 
 - Each alias is a plain host name, different from the site's domain. At most 50.
-- No name can belong to two sites: an alias another site already uses is refused with `409`.
+- No name can belong to two sites: an alias another site already uses is refused with `400`
+  (`alias … is already used by …`), and nothing changes.
 - When the site has a Let's Encrypt certificate, the panel reissues it for the new names by itself.
   If the reissue fails, the site keeps serving its previous certificate.
-- When the site has a custom certificate, the answer warns that it may not cover the new aliases:
-  install one that does.
+- When the site has a custom certificate, the panel warns that it may not cover the new aliases:
+  install one that does. If you then choose **Back to Let's Encrypt**, the site takes back its
+  previous Let's Encrypt certificate: choose **Issue / renew** so that it covers the new aliases.
 
 ## Next step {#next}
 

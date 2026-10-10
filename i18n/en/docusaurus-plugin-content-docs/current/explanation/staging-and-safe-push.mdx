@@ -3,8 +3,8 @@ title: Staging, Safe Push and Performance Guard
 description: Why staging is a site of its own, how Safe Push decides whether to publish, and how Performance Guard measures a speed difference without being fooled by the server's noise.
 type: explanation
 prerequisites: []
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 6
 ---
 
@@ -94,7 +94,8 @@ are fewer than 20 measurable pairs, it is **inconclusive**. Safe Push publishes 
 The threshold is 10% because staging and production are different sites, with their own database
 and caches, and the same code can differ by a few points. The 200 rounds are there to still catch
 a 30% regression: in the calibration runs it was almost always blocked, while two identical
-versions were not. The price is time: about two minutes per page.
+versions were not. The price is time: 2 × 200 renders per page, about 30 seconds for a page PHP renders in 60 ms and
+about two minutes at 300 ms.
 
 ## The check after promotion {#after-promotion}
 

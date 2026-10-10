@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - A site with the page cache on
   - An administrator account, or an operator of the site
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 1
 ---
 
@@ -48,8 +48,9 @@ After a full purge, the first visitor of each page finds it empty. You can fill 
 site's sitemap: on the **Overview** tab, **Actions** section, press **Warm the cache**. On WordPress
 the same command is also on the **WordPress** tab, **Cache warming** card, **Warm now** button.
 
-With cgctl: `cgctl warm <site-id>`. The panel does it by itself after a publish from staging, a
-rollback and a migration.
+With cgctl: `cgctl warm <site-id>`. The panel does it by itself after a release is
+activated, a publish from staging and a migration; after a rollback it purges the cache but does not
+warm it.
 
 ## Check the result {#check}
 

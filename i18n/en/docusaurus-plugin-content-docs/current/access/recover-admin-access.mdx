@@ -4,8 +4,8 @@ description: Get back into the panel from the server when you have lost the pass
 type: how-to
 prerequisites:
   - Root access to the server over SSH
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 7
 ---
 
@@ -21,8 +21,8 @@ Connect to the server as root and run:
 panel-api recover-admin
 ```
 
-The command lists every account with its role and asks you which one to reset. It never picks one
-by itself.
+The command lists every account with its role and tells you to run it again with
+`--email <address>` to reset one. It never picks one by itself.
 
 ## Reset the password {#reset-the-password}
 

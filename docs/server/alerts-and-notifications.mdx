@@ -49,6 +49,8 @@ ogni file. Il pannello non ha sovrascritto nulla. Un amministratore sceglie, fil
 
 ## Ricevi le notifiche in una chat {#webhook}
 
+{/* TODO(verify): la consegna a un webhook vero (Slack, Discord, Mattermost), la forma del messaggio e il ritmo di sei ore. Non verificata il 2026-10-10: nessun webhook esterno disponibile; un ricevitore su questo server viene rifiutato (`not a public address`). */}
+
 Il pannello può mandare gli avvisi a un webhook che accetta un campo `text`, come quelli in entrata
 di Slack, Discord o Mattermost.
 
@@ -61,8 +63,10 @@ Ogni cinque minuti il pannello manda ogni avviso non archiviato che non ha notif
 sei ore, nella lingua degli amministratori, nella forma `CloudGround ERRORE su <sito>: <testo>`. Finché
 non lo archivi, un avviso torna quindi ogni sei ore. Un invio fallito si riprova al giro successivo.
 
-L'URL deve essere `https` e puntare a un indirizzo pubblico: il pannello rifiuta gli indirizzi
-locali e privati e non segue i redirect. L'URL è una credenziale: gli altri account lo vedono
+L'URL deve essere `https` (un `http://` è rifiutato al salvataggio) e puntare a un indirizzo
+pubblico: al momento dell'invio il pannello rifiuta gli indirizzi locali e privati, e anche quelli di
+questo server, e non segue i redirect. Un invio rifiutato così compare solo nel log dell'API
+(`alert webhook failed … not a public address`). L'URL è una credenziale: gli altri account lo vedono
 mascherato, e il pannello non lo scrive mai nei log. Per spegnere le notifiche, svuota il campo e
 premi **Salva**.
 

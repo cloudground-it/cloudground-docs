@@ -4,8 +4,8 @@ description: Every cgctl command, its options, the configuration variables and t
 type: reference
 prerequisites:
   - An API token, or an account's email and password
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 1
 ---
 
@@ -91,12 +91,33 @@ and, with 2FA, `CLOUDGROUND_TOTP`): the API does not take a token to manage toke
 | `cgctl tokens create <name> [days]` | `POST /api/tokens` | Creates a token; `days` from 0 (never) to 365. The token is shown once. |
 | `cgctl tokens revoke <token-id>` | `DELETE /api/tokens/<id>` | Revokes a token. |
 
+:::warning[They do not work on the local socket]
+
+With the default `CLOUDGROUND_URL` (`unix:///run/cloudground/api.sock`) a sign-in with email and
+password, and so these three commands, answers
+`HTTP 401: authentication required`: the session cookie is `Secure` and cgctl does not send it back
+over `unix://`. On the server run them with `CLOUDGROUND_URL=https://127.0.0.1:8443`, or create
+tokens in the panel, under **Security**.
+
+:::
+
+### On the server {#on-the-server}
+
+These commands run as root on the server and do not talk to the panel.
+
+| Command | What it does |
+| --- | --- |
+| `cgctl install [--plan] [--from <dir> \| --release <dir>] [--skip-packages] [--container]` | Installs CloudGround or upgrades it in place; `--plan` shows what would change without changing anything. It is the command `install.sh` runs. |
+| `cgctl doctor [--skip-packages] [--container]` | Checks every installation step and reports what does not match; exits with 1 when it finds differences, otherwise prints `no drift`. |
+| `cgctl release verify <dir> [file ...]` | Checks a downloaded release against the signing keys built into cgctl; needs neither the panel nor a token. |
+
 ## Authentication {#authentication}
 
 1. With a token (`CLOUDGROUND_TOKEN` or `CLOUDGROUND_TOKEN_FILE`), every request carries
    `Authorization: Bearer <token>`.
 2. Without a token, `CLOUDGROUND_EMAIL` and `CLOUDGROUND_PASSWORD` (and `CLOUDGROUND_TOTP`) sign in
-   once for the command.
+   once for the command. Only over `https://`: on the `unix://` socket every command answers
+   `HTTP 401` (see [API tokens](#tokens)).
 3. With neither, cgctl exits with 1 and explains how to get a token.
 
 ## Configuration {#configuration}

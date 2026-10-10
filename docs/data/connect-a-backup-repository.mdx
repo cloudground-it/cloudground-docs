@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - Un account amministratore
   - Uno spazio di archiviazione fuori da questo server (object storage compatibile S3, un server SFTP o un server REST per restic)
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 3
 ---
 
@@ -26,7 +26,13 @@ Il campo **Repository** accetta un indirizzo restic:
 
 Una cartella su questo server non è un backup off-site: se perdi il server, perdi anche i backup.
 
-{/* TODO(verify): quali credenziali usa restic per un repository sftp: (chiave SSH di root?) e se un indirizzo b2: nativo funziona: il pannello passa solo le chiavi S3, non quelle B2. */}
+- **SFTP**: restic si collega con `ssh` come root, con la chiave e i `known_hosts` di root
+  (`/root/.ssh/`). Prima di salvare, metti la chiave pubblica di root sul server remoto e collegati una
+  volta a mano da root, per accettarne la chiave host: senza, la prova fallisce con `Host key
+  verification failed`.
+- **Backblaze B2**: usa il suo endpoint compatibile S3 (`s3:https://s3.<regione>.backblazeb2.com/<bucket>`)
+  con le chiavi in **S3 access key** e **S3 secret key**. Un indirizzo `b2:` non funziona: il pannello
+  passa a restic solo le chiavi S3, e la prova fallisce con `Account ID ($B2_ACCOUNT_ID) is empty`.
 
 ## Salva le impostazioni {#save}
 
@@ -50,14 +56,17 @@ raggiungibile* e il numero di snapshot che contiene.
 ## Da riga di comando {#cli}
 
 ```bash
-cgctl settings set backup_repository 's3:https://<endpoint>/<bucket>'
 cgctl settings set backup_s3_access_key '<access-key>'
 cgctl settings set backup_s3_secret_key '<secret-key>'
 cgctl settings set backup_password '<password>'
+cgctl settings set backup_repository 's3:https://<endpoint>/<bucket>'
 ```
 
-Ogni comando cambia una chiave. La prova della coppia parte quando repository e password sono
-entrambi impostati.
+Ogni comando cambia una chiave, quindi imposta le chiavi S3 prima del repository: ogni volta che
+cambiano il repository o la password, il pannello prova la coppia con i valori già salvati. Su un
+server che ha già un repository, un repository nuovo viene creato con la password già salvata;
+`backup_password` cambiato da solo è rifiutato, perché non apre il repository di prima. Per un
+repository nuovo con una password nuova, salva i due campi insieme da **Impostazioni**.
 
 ## Prossimo passo {#next}
 

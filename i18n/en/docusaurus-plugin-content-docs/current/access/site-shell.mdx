@@ -6,8 +6,8 @@ prerequisites:
   - A site with SFTP access on
   - An administrator account, signed in to the panel with a session
   - An SSH public key
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 2
 ---
 
@@ -52,9 +52,9 @@ Use the **Shell command** from the connection details:
 ssh cg-shell-<id>@<host>
 ```
 
-With SSH on a port other than 22 the command carries `-p <port>`. The session starts in the site's
-`current` folder when there is one, otherwise in the site's folder. A single command works too:
-`ssh cg-shell-<id>@<host> wp plugin list`.
+With SSH on a port other than 22 the command carries `-p <port>`. An interactive session starts in
+the site's `current` folder when there is one, otherwise in the site's folder. A single command works
+too, and starts in the site's folder: `ssh cg-shell-<id>@<host> wp --version`.
 
 The shell takes keys only, never a password. A site has at most 8 sessions open at once. Everything a
 session starts, `nohup` included, ends with the session.
@@ -62,7 +62,8 @@ session starts, `nohup` included, ends with the session.
 ## From a checkout to a release {#checkout-to-release}
 
 The `~/src` folder belongs to the site user: clone your repository there and publish it as a release
-with `cgctl`, on the server:
+from the **Releases** tab, **New release** card, with **A checkout in ~/src** and **Create release**.
+Or with `cgctl`, on the server:
 
 ```bash prompt
 cgctl deploy <site-id> /srv/sites/<domain>/src/<app>

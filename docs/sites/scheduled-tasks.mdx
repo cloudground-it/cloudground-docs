@@ -4,8 +4,8 @@ description: Aggiungi a un sito un comando che gira a orari fissi, eseguilo subi
 type: how-to
 prerequisites:
   - Un account amministratore oppure operatore assegnato al sito
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 5
 ---
 
@@ -16,12 +16,15 @@ l'utente del sito, nella sua cartella e con le stesse protezioni del suo PHP.
 
 1. Apri il sito, poi **Altro** e **Cron**.
 2. In **Nuova attività pianificata**, scrivi la **Pianificazione (cron)** o scegline una da
-   **Preimpostazioni**: **Ogni 15 minuti**, **Ogni ora**, **Ogni giorno alle 3**, **Ogni domenica alle 3**.
+   **Preimpostazioni**: **Ogni 5 minuti**, **Ogni 15 minuti**, **Ogni ora**, **Ogni giorno alle 3**,
+   **Ogni domenica alle 3**.
 3. In **Comando** scrivi il comando, per esempio `php current/artisan schedule:run`.
 4. In **Descrizione** scrivi, se vuoi, a cosa serve.
 5. Scegli **Aggiungi**.
 
-{/* TODO(verify): che `php` nel PATH dell'attività sia la CLI della versione PHP del sito, e non un'altra installata. */}
+Il `PATH` dell'attività è `/usr/local/bin:/usr/bin:/bin`, quindi `php` è `/usr/bin/php`, la CLI
+predefinita del server, non per forza la versione PHP del sito. Se il sito usa un'altra versione,
+scrivila per esteso, per esempio `php8.4 current/artisan schedule:run`.
 
 Il comando parte dalla cartella del sito (`/srv/sites/<dominio>`), che è anche la sua `HOME`. Il suo
 output, insieme agli errori, finisce in `logs/cron-<id>.log` nella cartella del sito, che tiene le

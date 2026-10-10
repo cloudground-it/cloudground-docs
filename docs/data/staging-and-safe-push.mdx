@@ -6,8 +6,8 @@ prerequisites:
   - Un sito di produzione attivo
   - Un account amministratore oppure operatore assegnato al sito
   - Per pubblicare tabelle del database, un repository di backup configurato
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 2
 ---
 
@@ -27,7 +27,15 @@ misurato le due versioni. Il perché di ogni passaggio è in
 Un sito ha al massimo una copia di staging, e uno staging non si può a sua volta clonare. Un sito
 WordPress con il database esterno non si può clonare.
 
-{/* TODO(verify): se staging.<dominio> riceve un certificato e quale record DNS serve per raggiungerlo. */}
+:::note[Il certificato dello staging]
+
+Lo staging nasce senza certificato: finché non ne emetti uno risponde con il certificato autofirmato
+di riserva del server, che il browser rifiuta. Fai puntare al server anche `staging.<dominio>` (un
+record A o AAAA, o un wildcard `*.<dominio>`), poi premi **Apri lo staging**, scheda **SSL**,
+**Emetti / rinnova**, oppure `cgctl --wait cert issue <id-staging>`. **Ricrea lo staging** crea un sito
+nuovo: il certificato va emesso di nuovo.
+
+:::
 
 ## Confronta staging e produzione {#compare}
 
@@ -41,8 +49,9 @@ dice *Elenco troncato*.
 1. Nel riquadro **Safe Push**, scrivi in **Pagine da misurare** i percorsi da confrontare,
    separati da spazi o virgole (al massimo 10, ognuno inizia con `/`). Il valore iniziale è `/`.
 2. Premi **Pubblica tutto** e conferma.
-3. Segui l'attività. Performance Guard misura ogni pagina per circa due minuti, poi il rilascio
-   viene costruito, attivato e verificato.
+3. Segui l'attività. Performance Guard chiede ogni pagina 200 volte allo staging e 200 alla
+   produzione, poi il rilascio viene costruito, attivato e verificato. Per una pagina che PHP genera in
+   60 ms tutto dura circa 30 secondi; a 300 ms circa 2 minuti per pagina.
 4. Apri la scheda **Rilasci**: il nuovo rilascio è *attivo*, oppure *bloccato* con il motivo.
    Premi **Guard: …** sulla riga per vedere il rapporto.
 

@@ -2,7 +2,7 @@
 title: "Guide · Server"
 description: "Il dominio del pannello, i servizi, i log, gli avvisi e gli aggiornamenti."
 type: index
-last_verified: unverified
+last_verified: 2026-10-10
 hide_table_of_contents: true
 ---
 

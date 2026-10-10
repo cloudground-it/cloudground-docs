@@ -4,8 +4,8 @@ description: Elimina un sito con tutto quello che il pannello ha creato per lui,
 type: how-to
 prerequisites:
   - Un account amministratore
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 6
 ---
 
@@ -51,7 +51,22 @@ Rilanciare l'eliminazione è sicuro: ogni passo toglie solo quello che c'è anco
 Nel pannello spariscono anche i rilasci, i backup, le attività pianificate e le assegnazioni agli
 operatori del sito.
 
-{/* TODO(verify): l'eliminazione non sembra cancellare le snapshot dal repository off-site (nessun forget nel codice). Verificare sul server e dire qui se restano nel repository. */}
+:::note[Le snapshot restano nel repository]
+
+L'eliminazione non tocca il repository restic: le snapshot del sito restano lì, ma il pannello non le
+mostra più e non può ripristinarle. Per liberare spazio, toglile tu con restic, sul server da root:
+
+```bash prompt
+export RESTIC_REPOSITORY=<repository> RESTIC_PASSWORD_FILE=<file-con-la-password>
+restic snapshots --tag site:<dominio>
+restic forget --prune <id> <id>
+```
+
+`<repository>` è il **Repository** delle **Impostazioni**, `<dominio>` il dominio del sito eliminato,
+`<id>` gli ID che il primo comando elenca. Per un repository S3 esporta anche `AWS_ACCESS_KEY_ID` e
+`AWS_SECRET_ACCESS_KEY`.
+
+:::
 
 ## Se l'eliminazione fallisce {#if-it-fails}
 

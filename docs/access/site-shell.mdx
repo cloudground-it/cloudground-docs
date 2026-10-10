@@ -6,8 +6,8 @@ prerequisites:
   - Un sito con l'accesso SFTP attivo
   - Un account amministratore, con accesso tramite sessione nel pannello
   - Una chiave SSH pubblica
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 2
 ---
 
@@ -52,9 +52,9 @@ Usa il **Comando shell** dei dati di connessione:
 ssh cg-shell-<id>@<host>
 ```
 
-Con SSH su una porta diversa dalla 22 il comando contiene `-p <porta>`. La sessione parte nella
-cartella `current` del sito, se esiste, altrimenti nella cartella del sito. Anche un comando singolo
-funziona: `ssh cg-shell-<id>@<host> wp plugin list`.
+Con SSH su una porta diversa dalla 22 il comando contiene `-p <porta>`. La sessione interattiva
+parte nella cartella `current` del sito, se esiste, altrimenti nella cartella del sito. Anche un
+comando singolo funziona, e parte nella cartella del sito: `ssh cg-shell-<id>@<host> wp --version`.
 
 La shell accetta solo chiavi, mai password. Ogni sito ha al massimo 8 sessioni aperte insieme.
 Tutto quello che una sessione avvia, anche con `nohup`, finisce con la sessione.
@@ -62,7 +62,8 @@ Tutto quello che una sessione avvia, anche con `nohup`, finisce con la sessione.
 ## Dal checkout al rilascio {#checkout-to-release}
 
 La cartella `~/src` è dell'utente del sito: clona lì il tuo repository e pubblicalo come rilascio
-con `cgctl`, dal server:
+dalla scheda **Rilasci**, riquadro **Nuovo rilascio**, con **Un checkout in ~/src** e **Crea
+rilascio**. Oppure con `cgctl`, dal server:
 
 ```bash prompt
 cgctl deploy <id-sito> /srv/sites/<dominio>/src/<app>

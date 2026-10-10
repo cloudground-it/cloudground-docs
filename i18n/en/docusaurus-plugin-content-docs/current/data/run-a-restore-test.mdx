@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - A site with at least one backup
   - An administrator account, or an operator assigned to the site
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 6
 ---
 
@@ -49,7 +49,9 @@ How long the test takes, up to step 4, is the **Estimated restore time**.
   the newest backup that *passed*.
 - Take a new backup with **Back up now** and see whether its test passes.
 
-{/* TODO(verify): whether a failed restore test inside a scheduled backup raises an alert in the panel (background tasks may be quiet). */}
+A failed restore test, even inside a scheduled backup, raises an alert under the panel's bell, for
+example `backup scheduled failed: restore test failed: the restored tree is empty`: see
+[alerts and notifications](/server/alerts-and-notifications).
 
 ## Next step {#next}
 

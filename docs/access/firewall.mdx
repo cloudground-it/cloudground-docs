@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - Un account amministratore
   - Il firewall del server (ufw) attivo
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 6
 ---
 
@@ -15,9 +15,9 @@ come le riporta il sistema. Gli amministratori aggiungono e rimuovono regole; gl
 lettura le vedono soltanto.
 
 Quando il firewall è attivo durante l'installazione, l'installer apre le porte 22, 80, 443 e 8443
-in TCP e la 443 in UDP. Il pannello non attiva il firewall da solo: se la pagina dice **inattivo**,
-le regole non hanno effetto.
-{/* TODO(verify): on the test box, check whether a fresh install leaves ufw active or inactive. */}
+in TCP e la 443 in UDP. Né l'installer né il pannello attivano il firewall: su un server cloud appena
+creato ufw di solito è spento, e la pagina dice **inattivo**. Finché è inattivo le regole vengono
+salvate ma non hanno effetto, e la pagina non le mostra.
 
 ## Apri una porta {#allow-a-port}
 
@@ -51,6 +51,14 @@ Il pannello rifiuta qualsiasi regola che chiuderebbe fuori te o i siti:
 
 Per queste porte non puoi rimuovere la regola né bloccarle per tutti. Puoi invece bloccarle per un
 solo indirizzo, o aggiungere regole di consenso.
+
+:::warning[Un blocco su queste porte non si toglie dal pannello]
+
+Anche **Rimuovi la regola** su queste porte è rifiutato, compresa quella che blocca un solo
+indirizzo. Per toglierla serve il server, da root, per esempio
+`ufw delete deny from 203.0.113.9 to any port 8443 proto tcp`.
+
+:::
 
 ## Dall'API {#from-the-api}
 

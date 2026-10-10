@@ -6,8 +6,8 @@ prerequisites:
   - Un sito attivo
   - Un account amministratore oppure operatore assegnato al sito
   - Un token API e cgctl, per creare il rilascio
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 7
 ---
 
@@ -17,18 +17,29 @@ dallo staging usa invece [Safe Push](/data/staging-and-safe-push).
 
 ## Prepara il codice {#prepare}
 
-Metti il codice in una cartella dentro la cartella del sito, `/srv/sites/<dominio>`. Per esempio,
-dalla [shell del sito](/access/site-shell):
+Metti il codice in una cartella dentro la cartella del sito, `/srv/sites/<dominio>`. Il modo più
+semplice è un checkout in `~/src`, che esiste quando la [shell del sito](/access/site-shell) è
+attiva:
 
 ```bash
 mkdir -p ~/src/app && cd ~/src/app
 git clone <repository> .
 ```
 
-Il pannello rifiuta una cartella fuori da quella del sito, la cartella del sito stessa e
-`releases/`. I collegamenti nella cartella vengono seguiti solo se restano dentro il sito.
+Via SFTP puoi scrivere solo in `shared/`, `logs/`, `tmp/` e, con la shell attiva, `src/`: la
+cartella del sito in sé appartiene a root. Il pannello rifiuta una cartella fuori da quella del sito,
+la cartella del sito stessa e `releases/`. Un collegamento sul percorso della cartella (come
+`current`) viene seguito se resta dentro il sito; i collegamenti dentro la cartella vengono copiati
+come collegamenti, mai seguiti.
 
 ## Crea il rilascio {#create}
+
+1. Apri il sito e scegli la scheda **Rilasci**.
+2. Nel riquadro **Nuovo rilascio** scegli **Un checkout in ~/src** e la cartella in **Checkout**, oppure
+   **Un’altra cartella del sito** e scrivi il percorso in **Cartella**.
+3. Premi **Crea rilascio**.
+
+Con cgctl:
 
 ```bash
 cgctl --wait deploy <site-id> /srv/sites/<dominio>/src/app

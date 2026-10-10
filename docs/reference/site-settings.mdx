@@ -3,8 +3,8 @@ title: Impostazioni del sito
 description: Ogni campo che PATCH /api/sites/<id> accetta, con valori ammessi, valore predefinito, effetto e chi lo può cambiare.
 type: reference
 prerequisites: []
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 2
 ---
 
@@ -61,10 +61,10 @@ true` salta il controllo; lo può mandare solo un amministratore.
 | Codice | Quando |
 | --- | --- |
 | `202` | `{"site": …, "task": …}`, più `"warnings"` quando c'è qualcosa da sapere |
-| `400` | corpo malformato o campo sconosciuto; nessun campo; un valore fuori regola (`{"error": …, "fields": {<campo>: <messaggio>}}`); budget di PHP superato |
+| `400` | corpo malformato o campo sconosciuto; nessun campo; un valore fuori regola, anche un alias di un altro sito (`{"error": …, "fields": {<campo>: <messaggio>}}`); budget di PHP superato |
 | `403` | `aliases` o `proxy_upstream` (con `fields`), oppure `allow_over_budget`, da chi non è amministratore |
 | `404` | il sito non esiste o è fuori dalla portata di un operatore |
-| `409` | `hsts: true` senza un certificato valido per almeno altri 14 giorni; un alias di un altro sito |
+| `409` | `hsts: true` senza un certificato valido per almeno altri 14 giorni |
 | `503` | il pannello si sta riavviando: riprova tra un momento |
 
 La modifica è salvata subito e applicata dall'attività **Impostazioni sito**. Se l'attività fallisce, il

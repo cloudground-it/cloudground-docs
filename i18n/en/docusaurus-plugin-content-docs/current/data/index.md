@@ -2,7 +2,7 @@
 title: "How-to · Data"
 description: "Cache, staging, backups, restores, releases and databases."
 type: index
-last_verified: unverified
+last_verified: 2026-10-10
 hide_table_of_contents: true
 ---
 

@@ -3,8 +3,8 @@ title: Paths, ports and services
 description: The ports the server listens on, the systemd services, the system users and the paths CloudGround uses.
 type: reference
 prerequisites: []
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 5
 ---
 
@@ -62,8 +62,9 @@ The panel has no TCP port of its own: nginx talks to it on the socket `/run/clou
 | `/etc/cloudground/certs/` | the panel's certificates (`panel.pem`, `panel-ip.pem`), the fallback (`fallback.pem`) and uploaded ones (`custom/`) |
 | `/var/lib/cloudground/state.db` | the panel's database |
 | `/var/lib/cloudground/secret.key` | the key that encrypts the database's secrets: back it up with the database |
-| `/var/lib/cloudground-agent/` | the agent's working space and `highest-release` |
+| `/var/lib/cloudground-agent/` | the agent's working space and, after the first update, `highest-release` |
 | `/run/cloudground/agent.sock` | the agent's socket |
+| `/run/cloudground/shell.sock` | the socket on which the agent takes the site shells' sessions |
 | `/var/log/cloudground-install.log` | the installer's log |
 
 ## The sites {#site-paths}
@@ -93,6 +94,8 @@ The panel has no TCP port of its own: nginx talks to it on the socket `/run/clou
 | `/etc/mysql/mariadb.conf.d/99-cloudground.cnf` | MariaDB's configuration, calculated for the server |
 | `/etc/sysctl.d/60-cloudground.conf` | the kernel settings |
 | `/etc/ssh/sshd_config.d/10-cloudground-sftp.conf` | chrooted SFTP for the sites |
+| `/etc/ssh/sshd_config.d/11-cloudground-shell.conf` | the site shells' `cg-shell-*` logins, keys only |
+| `/var/cache/cloudground/restic/` | restic's cache for the backup repository |
 | `/etc/logrotate.d/cloudground` | rotation of the sites' logs |
 | `/var/log/mysql/slow.log` | MariaDB's slow queries, over 1 second |
 

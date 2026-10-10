@@ -4,8 +4,8 @@ description: Rientra nel pannello dal server quando hai perso la password o il t
 type: how-to
 prerequisites:
   - Accesso root al server via SSH
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 7
 ---
 
@@ -21,8 +21,8 @@ Collegati al server come root ed esegui:
 panel-api recover-admin
 ```
 
-Il comando elenca ogni account con il suo ruolo e ti chiede quale reimpostare. Non sceglie mai da
-solo.
+Il comando elenca ogni account con il suo ruolo e ti dice di rilanciarlo con `--email <indirizzo>`
+per reimpostarne uno. Non sceglie mai da solo.
 
 ## Reimposta la password {#reset-the-password}
 

@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - Un sito con almeno un backup
   - Un account amministratore oppure operatore assegnato al sito
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 6
 ---
 
@@ -50,7 +50,9 @@ La durata della prova, fino al punto 4, è il **Tempo di ripristino stimato**.
   il backup più recente che è *riuscito*.
 - Fai un nuovo backup con **Esegui backup ora** e guarda se la prova passa.
 
-{/* TODO(verify): se un ripristino di prova fallito dentro un backup pianificato fa comparire un avviso nel pannello (le attività in background potrebbero essere silenziose). */}
+Un ripristino di prova fallito, anche dentro un backup pianificato, accende un avviso nella campanella
+del pannello, per esempio `backup scheduled failed: restore test failed: the restored tree is empty`:
+vedi [avvisi e notifiche](/server/alerts-and-notifications).
 
 ## Prossimo passo {#next}
 

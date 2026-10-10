@@ -2,7 +2,7 @@
 title: "Explanation"
 description: "How CloudGround works and why it is built this way."
 type: index
-last_verified: unverified
+last_verified: 2026-10-10
 hide_table_of_contents: true
 ---
 

@@ -2,7 +2,7 @@
 title: "Riferimento"
 description: "Tipi di sito, impostazioni, ruoli, cache, percorsi e porte: i valori esatti."
 type: index
-last_verified: unverified
+last_verified: 2026-10-10
 hide_table_of_contents: true
 ---
 

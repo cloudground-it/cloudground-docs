@@ -3,8 +3,8 @@ title: Site settings
 description: Every field PATCH /api/sites/<id> takes, with its allowed values, default, effect and who may change it.
 type: reference
 prerequisites: []
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 2
 ---
 
@@ -62,10 +62,10 @@ true` skips the check; only an administrator may send it.
 | Code | When |
 | --- | --- |
 | `202` | `{"site": …, "task": …}`, plus `"warnings"` when there is something to know |
-| `400` | malformed body or unknown field; no field; a value against its rule (`{"error": …, "fields": {<field>: <message>}}`); PHP budget exceeded |
+| `400` | malformed body or unknown field; no field; a value against its rule, an alias another site holds included (`{"error": …, "fields": {<field>: <message>}}`); PHP budget exceeded |
 | `403` | `aliases` or `proxy_upstream` (with `fields`), or `allow_over_budget`, from anyone but an administrator |
 | `404` | the site does not exist or is out of an operator's reach |
-| `409` | `hsts: true` without a certificate valid for at least another 14 days; an alias another site holds |
+| `409` | `hsts: true` without a certificate valid for at least another 14 days |
 | `503` | the panel is restarting: try again in a moment |
 
 The change is saved at once and applied by the **Site settings** task. If the task fails, the panel

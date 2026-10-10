@@ -1,6 +1,6 @@
 ---
 title: Cosa fa l'installer
-description: I dieci passi dell'installer, in ordine, e le scelte dietro ognuno. Rilanciarlo su un server CloudGround lo aggiorna sul posto.
+description: Il controllo e i nove passi dell'installer, in ordine, e le scelte dietro ognuno. Rilanciarlo su un server CloudGround lo aggiorna sul posto.
 type: explanation
 prerequisites: []
 version: unreleased
@@ -10,34 +10,34 @@ sidebar_position: 2
 
 `installer/install.sh` prepara un server Ubuntu vuoto e avvia il pannello. Tutto ciò che stampano
 i programmi che lancia finisce in `/var/log/cloudground-install.log`; sul terminale vedi solo i
-dieci passi e la loro durata.
+nove passi e la loro durata.
 
 ## I passi {#steps}
 
 ```mermaid
 flowchart TD
-  start(["bash install.sh, come root"]) --> check["1 · Controlla la macchina"]
+  start(["bash install.sh, come root"]) --> check["Controlla la macchina"]
   check --> ok{"Tutti i controlli<br/>passano?"}
   ok -- "no" --> stop(["Elenca tutti i problemi<br/>e si ferma senza toccare nulla"])
-  ok -- "sì" --> pkgs["2 · Installa nginx, PHP, MariaDB,<br/>Redis, restic, certbot, wp-cli, composer"]
-  pkgs --> users["3 · Crea utente cloudground, cartelle,<br/>token dell'agent, certificati autofirmati"]
+  ok -- "sì" --> pkgs["1 · Installa nginx, PHP, MariaDB,<br/>Redis, restic, certbot, wp-cli, composer"]
+  pkgs --> users["2 · Crea utente cloudground, cartelle,<br/>token dell'agent, certificati autofirmati"]
   users --> src{"Da dove arrivano<br/>i binari?"}
-  src -- "build locale" --> bins["4 · Installa panel-api,<br/>panel-agent, cgctl"]
+  src -- "build locale" --> bins["3 · Installa panel-api,<br/>panel-agent, cgctl"]
   src -- "release scaricata" --> verify{"Firma valida, versione richiesta,<br/>non più vecchia dell'installata?"}
   verify -- "no" --> refuse(["Si rifiuta di installare"])
   verify -- "sì" --> bins
-  bins --> kernel["5 · Parametri del kernel<br/>e dei worker di nginx"]
-  kernel --> nginx["6 · Server di default di nginx:<br/>:80, :443 e il pannello su :8443"]
-  nginx --> maria["7 · Avvia MariaDB"]
-  maria --> svc["8 · Unità systemd: agent, API e socket;<br/>attende che nginx ascolti su :443"]
-  svc --> fw["9 · Firewall e SFTP chiuso in chroot"]
-  fw --> rot["10 · Rotazione dei log<br/>e rinnovo dei certificati"]
+  bins --> kernel["4 · Parametri del kernel<br/>e dei worker di nginx"]
+  kernel --> nginx["5 · Server di default di nginx:<br/>:80, :443 e il pannello su :8443"]
+  nginx --> maria["6 · Avvia MariaDB"]
+  maria --> svc["7 · Unità systemd: agent, API e socket;<br/>attende che nginx ascolti su :443"]
+  svc --> fw["8 · Firewall e SFTP chiuso in chroot"]
+  fw --> rot["9 · Rotazione dei log<br/>e rinnovo dei certificati"]
   rot --> link(["Stampa il link di setup monouso"])
 ```
 
 ## Cosa controlla prima {#preflight}
 
-Il primo passo fa tutti i controlli e riporta tutti i problemi insieme, così correggi la macchina in
+Il controllo iniziale, prima dei passi, fa tutte le verifiche e riporta tutti i problemi insieme, così correggi la macchina in
 un solo giro:
 
 - Ubuntu 24.04 o 26.04 LTS, architettura amd64;
@@ -57,6 +57,8 @@ corrisponde a quello scritto nell'installer. wp-cli è controllato contro lo SHA
 accanto al file.
 
 ## I binari {#binaries}
+
+{/* TODO(verify): il percorso della release scaricata (firma del manifest, versione, downgrade). Non verificabile il 2026-10-10: non esiste ancora una release firmata pubblica. Verificati la build locale e la riesecuzione. */}
 
 Con `CLOUDGROUND_LOCAL_BUILD` l'installer copia i binari da una cartella locale. Altrimenti scarica
 la release e la installa solo se:

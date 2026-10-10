@@ -4,8 +4,8 @@ description: Check the state of the system services that run the sites, and rest
 type: how-to
 prerequisites:
   - An administrator account to restart; read-only to look
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 2
 ---
 
@@ -18,7 +18,7 @@ The **Services** page, in the **Server** group, lists the system services that r
 | `redis` | `redis-server` |
 | **Site PHP** | every `cloudground-php-*.service`, one per site |
 
-For each service you see **State**, **At boot** (*starts on boot* or *manual start*), **Memory**,
+For each service you see **State**, **At boot** (*yes* or *no*), **Memory**,
 **Started** and **Version**. The **Site PHP** row sums up the PHP processes: how many are running
 and, when one is not, which.
 

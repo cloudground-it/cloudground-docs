@@ -43,7 +43,7 @@ scp -r dist installer root@<ip-del-server>:/root/cloudground/
 
 `<ip-del-server>` è l'indirizzo pubblico del server.
 
-{/* TODO(verify): quando esiste una release pubblica, sostituire questo passo con il download firmato (CLOUDGROUND_RELEASE_PUBKEY) e il suo URL. */}
+{/* TODO(verify): quando esiste una release pubblica, sostituire questo passo con il download firmato (CLOUDGROUND_RELEASE_PUBKEY) e il suo URL. Il 2026-10-10 sono stati verificati sul server di prova (a7d92ba) i passi dell'installer (riesecuzione con la stessa build), le etichette della pagina Primo accesso e i servizi; non l'installazione da zero, il link di setup e la creazione del primo amministratore, perché il server era già configurato e non si poteva reinstallare da zero. */}
 
 ## Lancia l'installer {#run-the-installer}
 
@@ -54,23 +54,24 @@ ssh root@<ip-del-server>
 CLOUDGROUND_LOCAL_BUILD=/root/cloudground/dist bash /root/cloudground/installer/install.sh
 ```
 
-L'installer mostra dieci passi, ognuno con la sua durata:
+Prima controlla la macchina, poi mostra nove passi, ognuno con la sua durata (qui sotto senza i
+tempi, che dipendono dal server):
 
 ```text
-  ✓   1/10  Checking the machine
-  ✓   2/10  Installing nginx, PHP, MariaDB, restic
-  ✓   3/10  Creating users, directories and secrets
-  ✓   4/10  Installing CloudGround binaries
-  ✓   5/10  Tuning kernel and nginx workers
-  ✓   6/10  Configuring nginx
-  ✓   7/10  Tuning MariaDB
-  ✓   8/10  Starting services
-  ✓   9/10  Opening the firewall
-  ✓  10/10  Log rotation and certificate renewal
+  ✓   1/9  Installing nginx, PHP, MariaDB, restic
+  ✓   2/9  Creating users, directories and secrets
+  ✓   3/9  Installing CloudGround binaries
+  ✓   4/9  Tuning kernel and nginx workers
+  ✓   5/9  Configuring nginx
+  ✓   6/9  Tuning MariaDB
+  ✓   7/9  Starting services
+  ✓   8/9  Opening the firewall
+  ✓   9/9  Log rotation and certificate renewal
 ```
 
-Se il primo passo trova dei problemi (sistema, architettura, memoria, disco, porte occupate), li
-elenca tutti insieme e si ferma senza toccare nulla. Correggili e rilancia lo stesso comando.
+Se il controllo della macchina trova dei problemi (sistema, architettura, memoria, disco, porte
+occupate), li elenca tutti insieme e si ferma senza toccare nulla. Correggili e rilancia lo stesso
+comando.
 
 ## Apri il link di setup {#open-the-setup-link}
 
@@ -82,6 +83,8 @@ Alla fine l'installer stampa un indirizzo come questo:
      Open   https://<ip-del-server>:8443/setup/<token>
 
      The link is valid for 24 hours and works once.
+     Your browser will warn about the certificate — it is self-signed
+     until you issue a real one. That is expected on first boot.
 ```
 
 Apri il link nel browser. Il browser avvisa che il certificato non è valido: è autofirmato, ed è

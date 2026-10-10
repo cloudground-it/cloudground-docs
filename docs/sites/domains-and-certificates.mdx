@@ -41,6 +41,8 @@ mostra **Ultimo rinnovo fallito** con il motivo.
 
 ## Un certificato wildcard {#a-wildcard-certificate}
 
+{/* TODO(verify): emissione di un certificato wildcard con il DNS Cloudflare. Non verificata il 2026-10-10: il server di prova non ha un token Cloudflare né una zona su Cloudflare; verificato solo che senza token la richiesta risponde 412 `set cloudflare_api_token in settings first`. */}
+
 Un wildcard copre `<dominio>` e `*.<dominio>`, e usa il DNS Cloudflare invece del file di prova.
 
 1. In **Impostazioni**, sotto **Certificati**, scrivi il **Token API Cloudflare**. Gli serve il
@@ -61,8 +63,13 @@ rinnova. Per tornare a Let's Encrypt scegli **Torna a Let's Encrypt**.
 
 ## Aggiungi un alias {#add-an-alias}
 
-Gli alias non hanno una scheda: li cambia un amministratore con l'API. Manda la lista completa;
-`[]` li toglie tutti.
+Gli alias li cambia solo un amministratore.
+
+1. Apri il sito, scheda **Panoramica**, riquadro **Domini e cartella**.
+2. In **Alias** scrivi ogni nome e premi Invio; la × su un nome lo toglie.
+3. Scegli **Applica**.
+
+Con l'API, manda la lista completa; `[]` li toglie tutti:
 
 ```bash
 curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
@@ -73,11 +80,13 @@ curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
 ```
 
 - Ogni alias è un nome host semplice, diverso dal dominio del sito. Al massimo 50.
-- Nessun nome può appartenere a due siti: un alias già usato da un altro sito è rifiutato con `409`.
+- Nessun nome può appartenere a due siti: un alias già usato da un altro sito è rifiutato con `400`
+  (`alias … is already used by …`), e niente cambia.
 - Se il sito ha un certificato Let's Encrypt, il pannello lo riemette da solo per i nomi nuovi. Se la
   riemissione fallisce, il sito continua a usare il certificato di prima.
-- Se il sito ha un certificato personalizzato, la risposta avverte che potrebbe non coprire gli alias
-  nuovi: installane uno che li copra.
+- Se il sito ha un certificato personalizzato, il pannello avverte che potrebbe non coprire gli alias
+  nuovi: installane uno che li copra. Se poi scegli **Torna a Let's Encrypt**, il sito riprende il
+  certificato Let's Encrypt di prima: scegli **Emetti / rinnova** perché copra gli alias nuovi.
 
 ## Prossimo passo {#next}
 

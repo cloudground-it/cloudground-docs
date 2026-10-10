@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - An administrator account
   - The server's firewall (ufw) active
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 6
 ---
 
@@ -14,9 +14,9 @@ The **Firewall** page, in the **Server** group, shows whether the firewall is ac
 the system reports them. Administrators add and remove rules; read-only accounts only see them.
 
 When the firewall is active during installation, the installer opens ports 22, 80, 443 and 8443 over
-TCP and 443 over UDP. The panel does not turn the firewall on by itself: when the page says
-**inactive**, rules have no effect.
-{/* TODO(verify): on the test box, check whether a fresh install leaves ufw active or inactive. */}
+TCP and 443 over UDP. Neither the installer nor the panel turns the firewall on: on a freshly created
+cloud server ufw is usually off, and the page says **inactive**. While it is inactive, rules are
+saved but have no effect, and the page does not show them.
 
 ## Open a port {#allow-a-port}
 
@@ -50,6 +50,14 @@ The panel refuses any rule that would lock you or the sites out:
 
 For these ports you cannot remove the rule or block them for everyone. You can block them for a
 single address, or add allow rules.
+
+:::warning[A block on these ports cannot be removed from the panel]
+
+**Delete rule** on these ports is refused too, including the one that blocks a single address. To
+remove it you need the server, as root, for example
+`ufw delete deny from 203.0.113.9 to any port 8443 proto tcp`.
+
+:::
 
 ## From the API {#from-the-api}
 

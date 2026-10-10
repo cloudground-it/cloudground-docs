@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - Un account amministratore
   - Un dominio il cui record DNS A o AAAA punta al server, se vuoi il certificato subito
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 1
 ---
 
@@ -36,7 +36,9 @@ lo stato diventa **attivo**.
 
 Se nelle **Impostazioni** del pannello c'è l'**Email per Let's Encrypt**, la creazione chiede anche il
 certificato. Se il DNS non punta ancora al server, il sito nasce lo stesso: l'attività lo scrive tra i
-suoi messaggi e il sito usa un certificato provvisorio finché non ne emetti uno dalla scheda **SSL**.
+suoi messaggi (`Certificate pending (DNS may not point here yet)`) e il sito risponde con il
+certificato autofirmato di riserva del server (`CN=fallback.invalid`), che i browser rifiutano,
+finché non ne emetti uno dalla scheda **SSL**.
 
 ## Con cgctl {#with-cgctl}
 

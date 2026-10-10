@@ -2,7 +2,7 @@
 title: "How-to · Sites"
 description: "Create sites, change their settings, and manage domains, certificates, routing and scheduled tasks."
 type: index
-last_verified: unverified
+last_verified: 2026-10-10
 hide_table_of_contents: true
 ---
 

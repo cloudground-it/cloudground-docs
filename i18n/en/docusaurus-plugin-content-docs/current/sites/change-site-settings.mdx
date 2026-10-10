@@ -1,11 +1,11 @@
 ---
 title: Change a site's settings
-description: Change the profile, cache, PHP, HSTS and object cache from the site's tabs, and the other fields with a PATCH request to the API.
+description: Change aliases, profile, cache, PHP, HSTS and object cache from the site's tabs, or any field with a PATCH request to the API.
 type: how-to
 prerequisites:
   - An administrator account, or an operator assigned to the site
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 2
 ---
 
@@ -18,8 +18,9 @@ Open **Sites**, pick the site, then the tab:
 
 | Tab | What you change | Button |
 | --- | --- | --- |
+| **Overview**, card **Domains and folder** | **Aliases** (administrators only), **Public folder**; for a reverse proxy, **Upstream URL** instead of the folder (administrators only) | **Apply** |
 | **Cache** | **Performance profile**, **Page cache**, **Lifetime (TTL)** in seconds (0 = the profile's) | **Apply** |
-| **PHP** (under **More**) | **PHP version**, **Memory limit**, **Max upload size**, **Max execution time** | **Apply** |
+| **PHP** (under **More**) | **PHP version**, **Memory limit**, **Max upload size**, **Max execution time**; in the **Workers** card, **PHP workers** (0 = automatic) | **Apply** |
 | **SSL** | the **HSTS** switch | — |
 | **WordPress** | the **Object cache** switch | — |
 
@@ -36,15 +37,14 @@ least another 14 days.
 
 ## With the API {#with-the-api}
 
-Some fields have no tab: `aliases`, `php_workers`, `public_root` and `proxy_upstream`. For those, and
-for any other field, send a `PATCH` request with an API token. On the server, as root:
+From a script, send the same `PATCH` request with an API token. On the server, as root:
 
 ```bash
 curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
   -X PATCH \
   -H "Authorization: Bearer $CLOUDGROUND_TOKEN" \
   -H 'Content-Type: application/json' \
-  -d '{"php_workers": 8, "memory_limit_mb": 512}'
+  -d '{"php_workers": 4, "memory_limit_mb": 256}'
 ```
 
 - `<id>` is the site's number: it is in the address of its page in the panel (`/sites/<id>`) and in
@@ -56,14 +56,13 @@ The answer is `202` with the site after the change and the task it started. When
 to know, for example that the certificate no longer covers every alias, the answer also carries
 `warnings`.
 
-{/* TODO(verify): confirm on the server that the API socket takes a Bearer token from root in exactly this form. */}
-
 ## If the request is refused {#if-it-is-refused}
 
 - **400** with `fields`: a value is out of range. `fields` names each wrong field with its message,
   and nothing changed.
 - **400** on the PHP budget: workers × memory limit exceeds the server's memory. Lower one of the
-  two. An administrator can force it with `"allow_over_budget": true`.
+  two. An administrator can force it with `"allow_over_budget": true`, or from the **PHP** tab with
+  **Apply beyond the budget**.
 - **403**: only an administrator changes `aliases` and `proxy_upstream`.
 - **409** on `hsts`: the site has no certificate, or it expires within 14 days. Issue it first.
 

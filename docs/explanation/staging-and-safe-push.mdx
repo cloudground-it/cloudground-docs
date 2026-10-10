@@ -3,8 +3,8 @@ title: Staging, Safe Push e Performance Guard
 description: Perché lo staging è un sito a sé, come Safe Push decide se pubblicare e come Performance Guard misura una differenza di velocità senza farsi ingannare dal rumore del server.
 type: explanation
 prerequisites: []
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 6
 ---
 
@@ -97,7 +97,8 @@ sono meno di 20 coppie misurabili, è **non concludente**. Safe Push pubblica co
 La soglia è 10% perché staging e produzione sono siti diversi, con database e cache propri, e lo
 stesso codice può differire di qualche punto. I 200 giri servono a vedere comunque un
 peggioramento del 30%: nelle prove di taratura, quasi sempre bloccato, mentre due versioni uguali
-non vengono bloccate. Il prezzo è il tempo: circa due minuti per pagina.
+non vengono bloccate. Il prezzo è il tempo: 2 × 200 rendering per pagina, circa 30 secondi per una pagina che PHP
+genera in 60 ms e circa due minuti a 300 ms.
 
 ## Il controllo dopo la promozione {#after-promotion}
 

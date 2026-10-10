@@ -49,6 +49,8 @@ panel has overwritten nothing. An administrator chooses, file by file:
 
 ## Get notifications in a chat {#webhook}
 
+{/* TODO(verify): delivery to a real webhook (Slack, Discord, Mattermost), the message form and the six-hour rhythm. Not verified on 2026-10-10: no external webhook available; a receiver on this server is refused (`not a public address`). */}
+
 The panel can send alerts to a webhook that takes a `text` field, such as the incoming webhooks of
 Slack, Discord or Mattermost.
 
@@ -61,8 +63,10 @@ Every five minutes the panel sends each undismissed alert it has not notified in
 in the administrators' language, in the form `CloudGround ERROR on <site>: <text>`. Until you dismiss
 it, an alert therefore comes back every six hours. A failed send is tried again on the next round.
 
-The URL must be `https` and point to a public address: the panel refuses local and private addresses
-and follows no redirect. The URL is a credential: other accounts see it masked, and the panel never
+The URL must be `https` (an `http://` one is refused on save) and point to a public address: when it
+sends, the panel refuses local and private addresses, this server's own included, and follows no
+redirect. A send refused that way shows only in the API log (`alert webhook failed … not a public
+address`). The URL is a credential: other accounts see it masked, and the panel never
 writes it to the logs. To stop notifications, empty the field and press **Save**.
 
 ## Next step {#next}

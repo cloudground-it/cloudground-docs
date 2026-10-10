@@ -4,8 +4,8 @@ description: Ogni comando di cgctl, le opzioni, le variabili di configurazione e
 type: reference
 prerequisites:
   - Un token API, o email e password di un account
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 1
 ---
 
@@ -92,12 +92,32 @@ con la 2FA, `CLOUDGROUND_TOTP`): l'API non accetta un token per gestire i token.
 | `cgctl tokens create <nome> [giorni]` | `POST /api/tokens` | Crea un token; `giorni` da 0 (mai) a 365. Il token compare una sola volta. |
 | `cgctl tokens revoke <id-token>` | `DELETE /api/tokens/<id>` | Revoca un token. |
 
+:::warning[Sul socket locale non funzionano]
+
+Con il `CLOUDGROUND_URL` predefinito (`unix:///run/cloudground/api.sock`) l'accesso con email e
+password, quindi anche questi tre comandi, risponde `HTTP 401: authentication required`: il cookie
+di sessione è `Secure` e cgctl non lo rimanda su `unix://`. Sul server lanciali con
+`CLOUDGROUND_URL=https://127.0.0.1:8443`, o crea i token dal pannello, in **Sicurezza**.
+
+:::
+
+### Sul server {#on-the-server}
+
+Questi comandi girano da root sul server e non parlano con il pannello.
+
+| Comando | Cosa fa |
+| --- | --- |
+| `cgctl install [--plan] [--from <cartella> \| --release <cartella>] [--skip-packages] [--container]` | Installa CloudGround o lo aggiorna sul posto; `--plan` mostra cosa cambierebbe senza cambiare niente. È il comando che lancia `install.sh`. |
+| `cgctl doctor [--skip-packages] [--container]` | Controlla ogni passo dell'installazione e dice cosa non corrisponde; esce con 1 se trova differenze, altrimenti stampa `no drift`. |
+| `cgctl release verify <cartella> [file ...]` | Verifica una release scaricata con le chiavi di firma compilate in cgctl; non serve il pannello né un token. |
+
 ## Autenticazione {#authentication}
 
 1. Con un token (`CLOUDGROUND_TOKEN` o `CLOUDGROUND_TOKEN_FILE`), ogni richiesta porta
    `Authorization: Bearer <token>`.
 2. Senza token, `CLOUDGROUND_EMAIL` e `CLOUDGROUND_PASSWORD` (e `CLOUDGROUND_TOTP`) accedono una volta
-   per il comando.
+   per il comando. Solo su `https://`: sul socket `unix://` ogni comando risponde `HTTP 401` (vedi i
+   [token API](#tokens)).
 3. Senza né l'uno né gli altri, cgctl esce con 1 e spiega come ottenere un token.
 
 ## Configurazione {#configuration}

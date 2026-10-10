@@ -2,7 +2,7 @@
 title: "Guide · Siti"
 description: "Crea i siti, cambia le impostazioni, gestisci domini, certificati, routing e attività pianificate."
 type: index
-last_verified: unverified
+last_verified: 2026-10-10
 hide_table_of_contents: true
 ---
 

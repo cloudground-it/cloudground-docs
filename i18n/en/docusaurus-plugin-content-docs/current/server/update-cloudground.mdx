@@ -27,7 +27,7 @@ panel is opened** and press **Save**. The check never installs anything by itsel
    **Update now** and confirm.
 2. The panel says **Update started: the panel will restart.**
 
-{/* TODO(verify): what the interface shows during the restart and when it is back. */}
+{/* TODO(verify): what the interface shows during the restart and when it is back, and the whole signed update path (manifest, guard, update-result.json). Not verifiable on 2026-10-10: build a7d92ba has no signing key compiled in and no signed release exists to update from. */}
 
 What happens, in order:
 
@@ -46,9 +46,10 @@ newest.
 
 :::note[Builds without updates]
 
-A build made with `make dist` without `UPDATE_URL` and `UPDATE_PUBKEY` cannot update itself: the
-panel answers **this build has no update origin compiled in**. In that case update with the
-installer.
+A build made with `make dist` without a release signing key (`UPDATE_PUBKEY` empty, as until a
+public release exists) cannot update itself: **Update now** answers `self-update is not available in
+this build: this build has no release signing key compiled in` (`… no update origin compiled in` when
+`UPDATE_URL` is missing too). In that case update with the installer.
 
 :::
 

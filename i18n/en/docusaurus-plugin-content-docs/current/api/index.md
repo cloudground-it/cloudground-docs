@@ -4,8 +4,8 @@ description: Where the panel's API answers, how to authenticate, which requests 
 type: reference
 prerequisites:
   - An account in the panel, or an API token
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 1
 ---
 

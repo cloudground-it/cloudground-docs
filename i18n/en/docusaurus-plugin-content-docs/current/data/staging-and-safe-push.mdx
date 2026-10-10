@@ -6,8 +6,8 @@ prerequisites:
   - An active production site
   - An administrator account, or an operator assigned to the site
   - To publish database tables, a configured backup repository
-version: unreleased
-last_verified: unverified
+version: a7d92ba
+last_verified: 2026-10-10
 sidebar_position: 2
 ---
 
@@ -25,7 +25,15 @@ for each step is in [Staging, Safe Push and Performance Guard](/explanation/stag
 A site has at most one staging copy, and a staging copy cannot be staged itself. A WordPress site
 with an external database cannot be cloned.
 
-{/* TODO(verify): whether staging.<domain> gets a certificate, and which DNS record it needs. */}
+:::note[The staging certificate]
+
+Staging starts without a certificate: until you issue one it answers with the server's self-signed
+fallback certificate, which browsers refuse. Point `staging.<domain>` at the server too (an A or AAAA
+record, or a wildcard `*.<domain>`), then press **Open staging**, **SSL** tab, **Issue / renew**, or
+run `cgctl --wait cert issue <staging-id>`. **Recreate staging** makes a new site: issue the
+certificate again.
+
+:::
 
 ## Compare staging and production {#compare}
 
@@ -38,8 +46,9 @@ folders, and stops at 1000 files per list: beyond that the page says *List trunc
 1. In the **Safe Push** panel, type in **Pages to measure** the paths to compare, separated by
    spaces or commas (at most 10, each starting with `/`). The initial value is `/`.
 2. Press **Publish everything** and confirm.
-3. Follow the task. Performance Guard measures each page for about two minutes, then the release
-   is built, made live and verified.
+3. Follow the task. Performance Guard requests each page 200 times from staging and 200 from
+   production, then the release is built, made live and verified. For a page PHP renders in 60 ms
+   the whole push takes about 30 seconds; at 300 ms, about 2 minutes per page.
 4. Open the **Releases** tab: the new release is *live*, or *blocked* with the reason. Press
    **Guard: …** on its row to see the report.
 

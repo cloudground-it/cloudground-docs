@@ -1,6 +1,6 @@
 ---
 title: What the installer does
-description: The installer's ten steps, in order, and the choices behind each. Running it again on a CloudGround server upgrades it in place.
+description: The installer's check and nine steps, in order, and the choices behind each. Running it again on a CloudGround server upgrades it in place.
 type: explanation
 prerequisites: []
 version: unreleased
@@ -9,35 +9,35 @@ sidebar_position: 2
 ---
 
 `installer/install.sh` prepares an empty Ubuntu server and starts the panel. Everything the programs
-it runs print goes to `/var/log/cloudground-install.log`; on the terminal you see only the ten steps
+it runs print goes to `/var/log/cloudground-install.log`; on the terminal you see only the nine steps
 and how long each took.
 
 ## The steps {#steps}
 
 ```mermaid
 flowchart TD
-  start(["bash install.sh, as root"]) --> check["1 · Check the machine"]
+  start(["bash install.sh, as root"]) --> check["Check the machine"]
   check --> ok{"Every check<br/>passes?"}
   ok -- "no" --> stop(["List every problem<br/>and stop without touching anything"])
-  ok -- "yes" --> pkgs["2 · Install nginx, PHP, MariaDB,<br/>Redis, restic, certbot, wp-cli, composer"]
-  pkgs --> users["3 · Create the cloudground user, folders,<br/>agent token, self-signed certificates"]
+  ok -- "yes" --> pkgs["1 · Install nginx, PHP, MariaDB,<br/>Redis, restic, certbot, wp-cli, composer"]
+  pkgs --> users["2 · Create the cloudground user, folders,<br/>agent token, self-signed certificates"]
   users --> src{"Where do the<br/>binaries come from?"}
-  src -- "local build" --> bins["4 · Install panel-api,<br/>panel-agent, cgctl"]
+  src -- "local build" --> bins["3 · Install panel-api,<br/>panel-agent, cgctl"]
   src -- "downloaded release" --> verify{"Valid signature, requested version,<br/>not older than what is installed?"}
   verify -- "no" --> refuse(["Refuse to install"])
   verify -- "yes" --> bins
-  bins --> kernel["5 · Kernel and nginx<br/>worker settings"]
-  kernel --> nginx["6 · nginx default servers:<br/>:80, :443 and the panel on :8443"]
-  nginx --> maria["7 · Start MariaDB"]
-  maria --> svc["8 · systemd units: agent, API and socket;<br/>wait for nginx to listen on :443"]
-  svc --> fw["9 · Firewall and chrooted SFTP"]
-  fw --> rot["10 · Log rotation<br/>and certificate renewal"]
+  bins --> kernel["4 · Kernel and nginx<br/>worker settings"]
+  kernel --> nginx["5 · nginx default servers:<br/>:80, :443 and the panel on :8443"]
+  nginx --> maria["6 · Start MariaDB"]
+  maria --> svc["7 · systemd units: agent, API and socket;<br/>wait for nginx to listen on :443"]
+  svc --> fw["8 · Firewall and chrooted SFTP"]
+  fw --> rot["9 · Log rotation<br/>and certificate renewal"]
   rot --> link(["Print the one-time setup link"])
 ```
 
 ## What it checks first {#preflight}
 
-The first step runs every check and reports every problem together, so you fix the machine in one
+The initial check, before the steps, runs every test and reports every problem together, so you fix the machine in one
 pass:
 
 - Ubuntu 24.04 or 26.04 LTS, amd64 architecture;
@@ -56,6 +56,8 @@ restic and composer are downloaded at a pinned version and installed only if the
 the one written in the installer. wp-cli is checked against the SHA-512 published next to it.
 
 ## The binaries {#binaries}
+
+{/* TODO(verify): the downloaded-release path (manifest signature, version, downgrade). Not verifiable on 2026-10-10: no signed public release exists yet. The local build and the rerun were verified. */}
 
 With `CLOUDGROUND_LOCAL_BUILD` the installer copies the binaries from a local folder. Otherwise it
 downloads the release and installs it only when:
