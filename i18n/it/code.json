@@ -426,5 +426,26 @@
   "theme.tags.tagsPageTitle": {
     "message": "Etichette",
     "description": "The title of the tag list page"
+  },
+  "cg.type.tutorial": {
+    "message": "Tutorial"
+  },
+  "cg.type.howto": {
+    "message": "Guida pratica"
+  },
+  "cg.type.reference": {
+    "message": "Riferimento"
+  },
+  "cg.type.explanation": {
+    "message": "Spiegazione"
+  },
+  "cg.meta.type": {
+    "message": "Tipo"
+  },
+  "cg.meta.version": {
+    "message": "Versione"
+  },
+  "cg.meta.unverified": {
+    "message": "Non verificata"
   }
 }

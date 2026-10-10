@@ -426,5 +426,26 @@
   "theme.tags.tagsPageTitle": {
     "message": "Tags",
     "description": "The title of the tag list page"
+  },
+  "cg.type.tutorial": {
+    "message": "Tutorial"
+  },
+  "cg.type.howto": {
+    "message": "How-to guide"
+  },
+  "cg.type.reference": {
+    "message": "Reference"
+  },
+  "cg.type.explanation": {
+    "message": "Explanation"
+  },
+  "cg.meta.type": {
+    "message": "Type"
+  },
+  "cg.meta.version": {
+    "message": "Version"
+  },
+  "cg.meta.unverified": {
+    "message": "Unverified"
   }
 }

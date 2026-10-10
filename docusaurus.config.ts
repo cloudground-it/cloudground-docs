@@ -39,6 +39,7 @@ const config: Config = {
   onBrokenLinks: 'throw',
   onBrokenAnchors: 'throw',
   markdown: {
+    mermaid: true,
     hooks: {onBrokenMarkdownLinks: 'throw'},
   },
 
@@ -102,6 +103,7 @@ const config: Config = {
   ],
 
   themes: [
+    '@docusaurus/theme-mermaid',
     [
       '@easyops-cn/docusaurus-search-local',
       {
@@ -149,6 +151,35 @@ const config: Config = {
     tableOfContents: {
       minHeadingLevel: 2,
       maxHeadingLevel: 3,
+    },
+    // Diagrams take their colours from the theme tokens: the base theme with
+    // the light palette here, and custom.css (section Mermaid) maps every
+    // fill and stroke to the --cg-* variables, so dark mode follows.
+    mermaid: {
+      theme: {light: 'base', dark: 'base'},
+      options: {
+        fontFamily: 'Archivo, system-ui, sans-serif',
+        themeVariables: {
+          fontFamily: 'Archivo, system-ui, sans-serif',
+          fontSize: '14px',
+          primaryColor: '#e9e7e0',
+          primaryTextColor: '#0f0f12',
+          primaryBorderColor: '#0f0f12',
+          secondaryColor: '#f2f1ec',
+          tertiaryColor: '#f2f1ec',
+          lineColor: '#55555d',
+          textColor: '#0f0f12',
+          mainBkg: '#e9e7e0',
+          clusterBkg: '#f2f1ec',
+          clusterBorder: '#d6d4cc',
+          edgeLabelBackground: '#f2f1ec',
+          noteBkgColor: '#f2f1ec',
+          noteBorderColor: '#2f5bff',
+          actorBkg: '#e9e7e0',
+          actorBorder: '#0f0f12',
+          signalColor: '#0f0f12',
+        },
+      },
     },
     prism: {
       theme: inkPrism,

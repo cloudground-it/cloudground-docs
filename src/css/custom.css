@@ -1615,3 +1615,114 @@ html[data-theme='dark'] .navbar-sidebar .menu__caret::before {
 .navbar-sidebar .menu__link svg {
   display: none;
 }
+
+/* ---------- Mermaid ---------- */
+/* Diagrams use the site's tokens in both modes. Mermaid scopes its own styles
+   under the SVG's id, so these rules need !important to win. Diagram sources
+   carry no colours of their own (STANDARD.md §5). */
+
+.docusaurus-mermaid-container {
+  margin: 0 0 var(--ifm-leading);
+  padding: 20px;
+  border: 1px solid var(--cg-rule);
+  background: var(--cg-bg);
+  overflow-x: auto;
+  text-align: center;
+}
+
+.docusaurus-mermaid-container svg {
+  max-width: 100%;
+  height: auto;
+  font-family: 'Archivo', system-ui, sans-serif !important;
+}
+
+.docusaurus-mermaid-container svg text,
+.docusaurus-mermaid-container svg .label,
+.docusaurus-mermaid-container svg .nodeLabel,
+.docusaurus-mermaid-container svg .edgeLabel,
+.docusaurus-mermaid-container svg .messageText,
+.docusaurus-mermaid-container svg .noteText,
+.docusaurus-mermaid-container svg .actor tspan,
+.docusaurus-mermaid-container svg .stateLabel text,
+.docusaurus-mermaid-container svg .cluster-label span {
+  fill: var(--cg-fg) !important;
+  color: var(--cg-fg) !important;
+}
+
+/* Boxes: flowchart nodes, states, sequence actors. */
+.docusaurus-mermaid-container svg .node rect,
+.docusaurus-mermaid-container svg .node polygon,
+.docusaurus-mermaid-container svg .node circle:not(.state-start),
+.docusaurus-mermaid-container svg .node path,
+.docusaurus-mermaid-container svg .node .basic,
+.docusaurus-mermaid-container svg g.stateGroup rect,
+.docusaurus-mermaid-container svg .actor,
+.docusaurus-mermaid-container svg .labelBox {
+  fill: var(--cg-bg2) !important;
+  stroke: var(--cg-rule-strong) !important;
+  stroke-width: 1px !important;
+}
+
+/* Groups: subgraphs and composite states, a hairline frame on the page colour. */
+.docusaurus-mermaid-container svg .cluster rect,
+.docusaurus-mermaid-container svg .statediagram-cluster rect,
+.docusaurus-mermaid-container svg .composit {
+  fill: var(--cg-bg) !important;
+  stroke: var(--cg-rule) !important;
+}
+
+.docusaurus-mermaid-container svg .cluster-label,
+.docusaurus-mermaid-container svg .cluster text {
+  font-family: 'Geist Mono', ui-monospace, monospace !important;
+}
+
+/* Lines and arrowheads. */
+.docusaurus-mermaid-container svg .flowchart-link,
+.docusaurus-mermaid-container svg .edgePath .path,
+.docusaurus-mermaid-container svg .transition,
+.docusaurus-mermaid-container svg .messageLine0,
+.docusaurus-mermaid-container svg .messageLine1,
+.docusaurus-mermaid-container svg .actor-line,
+.docusaurus-mermaid-container svg .loopLine {
+  stroke: var(--cg-text-muted) !important;
+}
+
+.docusaurus-mermaid-container svg marker path,
+.docusaurus-mermaid-container svg .arrowheadPath,
+.docusaurus-mermaid-container svg #arrowhead path,
+.docusaurus-mermaid-container svg .arrowMarkerPath {
+  fill: var(--cg-text-muted) !important;
+  stroke: var(--cg-text-muted) !important;
+}
+
+.docusaurus-mermaid-container svg .edgeLabel,
+.docusaurus-mermaid-container svg .edgeLabel rect,
+.docusaurus-mermaid-container svg .edgeLabel p,
+.docusaurus-mermaid-container svg .labelBkg {
+  background-color: var(--cg-bg) !important;
+  fill: var(--cg-bg) !important;
+}
+
+/* Notes and start/end markers take the accent. */
+.docusaurus-mermaid-container svg .note {
+  fill: var(--cg-bg) !important;
+  stroke: var(--cg-accent) !important;
+}
+
+.docusaurus-mermaid-container svg .state-start,
+.docusaurus-mermaid-container svg .state-end,
+.docusaurus-mermaid-container svg circle.state-start {
+  fill: var(--cg-fg) !important;
+  stroke: var(--cg-fg) !important;
+}
+
+/* Decision diamonds: the accent, to mark where a flow branches. */
+.docusaurus-mermaid-container svg .node polygon {
+  stroke: var(--cg-accent) !important;
+}
+
+/* ---------- Unverified pages ---------- */
+
+.cg-metastrip__cell--unverified dd {
+  color: var(--cg-orange);
+}
