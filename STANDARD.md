@@ -108,7 +108,10 @@ Facts come from the product's source of truth, in this order: the behaviour of a
 the package `SPEC.md` files; the code. Never from older documentation. When the product changes a
 behaviour a page describes, the page goes back to `unverified` in the same change.
 
-The theme shows "non verificata" / "unverified" in the header strip of such a page.
+The theme shows "non verificata" / "unverified" in the header strip of such a page. A fact the
+code does not settle is never guessed: the page says what is known and leaves a comment
+`{/* TODO(verify): … */}` for the integrator, who resolves it on the test server before setting
+the date.
 
 ## 5. Diagrams
 
@@ -133,7 +136,9 @@ mode (see `src/css/custom.css`, section *Mermaid*). Rules:
 - a non-index page has no `{#next}` section;
 - a page exists in one language and not the other, or the two differ in `type` or
   `last_verified`;
-- an internal link (Markdown link or a `<Card to>`) points to a page or file that does not exist.
+- an internal link (Markdown link or a `<Card to>`) points to a page or file that does not exist;
+- a page holds an HTML comment (MDX refuses `<!-- -->`; write `{/* … */}`);
+- a Mermaid diagram does not parse.
 
 `npm run check -- --strict` also fails on `unverified` pages; use it before a release. The
 Docusaurus build itself refuses broken links and anchors (`onBrokenLinks: 'throw'`).

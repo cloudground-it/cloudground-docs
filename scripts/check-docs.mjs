@@ -113,6 +113,7 @@ for (const [locale, map] of Object.entries(pages)) {
       }
       if (!/^##\s.*\{#next\}\s*$/m.test(body)) fail(file, 'no next-step section (`## … {#next}`)');
     }
+    if (/<!--/.test(stripCode(body))) fail(file, 'HTML comment: MDX refuses `<!-- -->`, use `{/* … */}`');
     for (const m of body.matchAll(/^```mermaid\n([\s\S]*?)^```/gm)) diagrams.push({file, src: m[1]});
     for (const link of links(body)) {
       const target = link.split('#')[0];
