@@ -11,7 +11,7 @@ sidebar_position: 1
 
 `cgctl` è un client leggero dell'API del pannello, pensato per gli script. Ogni comando diventa una
 sola richiesta all'API; la risposta JSON dell'API esce, indentata, sullo standard output. Per
-iniziare vedi [token API e cgctl](/access/api-tokens-and-cgctl).
+iniziare vedi [token API e cgctl](/docs/access/api-tokens-and-cgctl).
 
 ## Sintassi {#syntax}
 
@@ -65,7 +65,7 @@ cgctl --wait sites create example.com wordpress \
 Senza password, il pannello ne genera una. Le opzioni accettano anche la forma `--opzione=valore` e
 vincono sugli stessi campi di `flags-json`. Un'opzione sconosciuta, un'opzione senza valore, due
 opzioni della password insieme, un file illeggibile o più di tre argomenti posizionali sono un errore
-d'uso (uscita 2). I nomi e la password seguono le [regole dei database](/reference/database-names-and-passwords).
+d'uso (uscita 2). I nomi e la password seguono le [regole dei database](/docs/reference/database-names-and-passwords).
 
 Il riepilogo, in testo semplice: il sito e il suo stato (`Being created: task <id>`, o con `--wait`
 `Created.`), poi URL e link del pannello, URL e utente di amministrazione di WordPress, host, porta,
@@ -130,8 +130,8 @@ Questi comandi girano da root sul server e non parlano con il pannello.
 | --- | --- |
 | `cgctl install [--plan] [--from <cartella> \| --release <cartella>] [--skip-packages] [--container]` | Installa CloudGround, o ripara un server con la stessa release (un'altra release va installata con `cgctl update`); `--plan` mostra cosa cambierebbe senza cambiare niente. È il comando che lancia `install.sh`. |
 | `cgctl doctor [--skip-packages] [--container]` | Controlla ogni passo dell'installazione e dice cosa non corrisponde; esce con 1 se trova differenze, altrimenti stampa `no drift`. |
-| `cgctl update [--to <vX.Y.Z>] [--channel stable\|beta] [--check] [--timeout <durata>]` | Aggiorna CloudGround a una release firmata più recente, con snapshot e rollback automatico, come **Aggiorna ora** nel pannello; `--check` dice solo cosa installerebbe. Vedi [aggiorna CloudGround](/server/update-cloudground). |
-| `cgctl uninstall [--plan] [--yes] [--remove-sites [--confirm <hostname>]] [--purge-packages]` | Toglie CloudGround dal server, tenendo i siti e i loro database se non c'è `--remove-sites`; `--plan` elenca ogni azione senza cambiare nulla. Vedi [disinstalla CloudGround](/server/uninstall-cloudground). |
+| `cgctl update [--to <vX.Y.Z>] [--channel stable\|beta] [--check] [--timeout <durata>]` | Aggiorna CloudGround a una release firmata più recente, con snapshot e rollback automatico, come **Aggiorna ora** nel pannello; `--check` dice solo cosa installerebbe. Vedi [aggiorna CloudGround](/docs/server/update-cloudground). |
+| `cgctl uninstall [--plan] [--yes] [--remove-sites [--confirm <hostname>]] [--purge-packages]` | Toglie CloudGround dal server, tenendo i siti e i loro database se non c'è `--remove-sites`; `--plan` elenca ogni azione senza cambiare nulla. Vedi [disinstalla CloudGround](/docs/server/uninstall-cloudground). |
 | `cgctl release verify <cartella> [file ...]` | Verifica una release scaricata con le chiavi di firma compilate in cgctl; non serve il pannello né un token. |
 
 ## Autenticazione {#authentication}
@@ -194,4 +194,4 @@ risposta, `--wait` non cambia nulla.
 
 ## Prossimo passo {#next}
 
-Per le operazioni che cgctl non copre, usa direttamente l'[API](/api).
+Per le operazioni che cgctl non copre, usa direttamente l'[API](/docs/api).

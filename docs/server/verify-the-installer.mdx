@@ -61,7 +61,7 @@ Se uno dei due controlli fallisce, non lanciare lo script.
 bash install.sh
 ```
 
-Da qui l'installazione è la stessa del [tutorial](/tutorials/install#run-the-installer): lo script
+Da qui l'installazione è la stessa del [tutorial](/docs/tutorials/install#run-the-installer): lo script
 scarica i binari della release da GitHub, lancia `cgctl` solo se ha lo SHA-256 che lo script indica,
 e `cgctl` non installa nulla il cui manifesto non si verifica.
 
@@ -73,4 +73,4 @@ gh attestation verify install.sh --repo cloudground-it/cloudground
 
 ## Prossimo passo {#next}
 
-Per sapere da cosa protegge ogni controllo, leggi [cosa fa l'installer](/explanation/installation#trust).
+Per sapere da cosa protegge ogni controllo, leggi [cosa fa l'installer](/docs/explanation/installation#trust).

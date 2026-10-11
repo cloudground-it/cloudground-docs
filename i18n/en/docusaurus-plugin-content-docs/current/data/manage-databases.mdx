@@ -39,7 +39,7 @@ Read-only accounts see both sections and can open Quarry, but change nothing.
 
 1. In **Databases**, press **Add database**.
 2. In **Name**, type the name, for example `shop_data`. The
-   [name rules](/reference/database-names-and-passwords#names) apply.
+   [name rules](/docs/reference/database-names-and-passwords#names) apply.
 3. Press **Create database**.
 
 The database is created by a task (*Creating the database …*). It is empty, and no user can reach
@@ -50,7 +50,7 @@ it until you give one access: see [change a user's privileges](#privileges).
 1. In **Database users**, press **Add user**.
 2. In **User**, type the name, for example `reporting`. The same rules as for databases apply.
 3. Leave **Password** empty to have a strong one generated, or type your own: see the
-   [password rules](/reference/database-names-and-passwords#passwords).
+   [password rules](/docs/reference/database-names-and-passwords#passwords).
 4. Under **Privileges**, choose for each database **None**, **Read only** or **All privileges**.
 5. Press **Create user**.
 
@@ -100,7 +100,7 @@ The menu item is disabled for the primary database and the primary user.
 ## Open a database in Quarry {#open-in-quarry}
 
 On a database's row, press **Open in Quarry**. Quarry opens in a new tab, already signed in for this
-site: see [Use Quarry](/data/use-quarry).
+site: see [Use Quarry](/docs/data/use-quarry).
 
 ## WordPress tools {#wordpress-tools}
 
@@ -128,7 +128,7 @@ cgctl database user-create <site-id> reporting shop_data:read site_7:all
   for each database it may reach. It always generates the password, which appears once in the
   answer.
 
-Deleting, privileges and password resets are routes of the [API](/api):
+Deleting, privileges and password resets are routes of the [API](/docs/api):
 `DELETE /api/sites/<id>/databases/<name>?confirm=<name>`,
 `PUT /api/sites/<id>/database-users/<name>/grants`,
 `POST /api/sites/<id>/database-users/<name>/password` and
@@ -136,4 +136,4 @@ Deleting, privileges and password resets are routes of the [API](/api):
 
 ## Next step {#next}
 
-[Use Quarry](/data/use-quarry) to browse and edit the tables.
+[Use Quarry](/docs/data/use-quarry) to browse and edit the tables.

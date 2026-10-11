@@ -8,7 +8,7 @@ last_verified: unverified
 sidebar_position: 3
 ---
 
-Every account has exactly one of three roles. To assign them see [users and roles](/access/users-and-roles).
+Every account has exactly one of three roles. To assign them see [users and roles](/docs/access/users-and-roles).
 
 | Role | API value | Reach |
 | --- | --- | --- |
@@ -106,7 +106,7 @@ users, tokens and the site shell. Nor can it add a key of type "shell". These re
 **403**. A token cannot open Quarry either.
 
 A database user signed in to Quarry with its own password has no panel role: its MariaDB privileges
-decide (see [How Quarry works](/explanation/quarry#mariadb-decides)).
+decide (see [How Quarry works](/docs/explanation/quarry#mariadb-decides)).
 
 The panel revokes an account's tokens when its password is changed or reset, when it turns two-step
 verification off, when it is disabled, demoted or deleted, and with `panel-api recover-admin`.
@@ -118,4 +118,4 @@ uses to ask the panel to purge its pages from the cache. It gives access to noth
 
 ## Next step {#next}
 
-Create the accounts with the right role: [users and roles](/access/users-and-roles).
+Create the accounts with the right role: [users and roles](/docs/access/users-and-roles).

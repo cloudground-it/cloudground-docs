@@ -11,7 +11,7 @@ sidebar_position: 1
 
 `cgctl` is a thin client of the panel's API, made for scripts. Every command becomes a single API
 request; the API's JSON answer goes, indented, to standard output. To get started see
-[API tokens and cgctl](/access/api-tokens-and-cgctl).
+[API tokens and cgctl](/docs/access/api-tokens-and-cgctl).
 
 ## Syntax {#syntax}
 
@@ -64,7 +64,7 @@ cgctl --wait sites create example.com wordpress \
 Without a password, the panel generates one. The options also take the form `--option=value`, and win
 over the same fields in `flags-json`. An unknown option, an option without its value, two of the
 password options together, an unreadable file or more than three positional arguments is a usage
-error (exit 2). The names and the password follow the [database rules](/reference/database-names-and-passwords).
+error (exit 2). The names and the password follow the [database rules](/docs/reference/database-names-and-passwords).
 
 The summary, in plain text: the site and its state (`Being created: task <id>`, or with `--wait`
 `Created.`), then the URL and the panel link, WordPress's admin URL and user, the database's host,
@@ -129,8 +129,8 @@ These commands run as root on the server and do not talk to the panel.
 | --- | --- |
 | `cgctl install [--plan] [--from <dir> \| --release <dir>] [--skip-packages] [--container]` | Installs CloudGround, or repairs a server running the same release (another release goes in with `cgctl update`); `--plan` shows what would change without changing anything. It is the command `install.sh` runs. |
 | `cgctl doctor [--skip-packages] [--container]` | Checks every installation step and reports what does not match; exits with 1 when it finds differences, otherwise prints `no drift`. |
-| `cgctl update [--to <vX.Y.Z>] [--channel stable\|beta] [--check] [--timeout <duration>]` | Updates CloudGround to a newer signed release, with a snapshot and an automatic rollback, like the panel's **Update now**; `--check` only says what would be installed. See [update CloudGround](/server/update-cloudground). |
-| `cgctl uninstall [--plan] [--yes] [--remove-sites [--confirm <hostname>]] [--purge-packages]` | Removes CloudGround from the server, keeping the sites and their databases unless `--remove-sites`; `--plan` lists every action without changing anything. See [uninstall CloudGround](/server/uninstall-cloudground). |
+| `cgctl update [--to <vX.Y.Z>] [--channel stable\|beta] [--check] [--timeout <duration>]` | Updates CloudGround to a newer signed release, with a snapshot and an automatic rollback, like the panel's **Update now**; `--check` only says what would be installed. See [update CloudGround](/docs/server/update-cloudground). |
+| `cgctl uninstall [--plan] [--yes] [--remove-sites [--confirm <hostname>]] [--purge-packages]` | Removes CloudGround from the server, keeping the sites and their databases unless `--remove-sites`; `--plan` lists every action without changing anything. See [uninstall CloudGround](/docs/server/uninstall-cloudground). |
 | `cgctl release verify <dir> [file ...]` | Checks a downloaded release against the signing keys built into cgctl; needs neither the panel nor a token. |
 
 ## Authentication {#authentication}
@@ -191,4 +191,4 @@ changes nothing.
 
 ## Next step {#next}
 
-For what cgctl does not cover, use the [API](/api) directly.
+For what cgctl does not cover, use the [API](/docs/api) directly.

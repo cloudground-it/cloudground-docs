@@ -18,7 +18,7 @@ The full list of routes, with the role each one needs, is generated from the cod
 | Address | What it serves |
 | --- | --- |
 | `https://<ip>:8443` | API and interface, always, with a self-signed certificate. |
-| `https://<panel-domain>` | API and interface, once you have [given the panel a domain](/server/panel-domain). |
+| `https://<panel-domain>` | API and interface, once you have [given the panel a domain](/docs/server/panel-domain). |
 | `/run/cloudground/api.sock` | The Unix socket behind both addresses (owner `cloudground`, group `www-data`, mode `0660`). |
 | `http://127.0.0.1:9080` | Only `POST /api/connector/purge` and `GET /healthz`, for the sites on the same server. |
 
@@ -37,7 +37,7 @@ There are two ways.
 alone, even when it carries a cookie. A token that is unknown, expired, revoked, or whose account is
 no longer an enabled administrator gets **401** `invalid or revoked API token`. Any other
 `Authorization` header (a Bearer that does not start with `cgt_`, a proxy's Basic authentication) is
-ignored. To create one see [API tokens and cgctl](/access/api-tokens-and-cgctl).
+ignored. To create one see [API tokens and cgctl](/docs/access/api-tokens-and-cgctl).
 
 **Session.** `POST /api/login` with `{"email": "…", "password": "…"}` sets the session cookie
 `__Host-cloudground_session` (`Secure`, `HttpOnly`, `SameSite=Strict`). A session lasts 24 hours at
@@ -67,7 +67,7 @@ email, every attempt waits before it is evaluated, 1 to 60 seconds.
 Every route needs one of these levels: open, signed in, whole server, manage, administrator. A role
 that is not allowed gets **403**; a site an operator cannot reach answers **404**. Some routes are
 session-only and answer a token with **403**: your own account, users, tokens and the site shell. The
-full table is in [roles and permissions](/reference/roles-and-permissions).
+full table is in [roles and permissions](/docs/reference/roles-and-permissions).
 
 ## Errors {#errors}
 
@@ -105,4 +105,4 @@ again.
 
 ## Next step {#next}
 
-For scripts, `cgctl` already makes these calls for you: see the [CLI reference](/cli).
+For scripts, `cgctl` already makes these calls for you: see the [CLI reference](/docs/cli).

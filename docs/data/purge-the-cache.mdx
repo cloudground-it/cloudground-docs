@@ -11,7 +11,7 @@ sidebar_position: 1
 ---
 
 Su WordPress e WooCommerce non serve quasi mai: il connettore svuota da sé le pagine che una
-modifica cambia (l'elenco è nel [riferimento della cache](/reference/cache-behaviour#automatic-purges)).
+modifica cambia (l'elenco è nel [riferimento della cache](/docs/reference/cache-behaviour#automatic-purges)).
 Svuota a mano quando cambi qualcosa che il pannello non vede, per esempio un file del tema caricato
 via SFTP, o su un sito PHP o Laravel.
 
@@ -40,7 +40,7 @@ cgctl purge <id-sito> https://<dominio>/blog/articolo/  # uno o più indirizzi
 ```
 
 `<id-sito>` è il numero del sito, che vedi con `cgctl sites list`. La risposta dice quante voci sono
-state tolte, in `removed`. Per configurare cgctl, vedi [token API e cgctl](/access/api-tokens-and-cgctl).
+state tolte, in `removed`. Per configurare cgctl, vedi [token API e cgctl](/docs/access/api-tokens-and-cgctl).
 
 ## Riempi di nuovo la cache {#warm-the-cache}
 
@@ -63,4 +63,4 @@ Subito dopo lo svuotamento la risposta dice `MISS`; la richiesta successiva dice
 ## Prossimo passo {#next}
 
 Per sapere quali pagine restano sempre fuori dalla cache, leggi il
-[comportamento della cache](/reference/cache-behaviour).
+[comportamento della cache](/docs/reference/cache-behaviour).

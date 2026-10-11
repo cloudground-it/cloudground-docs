@@ -50,7 +50,7 @@ does not work yet.
 The script installs CloudGround v0.1.0. It downloads the release from GitHub, runs its `cgctl` only
 if it has the SHA-256 the script names, and `cgctl` installs nothing whose signed manifest does not
 verify. To check the script itself before you run it, see
-[verify the installer](/server/verify-the-installer).
+[verify the installer](/docs/server/verify-the-installer).
 
 It checks the machine first, then shows nine steps, each with its duration (below without the times,
 which depend on the server):
@@ -86,7 +86,7 @@ At the end the installer prints an address like this one:
 
 When the server's firewall (ufw) is off, two more lines follow: the installer does not turn it on, it
 prints the commands that would, with SSH, the sites and the panel open. Leave them for now; the
-[firewall](/access/firewall#enable) page explains them.
+[firewall](/docs/access/firewall#enable) page explains them.
 
 Open the link in your browser. The browser warns that the certificate is not valid: it is
 self-signed, which is expected on first boot. Accept the warning for this address.

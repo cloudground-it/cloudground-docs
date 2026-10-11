@@ -54,15 +54,33 @@ function parse(file) {
   }
 }
 
-// Permalink of a page, as Docusaurus computes it with routeBasePath '/'.
+// The docs plugin's routeBasePath: every page lives under /docs. The site's
+// own pages (src/pages: the home, the privacy note) live at the root.
+const DOCS_BASE = '/docs';
+
+// Permalink of a page, as Docusaurus computes it with routeBasePath 'docs'.
 function permalink(rel, fm) {
   const dir = path.posix.dirname(rel.split(path.sep).join('/'));
+  let local;
   if (fm?.slug) {
-    return fm.slug.startsWith('/') ? fm.slug : `/${dir === '.' ? '' : `${dir}/`}${fm.slug}`;
+    local = fm.slug.startsWith('/') ? fm.slug : `/${dir === '.' ? '' : `${dir}/`}${fm.slug}`;
+  } else {
+    const base = path.posix.basename(rel, path.extname(rel));
+    if (base === 'index' || base === path.posix.basename(dir)) local = dir === '.' ? '/' : `/${dir}`;
+    else local = `/${dir === '.' ? '' : `${dir}/`}${base}`;
   }
-  const base = path.posix.basename(rel, path.extname(rel));
-  if (base === 'index' || base === path.posix.basename(dir)) return dir === '.' ? '/' : `/${dir}`;
-  return `/${dir === '.' ? '' : `${dir}/`}${base}`;
+  return local === '/' ? DOCS_BASE : `${DOCS_BASE}${local}`;
+}
+
+// Routes of src/pages: index.tsx is the root, other files their own name.
+function sitePages() {
+  const dir = path.join(ROOT, 'src/pages');
+  if (!fs.existsSync(dir)) return [];
+  return fs
+    .readdirSync(dir)
+    .filter((f) => /\.(tsx|jsx|mdx?)$/.test(f))
+    .map((f) => f.replace(/\.[^.]+$/, ''))
+    .map((name) => (name === 'index' ? '/' : `/${name}`));
 }
 
 // Fenced code is not prose: links inside it are not checked.
@@ -88,7 +106,7 @@ for (const [locale, dir] of Object.entries(LOCALES)) {
 }
 
 for (const [locale, map] of Object.entries(pages)) {
-  const permalinks = new Set([...map].map(([rel, p]) => permalink(rel, p.fm)));
+  const permalinks = new Set([...map].map(([rel, p]) => permalink(rel, p.fm)).concat(sitePages()));
   for (const [rel, {file, fm, body}] of map) {
     if (!fm) {
       fail(file, 'no front matter');

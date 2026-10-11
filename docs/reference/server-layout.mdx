@@ -24,7 +24,7 @@ pannello, `<dominio>` il suo dominio.
 | 9080/tcp | panel-api | solo `127.0.0.1` | il connettore WordPress: svuotamento della cache e controllo di salute |
 
 L'installer non accende mai il firewall. Se è già attivo, apre le porte su cui ascolta sshd, 80, 443,
-443/udp e 8443 (vedi [firewall](/access/firewall)). Dal pannello non puoi chiudere le porte di SSH, 80,
+443/udp e 8443 (vedi [firewall](/docs/access/firewall)). Dal pannello non puoi chiudere le porte di SSH, 80,
 443 e 8443.
 
 Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudground/api.sock`.
@@ -50,7 +50,7 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `cg-site-<id>` | l'utente di sistema di un sito: possiede i suoi file, esegue il suo PHP, entra in SFTP |
 | `cg-shell-<id>` | l'accesso alla shell del sito, con lo stesso uid di `cg-site-<id>` |
 | `cg-sftp-off` | gruppo: i suoi membri non possono entrare né in SSH né in SFTP |
-| `site_<id>` | il nome predefinito del database e dell'utente MariaDB principali di un sito, quando non ne scegli uno (vedi [nomi e password dei database](/reference/database-names-and-passwords)) |
+| `site_<id>` | il nome predefinito del database e dell'utente MariaDB principali di un sito, quando non ne scegli uno (vedi [nomi e password dei database](/docs/reference/database-names-and-passwords)) |
 
 ## Il pannello {#panel-paths}
 
@@ -67,11 +67,11 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `/var/lib/cloudground-agent/installed.json` | cosa ha installato l'installer perché mancava: pacchetti, repository, strumenti (lo legge `cgctl uninstall --purge-packages`) |
 | `/var/lib/cloudground-agent/update-result.json` | l'esito dell'ultimo aggiornamento |
 | `/var/lib/cloudground-agent/update-snapshots/` | gli snapshot presi prima di un aggiornamento, gli ultimi tre |
-| `/var/lib/cloudground-agent/databases.json` | il registro dell'agent di quale database e utente database è di quale sito (vedi [recupera il registro dei database](/data/recover-the-database-record)) |
+| `/var/lib/cloudground-agent/databases.json` | il registro dell'agent di quale database e utente database è di quale sito (vedi [recupera il registro dei database](/docs/data/recover-the-database-record)) |
 | `/run/cloudground/agent.sock` | il socket dell'agent |
 | `/run/cloudground/shell.sock` | il socket con cui l'agent riceve le sessioni della shell dei siti |
 | `/var/log/cloudground-install.log` | il log dell'installer |
-| `/root/cloudground-uninstall/` | dopo una disinstallazione: lo stato del pannello, `backup.env`, `README.txt` (vedi [disinstalla CloudGround](/server/uninstall-cloudground#kept)) |
+| `/root/cloudground-uninstall/` | dopo una disinstallazione: lo stato del pannello, `backup.env`, `README.txt` (vedi [disinstalla CloudGround](/docs/server/uninstall-cloudground#kept)) |
 
 ## I siti {#site-paths}
 
@@ -137,4 +137,4 @@ l'agent possa partire.
 
 ## Prossimo passo {#next}
 
-Per capire come questi pezzi lavorano insieme, leggi l'[architettura](/explanation/architecture).
+Per capire come questi pezzi lavorano insieme, leggi l'[architettura](/docs/explanation/architecture).

@@ -39,7 +39,7 @@ Gli account in sola lettura vedono entrambe le sezioni e possono aprire Quarry, 
 
 1. In **Database**, premi **Aggiungi database**.
 2. In **Nome**, scrivi il nome, per esempio `shop_data`. Valgono le
-   [regole dei nomi](/reference/database-names-and-passwords#names).
+   [regole dei nomi](/docs/reference/database-names-and-passwords#names).
 3. Premi **Crea database**.
 
 Il database viene creato da un'attività (*Creazione del database …*). È vuoto, e nessun utente lo
@@ -50,7 +50,7 @@ raggiunge finché non gli dai accesso: vedi [cambia i privilegi di un utente](#p
 1. In **Utenti database**, premi **Aggiungi utente**.
 2. In **Utente**, scrivi il nome, per esempio `reporting`. Valgono le stesse regole dei database.
 3. Lascia vuota la **Password** per farne generare una robusta, oppure scrivi la tua: vedi le
-   [regole delle password](/reference/database-names-and-passwords#passwords).
+   [regole delle password](/docs/reference/database-names-and-passwords#passwords).
 4. In **Privilegi**, scegli per ogni database **Nessuno**, **Sola lettura** o **Tutti i privilegi**.
 5. Premi **Crea utente**.
 
@@ -102,7 +102,7 @@ La voce del menu è disattivata per il database principale e per l'utente princi
 ## Apri un database in Quarry {#open-in-quarry}
 
 Sulla riga di un database, premi **Apri in Quarry**. Quarry si apre in una nuova scheda, con l'accesso
-già fatto per questo sito: vedi [Usa Quarry](/data/use-quarry).
+già fatto per questo sito: vedi [Usa Quarry](/docs/data/use-quarry).
 
 ## Strumenti WordPress {#wordpress-tools}
 
@@ -131,7 +131,7 @@ cgctl database user-create <site-id> reporting shop_data:read site_7:all
   per ogni database che può raggiungere. Genera sempre la password, che compare una sola volta nella
   risposta.
 
-Eliminazione, privilegi e reimpostazione della password sono route dell'[API](/api):
+Eliminazione, privilegi e reimpostazione della password sono route dell'[API](/docs/api):
 `DELETE /api/sites/<id>/databases/<name>?confirm=<name>`,
 `PUT /api/sites/<id>/database-users/<name>/grants`,
 `POST /api/sites/<id>/database-users/<name>/password` e
@@ -139,4 +139,4 @@ Eliminazione, privilegi e reimpostazione della password sono route dell'[API](/a
 
 ## Prossimo passo {#next}
 
-[Usa Quarry](/data/use-quarry) per sfogliare e modificare le tabelle.
+[Usa Quarry](/docs/data/use-quarry) per sfogliare e modificare le tabelle.

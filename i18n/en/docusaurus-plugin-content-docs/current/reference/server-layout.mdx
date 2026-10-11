@@ -24,7 +24,7 @@ the panel, `<domain>` its domain.
 | 9080/tcp | panel-api | `127.0.0.1` only | the WordPress connector: cache purge and health check |
 
 The installer never turns the firewall on. When it is already active, it opens the ports sshd listens
-on, 80, 443, 443/udp and 8443 (see [firewall](/access/firewall)). From the panel you cannot close the
+on, 80, 443, 443/udp and 8443 (see [firewall](/docs/access/firewall)). From the panel you cannot close the
 SSH ports, 80, 443 or 8443.
 
 The panel has no TCP port of its own: nginx talks to it on the socket `/run/cloudground/api.sock`.
@@ -50,7 +50,7 @@ The panel has no TCP port of its own: nginx talks to it on the socket `/run/clou
 | `cg-site-<id>` | a site's system user: owns its files, runs its PHP, signs in over SFTP |
 | `cg-shell-<id>` | the site shell's login, with the same uid as `cg-site-<id>` |
 | `cg-sftp-off` | group: its members can sign in over neither SSH nor SFTP |
-| `site_<id>` | the default name of a site's primary MariaDB database and user, when you choose none (see [database names and passwords](/reference/database-names-and-passwords)) |
+| `site_<id>` | the default name of a site's primary MariaDB database and user, when you choose none (see [database names and passwords](/docs/reference/database-names-and-passwords)) |
 
 ## The panel {#panel-paths}
 
@@ -67,11 +67,11 @@ The panel has no TCP port of its own: nginx talks to it on the socket `/run/clou
 | `/var/lib/cloudground-agent/installed.json` | what the installer installed because it was missing: packages, repository, tools (read by `cgctl uninstall --purge-packages`) |
 | `/var/lib/cloudground-agent/update-result.json` | the outcome of the last update |
 | `/var/lib/cloudground-agent/update-snapshots/` | the snapshots taken before an update, the newest three |
-| `/var/lib/cloudground-agent/databases.json` | the agent's record of which database and database user is which site's (see [recover the database record](/data/recover-the-database-record)) |
+| `/var/lib/cloudground-agent/databases.json` | the agent's record of which database and database user is which site's (see [recover the database record](/docs/data/recover-the-database-record)) |
 | `/run/cloudground/agent.sock` | the agent's socket |
 | `/run/cloudground/shell.sock` | the socket on which the agent takes the site shells' sessions |
 | `/var/log/cloudground-install.log` | the installer's log |
-| `/root/cloudground-uninstall/` | after an uninstall: the panel's state, `backup.env`, `README.txt` (see [uninstall CloudGround](/server/uninstall-cloudground#kept)) |
+| `/root/cloudground-uninstall/` | after an uninstall: the panel's state, `backup.env`, `README.txt` (see [uninstall CloudGround](/docs/server/uninstall-cloudground#kept)) |
 
 ## The sites {#site-paths}
 
@@ -137,4 +137,4 @@ the agent can start.
 
 ## Next step {#next}
 
-To see how these pieces work together, read the [architecture](/explanation/architecture).
+To see how these pieces work together, read the [architecture](/docs/explanation/architecture).

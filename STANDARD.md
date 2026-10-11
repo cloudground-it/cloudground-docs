@@ -71,6 +71,10 @@ The body:
    (`## Crea il sito {#create-the-site}`), so links and translations line up.
 4. End with a **next step**: a last section `## Prossimo passo {#next}` / `## Next step {#next}`
    with one link (two at most) to where the reader naturally goes next. Index pages are exempt.
+5. **Links between pages are absolute and start with `/docs`**: the guide is published at
+   `https://cloudground.it/docs` (English at `/en/docs`), next to the website's own pages (the
+   home at `/`, `/privacy`). Write `[Restore a backup](/docs/data/restore-a-backup)`, never a
+   path without `/docs` and never the full address; Docusaurus adds `/en` on English pages.
 
 ## 3. Style
 
@@ -136,7 +140,8 @@ mode (see `src/css/custom.css`, section *Mermaid*). Rules:
 - a non-index page has no `{#next}` section;
 - a page exists in one language and not the other, or the two differ in `type` or
   `last_verified`;
-- an internal link (Markdown link or a `<Card to>`) points to a page or file that does not exist;
+- an internal link (Markdown link or a `<Card to>`) points to a page or file that does not exist
+  (pages are looked up under `/docs`, the site's own pages in `src/pages/` at the root);
 - a page holds an HTML comment (MDX refuses `<!-- -->`; write `{/* … */}`);
 - a Mermaid diagram does not parse.
 

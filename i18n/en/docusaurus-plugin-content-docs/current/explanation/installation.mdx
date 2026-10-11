@@ -83,7 +83,7 @@ Once you run the genuine script, the address that served it has no further say: 
 files the script's hash names nor the signing key. But that address could serve a different script,
 and a script decides everything. To avoid trusting it, download the script of a named release and
 check it against the signed manifest with the release key published in this documentation:
-[verify the installer](/server/verify-the-installer).
+[verify the installer](/docs/server/verify-the-installer).
 
 After the install, the panel's updates check releases with the keys compiled into the installed
 binaries.
@@ -102,9 +102,9 @@ binaries.
   and a script that turns ufw on can lock you out. If ufw is already active, it opens the ports sshd
   listens on (those `sshd -T` reports, 22 when it reports none), 80, 443, 443/udp and 8443. If ufw is
   installed but off, it changes nothing and, at the end, prints the commands that turn it on with
-  those ports open (see [firewall](/access/firewall#enable)).
+  those ports open (see [firewall](/docs/access/firewall#enable)).
 - **SFTP.** The sites' system users (`cg-site-*`) get SFTP only, locked in the site's folder. The
-  [site shell](/access/site-shell) uses a separate login.
+  [site shell](/docs/access/site-shell) uses a separate login.
 - **Logs.** Site logs rotate daily, or at 1 GB, and 14 are kept.
 
 ## Running it again {#rerun}
@@ -116,8 +116,8 @@ differs without changing anything.
 
 The installer of another release refuses to run over an installed panel and names
 `cgctl update --to <release>`: the installer has no snapshot and no rollback, an update has both (see
-[update CloudGround](/server/update-cloudground)).
+[update CloudGround](/docs/server/update-cloudground)).
 
 ## Next step {#next}
 
-To try it on a server, follow the [Install CloudGround](/tutorials/install) tutorial.
+To try it on a server, follow the [Install CloudGround](/docs/tutorials/install) tutorial.

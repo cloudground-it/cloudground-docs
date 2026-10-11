@@ -18,7 +18,7 @@ file `docs/api.md` del [repository del prodotto](https://github.com/cloudground-
 | Indirizzo | Cosa serve |
 | --- | --- |
 | `https://<ip>:8443` | API e interfaccia, sempre, con un certificato autofirmato. |
-| `https://<dominio-del-pannello>` | API e interfaccia, dopo che hai [dato un dominio al pannello](/server/panel-domain). |
+| `https://<dominio-del-pannello>` | API e interfaccia, dopo che hai [dato un dominio al pannello](/docs/server/panel-domain). |
 | `/run/cloudground/api.sock` | Il socket Unix dietro i due indirizzi (proprietario `cloudground`, gruppo `www-data`, permessi `0660`). |
 | `http://127.0.0.1:9080` | Solo `POST /api/connector/purge` e `GET /healthz`, per i siti dello stesso server. |
 
@@ -37,7 +37,7 @@ Ci sono due modi.
 dal token, anche se porta un cookie. Un token sconosciuto, scaduto, revocato o di un account che
 non è più un amministratore attivo riceve **401** `invalid or revoked API token`. Un altro header
 `Authorization` (un Bearer che non inizia con `cgt_`, l'autenticazione Basic di un proxy) viene
-ignorato. Per crearne uno vedi [token API e cgctl](/access/api-tokens-and-cgctl).
+ignorato. Per crearne uno vedi [token API e cgctl](/docs/access/api-tokens-and-cgctl).
 
 **Sessione.** `POST /api/login` con `{"email": "…", "password": "…"}` imposta il cookie di sessione
 `__Host-cloudground_session` (`Secure`, `HttpOnly`, `SameSite=Strict`). La sessione dura al massimo
@@ -69,7 +69,7 @@ Ogni rotta richiede uno di questi livelli: aperta, account collegato, tutto il s
 amministratore. Un ruolo non ammesso riceve **403**; un sito che un operatore non può raggiungere
 risponde **404**. Alcune rotte sono solo per sessioni e rispondono **403** a un token: il proprio
 account, gli utenti, i token e la shell dei siti. La tabella completa è in
-[ruoli e permessi](/reference/roles-and-permissions).
+[ruoli e permessi](/docs/reference/roles-and-permissions).
 
 ## Errori {#errors}
 
@@ -107,4 +107,4 @@ rileggi lo stato.
 
 ## Prossimo passo {#next}
 
-Per gli script, `cgctl` fa già queste chiamate per te: vedi il [riferimento della CLI](/cli).
+Per gli script, `cgctl` fa già queste chiamate per te: vedi il [riferimento della CLI](/docs/cli).

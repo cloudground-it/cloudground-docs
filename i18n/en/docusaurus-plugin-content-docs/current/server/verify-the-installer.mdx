@@ -61,7 +61,7 @@ If either check fails, do not run the script.
 bash install.sh
 ```
 
-From here the install is the same as in the [tutorial](/tutorials/install#run-the-installer): the
+From here the install is the same as in the [tutorial](/docs/tutorials/install#run-the-installer): the
 script downloads the release's binaries from GitHub, runs `cgctl` only if it has the SHA-256 the
 script names, and `cgctl` installs nothing whose manifest does not verify.
 
@@ -73,4 +73,4 @@ gh attestation verify install.sh --repo cloudground-it/cloudground
 
 ## Next step {#next}
 
-To see what each check protects, read [what the installer does](/explanation/installation#trust).
+To see what each check protects, read [what the installer does](/docs/explanation/installation#trust).

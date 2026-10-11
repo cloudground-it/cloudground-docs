@@ -11,7 +11,7 @@ sidebar_position: 2
 
 Ogni impostazione di un sito passa dalla stessa richiesta, `PATCH /api/sites/<id>`: le schede del
 pannello la usano, e puoi usarla anche tu. Ogni campo con il suo intervallo è nel
-[riferimento delle impostazioni](/reference/site-settings).
+[riferimento delle impostazioni](/docs/reference/site-settings).
 
 ## Dalle schede del sito {#from-the-site-tabs}
 
@@ -50,7 +50,7 @@ curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
 
 - `<id>` è il numero del sito: è nell'indirizzo della sua pagina nel pannello (`/sites/<id>`) e
   nell'output di `cgctl sites list`.
-- `CLOUDGROUND_TOKEN` è un token API: vedi [Token API e cgctl](/access/api-tokens-and-cgctl).
+- `CLOUDGROUND_TOKEN` è un token API: vedi [Token API e cgctl](/docs/access/api-tokens-and-cgctl).
 - Manda solo i campi che vuoi cambiare. Una richiesta senza campi è rifiutata.
 
 La risposta è `202` con il sito dopo la modifica e l'attività avviata. Se c'è qualcosa da sapere, per

@@ -11,7 +11,7 @@ sidebar_position: 1
 ---
 
 On WordPress and WooCommerce you rarely need this: the connector purges the pages a change affects
-by itself (the list is in the [cache reference](/reference/cache-behaviour#automatic-purges)). Purge
+by itself (the list is in the [cache reference](/docs/reference/cache-behaviour#automatic-purges)). Purge
 by hand when you change something the panel cannot see, such as a theme file uploaded over SFTP, or
 on a PHP or Laravel site.
 
@@ -40,7 +40,7 @@ cgctl purge <site-id> https://<domain>/blog/post/   # one or more addresses
 ```
 
 `<site-id>` is the site's number, which `cgctl sites list` shows. The answer says how many entries
-were removed, in `removed`. To set cgctl up, see [API tokens and cgctl](/access/api-tokens-and-cgctl).
+were removed, in `removed`. To set cgctl up, see [API tokens and cgctl](/docs/access/api-tokens-and-cgctl).
 
 ## Fill the cache again {#warm-the-cache}
 
@@ -62,4 +62,4 @@ Right after the purge the answer says `MISS`; the next request says `HIT`.
 
 ## Next step {#next}
 
-To see which pages always stay out of the cache, read the [cache behaviour](/reference/cache-behaviour).
+To see which pages always stay out of the cache, read the [cache behaviour](/docs/reference/cache-behaviour).

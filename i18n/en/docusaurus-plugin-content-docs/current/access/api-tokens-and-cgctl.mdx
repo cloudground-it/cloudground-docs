@@ -71,7 +71,7 @@ cgctl sites list
 
 cgctl verifies the certificate. On the `https://<ip>:8443` address, whose certificate is
 self-signed, it needs `CLOUDGROUND_INSECURE=1`: better to [give the panel a
-domain](/server/panel-domain). `http://` is accepted only to an address local to the computer.
+domain](/docs/server/panel-domain). `http://` is accepted only to an address local to the computer.
 
 ## Wait for a task to finish {#wait}
 
@@ -82,7 +82,7 @@ Many commands start a background task. With `--wait` cgctl follows it to the end
 cgctl --wait backup run <site-id>
 ```
 
-The full list of commands, variables and exit codes is in the [CLI reference](/cli).
+The full list of commands, variables and exit codes is in the [CLI reference](/docs/cli).
 
 ## List and revoke tokens {#revoke}
 

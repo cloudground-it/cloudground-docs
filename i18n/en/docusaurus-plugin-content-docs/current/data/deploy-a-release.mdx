@@ -13,12 +13,12 @@ sidebar_position: 7
 
 A site's code lives in releases that never change once created. Deploying takes two steps:
 **create** the release from a folder, then **activate** it. To publish from staging, use
-[Safe Push](/data/staging-and-safe-push) instead.
+[Safe Push](/docs/data/staging-and-safe-push) instead.
 
 ## Prepare the code {#prepare}
 
 Put the code in a folder inside the site folder, `/srv/sites/<domain>`. The simplest is a checkout
-in `~/src`, which exists while the [site shell](/access/site-shell) is on:
+in `~/src`, which exists while the [site shell](/docs/access/site-shell) is on:
 
 ```bash
 mkdir -p ~/src/app && cd ~/src/app
@@ -75,4 +75,4 @@ be activated.
 
 ## Next step {#next}
 
-[Roll back a release](/data/roll-back-a-release) if the new one misbehaves.
+[Roll back a release](/docs/data/roll-back-a-release) if the new one misbehaves.

@@ -26,7 +26,7 @@ A site's databases and database users are its own. The agent keeps its own recor
 which site's and refuses every other; a user is granted privileges only on its own site's databases,
 with at most 50 connections, and `_` and `%` are escaped in the grants: MariaDB would read them as
 wildcards, which also reach other sites' databases with similar names. Quarry runs as accounts limited
-the same way (see [How Quarry works](/explanation/quarry#mariadb-decides)).
+the same way (see [How Quarry works](/docs/explanation/quarry#mariadb-decides)).
 
 ## One PHP per site, in a sandbox {#one-php-per-site}
 
@@ -88,7 +88,7 @@ refuses it. With a public folder (`public_root`) the check starts at `current`, 
 a public folder whose path goes through a link.
 
 The routing an administrator writes for a site cannot leave its folder or proxy to the server's
-services: see [Edit the routing](/sites/edit-routing).
+services: see [Edit the routing](/docs/sites/edit-routing).
 
 ## The server works inside the site's folder {#root-inside-the-tree}
 

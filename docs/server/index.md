@@ -7,11 +7,11 @@ hide_table_of_contents: true
 ---
 
 <Cards>
-  <Card to="/server/panel-domain" title="Dai un dominio al pannello" />
-  <Card to="/server/services" title="Gestisci i servizi" />
-  <Card to="/server/logs" title="Leggi i log" />
-  <Card to="/server/alerts-and-notifications" title="Avvisi e notifiche" />
-  <Card to="/server/update-cloudground" title="Aggiorna CloudGround" />
-  <Card to="/server/verify-the-installer" title="Verifica l'installer" />
-  <Card to="/server/uninstall-cloudground" title="Disinstalla CloudGround" />
+  <Card to="/docs/server/panel-domain" title="Dai un dominio al pannello" />
+  <Card to="/docs/server/services" title="Gestisci i servizi" />
+  <Card to="/docs/server/logs" title="Leggi i log" />
+  <Card to="/docs/server/alerts-and-notifications" title="Avvisi e notifiche" />
+  <Card to="/docs/server/update-cloudground" title="Aggiorna CloudGround" />
+  <Card to="/docs/server/verify-the-installer" title="Verifica l'installer" />
+  <Card to="/docs/server/uninstall-cloudground" title="Disinstalla CloudGround" />
 </Cards>

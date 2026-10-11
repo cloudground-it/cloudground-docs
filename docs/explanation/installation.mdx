@@ -83,7 +83,7 @@ Una volta che lanci lo script autentico, l'indirizzo che lo ha servito non ha pi
 file che l'hash dello script indica né la chiave di firma. Ma quell'indirizzo potrebbe servire uno
 script diverso, e uno script decide tutto. Per non doverti fidare, scarica lo script di una release
 precisa e controllalo con il manifesto firmato e la chiave delle release pubblicata in questa
-documentazione: [verifica l'installer](/server/verify-the-installer).
+documentazione: [verifica l'installer](/docs/server/verify-the-installer).
 
 Dopo l'installazione, gli aggiornamenti del pannello controllano le release con le chiavi compilate
 nei binari installati.
@@ -102,9 +102,9 @@ nei binari installati.
   provider, e uno script che accende ufw può chiuderti fuori. Se ufw è già attivo, apre le porte su
   cui ascolta sshd (quelle che riporta `sshd -T`, la 22 se non ne riporta nessuna), 80, 443, 443/udp e
   8443. Se ufw è installato ma spento, non cambia nulla e alla fine stampa i comandi che lo accendono
-  con quelle porte aperte (vedi [firewall](/access/firewall#enable)).
+  con quelle porte aperte (vedi [firewall](/docs/access/firewall#enable)).
 - **SFTP.** Gli utenti di sistema dei siti (`cg-site-*`) entrano solo in SFTP, chiusi nella
-  cartella del sito. La [shell del sito](/access/site-shell) usa un accesso a parte.
+  cartella del sito. La [shell del sito](/docs/access/site-shell) usa un accesso a parte.
 - **Log.** I log dei siti ruotano ogni giorno, o a 1 GB, e se ne tengono 14.
 
 ## Rilanciarlo {#rerun}
@@ -116,8 +116,8 @@ cambiare nulla.
 
 L'installer di un'altra release si rifiuta di girare sopra un pannello installato e indica
 `cgctl update --to <release>`: l'installer non ha snapshot né rollback, un aggiornamento li ha
-entrambi (vedi [aggiorna CloudGround](/server/update-cloudground)).
+entrambi (vedi [aggiorna CloudGround](/docs/server/update-cloudground)).
 
 ## Prossimo passo {#next}
 
-Per provarlo su un server, segui il tutorial [Installa CloudGround](/tutorials/install).
+Per provarlo su un server, segui il tutorial [Installa CloudGround](/docs/tutorials/install).

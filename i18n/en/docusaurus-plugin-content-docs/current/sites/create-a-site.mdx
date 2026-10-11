@@ -18,7 +18,7 @@ administrator can create a site.
 
 1. Open **Sites** and choose **New site**.
 2. In **Domain**, type the site's name, for example `example.com`. The panel lowercases it.
-3. In **Type**, pick the kind of site. The differences are in the [site types reference](/reference/site-types).
+3. In **Type**, pick the kind of site. The differences are in the [site types reference](/docs/reference/site-types).
 4. In **PHP**, keep **Default version** or pick one of the versions installed on the server. Static
    and reverse proxy sites have no such field.
 5. In **Performance profile**, keep **Recommended** or pick **Balanced**, **Commerce** or
@@ -39,7 +39,7 @@ The **Database** part depends on the type:
 - **WordPress**, **WooCommerce** and **Laravel** always have a database: their configuration uses it.
 - **PHP** and **Static**: turn on **Create a database too** to get a MariaDB database and a user with
   all privileges on it. Off, the site starts with none; you can add one later from the
-  [Database tab](/data/manage-databases).
+  [Database tab](/docs/data/manage-databases).
 - **Reverse proxy**: no database.
 
 When the site gets one, fill in:
@@ -49,7 +49,7 @@ When the site gets one, fill in:
 2. **Database password**. The panel fills it with a generated password; keep it, press **Generate**
    for another, or type your own. **Show** displays it.
 
-The names and the password follow the [database rules](/reference/database-names-and-passwords): for
+The names and the password follow the [database rules](/docs/reference/database-names-and-passwords): for
 example, a name already used on this server, or a password with `'`, `"` or `\`, is refused under its
 field.
 
@@ -69,7 +69,7 @@ as they run: *done*, *in progress* or *failed*. Below, everything you need to us
 
 The summary is the only place the panel ever shows the database password, chosen or generated. Before
 closing it, press **Download as .txt** or **Copy**. If you lose it, set a new one from the
-[Database tab](/data/manage-databases#reset-password).
+[Database tab](/docs/data/manage-databases#reset-password).
 
 :::
 
@@ -92,7 +92,7 @@ issue one from the **SSL** tab.
 ## SFTP starts off {#sftp}
 
 A new site's SFTP access is off: nobody can sign in over SFTP until you turn it on, with a password of
-its own, from the site's **SFTP / SSH** tab. See [SFTP and SSH keys](/access/sftp-and-ssh-keys).
+its own, from the site's **SFTP / SSH** tab. See [SFTP and SSH keys](/docs/access/sftp-and-ssh-keys).
 
 ## With cgctl {#with-cgctl}
 

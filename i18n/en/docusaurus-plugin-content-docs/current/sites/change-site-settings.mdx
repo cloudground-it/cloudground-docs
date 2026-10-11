@@ -10,7 +10,7 @@ sidebar_position: 2
 ---
 
 Every setting of a site goes through the same request, `PATCH /api/sites/<id>`: the panel's tabs use
-it, and so can you. Every field with its range is in the [site settings reference](/reference/site-settings).
+it, and so can you. Every field with its range is in the [site settings reference](/docs/reference/site-settings).
 
 ## From the site's tabs {#from-the-site-tabs}
 
@@ -49,7 +49,7 @@ curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
 
 - `<id>` is the site's number: it is in the address of its page in the panel (`/sites/<id>`) and in
   the output of `cgctl sites list`.
-- `CLOUDGROUND_TOKEN` is an API token: see [API tokens and cgctl](/access/api-tokens-and-cgctl).
+- `CLOUDGROUND_TOKEN` is an API token: see [API tokens and cgctl](/docs/access/api-tokens-and-cgctl).
 - Send only the fields you want to change. A request naming no field is refused.
 
 The answer is `202` with the site after the change and the task it started. When there is something

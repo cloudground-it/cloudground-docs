@@ -19,7 +19,7 @@ database. Solo un amministratore può creare un sito.
 1. Apri **Siti** e scegli **Nuovo sito**.
 2. In **Dominio** scrivi il nome del sito, per esempio `example.com`. Il pannello lo porta in
    minuscolo.
-3. In **Tipo** scegli il tipo di sito. Le differenze sono nel [riferimento dei tipi di sito](/reference/site-types).
+3. In **Tipo** scegli il tipo di sito. Le differenze sono nel [riferimento dei tipi di sito](/docs/reference/site-types).
 4. In **PHP** lascia **Versione predefinita** o scegli una delle versioni installate sul server. Il
    campo non c'è per i siti statici e reverse proxy.
 5. In **Profilo prestazioni** lascia **Consigliato** o scegli **Bilanciato**, **E-commerce** o
@@ -42,7 +42,7 @@ La parte **Database** dipende dal tipo:
   usa.
 - **PHP** e **Statico**: attiva **Crea anche un database** per avere un database MariaDB e un utente
   con tutti i privilegi su di esso. Se resta spento, il sito parte senza; puoi aggiungerne uno dopo
-  dalla [scheda Database](/data/manage-databases).
+  dalla [scheda Database](/docs/data/manage-databases).
 - **Reverse proxy**: nessun database.
 
 Quando il sito ne riceve uno, compila:
@@ -52,7 +52,7 @@ Quando il sito ne riceve uno, compila:
 2. **Password del database**. Il pannello la riempie con una password generata; tienila, premi
    **Genera** per averne un'altra, oppure scrivi la tua. **Mostra** la fa vedere.
 
-I nomi e la password seguono le [regole dei database](/reference/database-names-and-passwords): per
+I nomi e la password seguono le [regole dei database](/docs/reference/database-names-and-passwords): per
 esempio, un nome già usato su questo server, o una password con `'`, `"` o `\`, viene rifiutato sotto
 il suo campo.
 
@@ -73,7 +73,7 @@ il sito:
 
 Il riepilogo è l'unico posto in cui il pannello mostra la password del database, scelta o generata.
 Prima di chiuderlo, premi **Scarica come .txt** o **Copia**. Se la perdi, impostane una nuova dalla
-[scheda Database](/data/manage-databases#reset-password).
+[scheda Database](/docs/data/manage-databases#reset-password).
 
 :::
 
@@ -96,7 +96,7 @@ finché non ne emetti uno dalla scheda **SSL**.
 ## SFTP parte spento {#sftp}
 
 L'accesso SFTP di un sito nuovo è spento: nessuno può entrare in SFTP finché non lo attivi, con una
-sua password, dalla scheda **SFTP / SSH** del sito. Vedi [SFTP e chiavi SSH](/access/sftp-and-ssh-keys).
+sua password, dalla scheda **SFTP / SSH** del sito. Vedi [SFTP e chiavi SSH](/docs/access/sftp-and-ssh-keys).
 
 ## Con cgctl {#with-cgctl}
 

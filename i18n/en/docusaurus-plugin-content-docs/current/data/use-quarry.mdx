@@ -12,7 +12,7 @@ sidebar_position: 10
 
 Quarry is CloudGround's database manager. It runs on the panel's own address, at `/quarry`, as a
 service of its own: you open it from the panel, or sign in with a database user's name and password.
-To see how its two ways in and its limits work, read [How Quarry works](/explanation/quarry).
+To see how its two ways in and its limits work, read [How Quarry works](/docs/explanation/quarry).
 
 ## Open it from the panel {#from-the-panel}
 
@@ -38,7 +38,7 @@ What you can do follows your panel role:
 3. In **Database**, optionally type the database to open first.
 4. Press **Sign in**.
 
-`<server-ip>` is the server's address, `<panel-domain>` the [panel's domain](/server/panel-domain).
+`<server-ip>` is the server's address, `<panel-domain>` the [panel's domain](/docs/server/panel-domain).
 
 - Only the database users the panel made can sign in: those of a site's **Database** tab and the
   primary users made with the sites. Never `root`, nor the server's own accounts.
@@ -47,7 +47,7 @@ What you can do follows your panel role:
 - Any refusal reads *Wrong database user or password.*, whatever the reason. Wrong passwords slow
   further attempts from the same network down; they never lock the user out. From a network that
   keeps failing, an attempt may be refused with *too many attempts for this database user at once*:
-  wait and try again. See [sign-in protection](/explanation/sign-in-protection#quarry).
+  wait and try again. See [sign-in protection](/docs/explanation/sign-in-protection#quarry).
 
 ## Find your way {#layout}
 
@@ -138,7 +138,7 @@ Quarry answers **Not simulated**, with the reason, when the statement:
 
 The whole simulation has 60 seconds, and waits at most 5 seconds for a row the live site has locked.
 After it, an `AUTO_INCREMENT` counter may have moved on, as after any rolled-back write. Why these
-refusals: [Simulate](/explanation/quarry#simulate).
+refusals: [Simulate](/docs/explanation/quarry#simulate).
 
 ## Export {#export}
 
@@ -193,4 +193,4 @@ again.
 ## Next step {#next}
 
 To understand the two ways in and what Simulate protects, read
-[How Quarry works](/explanation/quarry).
+[How Quarry works](/docs/explanation/quarry).

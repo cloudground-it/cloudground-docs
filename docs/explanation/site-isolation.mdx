@@ -26,7 +26,7 @@ I database e gli utenti database di un sito sono solo suoi. L'agent tiene un suo
 è di quale sito e rifiuta tutti gli altri; un utente riceve privilegi solo sui database del suo sito, con
 al massimo 50 connessioni, e nei privilegi `_` e `%` sono protetti: MariaDB li leggerebbe come jolly,
 che raggiungono anche i database di altri siti con nomi simili. Quarry gira con account limitati allo
-stesso modo (vedi [Come funziona Quarry](/explanation/quarry#mariadb-decides)).
+stesso modo (vedi [Come funziona Quarry](/docs/explanation/quarry#mariadb-decides)).
 
 ## Un PHP per sito, in una sandbox {#one-php-per-site}
 
@@ -89,7 +89,7 @@ lo rifiuta. Con una cartella pubblica (`public_root`) il controllo parte da `cur
 rifiuta una cartella pubblica che passa per un link.
 
 Il routing che un amministratore scrive per un sito non può uscire dalla sua cartella, né fare proxy
-verso i servizi del server: lo spiega [Modifica il routing](/sites/edit-routing).
+verso i servizi del server: lo spiega [Modifica il routing](/docs/sites/edit-routing).
 
 ## Il server lavora dentro la cartella del sito {#root-inside-the-tree}
 

@@ -7,6 +7,6 @@ hide_table_of_contents: true
 ---
 
 <Cards>
-  <Card to="/tutorials/install" title="Installa CloudGround" />
-  <Card to="/tutorials/first-site" title="Il primo sito" />
+  <Card to="/docs/tutorials/install" title="Installa CloudGround" />
+  <Card to="/docs/tutorials/first-site" title="Il primo sito" />
 </Cards>
