@@ -1,12 +1,12 @@
 ---
 title: SFTP and SSH keys
-description: Turn on a site's SFTP access, choose its password and add the SSH keys of the people who work on it.
+description: Turn on a site's SFTP access with SSH keys only or with a password, and add the SSH keys of the people who work on it.
 type: how-to
 prerequisites:
   - A site
   - An administrator account, or an operator assigned to the site
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 1
 ---
 
@@ -17,8 +17,29 @@ included.
 ## Turn on SFTP access {#enable-sftp}
 
 1. Open the site and go to the **SFTP / SSH** tab.
-2. In **SFTP access**, type an **SFTP password** of at least 12 characters.
+2. In **SFTP access**, under **How to sign in**, leave **SSH keys only** selected.
+3. If the site has no SSH key yet, paste the one that will sign in into **Public key**.
+4. Press **Enable with keys only**.
+
+With keys only the login has no password: the server does not even ask for one, so there is
+nothing to guess. To add more keys, see [below](#add-a-key).
+
+### With a password {#enable-with-a-password}
+
+1. Under **How to sign in**, choose **Password or SSH key**.
+2. Type an **SFTP password** of at least 12 characters.
 3. Press **Enable SFTP**.
+
+:::caution[A password can be guessed]
+
+SFTP usernames have the form `cg-site-<id>`, so they are easy to guess. Against repeated wrong
+passwords, only the SSH server's own limits per connection apply for now: CloudGround does not yet
+block an address that keeps failing. Use a long, random password, or keys only.
+
+:::
+
+To switch an account from one way to the other, choose it and press **Switch to keys only** or
+**Switch to a password**.
 
 The **Connection details** box shows what the client needs: **Host**, **Port**, **Username**,
 **Folder** and the **Command**, ready to copy:
@@ -30,7 +51,7 @@ sftp cg-site-<id>@<host>
 `<host>` is the address you opened the panel with. When SSH on the server does not listen on port
 22, the command also carries `-P <port>`. Inside the session the site's folder is the root `/`.
 
-To change the password, type a new one and press **Change password**.
+To change the password of a password login, type a new one and press **Change password**.
 
 ## Add an SSH key {#add-a-key}
 
@@ -66,9 +87,21 @@ keys stay in the list and work again when you turn access back on.
 
 ## From cgctl or the API {#from-the-api}
 
-The API offers the same operations: `POST /api/sites/<id>/sftp` with `{"enable": true, "password": "…"}`
-or `{"enable": false}`, and `GET`, `POST`, `DELETE` on `/api/sites/<id>/ssh-keys`. `cgctl` has no
-command for them.
+The API offers the same operations on `POST /api/sites/<id>/sftp`:
+
+- `{"enable": true, "public_key": "ssh-ed25519 …"}` adds the key and turns access on with keys only;
+- `{"enable": true, "keys_only": true}` turns access on (or switches it) to keys only;
+- `{"enable": true, "keys_only": false, "password": "…"}` turns it on with a password;
+- `{"enable": false}` turns it off.
+
+`GET`, `POST` and `DELETE` on `/api/sites/<id>/ssh-keys` list, add and remove keys. With
+[cgctl](/docs/cli#sftp):
+
+```bash
+cgctl sftp keys-only <site-id> ~/.ssh/id_ed25519.pub
+cgctl sftp password <site-id> < password.txt
+cgctl sftp off <site-id>
+```
 
 ## Next step {#next}
 
