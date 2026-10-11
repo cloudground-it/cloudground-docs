@@ -4,69 +4,104 @@ description: Tell the panel where to keep the encrypted backups of every site, w
 type: how-to
 prerequisites:
   - An administrator account
-  - Storage outside this server (S3-compatible object storage, an SFTP server, or a REST server for restic)
-version: a7d92ba
-last_verified: 2026-10-10
+  - Storage outside this server (an object storage bucket, an SFTP server, or a REST server for restic)
+version: unreleased
+last_verified: unverified
 sidebar_position: 3
 ---
 
 Every site keeps its backups in one restic repository. The data is encrypted on the server, with
-the repository password, before it leaves.
+the repository password, before it leaves. You set both in **Settings**, in the **Off-site backups
+(restic)** panel.
 
-## Choose the repository address {#repository-address}
+## Choose the destination {#destination}
 
-The **Repository** field takes a restic address:
+1. Open **Settings** and find the **Off-site backups (restic)** panel.
+2. In **Backup destination**, choose where the snapshots go.
+3. Fill in the fields of that destination.
 
-| Destination | Address form |
-| --- | --- |
-| S3-compatible object storage | `s3:https://<endpoint>/<bucket>[/<folder>]` |
-| SFTP server | `sftp:<user>@<host>:/<path>` |
-| REST server for restic | `rest:https://<host>/<path>` |
-| Folder on this server | `/<path>` |
+| Backup destination | Fields | Repository the panel saves |
+| --- | --- | --- |
+| **This server (a local folder)** | **Folder**, an absolute path such as `/var/backups/cloudground` | the folder |
+| **Amazon S3** | **Region** (for example `eu-central-1`), **Bucket**, **Folder in the bucket** | `s3:https://s3.<region>.amazonaws.com/<bucket>[/<folder>]` |
+| **Cloudflare R2** | **Account ID** (on the R2 page of the Cloudflare dashboard, under *Account details*), **Bucket**, **Folder in the bucket** | `s3:https://<account-id>.r2.cloudflarestorage.com/<bucket>[/<folder>]`, region `auto` |
+| **Backblaze B2** | **Region** (for example `eu-central-003`), **Bucket**, **Folder in the bucket** | `s3:https://s3.<region>.backblazeb2.com/<bucket>[/<folder>]` |
+| **Wasabi** | **Region** (for example `eu-central-1`), **Bucket**, **Folder in the bucket** | `s3:https://s3.<region>.wasabisys.com/<bucket>[/<folder>]` |
+| **Hetzner Object Storage** | **Region**, the location (for example `fsn1`), **Bucket**, **Folder in the bucket** | `s3:https://<region>.your-objectstorage.com/<bucket>[/<folder>]` |
+| **OVHcloud Object Storage** | **Region** (for example `gra`), **Bucket**, **Folder in the bucket** | `s3:https://s3.<region>.io.cloud.ovh.net/<bucket>[/<folder>]` |
+| **MinIO or another S3-compatible service** | **Endpoint** (for example `https://minio.example.com`), **Region** (only if the service asks for one), **Bucket**, **Folder in the bucket** | `s3:https://<endpoint>/<bucket>[/<folder>]` |
+| **Other restic repository (advanced)** | **Repository**, as restic writes it, and an optional **Region** | what you type |
 
-A folder on this server is not an off-site backup: if you lose the server, you lose the backups
-too.
+- **Folder in the bucket** is optional: use it to share a bucket with other data, for example
+  `cloudground`.
+- **Bucket**: create it first at the provider. It can stay private.
+- Every object storage destination also asks for the **Access key** and the **Secret key**: a key with
+  read and write access to this bucket only. **Advanced** shows them too, for an `s3:` repository.
+- Under the fields, **Repository** shows what the panel will save, as restic reads it.
 
-- **SFTP**: restic connects with `ssh` as root, with root's key and `known_hosts` (`/root/.ssh/`).
-  Before saving, put root's public key on the remote server and connect once by hand as root to
-  accept its host key: otherwise the test fails with `Host key verification failed`.
-- **Backblaze B2**: use its S3-compatible endpoint (`s3:https://s3.<region>.backblazeb2.com/<bucket>`)
-  with the keys in **S3 access key** and **S3 secret key**. A `b2:` address does not work: the panel
-  passes restic only the S3 keys, and the test fails with `Account ID ($B2_ACCOUNT_ID) is empty`.
+A repository saved earlier that the destinations above do not produce exactly (an SFTP or REST
+server, credentials in the address, another path) appears as **Other restic repository (advanced)**,
+with the address as it is.
+
+:::warning[A folder on this server is not an off-site backup]
+
+If you lose the server, you lose the backups too. For real off-site backups choose object storage.
+
+:::
+
+- **SFTP** (advanced, `sftp:<user>@<host>:/<path>`): restic connects with `ssh` as root, with root's
+  key and `known_hosts` (`/root/.ssh/`). Before saving, put root's public key on the remote server and
+  connect once by hand as root to accept its host key: otherwise the test fails with
+  `Host key verification failed`.
+- **Backblaze B2**: the destination uses B2's S3-compatible API. A `b2:` address typed as advanced does
+  not work: the panel passes restic only the S3 keys, and the test fails with
+  `Account ID ($B2_ACCOUNT_ID) is empty`.
+
+## Set the repository password {#password}
+
+The repository password encrypts every snapshot. Without it no backup can be restored, not even by
+the panel: keep a copy outside this server.
+
+1. Next to **Repository password**, press **Generate**. The panel makes a password of 32 characters
+   and shows it.
+2. In **Keep this password safe**, press **Copy** or **Download**. **Download** saves
+   `cloudground-backup-password.txt`, with the password and the repository.
+3. Store it outside this server.
+
+You can type your own password instead of generating one. Once saved, the password is never shown
+again, and **Generate** no longer appears: the field says it is **Set**. Change it only for a new,
+empty repository: the snapshots already there open only with the old one.
 
 ## Save the settings {#save}
 
-1. Open **Settings** and find the **Off-site backups (restic)** panel.
-2. Type the address in **Repository**.
-3. Type the **Repository password**. Keep a copy of it outside this server: without the password
-   the backups cannot be read.
-4. For S3 object storage, fill in **S3 access key**, **S3 secret key** and **Region** (leave the
-   region empty if the service does not ask for one).
-5. Press **Save**.
+Press **Save**.
 
 When you change the repository or the password, the panel tries the pair before saving it. If the
-repository does not exist yet, it is created. If it exists with another password, the panel
-refuses to save: the existing backups would become unreadable.
+repository does not exist yet, it is created. If it exists with another password, the panel refuses
+to save: the existing backups would become unreadable.
 
 ## Test the connection {#test}
 
-Press **Test connection**. If the repository answers, the panel shows *Repository reachable* and
-the number of snapshots it holds.
+Press **Test connection**. It connects with the saved settings, so it is available only once nothing
+is left unsaved (*Save first: the test reads the saved settings*). If the repository answers, the
+panel shows *Repository reachable* and the number of snapshots it holds.
 
 ## From the command line {#cli}
 
 ```bash
 cgctl settings set backup_s3_access_key '<access-key>'
 cgctl settings set backup_s3_secret_key '<secret-key>'
+cgctl settings set backup_s3_region '<region>'
 cgctl settings set backup_password '<password>'
 cgctl settings set backup_repository 's3:https://<endpoint>/<bucket>'
 ```
 
-Each command changes one key, so set the S3 keys before the repository: whenever the repository or
-the password changes, the panel tries the pair with the values already saved. On a server that
-already has a repository, a new repository is created with the saved password; `backup_password`
-changed on its own is refused, because it does not open the previous repository. For a new
-repository with a new password, save both fields together in **Settings**.
+`backup_repository` takes the repository as the table above shows it; for Cloudflare R2 the region is
+`auto`. Each command changes one key, so set the S3 keys before the repository: whenever the
+repository or the password changes, the panel tries the pair with the values already saved. On a
+server that already has a repository, a new repository is created with the saved password;
+`backup_password` changed on its own is refused, because it does not open the previous repository.
+For a new repository with a new password, save both fields together in **Settings**.
 
 ## Next step {#next}
 

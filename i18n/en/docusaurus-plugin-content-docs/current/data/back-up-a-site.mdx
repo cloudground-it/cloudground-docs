@@ -5,12 +5,13 @@ type: how-to
 prerequisites:
   - A connected backup repository
   - An administrator account, or an operator assigned to the site
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 4
 ---
 
-Every backup is two snapshots in the repository: the site's database dump, then its files. Right
+Every backup is one snapshot for each of the site's databases, with its dump, then one snapshot of
+its files. A site without a database saves its files alone. Right
 after it is taken, the backup goes through a [restore test](/data/run-a-restore-test): until the
 test ends it is *pending*, and it counts only once it has *passed*.
 
@@ -21,26 +22,21 @@ checks which sites are due and starts their backup. There is nothing else to do.
 
 - They run only for active sites, and only with a repository and password set.
 - Staging copies have no scheduled backups.
-- A scheduled backup that fails is tried again at the next check.
+- A reverse proxy site is never backed up: it has no content of its own (its application has) and no
+  database. It starts with backups off, and **Back up now** is refused.
+- A scheduled backup that fails is tried again at the site's next slot (in an hour, a day or a
+  week), not at the next check.
 
 To change the schedule, in the site's **Backups** tab, **Schedule** card:
 
 1. In **Frequency** pick **Off**, **Every hour**, **Every day** or **Every week**.
-2. In **Keep** type how many days to keep the snapshots (0 to 3650; 0 keeps them all). Only an
-   administrator changes this field.
+2. In **Keep** choose how long to keep the snapshots: **Keep 7 days**, 14, 30, 60, 90, 180 or 365
+   days, or **Keep every snapshot**. Only an administrator changes this field. A value set another way
+   (with cgctl or the API, 0 to 3650 days) stays among the choices.
 3. Press **Save**.
 
 With the API it is `PUT /api/sites/<site-id>/backups/policy` with `enabled`, `schedule` (`hourly`,
 `daily`, `weekly`) and `retention_days`.
-
-:::warning[Sites that do not pass the restore test]
-
-On `a7d92ba` a reverse proxy site (empty folder) and a PHP or Laravel site whose database has no
-tables yet fail every restore test (`the restored tree is empty`, `the dump imported no tables`):
-their backups never count, and the panel tries a new one, with a new alert, every 5 minutes. For
-such a site set **Frequency** to **Off** until it has content.
-
-:::
 
 ## Take a backup now {#back-up-now}
 
@@ -58,7 +54,7 @@ cgctl --wait backup run <site-id>
 
 ## What a backup holds {#contents}
 
-- The site's database, if the panel manages it on this server. The dump streams straight into
+- Each of the site's databases, if the panel manages it on this server. The dump streams straight into
   restic and is never written to disk.
 - The whole site folder, `/srv/sites/<domain>`: releases, `shared/` (configuration and uploaded
   files), SFTP keys and the site's `logs/` folder.
@@ -70,7 +66,7 @@ not count.
 ## How long backups stay {#retention}
 
 Once a day the panel removes the site's snapshots older than the days in **Keep** from the
-repository (30 at first; with 0 it removes nothing). It never removes the newest backup that passed its restore test, nor one whose test has not run yet. The
+repository (30 at first; with **Keep every snapshot** it removes nothing). It never removes the newest backup that passed its restore test, nor one whose test has not run yet. The
 rule touches only that site's snapshots from this server.
 
 ## Delete a backup {#delete}
