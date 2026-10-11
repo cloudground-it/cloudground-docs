@@ -1,6 +1,6 @@
 ---
 title: Site isolation
-description: What keeps a site apart from the others on the same server, from its system user to its sandboxed PHP, and why the boundary is not open_basedir.
+description: What keeps a site apart from the others on the same server, from its system user to its sandboxed PHP with its own resource limits, and why the boundary is not open_basedir.
 type: explanation
 prerequisites: []
 version: v0.2.0
@@ -44,7 +44,7 @@ flowchart TB
     subgraph visible["Visible and writable"]
         tree["/srv/sites/domain<br/>its folder"]
         logs["/var/log/cloudground/domain<br/>its logs"]
-        tmp["private /tmp and /dev"]
+        tmp["private /tmp, /dev and /dev/shm"]
     end
     subgraph hidden["Absent or inaccessible"]
         others["/srv/sites/other domains<br/>(an empty folder)"]
@@ -63,6 +63,10 @@ In detail:
 - the rest of the system is read-only, and the configuration of the panel, nginx, the certificates
   and the database, the panel's state, the page cache and the backups are inaccessible;
 - other users' processes are invisible, `/tmp` and `/dev` are private;
+- `/dev/shm` is the site's own temporary memory, of at most 64 MiB, which neither the other sites
+  nor the server see (*since v0.2.0*; before, it was the server's, shared by all);
+- the PHP master has an IPC space of its own: the System V and POSIX shared memory, semaphores and
+  message queues it uses are out of reach of another site's PHP (*since v0.2.0*);
 - no extra privilege: no capabilities, setuid programs grant nothing, no new namespaces, only Unix
   and IP sockets;
 - PHP cannot start commands: `exec`, `passthru`, `shell_exec`, `system`, `proc_open` and `popen` are
@@ -79,6 +83,14 @@ namespace: what the site must not see is simply not there, for PHP and for any p
 On the test server, `open_basedir` cost 28% of uncached requests per second. The panel does not turn
 it on.
 
+## Resource limits {#resource-limits}
+
+*Since v0.2.0.* The site's slice also has limits of its own, enforced by the kernel: memory, CPU quota
+and number of processes. A site over its memory limit loses one of its own processes; the other sites
+are not touched, and its PHP keeps serving. So one busy or broken site cannot starve the others. The
+defaults, how to change them and how to read each site's usage are in
+[resource usage and limits](/docs/sites/resource-usage-and-limits).
+
 ## nginx and symbolic links {#nginx-and-symlinks}
 
 nginx can read every site, because it is in every site's group. That is why every site's vhost has
@@ -89,6 +101,22 @@ a public folder whose path goes through a link.
 
 The routing an administrator writes for a site cannot leave its folder or proxy to the server's
 services: see [Edit the routing](/docs/sites/edit-routing).
+
+## Files left in the public folder {#leftovers}
+
+*Since v0.2.0.* Backup copies, editor files, dumps and archives forgotten in the public folder are never
+served. nginx answers **404** for:
+
+- names ending in `.bak`, `.old`, `.orig`, `.save`, `.swp`, `.swo` or `~`;
+- SQL dumps: `.sql`, `.sql.gz`, `.sql.bz2`, `.sql.xz`, `.sql.zst`, `.sql.zip`;
+- copies of `wp-config.php` under a longer name, such as `wp-config.php.bak` (`wp-config.php` itself
+  goes to PHP as always);
+- archives at the top of the public folder: `.tar`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, `.tar.xz`,
+  `.txz`, `.tar.zst`, `.zip`, `.7z`, `.rar`. An archive deeper down, such as a plugin's download, is
+  served.
+
+Case does not matter. The answer is 404, not 403, so it does not confirm the file exists. A reverse
+proxy has no public folder and does not change.
 
 ## The server works inside the site's folder {#root-inside-the-tree}
 
@@ -106,6 +134,11 @@ inside the folder.
 
 With SFTP on, the site's user signs in locked into its folder (chroot), with only the internal SFTP
 server and no shell. With SFTP off, the user is in a group the SSH server refuses, even with a key.
+
+*Since v0.2.0.* With access by SSH keys only, the user's password is locked and the user joins a group
+for which the SSH server does not even offer a password sign-in: only the key is left. The panel
+checks SSH's configuration with `sshd -t` before reloading it, and puts the previous one back if SSH
+refuses it. See [SFTP and SSH keys](/docs/access/sftp-and-ssh-keys).
 
 ## Next step {#next}
 

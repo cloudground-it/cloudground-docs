@@ -52,6 +52,12 @@ twice: those from the attempt's own network (and /48), and those from anywhere.
 
 An attempt waits the longer of the two. The wait holds nothing but the request itself.
 
+*Since v0.2.0.* Even the longest wait, up to 60 seconds, runs to its end: the attempt then gets its
+normal answer, signed in or *invalid credentials*. If the client goes away first (a closed page, a
+client with a shorter timeout of its own), the attempt ends as too many attempts (**429**, *too many
+attempts — wait a minute and try again*): the password is not checked, and the attempt says nothing
+about it.
+
 **3. One check at a time.** After the wait, the attempts for one e-mail are checked one at a time, in
 the order they arrive. One network may have at most 4 attempts queued for an e-mail; one more from
 that network gets the same *too many attempts for this account at once*. An attempt from another

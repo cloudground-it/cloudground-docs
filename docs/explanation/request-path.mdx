@@ -3,8 +3,8 @@ title: Il percorso di una richiesta
 description: Cosa succede a una visita, da nginx alla cache di pagina e, solo se serve, a PHP-FPM, OPcache, object cache e MariaDB.
 type: explanation
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.2.0
+last_verified: unverified
 sidebar_position: 3
 ---
 
@@ -17,7 +17,11 @@ esatti sono nel [riferimento della cache](/docs/reference/cache-behaviour).
 ```mermaid
 flowchart TD
   req(["Richiesta HTTPS su :443"]) --> tls["nginx<br/>TLS, HTTP/2, HTTP/3 se disponibile"]
-  tls --> asset{"File statico?<br/>css, js, immagini, font"}
+  tls --> auth{"Percorso protetto?"}
+  auth -- "sì, senza le credenziali giuste" --> e401["401"]
+  auth -- "no, o credenziali giuste" --> left{"File lasciato nella cartella?<br/>copia, dump, archivio"}
+  left -- "sì" --> e404["404"]
+  left -- "no" --> asset{"File statico?<br/>css, js, immagini, font"}
   asset -- "sì" --> disk["Servito dal disco<br/>con cache del browser di 30 giorni"]
   asset -- "no" --> skip{"Va saltata la cache?<br/>POST, query string, cookie<br/>di sessione, percorso escluso"}
   skip -- "sì" --> php
@@ -35,6 +39,17 @@ flowchart TD
   store -- "no" --> save["Salvata in cache<br/>per la durata del profilo"]
   store -- "sì" --> nosave["Non salvata"]
 ```
+
+## Prima della cache {#before-the-cache}
+
+*Da v0.2.0.* Due controlli vengono prima di tutto il resto:
+
+- **Percorsi protetti.** Se il sito chiede nome utente e password su un percorso, nginx li controlla a
+  livello di tutto il server del sito, prima di scegliere dove mandare la richiesta: valgono per i file
+  statici, per la cache e per PHP. Una pagina in cache di un percorso protetto non esce senza la
+  password. Vedi [percorsi protetti](/docs/access/protected-paths).
+- **File lasciati nella cartella.** Copie di sicurezza, dump SQL e archivi in cima alla cartella
+  pubblica ricevono **404**: l'elenco è in [l'isolamento dei siti](/docs/explanation/site-isolation#leftovers).
 
 ## nginx e la cache di pagina {#page-cache}
 

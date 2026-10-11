@@ -55,6 +55,12 @@ qualsiasi parte.
 
 Un tentativo aspetta la più lunga delle due. L'attesa non occupa nulla oltre alla richiesta stessa.
 
+*Da v0.2.0.* Anche l'attesa più lunga, fino a 60 secondi, arriva in fondo: il tentativo riceve poi la
+sua risposta normale, accesso riuscito o *invalid credentials*. Se il client se ne va prima (una pagina
+chiusa, un client con un suo tempo massimo più breve), il tentativo finisce come troppi tentativi
+(**429**, *too many attempts — wait a minute and try again*): la password non viene controllata, e il
+tentativo non dice nulla su di lei.
+
 **3. Un controllo alla volta.** Dopo l'attesa, i tentativi per un'email vengono controllati uno alla
 volta, nell'ordine in cui arrivano. Una rete può avere al massimo 4 tentativi in coda per un'email; uno
 in più da quella rete riceve lo stesso *too many attempts for this account at once*. Un tentativo da

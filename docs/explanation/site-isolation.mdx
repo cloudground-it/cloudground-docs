@@ -1,6 +1,6 @@
 ---
 title: L'isolamento dei siti
-description: Cosa separa un sito dagli altri sullo stesso server, dal suo utente di sistema al PHP chiuso in una sandbox, e perché il confine non è open_basedir.
+description: Cosa separa un sito dagli altri sullo stesso server, dal suo utente di sistema al PHP chiuso in una sandbox con i suoi limiti di risorse, e perché il confine non è open_basedir.
 type: explanation
 prerequisites: []
 version: v0.2.0
@@ -45,7 +45,7 @@ flowchart TB
     subgraph visible["Visibile e scrivibile"]
         tree["/srv/sites/dominio<br/>la sua cartella"]
         logs["/var/log/cloudground/dominio<br/>i suoi log"]
-        tmp["/tmp e /dev privati"]
+        tmp["/tmp, /dev e /dev/shm privati"]
     end
     subgraph hidden["Assente o inaccessibile"]
         others["/srv/sites/altri domini<br/>(una cartella vuota)"]
@@ -64,6 +64,10 @@ In dettaglio:
 - il resto del sistema è in sola lettura, e la configurazione del pannello, di nginx, dei certificati e
   del database, lo stato del pannello, la cache di pagina e i backup sono inaccessibili;
 - i processi degli altri utenti sono invisibili, `/tmp` e `/dev` sono privati;
+- `/dev/shm` è una memoria temporanea del sito, di al massimo 64 MiB, che né gli altri siti né il
+  server vedono (*da v0.2.0*; prima era quella del server, comune a tutti);
+- il master PHP ha un suo spazio IPC: la memoria condivisa, i semafori e le code di messaggi System V
+  e POSIX che usa non sono raggiungibili dal PHP di un altro sito (*da v0.2.0*);
 - nessun privilegio in più: nessuna capability, i programmi setuid non danno privilegi, nessun
   namespace nuovo, solo socket Unix e IP;
 - PHP non può avviare comandi: `exec`, `passthru`, `shell_exec`, `system`, `proc_open` e `popen` sono
@@ -80,6 +84,14 @@ del servizio: quello che il sito non deve vedere non c'è proprio, per PHP e per
 PHP potrebbe usare. Sul server di prova, `open_basedir` costava il 28% delle richieste non in cache al
 secondo. Il pannello non lo attiva.
 
+## Limiti di risorse {#resource-limits}
+
+*Da v0.2.0.* La slice del sito ha anche i suoi limiti, applicati dal kernel: memoria, quota di CPU e
+numero di processi. Un sito che supera il suo limite di memoria perde uno dei suoi processi; gli altri
+siti non ne risentono, e il suo PHP continua a servire. Così un sito molto carico o rotto non affama
+gli altri. I valori predefiniti, come cambiarli e come leggere l'uso di ogni sito sono in
+[uso delle risorse e limiti](/docs/sites/resource-usage-and-limits).
+
 ## nginx e i link simbolici {#nginx-and-symlinks}
 
 nginx può leggere ogni sito, perché è nel gruppo di tutti. Per questo il vhost di ogni sito ha
@@ -90,6 +102,22 @@ rifiuta una cartella pubblica che passa per un link.
 
 Il routing che un amministratore scrive per un sito non può uscire dalla sua cartella, né fare proxy
 verso i servizi del server: lo spiega [Modifica il routing](/docs/sites/edit-routing).
+
+## I file lasciati nella cartella pubblica {#leftovers}
+
+*Da v0.2.0.* Copie di sicurezza, file di editor, dump e archivi dimenticati nella cartella pubblica non
+vengono mai serviti. nginx risponde **404** per:
+
+- i nomi che finiscono in `.bak`, `.old`, `.orig`, `.save`, `.swp`, `.swo` o `~`;
+- i dump SQL: `.sql`, `.sql.gz`, `.sql.bz2`, `.sql.xz`, `.sql.zst`, `.sql.zip`;
+- le copie di `wp-config.php` con un nome più lungo, come `wp-config.php.bak` (`wp-config.php` stesso va
+  a PHP come sempre);
+- gli archivi in cima alla cartella pubblica: `.tar`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, `.tar.xz`,
+  `.txz`, `.tar.zst`, `.zip`, `.7z`, `.rar`. Un archivio più in profondità, come un download di un plugin,
+  viene servito.
+
+Maiuscole e minuscole non contano. La risposta è 404 e non 403, così non conferma che il file esista. Un
+reverse proxy non ha una cartella pubblica e non cambia.
 
 ## Il server lavora dentro la cartella del sito {#root-inside-the-tree}
 
@@ -108,6 +136,11 @@ dentro la cartella.
 Con SFTP attivo, l'utente del sito entra chiuso nella sua cartella (chroot) e con il solo server SFTP
 interno, senza una shell. Con SFTP spento, l'utente è in un gruppo a cui il server SSH rifiuta l'accesso,
 anche con una chiave.
+
+*Da v0.2.0.* Con l'accesso a solo chiavi SSH, la password dell'utente è bloccata e l'utente entra in un
+gruppo per cui il server SSH non offre nemmeno l'accesso con password: resta solo la chiave. Il pannello
+controlla la configurazione di SSH con `sshd -t` prima di ricaricarla, e rimette quella di prima se SSH
+la rifiuta. Vedi [SFTP e chiavi SSH](/docs/access/sftp-and-ssh-keys).
 
 ## Prossimo passo {#next}
 

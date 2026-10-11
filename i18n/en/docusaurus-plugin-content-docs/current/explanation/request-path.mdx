@@ -3,8 +3,8 @@ title: The path of a request
 description: What happens to a visit, from nginx to the page cache and, only when needed, to PHP-FPM, OPcache, the object cache and MariaDB.
 type: explanation
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.2.0
+last_verified: unverified
 sidebar_position: 3
 ---
 
@@ -17,7 +17,11 @@ values are in the [cache reference](/docs/reference/cache-behaviour).
 ```mermaid
 flowchart TD
   req(["HTTPS request on :443"]) --> tls["nginx<br/>TLS, HTTP/2, HTTP/3 when available"]
-  tls --> asset{"Static file?<br/>css, js, images, fonts"}
+  tls --> auth{"Protected path?"}
+  auth -- "yes, without the right credentials" --> e401["401"]
+  auth -- "no, or the right credentials" --> left{"File left in the folder?<br/>copy, dump, archive"}
+  left -- "yes" --> e404["404"]
+  left -- "no" --> asset{"Static file?<br/>css, js, images, fonts"}
   asset -- "yes" --> disk["Served from disk<br/>with a 30-day browser cache"]
   asset -- "no" --> skip{"Skip the cache?<br/>POST, query string, session<br/>cookie, excluded path"}
   skip -- "yes" --> php
@@ -35,6 +39,17 @@ flowchart TD
   store -- "no" --> save["Stored in the cache<br/>for the profile's lifetime"]
   store -- "yes" --> nosave["Not stored"]
 ```
+
+## Before the cache {#before-the-cache}
+
+*Since v0.2.0.* Two checks come before everything else:
+
+- **Protected paths.** When the site asks for a username and password on a path, nginx checks them for
+  the site's whole server, before it chooses where the request goes: they hold for static files, for
+  the cache and for PHP. A cached page of a protected path does not go out without the password. See
+  [protected paths](/docs/access/protected-paths).
+- **Files left in the folder.** Backup copies, SQL dumps and archives at the top of the public folder
+  get **404**: the list is in [site isolation](/docs/explanation/site-isolation#leftovers).
 
 ## nginx and the page cache {#page-cache}
 
