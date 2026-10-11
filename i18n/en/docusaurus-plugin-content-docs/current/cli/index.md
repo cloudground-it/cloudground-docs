@@ -4,7 +4,7 @@ description: Every cgctl command, its options, the configuration variables and t
 type: reference
 prerequisites:
   - An API token, or an account's email and password
-version: unreleased
+version: v0.2.0
 last_verified: unverified
 sidebar_position: 1
 ---
