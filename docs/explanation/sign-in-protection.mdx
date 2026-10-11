@@ -8,8 +8,6 @@ last_verified: unverified
 sidebar_position: 10
 ---
 
-{/* TODO(verify): scritta dalla revisione dell'accesso sul branch worktree-agent-a570254e0ec96b948 (internal/api SPEC §2.3, §2.4 e §6.4 lì), non ancora in integration. Ricontrolla ogni numero di questa pagina quando viene unita. */}
-
 Chiunque raggiunga l'indirizzo del pannello può provare ad accedere. CloudGround non blocca un account
 dopo un certo numero di password sbagliate: un blocco permetterebbe a chiunque conosca il tuo indirizzo
 email di tenerti fuori dal tuo pannello, solo scrivendo password sbagliate. Rallenta invece i
@@ -17,16 +15,22 @@ tentativi, e rallenta **la rete da cui arrivano**, non l'account.
 
 ## In parole semplici {#plain-words}
 
-- Qualche password sbagliata non costa nulla. Dal quinto tentativo sbagliato in 15 minuti, ogni
-  tentativo successivo aspetta prima di essere controllato: 1 secondo, poi 2, poi 4, raddoppiando.
-- Le attese lunghe, fino a un minuto per tentativo, cadono sulla rete che continua a sbagliare.
-  L'utente vero, che accede da un'altra parte, aspetta al massimo 2 secondi.
-- Non viene mai bloccato nulla. La password giusta entra sempre, dopo l'attesa.
+- Qualche password sbagliata non costa nulla. Dal quinto tentativo sbagliato in 15 minuti, la rete
+  che continua a sbagliare deve aspettare tra un tentativo e il successivo: 1 secondo, poi 2, 4, 8,
+  16, raddoppiando.
+- Mandare i tentativi in parallelo non serve: ognuno aspetta il suo turno dopo quello precedente dalla
+  stessa rete. Un tentativo che dovrebbe aspettare più di un minuto viene rifiutato subito, quindi una
+  rete che sbaglia ha circa un tentativo al minuto su un account.
+- L'utente vero, che accede da un'altra parte, aspetta al massimo 2 secondi, e non viene mai rifiutato
+  per colpa dei tentativi di altri.
+- Non viene mai bloccato nulla. La password giusta entra sempre.
 - La risposta è la stessa che l'email esista o no: *invalid credentials*, dopo la stessa attesa. Le
   attese non dicono a chi attacca quali account esistono.
 
 Una *rete* è un indirizzo IPv4, oppure un /64 IPv6: un singolo host o cliente di solito riceve un /64
-intero, e contare ogni indirizzo IPv6 da solo darebbe a chi attacca miliardi di ripartenze.
+intero, e contare ogni indirizzo IPv6 da solo darebbe a chi attacca miliardi di ripartenze. Un
+indirizzo IPv6 conta anche per il suo /48, quindi spostarsi tra i /64 di una stessa assegnazione non
+serve.
 
 ## Il pannello {#panel}
 
@@ -38,32 +42,52 @@ minuto per una rete e una email. Oltre: *too many attempts — wait a minute and
 della password e le impostazioni della verifica in due passaggi contano negli stessi limiti.
 
 **2. L'attesa.** Le password e i codici della verifica in due passaggi sbagliati per un'email vengono
-contati sugli ultimi 15 minuti due volte: quelli dalla rete del tentativo, e quelli da qualsiasi parte.
-Dal quinto, un tentativo aspetta 1 s, poi 2 s, 4 s e così via, fino a **60 secondi** per gli errori
-della sua rete, e al massimo **2 secondi** per gli errori da qualsiasi parte. Aspetta il più lungo dei
-due. I tentativi mandati in parallelo aspettano ognuno la sua attesa, crescente.
+contati sugli ultimi 15 minuti due volte: quelli dalla rete del tentativo (e dal suo /48), e quelli da
+qualsiasi parte.
+
+- *L'attesa della rete.* Dal quinto errore, un tentativo aspetta 1 s, poi 2 s, 4 s e così via,
+  contati dal momento in cui il tentativo precedente dalla stessa rete inizia il suo controllo. Cinque
+  errori registrati e quattro tentativi mandati insieme: partono dopo 1, 3, 7 e 15 secondi. Un
+  tentativo la cui attesa supererebbe i **60 secondi** viene rifiutato subito con *too many attempts
+  for this account at once — wait a moment and try again*: non conta come errore e non occupa nulla.
+- *L'attesa da qualsiasi parte.* Gli errori di tutte le reti insieme aggiungono al massimo **2
+  secondi**, e non rifiutano mai un tentativo.
+
+Un tentativo aspetta la più lunga delle due. L'attesa non occupa nulla oltre alla richiesta stessa.
 
 **3. Un controllo alla volta.** Dopo l'attesa, i tentativi per un'email vengono controllati uno alla
 volta, nell'ordine in cui arrivano. Una rete può avere al massimo 4 tentativi in coda per un'email; uno
-in più da quella rete riceve *too many attempts for this account at once — wait a moment and try
-again*. Un tentativo da un'altra rete non viene mai rifiutato per quella coda.
+in più da quella rete riceve lo stesso *too many attempts for this account at once*. Un tentativo da
+un'altra rete non viene mai rifiutato, né per la coda né per l'attesa.
 
 Un accesso riuscito azzera gli errori da qualsiasi parte e quelli della sua rete. Gli errori di
 un'altra rete restano: la rete di chi attacca tiene la sua attesa mentre tu accedi da un'altra parte.
 
-**I codici della verifica in due passaggi.** Un codice viene chiesto solo dopo la password giusta, e
-ha un suo tetto: 10 codici sbagliati per un account in un'ora, da qualsiasi parte, e per quell'account
-non viene controllato nessun codice finché l'ora non è passata (*too many wrong two-factor codes for
-this account — try again in an hour*). Per arrivarci serve prima la password.
+### I codici della verifica in due passaggi {#two-step-codes}
+
+Un codice viene chiesto solo dopo la password giusta, e ha un suo tetto: **10 codici sbagliati per un
+account in un'ora**, all'accesso, durante l'attivazione o mentre spegni la verifica in due passaggi, da
+qualsiasi parte. Al tetto non viene controllato nessun codice per quell'account finché non è passata
+un'ora dal primo dei dieci: *too many wrong two-factor codes for this account — try again in an hour*.
+Un codice giusto non azzera il conteggio. Il decimo codice sbagliato finisce nel **Registro attività**
+come `login.2fa_brute`.
+
+Per arrivare al tetto serve prima la password, quindi vuol dire che qualcuno ha la tua password. Se sei
+tu (un telefono con l'orologio sbagliato, un telefono perso), aspetta l'ora, oppure sul server, da
+root, reimposta la password e spegni la verifica in due passaggi con `panel-api recover-admin --email
+<email> --disable-2fa`: vedi [recupera l'accesso amministratore](/access/recover-admin-access). Poi
+attivala di nuovo. Se non sei tu, cambia subito la password.
 
 ## Quarry {#quarry}
 
-L'accesso a Quarry con un utente database segue la stessa idea, con numeri suoi:
+L'accesso a Quarry con un utente database segue le stesse regole, con numeri suoi:
 
 - per rete, al massimo 20 tentativi al minuto, 80 per un intero /48 IPv6, e 6 per una rete e un
   utente database;
-- dal quinto rifiuto per un utente in 15 minuti, un tentativo aspetta 1 s, 2 s, 4 s …, fino a 60
-  secondi per i rifiuti della sua rete e al massimo 2 secondi per quelli da qualsiasi parte;
+- dal quinto rifiuto per un utente in 15 minuti, i tentativi di una rete sono distanziati di 1 s, 2 s,
+  4 s …, e uno che dovrebbe aspettare oltre 60 secondi viene rifiutato subito con *too many attempts
+  for this database user at once — wait a moment and try again*; i rifiuti da qualsiasi parte
+  aggiungono al massimo 2 secondi e non rifiutano mai;
 - la password dell'utente viene poi controllata un tentativo alla volta, con al massimo 4 in coda per
   rete;
 - ogni rifiuto, qualunque sia il motivo, è lo stesso *Utente database o password errati.*, e dura
@@ -77,10 +101,10 @@ accorge.
 
 ## Quanto costa {#trade-offs}
 
-- I tentativi sparsi su molte reti vengono rallentati ognuno solo dagli errori della propria rete. Il
-  loro ritmo totale è tenuto basso dai limiti per rete e da quanti controlli di password il server fa
-  insieme, non da un conteggio per account. Una password lunga e unica resta la vera difesa, con la
-  verifica in due passaggi per il pannello.
+- I tentativi sparsi su molte reti vengono rallentati ognuno solo dagli errori della propria rete: il
+  loro ritmo totale è di circa uno al minuto per rete (e per /48) su un account, frenato ancora da
+  quanti controlli di password il server fa insieme. Una password lunga e unica resta la vera difesa,
+  con la verifica in due passaggi per il pannello.
 - Dietro un solo indirizzo o un solo /48 IPv6, la connessione condivisa di un ufficio per esempio, chi
   attacca e l'utente vero condividono l'attesa della stessa rete.
 - Un accesso rifiutato finisce nel **Registro attività** con il suo indirizzo: è lì che guardi quando

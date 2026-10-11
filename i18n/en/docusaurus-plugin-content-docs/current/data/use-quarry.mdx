@@ -45,8 +45,9 @@ What you can do follows your panel role:
 - You see the databases this user may open, and MariaDB decides every action by the user's
   privileges. A read-only user's write fails with the server's error, `ERROR 1142 … command denied`.
 - Any refusal reads *Wrong database user or password.*, whatever the reason. Wrong passwords slow
-  further attempts down; they never lock the user out: see
-  [sign-in protection](/explanation/sign-in-protection#quarry).
+  further attempts from the same network down; they never lock the user out. From a network that
+  keeps failing, an attempt may be refused with *too many attempts for this database user at once*:
+  wait and try again. See [sign-in protection](/explanation/sign-in-protection#quarry).
 
 ## Find your way {#layout}
 

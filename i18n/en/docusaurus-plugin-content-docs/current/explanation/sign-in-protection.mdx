@@ -8,8 +8,6 @@ last_verified: unverified
 sidebar_position: 10
 ---
 
-{/* TODO(verify): written from the sign-in review on branch worktree-agent-a570254e0ec96b948 (internal/api SPEC §2.3, §2.4 and §6.4 there), not yet in integration. Re-check every number on this page once it is merged. */}
-
 Anyone who can reach the panel's address can try to sign in. CloudGround does not lock an account
 after a number of wrong passwords: a lock would let anyone who knows your e-mail address keep you out
 of your own panel, just by typing wrong passwords. It slows the guesses down instead, and it slows
@@ -17,16 +15,20 @@ down **the network they come from**, not the account.
 
 ## In plain words {#plain-words}
 
-- A few wrong passwords cost nothing. From the fifth wrong attempt in 15 minutes, every further
-  attempt waits before it is checked: 1 second, then 2, then 4, doubling.
-- The long waits, up to a minute per attempt, fall on the network that keeps failing. The real user,
-  signing in from somewhere else, waits at most 2 seconds.
-- Nothing is ever locked. The right password always gets in, after the wait.
+- A few wrong passwords cost nothing. From the fifth wrong attempt in 15 minutes, the network that
+  keeps failing has to wait between one attempt and the next: 1 second, then 2, 4, 8, 16, doubling.
+- Sending attempts in parallel does not help: each one waits its turn after the one before it from
+  the same network. An attempt that would have to wait more than a minute is refused at once, so a
+  failing network gets about one guess a minute at an account.
+- The real user, signing in from somewhere else, waits at most 2 seconds, and is never refused because
+  of someone else's attempts.
+- Nothing is ever locked. The right password always gets in.
 - The answer is the same whether the e-mail exists or not: *invalid credentials*, after the same
   wait. The delays do not tell an attacker which accounts exist.
 
 A *network* is one IPv4 address, or one IPv6 /64: a single host or customer usually gets a whole /64,
-and counting each IPv6 address on its own would hand an attacker billions of fresh starts.
+and counting each IPv6 address on its own would hand an attacker billions of fresh starts. An IPv6
+address also counts towards its /48, so moving between the /64s of one allocation does not help.
 
 ## The panel {#panel}
 
@@ -38,32 +40,51 @@ network and one e-mail. Beyond: *too many attempts — wait a minute and try aga
 password and the two-step settings count towards the same limits.
 
 **2. The wait.** Wrong passwords and wrong two-step codes for an e-mail are counted over 15 minutes
-twice: those from the attempt's own network, and those from anywhere. From the fifth, an attempt
-waits 1 s, then 2 s, 4 s and so on, up to **60 seconds** for its own network's failures, and at most
-**2 seconds** for the failures from anywhere. It waits the longer of the two. Attempts sent in
-parallel each wait their own, growing, delay.
+twice: those from the attempt's own network (and /48), and those from anywhere.
+
+- *The network's wait.* From the fifth failure, an attempt waits 1 s, then 2 s, 4 s and so on,
+  counted from the moment the previous attempt from the same network starts its check. Five failures
+  on record and four attempts sent at once: they start after 1, 3, 7 and 15 seconds. An attempt whose
+  wait would pass **60 seconds** is refused at once with *too many attempts for this account at once —
+  wait a moment and try again*: it counts as no failure and holds nothing.
+- *The wait from anywhere.* The failures from every network together add at most **2 seconds**, and
+  never refuse an attempt.
+
+An attempt waits the longer of the two. The wait holds nothing but the request itself.
 
 **3. One check at a time.** After the wait, the attempts for one e-mail are checked one at a time, in
 the order they arrive. One network may have at most 4 attempts queued for an e-mail; one more from
-that network gets *too many attempts for this account at once — wait a moment and try again*. An
-attempt from another network is never refused for that queue.
+that network gets the same *too many attempts for this account at once*. An attempt from another
+network is never refused, for the queue or for the wait.
 
 A successful sign-in clears the failures from anywhere and those of its own network. The failures of
 another network stay: the attacker's network keeps its delay while you sign in from elsewhere.
 
-**Two-step codes.** A code is asked only after the right password, and has a cap of its own: 10 wrong
-codes for an account within an hour, from anywhere, and no code is checked for that account until the
-hour is up (*too many wrong two-factor codes for this account — try again in an hour*). Reaching it
-takes the password first.
+### Two-step codes {#two-step-codes}
+
+A code is asked only after the right password, and has a cap of its own: **10 wrong codes for an
+account within an hour**, at sign-in, while enrolling or while turning two-step verification off,
+from anywhere. At the cap no code is checked for that account until an hour has passed since the
+earliest of the ten: *too many wrong two-factor codes for this account — try again in an hour*. A
+right code does not clear the count. The tenth wrong code is recorded in the **Audit log** as
+`login.2fa_brute`.
+
+Reaching the cap takes the password first, so it means someone has your password. If it is you
+(a phone with the wrong clock, a lost phone), wait the hour, or on the server, as root, reset the
+password and turn two-step verification off with `panel-api recover-admin --email <email>
+--disable-2fa`: see [recover administrator access](/access/recover-admin-access). Then enrol again.
+If it is not you, change the password at once.
 
 ## Quarry {#quarry}
 
-Signing in to Quarry with a database user follows the same idea, with its own numbers:
+Signing in to Quarry with a database user follows the same rules, with its own numbers:
 
 - per network, at most 20 attempts a minute, 80 for a whole IPv6 /48, and 6 for one network and one
   database user;
-- from the fifth refusal for a user in 15 minutes, an attempt waits 1 s, 2 s, 4 s …, up to 60 seconds
-  for its own network's refusals and at most 2 seconds for those from anywhere;
+- from the fifth refusal for a user in 15 minutes, a network's attempts are spaced 1 s, 2 s, 4 s …
+  apart, and one that would wait over 60 seconds is refused at once with *too many attempts for this
+  database user at once — wait a moment and try again*; the refusals from anywhere add at most 2
+  seconds and never refuse;
 - the user's password is then checked one attempt at a time, with at most 4 queued per network;
 - every refusal, whatever the reason, is the same *Wrong database user or password.*, and takes at
   least 300 milliseconds, so that the time does not tell a user that exists from one that does not.
@@ -75,10 +96,10 @@ which would lock the user, is left off: the site never notices.
 
 ## What it costs {#trade-offs}
 
-- Guesses spread over many networks are each slowed by their own network's failures only. Their
-  total rate is held down by the per-network limits and by how many password checks the server runs at
-  once, not by a count per account. A long, unique password stays the real defence, with two-step
-  verification for the panel.
+- Guesses spread over many networks are each slowed by their own network's failures only: their total
+  rate is about one a minute per network (and per /48) at an account, held down further by how many
+  password checks the server runs at once. A long, unique password stays the real defence, with
+  two-step verification for the panel.
 - Behind one address or one IPv6 /48, an office's shared connection for example, an attacker and
   the real user share the same network's delay.
 - A refused sign-in is recorded in the **Audit log** with its address: that is where to look when

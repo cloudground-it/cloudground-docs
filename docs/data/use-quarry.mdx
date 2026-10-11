@@ -46,7 +46,9 @@ Cosa puoi fare dipende dal tuo ruolo nel pannello:
   dell'utente. Una scrittura di un utente in sola lettura fallisce con l'errore del server,
   `ERROR 1142 … command denied`.
 - Ogni rifiuto dice *Utente database o password errati.*, qualunque sia il motivo. Le password
-  sbagliate rallentano i tentativi successivi; non bloccano mai l'utente: vedi
+  sbagliate rallentano i tentativi successivi dalla stessa rete; non bloccano mai l'utente. Da una
+  rete che continua a sbagliare, un tentativo può essere rifiutato con *too many attempts for this
+  database user at once*: aspetta e riprova. Vedi
   [la protezione dell'accesso](/explanation/sign-in-protection#quarry).
 
 ## Orientati {#layout}
