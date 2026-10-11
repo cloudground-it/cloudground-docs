@@ -3,7 +3,7 @@ title: Percorsi, porte e servizi
 description: Le porte su cui il server ascolta, i servizi systemd, gli utenti di sistema e i percorsi che CloudGround usa.
 type: reference
 prerequisites: []
-version: v0.1.0
+version: v0.2.0
 last_verified: unverified
 sidebar_position: 5
 ---
@@ -37,6 +37,7 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `cloudground-api.socket` | — | apre `/run/cloudground/api.sock` per l'API |
 | `cloudground-agent.service` | root, in sandbox | il lavoro privilegiato |
 | `cloudground-php-cg-site-<id>.service` | `cg-site-<id>` | il PHP-FPM di un sito, nella slice `cg-site-<id>.slice` |
+| `cg-site-<id>.slice` | — | la slice di un sito: tutti i suoi processi, con i contatori e i [limiti](/docs/sites/resource-usage-and-limits) (unità in `/etc/systemd/system/`) |
 | `cloudground-update-guard.service` | root | temporanea, durante un aggiornamento del pannello |
 | `nginx.service` | root e `www-data` | il server web |
 | `mariadb.service` | `mysql` | i database |
@@ -50,6 +51,7 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `cg-site-<id>` | l'utente di sistema di un sito: possiede i suoi file, esegue il suo PHP, entra in SFTP |
 | `cg-shell-<id>` | l'accesso alla shell del sito, con lo stesso uid di `cg-site-<id>` |
 | `cg-sftp-off` | gruppo: i suoi membri non possono entrare né in SSH né in SFTP |
+| `cg-sftp-keys` | gruppo: gli accessi SFTP con solo chiavi SSH, a cui il server SSH non chiede una password |
 | `site_<id>` | il nome predefinito del database e dell'utente MariaDB principali di un sito, quando non ne scegli uno (vedi [nomi e password dei database](/docs/reference/database-names-and-passwords)) |
 
 ## Il pannello {#panel-paths}
@@ -90,6 +92,8 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `/etc/cloudground-php/cg-site-<id>.conf` | la configurazione PHP-FPM del sito |
 | `/run/cloudground/php/cg-site-<id>/php.sock` | il socket PHP-FPM del sito |
 | `/etc/nginx/cloudground-auth/<dominio>.htpasswd` | la password di uno staging |
+| `/etc/nginx/cloudground-auth/<dominio>.path-<hash>.htpasswd` | l'hash della password di un [percorso protetto](/docs/access/protected-paths), uno per percorso (root:www-data, 0640) |
+| `/etc/systemd/system/cg-site-<id>.slice` | la slice del sito, con i suoi limiti |
 | `/etc/cron.d/` e `/etc/cloudground/cron/` | le attività pianificate dei siti |
 | `/etc/letsencrypt/live/<dominio>/` | il certificato del sito |
 
@@ -100,6 +104,7 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `/etc/mysql/mariadb.conf.d/99-cloudground.cnf` | la configurazione di MariaDB calcolata per il server |
 | `/etc/sysctl.d/60-cloudground.conf` | i parametri del kernel |
 | `/etc/ssh/sshd_config.d/10-cloudground-sftp.conf` | SFTP dei siti in chroot |
+| `/etc/ssh/sshd_config.d/09-cloudground-sftp-keys.conf` | niente password per gli accessi SFTP del gruppo `cg-sftp-keys` (scritto al primo uso) |
 | `/etc/ssh/sshd_config.d/11-cloudground-shell.conf` | gli accessi `cg-shell-*` della shell dei siti, solo con chiave |
 | `/var/cache/cloudground/restic/` | la cache di restic per il repository dei backup |
 | `/etc/logrotate.d/cloudground` | rotazione dei log dei siti |

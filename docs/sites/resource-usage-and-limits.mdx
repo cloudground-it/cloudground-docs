@@ -1,0 +1,97 @@
+---
+title: Risorse e limiti di un sito
+description: Guarda quanta CPU, memoria, disco e IO usa un sito, limita quanto può prendere agli altri e ricevi un avviso quando resta sopra una soglia.
+type: how-to
+prerequisites:
+  - Un sito
+  - Un account amministratore per i limiti; amministratore oppure operatore assegnato al sito per gli avvisi
+version: v0.2.0
+last_verified: unverified
+sidebar_position: 6
+---
+
+Tutti i processi di un sito (il suo PHP, le attività pianificate, wp-cli e la shell) girano nella sua
+slice di systemd, `cg-site-<id>.slice`. La scheda **Risorse** mostra quanto usano, e ti lascia
+limitare quanto possono prendere agli altri siti dello stesso server.
+
+## Guarda cosa usa il sito {#see-the-usage}
+
+1. Apri il sito, poi **Altro** e **Risorse**.
+2. Leggi i quattro valori in cima:
+   - **CPU**, in percentuale di quanto il sito può usare: la sua quota, o tutte le CPU del server;
+   - **Memoria**, rispetto al suo limite;
+   - **Disco**, lo spazio occupato dalla cartella del sito e dai suoi log, con il numero di file;
+   - **IO su disco**, i byte letti e scritti al secondo.
+3. Scegli **24 ore** o **30 giorni** per il grafico di CPU e memoria.
+
+Il pannello legge i contatori della slice ogni cinque minuti, e misura il disco al massimo una volta
+all'ora. Su un sito nuovo il primo campione arriva entro cinque minuti, il disco entro un'ora. Il
+pannello tiene un giorno di campioni e 30 giorni di valori orari.
+
+Se un processo del sito è stato terminato al limite di memoria, sotto **Memoria** compare *N processi
+terminati al limite di memoria*.
+
+Ogni account che vede il sito vede la scheda.
+
+## Limita le risorse del sito {#set-the-limits}
+
+Serve un account amministratore: i limiti decidono quanto un sito può togliere a tutti gli altri.
+
+1. Nella scheda **Risorse**, riquadro **Limiti**, scrivi:
+   - **Limite di memoria**, in MB;
+   - **Quota di CPU**, in percentuale: 100 % è una CPU, 200 % due;
+   - **Limite di processi**.
+2. Premi **Applica**.
+
+0 in un campo vuol dire il valore predefinito:
+
+| Campo | Predefinito | Valori ammessi |
+| --- | --- | --- |
+| **Limite di memoria** | metà della memoria del server, almeno 1024 MB | 0, o da 128 a 1048576 MB |
+| **Quota di CPU** | nessuna quota: il sito può usare tutte le CPU | 0, o da 10 a 25600 % |
+| **Limite di processi** | 512 | 0, o da 32 a 65536 |
+
+Il kernel applica i limiti al solo sito. Vicino al limite di memoria (nove decimi) il sito viene
+rallentato; al limite, uno dei suoi processi viene terminato, mai quello di un altro sito, e il PHP del
+sito continua a servire. Il nuovo limite vale subito, senza riavviare niente.
+
+Il disco non ha un limite: puoi solo ricevere un avviso (vedi sotto).
+
+## Ricevi un avviso sull'uso {#usage-alerts}
+
+1. Nella scheda **Risorse**, riquadro **Avvisi sull'uso**, lascia acceso **Avvisi sull'uso di questo
+   sito**.
+2. Scrivi le soglie: **CPU** e **Memoria** in percentuale, **Disco** in MB.
+3. Premi **Applica**.
+
+| Soglia | Predefinito | Quando scatta l'avviso |
+| --- | --- | --- |
+| **CPU** | 90 % (0 nel campo) | gli ultimi tre campioni, un quarto d'ora, sono tutti alla soglia o sopra |
+| **Memoria** | 90 % del limite di memoria (0 nel campo) | come la CPU |
+| **Disco** | nessun avviso (0 nel campo) | l'ultima misura del disco è alla soglia o sopra |
+
+Un picco breve non genera un avviso. L'avviso è di tipo **Risorse**: compare nel pannello **Avvisi** e
+va al webhook degli avvisi come gli altri (vedi [avvisi e notifiche](/docs/server/alerts-and-notifications)).
+Cambiare le soglie non tocca la configurazione del sito.
+
+## Con l'API {#with-the-api}
+
+`GET /api/sites/<id>/usage?range=24h` (o `30d`) restituisce i campioni, i limiti in vigore e l'ultimo
+campione. I limiti e le soglie sono campi di `PATCH /api/sites/<id>`:
+
+```json
+{
+  "memory_max_mb": 2048,
+  "cpu_quota_pct": 150,
+  "tasks_max": 256,
+  "usage_alerts": {"off": false, "cpu_pct": 80, "memory_pct": 90, "disk_mb": 20000}
+}
+```
+
+`memory_max_mb`, `cpu_quota_pct` e `tasks_max` li manda solo un amministratore: da un altro account la
+richiesta riceve **403**. `usage_alerts` si sostituisce per intero. Ogni campo è nel
+[riferimento delle impostazioni](/docs/reference/site-settings).
+
+## Prossimo passo {#next}
+
+[Controlla che il sito risponda](/docs/sites/uptime-monitoring) dall'esterno.

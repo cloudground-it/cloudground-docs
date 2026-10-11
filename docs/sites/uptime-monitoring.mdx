@@ -1,0 +1,65 @@
+---
+title: Controlla che un sito risponda
+description: Fai controllare al pannello, ogni minuto, che un sito risponda dal suo indirizzo pubblico, e ricevi un avviso quando smette.
+type: how-to
+prerequisites:
+  - Un sito il cui dominio punta già a questo server
+  - Un account amministratore oppure operatore assegnato al sito
+version: v0.2.0
+last_verified: unverified
+sidebar_position: 7
+---
+
+Con il controllo di disponibilità attivo, il pannello richiede il sito ogni minuto dal suo indirizzo
+pubblico, come farebbe un visitatore. Quando il sito smette di rispondere, ricevi un avviso.
+
+Il controllo parte spento su ogni sito: un sito il cui dominio non punta ancora qui sembrerebbe
+fuori servizio.
+
+## Attiva il controllo {#turn-it-on}
+
+1. Apri il sito: il riquadro **Disponibilità** è nella **Panoramica**.
+2. In **Percorso da richiedere** scrivi una pagina che risponde in fretta. Lascia `/` se non hai una
+   pagina migliore.
+3. Premi **Attiva**.
+
+Il primo controllo parte subito. Il riquadro mostra lo stato (**risponde**, **un errore**, **non
+risponde**), l'**Indirizzo controllato**, l'**Ultimo controllo** e la **Risposta**, con il codice HTTP e
+il tempo. Mentre il sito non risponde compare anche **Non risponde dal**.
+
+Per cambiare il percorso, scrivine un altro e premi **Salva**. Per spegnere il controllo, premi
+**Disattiva**: un avviso aperto si chiude.
+
+Il percorso inizia con `/` ed è fatto di lettere, cifre e `. _ ~ -` tra le barre, senza query.
+
+## Cosa conta come risposta {#what-counts}
+
+Il pannello chiede `GET https://<dominio><percorso>`, con un tempo massimo di 10 secondi.
+
+- **Risponde**: qualsiasi codice sotto 500, anche 401 o 404. Il sito sta rispondendo.
+- **Errore**: un codice 5xx, una connessione rifiutata o interrotta, un certificato che un browser
+  rifiuterebbe, nessuna risposta entro 10 secondi.
+
+Il pannello non segue i redirect: un 3xx conta come risposta, e il controllo non lascia mai
+l'indirizzo del sito.
+
+## L'avviso {#the-alert}
+
+Due errori di fila generano un avviso di tipo **Disponibilità**, con livello errore e il motivo
+dell'ultimo errore. Un solo errore, come un pacchetto perso o un ricaricamento, non basta. L'avviso
+compare nel pannello **Avvisi** e va al webhook degli avvisi (vedi
+[avvisi e notifiche](/docs/server/alerts-and-notifications)). Si chiude da solo quando il sito torna a
+rispondere.
+
+Un riavvio del pannello non chiude né riapre un avviso già aperto.
+
+## Con l'API {#with-the-api}
+
+- `GET /api/sites/<id>/uptime` restituisce `enabled`, `path`, `url`, `interval_seconds` e `last`,
+  l'ultimo controllo.
+- `PUT /api/sites/<id>/uptime` con `{"enabled": true, "path": "/health"}` attiva il controllo o cambia
+  il percorso; `{"enabled": false}` lo spegne.
+
+## Prossimo passo {#next}
+
+[Ricevi gli avvisi in una chat](/docs/server/alerts-and-notifications#webhook).

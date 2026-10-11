@@ -3,8 +3,8 @@ title: Impostazioni del sito
 description: Ogni campo che PATCH /api/sites/<id> accetta, con valori ammessi, valore predefinito, effetto e chi lo può cambiare.
 type: reference
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.2.0
+last_verified: unverified
 sidebar_position: 2
 ---
 
@@ -31,6 +31,10 @@ assegnato al sito.
 | `public_root` | stringa | tutti tranne reverse proxy | vuoto, o un percorso relativo di segmenti fatti di lettere, cifre, `-` e `_`, senza link simbolici né file lungo il percorso | `public` per Laravel, altrimenti vuoto | la cartella servita, dentro il rilascio attivo (`current/<public_root>`) | gestione |
 | `proxy_upstream` | stringa | reverse proxy | un URL `http` o `https` senza credenziali, query o frammento; salvato in forma normalizzata | scelto alla creazione | dove vanno le richieste | amministratore |
 | `object_cache` | booleano | WordPress, WooCommerce | `true`, `false` | spenta | installa e attiva la object cache APCu, o la spegne | gestione |
+| `memory_max_mb` | intero | tutti | 0, o da 128 a 1048576 | 0: metà della memoria del server, almeno 1024 MB | il limite di memoria della slice del sito (`MemoryMax`); il sito viene rallentato a nove decimi | amministratore |
+| `cpu_quota_pct` | intero | tutti | 0, o da 10 a 25600; 100 è una CPU | 0: nessuna quota | la quota di CPU della slice del sito (`CPUQuota`) | amministratore |
+| `tasks_max` | intero | tutti | 0, o da 32 a 65536 | 0: 512 | il numero massimo di processi della slice del sito (`TasksMax`) | amministratore |
+| `usage_alerts` | oggetto | tutti | `{off, cpu_pct, memory_pct, disk_mb}`, sostituito per intero; le percentuali da 0 a 100, `disk_mb` da 0 | avvisi accesi, CPU e memoria al 90 % (0), nessun avviso sul disco (0) | le soglie degli [avvisi sull'uso](/docs/sites/resource-usage-and-limits#usage-alerts); non tocca la configurazione del sito | gestione |
 
 Un altro campo nel corpo rende la richiesta malformata.
 
@@ -62,7 +66,7 @@ true` salta il controllo; lo può mandare solo un amministratore.
 | --- | --- |
 | `202` | `{"site": …, "task": …}`, più `"warnings"` quando c'è qualcosa da sapere |
 | `400` | corpo malformato o campo sconosciuto; nessun campo; un valore fuori regola, anche un alias di un altro sito (`{"error": …, "fields": {<campo>: <messaggio>}}`); budget di PHP superato |
-| `403` | `aliases` o `proxy_upstream` (con `fields`), oppure `allow_over_budget`, da chi non è amministratore |
+| `403` | `aliases`, `proxy_upstream`, `memory_max_mb`, `cpu_quota_pct` o `tasks_max` (con `fields`), oppure `allow_over_budget`, da chi non è amministratore |
 | `404` | il sito non esiste o è fuori dalla portata di un operatore |
 | `409` | `hsts: true` senza un certificato valido per almeno altri 14 giorni |
 | `503` | il pannello si sta riavviando: riprova tra un momento |

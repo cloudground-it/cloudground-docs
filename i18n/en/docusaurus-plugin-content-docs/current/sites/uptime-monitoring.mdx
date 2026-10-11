@@ -1,0 +1,64 @@
+---
+title: Check that a site answers
+description: Have the panel check every minute that a site answers from its public address, and get an alert when it stops.
+type: how-to
+prerequisites:
+  - A site whose domain already points to this server
+  - An administrator account, or an operator assigned to the site
+version: v0.2.0
+last_verified: unverified
+sidebar_position: 7
+---
+
+With the uptime check on, the panel requests the site every minute from its public address, as a
+visitor would. When the site stops answering, you get an alert.
+
+The check starts off on every site: a site whose domain does not point here yet would look like an
+outage.
+
+## Turn the check on {#turn-it-on}
+
+1. Open the site: the **Uptime** card is on the **Overview**.
+2. In **Path to request**, enter a page that answers quickly. Leave `/` if you have no better page.
+3. Press **Turn on**.
+
+The first check runs at once. The card shows the state (**answering**, **one failure**, **down**), the
+**Address checked**, the **Last check** and the **Answer**, with the HTTP status and the time. While
+the site is down it also shows **Down since**.
+
+To change the path, enter another one and press **Save**. To stop the check, press **Turn off**: an
+open alert closes.
+
+The path starts with `/` and is made of letters, digits and `. _ ~ -` between slashes, with no query.
+
+## What counts as an answer {#what-counts}
+
+The panel asks for `GET https://<domain><path>`, with a 10-second timeout.
+
+- **Answering**: any status below 500, 401 or 404 included. The site is answering.
+- **Failure**: a 5xx status, a refused or reset connection, a certificate a browser would refuse, no
+  answer within 10 seconds.
+
+The panel follows no redirect: a 3xx counts as an answer, and the check never leaves the site's
+address.
+
+## The alert {#the-alert}
+
+Two failures in a row raise an alert of kind **Uptime**, at error level, with the reason of the last
+failure. A single failure, such as a lost packet or a reload, is not enough. The alert shows in the
+**Alerts** panel and goes to the alert webhook (see
+[alerts and notifications](/docs/server/alerts-and-notifications)). It closes by itself when the site
+answers again.
+
+A restart of the panel neither closes nor reopens an alert that is already open.
+
+## With the API {#with-the-api}
+
+- `GET /api/sites/<id>/uptime` returns `enabled`, `path`, `url`, `interval_seconds` and `last`, the
+  last check.
+- `PUT /api/sites/<id>/uptime` with `{"enabled": true, "path": "/health"}` turns the check on or
+  changes the path; `{"enabled": false}` turns it off.
+
+## Next step {#next}
+
+[Get the alerts in a chat](/docs/server/alerts-and-notifications#webhook).

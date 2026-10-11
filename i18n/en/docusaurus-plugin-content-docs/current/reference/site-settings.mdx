@@ -3,8 +3,8 @@ title: Site settings
 description: Every field PATCH /api/sites/<id> takes, with its allowed values, default, effect and who may change it.
 type: reference
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.2.0
+last_verified: unverified
 sidebar_position: 2
 ---
 
@@ -32,6 +32,10 @@ to the site.
 | `public_root` | string | all but reverse proxy | empty, or a relative path of segments made of letters, digits, `-` and `_`, with no symbolic link or file along the path | `public` for Laravel, else empty | the folder served, inside the live release (`current/<public_root>`) | manage |
 | `proxy_upstream` | string | reverse proxy | an `http` or `https` URL with no credentials, query or fragment; stored normalised | chosen at creation | where requests go | administrator |
 | `object_cache` | boolean | WordPress, WooCommerce | `true`, `false` | off | installs and turns on the APCu object cache, or turns it off | manage |
+| `memory_max_mb` | integer | all | 0, or 128 to 1048576 | 0: half the server's memory, at least 1024 MB | the memory limit of the site's slice (`MemoryMax`); the site is slowed down at nine tenths | administrator |
+| `cpu_quota_pct` | integer | all | 0, or 10 to 25600; 100 is one CPU | 0: no quota | the CPU quota of the site's slice (`CPUQuota`) | administrator |
+| `tasks_max` | integer | all | 0, or 32 to 65536 | 0: 512 | the maximum number of processes in the site's slice (`TasksMax`) | administrator |
+| `usage_alerts` | object | all | `{off, cpu_pct, memory_pct, disk_mb}`, replaced whole; the percentages 0 to 100, `disk_mb` from 0 | alerts on, CPU and memory at 90 % (0), no disk alert (0) | the thresholds of the [usage alerts](/docs/sites/resource-usage-and-limits#usage-alerts); does not touch the site's configuration | manage |
 
 Any other field in the body makes the request malformed.
 
@@ -63,7 +67,7 @@ true` skips the check; only an administrator may send it.
 | --- | --- |
 | `202` | `{"site": …, "task": …}`, plus `"warnings"` when there is something to know |
 | `400` | malformed body or unknown field; no field; a value against its rule, an alias another site holds included (`{"error": …, "fields": {<field>: <message>}}`); PHP budget exceeded |
-| `403` | `aliases` or `proxy_upstream` (with `fields`), or `allow_over_budget`, from anyone but an administrator |
+| `403` | `aliases`, `proxy_upstream`, `memory_max_mb`, `cpu_quota_pct` or `tasks_max` (with `fields`), or `allow_over_budget`, from anyone but an administrator |
 | `404` | the site does not exist or is out of an operator's reach |
 | `409` | `hsts: true` without a certificate valid for at least another 14 days |
 | `503` | the panel is restarting: try again in a moment |

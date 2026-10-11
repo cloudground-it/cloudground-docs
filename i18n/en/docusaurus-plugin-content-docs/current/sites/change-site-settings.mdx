@@ -1,11 +1,11 @@
 ---
 title: Change a site's settings
-description: Change aliases, profile, cache, PHP, HSTS and object cache from the site's tabs, or any field with a PATCH request to the API.
+description: Change aliases, profile, cache, PHP and its extensions, limits, HSTS and object cache from the site's tabs, or any field with a PATCH request to the API.
 type: how-to
 prerequisites:
   - An administrator account, or an operator assigned to the site
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.2.0
+last_verified: unverified
 sidebar_position: 2
 ---
 
@@ -21,6 +21,7 @@ Open **Sites**, pick the site, then the tab:
 | **Overview**, card **Domains and folder** | **Aliases** (administrators only), **Public folder**; for a reverse proxy, **Upstream URL** instead of the folder (administrators only) | **Apply** |
 | **Cache** | **Performance profile**, **Page cache**, **Lifetime (TTL)** in seconds (0 = the profile's) | **Apply** |
 | **PHP** (under **More**) | **PHP version**, **Memory limit**, **Max upload size**, **Max execution time**; in the **Workers** card, **PHP workers** (0 = automatic) | **Apply** |
+| **Resources** (under **More**) | **Memory limit**, **CPU quota**, **Process limit** (administrators only); the **Usage alerts** thresholds. See [a site's resources and limits](/docs/sites/resource-usage-and-limits) | **Apply** |
 | **SSL** | the **HSTS** switch | — |
 | **WordPress** | the **Object cache** switch | — |
 
@@ -34,6 +35,26 @@ certificate stops working. The panel turns it on only when the site has a certif
 least another 14 days.
 
 :::
+
+## Install a PHP extension {#php-extensions}
+
+*Since v0.2.0.*
+
+The **PHP** tab shows, in the **PHP … extensions** card, the common extensions of the site's PHP
+version; the missing ones are marked **not installed**. **All loaded modules** lists every module the
+sites' PHP really loads.
+
+Extensions are the server's: every site on that PHP version shares them. That is why only an
+administrator installs one.
+
+1. In the **PHP** tab, press **Install** next to the extension.
+2. Confirm. A task installs the package `php<version>-<extension>` on the server, then restarts the
+   PHP of every site on that version so it loads it, with a moment of pause.
+
+Only these extensions can be installed: `apcu`, `bcmath`, `curl`, `gd`, `gmp`, `igbinary`, `imagick`,
+`intl`, `ldap`, `mbstring`, `memcached`, `mysql`, `pgsql`, `redis`, `soap`, `sqlite3`, `xml`, `zip`.
+With the API: `GET /api/php/<version>/extensions` lists them, `POST /api/php/<version>/extensions`
+with `{"extension": "redis"}` installs one (administrators only).
 
 ## With the API {#with-the-api}
 
@@ -63,7 +84,8 @@ to know, for example that the certificate no longer covers every alias, the answ
 - **400** on the PHP budget: workers × memory limit exceeds the server's memory. Lower one of the
   two. An administrator can force it with `"allow_over_budget": true`, or from the **PHP** tab with
   **Apply beyond the budget**.
-- **403**: only an administrator changes `aliases` and `proxy_upstream`.
+- **403**: only an administrator changes `aliases`, `proxy_upstream` and the resource limits
+  (`memory_max_mb`, `cpu_quota_pct`, `tasks_max`).
 - **409** on `hsts`: the site has no certificate, or it expires within 14 days. Issue it first.
 
 ## Next step {#next}

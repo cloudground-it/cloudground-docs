@@ -12,5 +12,7 @@ hide_table_of_contents: true
   <Card to="/docs/sites/domains-and-certificates" title="Domini e certificati" />
   <Card to="/docs/sites/edit-routing" title="Modifica il routing" />
   <Card to="/docs/sites/scheduled-tasks" title="Attività pianificate" />
+  <Card to="/docs/sites/resource-usage-and-limits" title="Risorse e limiti di un sito" />
+  <Card to="/docs/sites/uptime-monitoring" title="Controlla che un sito risponda" />
   <Card to="/docs/sites/delete-a-site" title="Elimina un sito" />
 </Cards>

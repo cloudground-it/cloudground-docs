@@ -1,0 +1,96 @@
+---
+title: A site's resources and limits
+description: See how much CPU, memory, disk and IO a site uses, limit how much it can take from the others, and get an alert when it stays over a threshold.
+type: how-to
+prerequisites:
+  - A site
+  - An administrator account for the limits; an administrator, or an operator assigned to the site, for the alerts
+version: v0.2.0
+last_verified: unverified
+sidebar_position: 6
+---
+
+Every process of a site (its PHP, scheduled tasks, wp-cli and the shell) runs in the site's systemd
+slice, `cg-site-<id>.slice`. The **Resources** tab shows what they use, and lets you limit how much
+they can take from the other sites on the same server.
+
+## See what the site uses {#see-the-usage}
+
+1. Open the site, then **More** and **Resources**.
+2. Read the four values at the top:
+   - **CPU**, as a share of what the site may use: its quota, or every CPU of the server;
+   - **Memory**, against its limit;
+   - **Disk**, the space taken by the site's folder and its logs, with the number of files;
+   - **Disk IO**, the bytes read and written per second.
+3. Choose **24 hours** or **30 days** for the CPU and memory chart.
+
+The panel reads the slice's counters every five minutes, and measures the disk at most once an hour.
+On a new site the first sample arrives within five minutes, the disk within the hour. The panel keeps
+a day of samples and 30 days of hourly values.
+
+If one of the site's processes was killed at the memory limit, **Memory** shows *N processes killed at
+the memory limit*.
+
+Every account that can see the site sees the tab.
+
+## Limit the site's resources {#set-the-limits}
+
+You need an administrator account: the limits decide how much one site can take from all the others.
+
+1. In the **Resources** tab, **Limits** card, enter:
+   - **Memory limit**, in MB;
+   - **CPU quota**, as a percentage: 100 % is one CPU, 200 % two;
+   - **Process limit**.
+2. Press **Apply**.
+
+0 in a field means the default:
+
+| Field | Default | Allowed values |
+| --- | --- | --- |
+| **Memory limit** | half the server's memory, at least 1024 MB | 0, or 128 to 1048576 MB |
+| **CPU quota** | no quota: the site may use every CPU | 0, or 10 to 25600 % |
+| **Process limit** | 512 | 0, or 32 to 65536 |
+
+The kernel enforces the limits on the site alone. Near the memory limit (nine tenths) the site is
+slowed down; at the limit, one of its processes is ended, never another site's, and the site's PHP
+keeps serving. A new limit applies at once, with nothing restarted.
+
+The disk has no limit: you can only get an alert (see below).
+
+## Get a usage alert {#usage-alerts}
+
+1. In the **Resources** tab, **Usage alerts** card, leave **Alert on this site's usage** on.
+2. Enter the thresholds: **CPU** and **Memory** as percentages, **Disk** in MB.
+3. Press **Apply**.
+
+| Threshold | Default | When the alert is raised |
+| --- | --- | --- |
+| **CPU** | 90 % (0 in the field) | the last three samples, a quarter of an hour, are all at or over the threshold |
+| **Memory** | 90 % of the memory limit (0 in the field) | as for CPU |
+| **Disk** | no alert (0 in the field) | the last disk measure is at or over the threshold |
+
+A short spike raises no alert. The alert's kind is **Resources**: it shows in the **Alerts** panel and
+goes to the alert webhook like the others (see [alerts and notifications](/docs/server/alerts-and-notifications)).
+Changing the thresholds does not touch the site's configuration.
+
+## With the API {#with-the-api}
+
+`GET /api/sites/<id>/usage?range=24h` (or `30d`) returns the samples, the limits in force and the
+latest sample. The limits and the thresholds are fields of `PATCH /api/sites/<id>`:
+
+```json
+{
+  "memory_max_mb": 2048,
+  "cpu_quota_pct": 150,
+  "tasks_max": 256,
+  "usage_alerts": {"off": false, "cpu_pct": 80, "memory_pct": 90, "disk_mb": 20000}
+}
+```
+
+Only an administrator sends `memory_max_mb`, `cpu_quota_pct` and `tasks_max`: from another account
+the request gets **403**. `usage_alerts` is replaced whole. Every field is in the
+[site settings reference](/docs/reference/site-settings).
+
+## Next step {#next}
+
+[Check that the site answers](/docs/sites/uptime-monitoring) from the outside.

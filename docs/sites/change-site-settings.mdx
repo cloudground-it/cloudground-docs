@@ -1,11 +1,11 @@
 ---
 title: Cambia le impostazioni di un sito
-description: Cambia alias, profilo, cache, PHP, HSTS e object cache dalle schede del sito, o qualsiasi campo con una richiesta PATCH all'API.
+description: Cambia alias, profilo, cache, PHP e le sue estensioni, limiti, HSTS e object cache dalle schede del sito, o qualsiasi campo con una richiesta PATCH all'API.
 type: how-to
 prerequisites:
   - Un account amministratore oppure operatore assegnato al sito
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.2.0
+last_verified: unverified
 sidebar_position: 2
 ---
 
@@ -22,6 +22,7 @@ Apri **Siti**, scegli il sito, poi la scheda:
 | **Panoramica**, riquadro **Domini e cartella** | **Alias** (solo un amministratore), **Cartella pubblica**; per un reverse proxy **URL upstream** al posto della cartella (solo un amministratore) | **Applica** |
 | **Cache** | **Profilo prestazioni**, **Cache di pagina**, **Durata (TTL)** in secondi (0 = quella del profilo) | **Applica** |
 | **PHP** (sotto **Altro**) | **Versione PHP**, **Limite di memoria**, **Dimensione massima upload**, **Tempo massimo di esecuzione**; nel riquadro **Worker**, **Worker PHP** (0 = automatico) | **Applica** |
+| **Risorse** (sotto **Altro**) | **Limite di memoria**, **Quota di CPU**, **Limite di processi** (solo un amministratore); le soglie degli **Avvisi sull'uso**. Vedi [risorse e limiti di un sito](/docs/sites/resource-usage-and-limits) | **Applica** |
 | **SSL** | l'interruttore **HSTS** | — |
 | **WordPress** | l'interruttore **Object cache** | — |
 
@@ -35,6 +36,26 @@ certificato smette di funzionare. Il pannello lo attiva solo se il sito ha un ce
 almeno altri 14 giorni.
 
 :::
+
+## Installa un'estensione PHP {#php-extensions}
+
+*Da v0.2.0.*
+
+La scheda **PHP** mostra, nel riquadro **Estensioni di PHP …**, le estensioni comuni della versione PHP
+del sito; quelle che mancano sono segnate **non installata**. **Tutti i moduli caricati** elenca ogni modulo
+che il PHP dei siti carica davvero.
+
+Le estensioni sono del server: tutti i siti su quella versione di PHP le condividono. Per questo solo
+un amministratore ne installa una.
+
+1. Nella scheda **PHP**, premi **Installa** accanto all'estensione.
+2. Conferma. Parte un'attività che installa il pacchetto `php<versione>-<estensione>` sul server, poi
+   riavvia il PHP di ogni sito su quella versione perché la carichi, con una breve pausa.
+
+Si installano solo queste estensioni: `apcu`, `bcmath`, `curl`, `gd`, `gmp`, `igbinary`, `imagick`,
+`intl`, `ldap`, `mbstring`, `memcached`, `mysql`, `pgsql`, `redis`, `soap`, `sqlite3`, `xml`, `zip`.
+Con l'API: `GET /api/php/<versione>/extensions` le elenca, `POST /api/php/<versione>/extensions` con
+`{"extension": "redis"}` ne installa una (solo un amministratore).
 
 ## Con l'API {#with-the-api}
 
@@ -63,7 +84,8 @@ esempio che il certificato non copre più tutti gli alias, la risposta ha anche 
 - **400** sul budget di PHP: worker × limite di memoria supera la memoria del server. Riduci uno dei
   due. Un amministratore può forzare con `"allow_over_budget": true`, o dalla scheda **PHP** con
   **Applica oltre il budget**.
-- **403**: `aliases` e `proxy_upstream` li cambia solo un amministratore.
+- **403**: `aliases`, `proxy_upstream` e i limiti delle risorse (`memory_max_mb`, `cpu_quota_pct`,
+  `tasks_max`) li cambia solo un amministratore.
 - **409** su `hsts`: il sito non ha un certificato, o scade entro 14 giorni. Emettilo prima.
 
 ## Prossimo passo {#next}
