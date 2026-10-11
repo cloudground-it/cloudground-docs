@@ -3,8 +3,8 @@ title: Staging, Safe Push and Performance Guard
 description: Why staging is a site of its own, how Safe Push decides whether to publish, and how Performance Guard measures a speed difference without being fooled by the server's noise.
 type: explanation
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 6
 ---
 
@@ -18,7 +18,9 @@ and vhost, at `staging.<domain>`. When you create it, the panel:
 
 - copies production's live release and uploaded files without following links, so the copy
   cannot reach production's files;
-- copies production's database into staging's;
+- copies production's primary database into staging's. The site's other databases are not copied:
+  they are not what its configuration (`wp-config.php`) uses, and a copy nothing in staging uses
+  would only double the data. They stay production's alone;
 - on WordPress, puts staging's database in the configuration, `WP_ENVIRONMENT_TYPE` = `staging`,
   a panel token different from production's, and new session keys: whoever gets into staging
   cannot sign a login to production;
@@ -33,7 +35,8 @@ production's code with only the chosen paths taken from staging. Either way `wp-
 the uploaded files stay production's: a release that comes from staging does not carry its
 credentials.
 
-**Tables.** The database is published separately, table by table. Some tables are never
+**Tables.** The primary database is published separately, table by table, from staging's to
+production's; the other databases take no part. Some tables are never
 published, because in production they hold live data that staging has in an old version:
 
 - WordPress users (`*_users`, `*_usermeta`);

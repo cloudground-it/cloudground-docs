@@ -6,8 +6,8 @@ prerequisites:
   - Un sito di produzione attivo
   - Un account amministratore oppure operatore assegnato al sito
   - Per pubblicare tabelle del database, un repository di backup configurato
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 2
 ---
 
@@ -26,6 +26,10 @@ misurato le due versioni. Il perché di ogni passaggio è in
 
 Un sito ha al massimo una copia di staging, e uno staging non si può a sua volta clonare. Un sito
 WordPress con il database esterno non si può clonare.
+
+Lo staging riceve solo il **database principale** della produzione, in un database suo
+(`site_<id-staging>`, con il suo utente). Gli altri database del sito non vengono copiati: restano
+solo in produzione, e lo staging non li vede.
 
 :::note[Il certificato dello staging]
 
@@ -66,6 +70,9 @@ Il rilascio parte dal codice della produzione, con i percorsi scelti presi dallo
 configurazione e i file caricati restano sempre quelli della produzione.
 
 ## Pubblica tabelle del database {#publish-tables}
+
+Le tabelle vanno dal database principale dello staging a quello della produzione. Gli altri database
+della produzione non cambiano mai con una pubblicazione.
 
 1. Nel riquadro **Tabelle del database**, seleziona le tabelle (da 1 a 50).
 2. Premi **Pubblica le tabelle**, scrivi il dominio di produzione per confermare e conferma.

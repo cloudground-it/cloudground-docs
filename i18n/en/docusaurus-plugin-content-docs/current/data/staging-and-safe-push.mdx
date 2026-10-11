@@ -6,8 +6,8 @@ prerequisites:
   - An active production site
   - An administrator account, or an operator assigned to the site
   - To publish database tables, a configured backup repository
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 2
 ---
 
@@ -24,6 +24,10 @@ for each step is in [Staging, Safe Push and Performance Guard](/explanation/stag
 
 A site has at most one staging copy, and a staging copy cannot be staged itself. A WordPress site
 with an external database cannot be cloned.
+
+Staging gets only production's **primary database**, in a database of its own
+(`site_<staging-id>`, with its own user). The site's other databases are not copied: they stay in
+production only, and staging does not see them.
 
 :::note[The staging certificate]
 
@@ -63,6 +67,9 @@ The release starts from production's code, with the chosen paths taken from stag
 files always stay production's.
 
 ## Publish database tables {#publish-tables}
+
+The tables go from staging's primary database to production's. Production's other databases never
+change with a publish.
 
 1. In the **Database tables** panel, select the tables (1 to 50).
 2. Press **Publish tables**, type the production domain to confirm, and confirm.

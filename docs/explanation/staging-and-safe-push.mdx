@@ -3,8 +3,8 @@ title: Staging, Safe Push e Performance Guard
 description: Perché lo staging è un sito a sé, come Safe Push decide se pubblicare e come Performance Guard misura una differenza di velocità senza farsi ingannare dal rumore del server.
 type: explanation
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 6
 ---
 
@@ -19,7 +19,9 @@ pannello:
 
 - copia il rilascio attivo e i file caricati della produzione, senza seguire collegamenti, così la
   copia non può arrivare ai file della produzione;
-- copia il database della produzione in quello dello staging;
+- copia il database principale della produzione in quello dello staging. Gli altri database del sito
+  non vengono copiati: non sono quelli che la sua configurazione (`wp-config.php`) usa, e una copia
+  che nulla nello staging usa raddoppierebbe solo i dati. Restano solo della produzione;
 - su WordPress, mette nella configurazione il database dello staging, `WP_ENVIRONMENT_TYPE` =
   `staging`, un token del pannello diverso da quello della produzione e nuove chiavi di sessione:
   chi entra nello staging non può firmare un accesso alla produzione;
@@ -34,7 +36,8 @@ staging, oppure dal codice della produzione con solo i percorsi scelti presi dal
 entrambi i casi `wp-config.php` e i file caricati restano quelli della produzione: un rilascio
 che arriva dallo staging non ne porta le credenziali.
 
-**Le tabelle.** Il database si pubblica a parte, tabella per tabella. Alcune tabelle non si
+**Le tabelle.** Il database principale si pubblica a parte, tabella per tabella, da quello dello
+staging a quello della produzione; gli altri database non c'entrano. Alcune tabelle non si
 pubblicano mai, perché in produzione contengono dati vivi che lo staging ha in una versione
 vecchia:
 
