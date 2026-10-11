@@ -3,8 +3,8 @@ title: Backup e ripristini di prova
 description: Com'è fatto un backup, perché conta solo dopo un ripristino di prova, e come un ripristino evita di lasciare il sito a metà.
 type: explanation
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.2.0
+last_verified: unverified
 sidebar_position: 7
 ---
 
@@ -75,13 +75,28 @@ Poi:
 
 - i file ripristinati vengono preparati accanto alla cartella del sito, sullo stesso disco, e
   scambiati con quella attuale in una sola operazione del kernel: non c'è un momento senza sito;
-- con il database (modalità *Tutto* o *Solo il database*), il database viene salvato, svuotato e ricreato dal dump, così le tabelle nate dopo lo snapshot
-  non restano;
+- con il database (modalità *Tutto* o *Solo il database*), ogni database scelto viene salvato, svuotato e ricreato dal dump, così le tabelle nate dopo lo snapshot
+  non restano; gli altri database del sito non vengono toccati;
 - PHP del sito riparte (svuotando la cache del codice e degli oggetti), nginx ricarica;
 - se il sito non riparte, file e database tornano com'erano.
 
 Alla fine la cache di pagina viene svuotata, non eliminata: la sua cartella resta, perché senza
 quella cartella il sito smetterebbe di usare la cache.
+
+## Prima di una migrazione {#before-a-migration}
+
+*Da v0.2.0.* Anche l'importazione di una migrazione sostituisce i file caricati e le tabelle del sito,
+e un archivio vecchio o sbagliato viene importato senza errori. Per questo comincia come un
+ripristino: con uno snapshot di sicurezza di tipo `pre-migration`, verificato con il ripristino di
+prova. Se la prova fallisce, l'importazione si ferma prima di cambiare il sito.
+
+Il registro dell'attività nomina lo snapshot (`safety snapshot <id> retained`). Se l'importazione
+fallisce, lo snapshot resta: ripristinandolo, il sito torna com'era prima della migrazione.
+
+Senza un repository di backup configurato l'importazione parte lo stesso, perché un server appena
+installato deve poter migrare il suo primo sito. In quel caso l'attività lo dice prima di toccare
+qualcosa: *No backup repository is configured: no safety snapshot is taken, and this import cannot be
+undone*.
 
 ## Prossimo passo {#next}
 

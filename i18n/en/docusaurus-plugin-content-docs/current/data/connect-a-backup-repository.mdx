@@ -80,6 +80,15 @@ When you change the repository or the password, the panel tries the pair before 
 repository does not exist yet, it is created. If it exists with another password, the panel refuses
 to save: the existing backups would become unreadable.
 
+### A password in the address {#password-in-the-address}
+
+*Since v0.2.0.* An advanced repository can carry a password in its address, for example
+`rest:https://<user>:<password>@<host>/`. The panel keeps it encrypted, like the other backup
+credentials, with the server's secrets key (`/var/lib/cloudground/secret.key`): in the panel's
+database the address stays without its password. In **Settings** and in the list of backups the
+address shows masked. A panel upgraded from an earlier version encrypts, at its first start, the
+passwords it had stored in clear.
+
 ## Test the connection {#test}
 
 Press **Test connection**. It connects with the saved settings, so it is available only once nothing

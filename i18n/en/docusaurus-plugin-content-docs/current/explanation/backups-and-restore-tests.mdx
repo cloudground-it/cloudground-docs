@@ -3,8 +3,8 @@ title: Backups and restore tests
 description: What a backup is made of, why it counts only after a restore test, and how a restore avoids leaving the site half done.
 type: explanation
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.2.0
+last_verified: unverified
 sidebar_position: 7
 ---
 
@@ -75,13 +75,26 @@ Then:
 
 - the restored files are prepared next to the site folder, on the same disk, and swapped with the
   current one in a single kernel operation: there is no moment without a site;
-- with the database (modes *Everything* or *Database only*), the database is saved, emptied and recreated from the dump, so tables born after the snapshot
-  do not stay;
+- with the database (modes *Everything* or *Database only*), each chosen database is saved, emptied and recreated from the dump, so tables born after the snapshot
+  do not stay; the site's other databases are not touched;
 - the site's PHP restarts (emptying the code and object caches), nginx reloads;
 - if the site does not come back, files and database go back to what they were.
 
 At the end the page cache is emptied, not removed: its folder stays, because without that folder
 the site would stop caching.
+
+## Before a migration {#before-a-migration}
+
+*Since v0.2.0.* A migration import also replaces the site's uploaded files and tables, and a stale or
+wrong archive imports without an error. So it starts like a restore: with a `pre-migration` safety
+snapshot, checked with the restore test. If the test fails, the import stops before the site changes.
+
+The task's log names the snapshot (`safety snapshot <id> retained`). If the import fails, the
+snapshot stays: restoring it puts the site back as it was before the migration.
+
+With no backup repository configured the import still runs, because a freshly installed server must
+be able to migrate its first site. In that case the task says so before it touches anything: *No
+backup repository is configured: no safety snapshot is taken, and this import cannot be undone*.
 
 ## Next step {#next}
 

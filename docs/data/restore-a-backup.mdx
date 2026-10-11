@@ -29,8 +29,10 @@ sicurezza preso all'inizio del ripristino.
    - **Tutto (file e database)**;
    - **Solo i file**;
    - **Solo il database**.
-4. Premi **Continua**, scrivi il dominio del sito per confermare e premi **Ripristina**.
-5. Segui l'attività *Ripristino avviato* fino alla fine.
+4. Con *Tutto* o *Solo il database*, in **Database da ripristinare** lascia selezionati i database da
+   riportare indietro (vedi [sotto](#databases)).
+5. Premi **Continua**, scrivi il dominio del sito per confermare e premi **Ripristina**.
+6. Segui l'attività *Ripristino avviato* fino alla fine.
 
 Lo snapshot di sicurezza compare nell'elenco dei backup: se ti serve tornare indietro, ripristina
 quello.
@@ -48,29 +50,50 @@ quello.
 
 ## Quali database {#databases}
 
-Dal pannello e con cgctl, *Tutto* e *Solo il database* ripristinano ogni database che il backup
-contiene e che il sito ha ancora.
+*Da v0.2.0.* Con *Tutto* e *Solo il database* scegli quali database del backup ripristinare. La
+finestra del ripristino elenca, in **Database da ripristinare**, i database che lo snapshot contiene,
+tutti selezionati.
+
+- Lasciali tutti selezionati per ripristinarli tutti.
+- Togli la selezione a quelli da non toccare: vengono sostituiti solo i database selezionati, gli
+  altri restano come sono ora.
+- Senza nessun database selezionato **Continua** resta disattivato: scegline almeno uno, oppure
+  ripristina **Solo i file**.
+
+Un backup fatto prima della v0.2.0 non registra i suoi database: per lui la finestra elenca i
+database che il sito ha adesso, e il ripristino rimette quelli che lo snapshot contiene davvero.
+
+Valgono poi queste regole:
 
 - Un database che il backup contiene e il sito non ha più viene saltato, e l'attività lo nomina. Per
   ripristinarlo, crealo di nuovo con lo stesso nome nella [scheda Database](/docs/data/manage-databases),
   poi ripristina.
-- Un database creato dopo il backup non c'è, e resta com'è.
+- Un database creato dopo il backup non è nello snapshot e resta com'è. Se lo nomini con l'API o con
+  cgctl, il ripristino viene rifiutato.
 - Un sito senza database non può ricevere un ripristino *Solo il database*.
 
-Per ripristinare solo alcuni database, usa l'API: `POST /api/backups/<backup-id>/restore` con
-`{"confirm": "<dominio>", "mode": "database", "databases": ["shop_data"]}`. Ogni nome deve essere nel
-backup ed essere ancora un database del sito; con `"mode": "files"` non si può nominare nessun
-database.
+Con l'API, l'elenco `GET /api/sites/<site-id>/backups` dà per ogni backup il campo `databases`: i nomi
+dei database dello snapshot, `[]` se non ne ha, `null` per un backup fatto prima della v0.2.0. Per
+ripristinarne solo alcuni, `POST /api/backups/<backup-id>/restore` con
+`{"confirm": "<dominio>", "mode": "database", "databases": ["shop_data"]}`. Ogni nome deve essere un
+database del sito; un nome che lo snapshot non contiene riceve **400**
+`snapshot <id> holds no database "<nome>"`, prima che parta qualsiasi cosa. Con `"mode": "files"` non
+si può nominare nessun database.
 
 ## Da riga di comando {#cli}
 
 ```bash
 cgctl --wait backup restore <backup-id> <dominio> files
+cgctl --wait backup restore <backup-id> <dominio> database --database shop_data
 ```
 
 `<backup-id>` è il campo `id` di un backup nell'elenco `GET /api/sites/<site-id>/backups`;
-`<dominio>` è il dominio del sito, come conferma. L'ultima parola è `full` (il valore se la ometti),
-`files` o `database`.
+`<dominio>` è il dominio del sito, come conferma. La parola dopo il dominio è `full` (il valore se la
+ometti), `files` o `database`.
+
+*Da v0.2.0.* `--database <nome>` ripristina solo quel database dello snapshot. Ripetilo per ogni
+database da ripristinare; vale anche la forma `--database=<nome>`, in qualsiasi punto dopo
+`backup restore`. Senza `--database` il ripristino rimette tutti i database.
 
 ## Prossimo passo {#next}
 

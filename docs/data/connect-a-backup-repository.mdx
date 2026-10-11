@@ -80,6 +80,15 @@ Quando cambi il repository o la password, il pannello prova la coppia prima di s
 repository non esiste ancora, lo crea. Se esiste con un'altra password, il pannello rifiuta di
 salvare: i backup già presenti diventerebbero illeggibili.
 
+### Una password nell'indirizzo {#password-in-the-address}
+
+*Da v0.2.0.* Un repository avanzato può portare una password nell'indirizzo, per esempio
+`rest:https://<utente>:<password>@<host>/`. Il pannello la conserva cifrata, come le altre credenziali
+dei backup, con la chiave dei segreti del server (`/var/lib/cloudground/secret.key`): nel database del
+pannello l'indirizzo resta senza password. Nelle **Impostazioni** e nell'elenco dei backup l'indirizzo
+compare mascherato. Un pannello aggiornato da una versione precedente cifra al primo avvio le password
+che aveva salvato in chiaro.
+
 ## Prova la connessione {#test}
 
 Premi **Prova la connessione**. Si collega con le impostazioni salvate, quindi è disponibile solo

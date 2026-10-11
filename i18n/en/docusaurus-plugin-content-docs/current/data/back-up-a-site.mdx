@@ -36,7 +36,24 @@ To change the schedule, in the site's **Backups** tab, **Schedule** card:
 3. Press **Save**.
 
 With the API it is `PUT /api/sites/<site-id>/backups/policy` with `enabled`, `schedule` (`hourly`,
-`daily`, `weekly`) and `retention_days`.
+`daily`, `weekly`), `retention_days` and `hour`. Send only the fields to change: the others keep
+their value.
+
+### Choose the time {#hour}
+
+*Since v0.2.0.* A daily or weekly backup can start at a fixed hour, at night for example.
+
+1. In **Frequency** pick **Every day** or **Every week**. The **Time** field appears.
+2. In **Time** pick the hour. Under the field the panel shows the server's time zone: the hour is in
+   that zone.
+3. Press **Save**.
+
+The backup starts at the first check (every 5 minutes) after that hour. A weekly backup keeps its
+weekday. If you change the hour, no second backup runs that day. If the panel was down at the chosen
+hour, the backup starts at the first check after it is back.
+
+With **Any time** the backup starts a day or a week after the previous one, as before v0.2.0. With
+the API, `hour` goes from 0 to 23; `-1` clears it.
 
 ## Take a backup now {#back-up-now}
 
