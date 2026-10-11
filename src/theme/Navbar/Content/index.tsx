@@ -2,6 +2,9 @@ import React, {type ReactNode} from 'react';
 import {useThemeConfig, ErrorCauseBoundary} from '@docusaurus/theme-common';
 import {useNavbarMobileSidebar} from '@docusaurus/theme-common/internal';
 import Link from '@docusaurus/Link';
+import {translate} from '@docusaurus/Translate';
+import {useLocation} from '@docusaurus/router';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import NavbarItem, {type Props as NavbarItemConfig} from '@theme/NavbarItem';
 import NavbarColorModeToggle from '@theme/Navbar/ColorModeToggle';
 import NavbarMobileSidebarToggle from '@theme/Navbar/MobileSidebar/Toggle';
@@ -25,23 +28,35 @@ function NavbarItems({items}: {items: NavbarItemConfig[]}): ReactNode {
 }
 
 /**
- * Segmented navbar: mark + "docs" tag | search field | section links.
- * Each segment is separated by a hairline, as in the design.
+ * Segmented navbar: mark (home) + "docs" tag inside the docs | search field |
+ * section links. Each segment is separated by a hairline, as in the design.
  */
 export default function NavbarContent(): ReactNode {
   const mobileSidebar = useNavbarMobileSidebar();
   const items = useThemeConfig().navbar.items as NavbarItemConfig[];
   const left = items.filter((item) => item.position !== 'right');
   const right = items.filter((item) => item.position === 'right');
+  const {pathname} = useLocation();
+  const docsBase = useBaseUrl('/docs');
+  const inDocs = pathname === docsBase || pathname.startsWith(`${docsBase}/`);
 
   return (
     <div className="cg-nav">
       <div className="cg-nav__brandcell">
         {!mobileSidebar.disabled && <NavbarMobileSidebarToggle />}
-        <Link to="/" className="cg-nav__brand" aria-label="CloudGround docs">
+        <Link
+          to="/"
+          className="cg-nav__brand"
+          aria-label={translate({id: 'cg.nav.home', message: 'CloudGround, pagina iniziale'})}>
           <LogoMark size={28} animated />
-          <span className="disp cg-nav__name">cloudground</span>
-          <span className="hud cg-tag">docs</span>
+          <span className="disp cg-nav__name" aria-hidden="true">
+            cloudground
+          </span>
+          {inDocs && (
+            <span className="hud cg-tag" aria-hidden="true">
+              docs
+            </span>
+          )}
         </Link>
       </div>
       <div className="cg-nav__search">

@@ -1,27 +1,34 @@
 import React, {type ReactNode} from 'react';
-import Translate from '@docusaurus/Translate';
+import Translate, {translate} from '@docusaurus/Translate';
+import {RELEASE, RELEASE_URL} from '@site/src/data/site';
 
 /**
- * The HUD strip above the navbar. It replaces the announcement bar slot, so it
- * scrolls away while the navbar stays.
+ * The status strip above the navbar, on every page: the project's state in one
+ * line. It takes the announcement bar's slot, so it scrolls away while the
+ * navbar stays.
  */
 export default function AnnouncementBar(): ReactNode {
   return (
-    <div className="cg-hudstrip" role="note">
-      <div className="cg-hudstrip__inner hud">
-        <span>
-          <Translate id="cg.hud.docs">Documentazione</Translate>
-        </span>
-        <span>
-          <Translate id="cg.hud.version">Versione [VERSIONE]</Translate>
-        </span>
-        <span>
-          <Translate id="cg.hud.verified">Verificata su Ubuntu 24.04 · 26.04</Translate>
-        </span>
-        <a className="cg-hudstrip__home" href="https://cloudground.it">
-          ← cloudground.it
-        </a>
-      </div>
-    </div>
+    <aside
+      className="cg-hudstrip"
+      aria-label={translate({id: 'cg.status.label', message: 'Stato del progetto'})}>
+      <ul className="cg-hudstrip__inner hud">
+        <li className="cg-hudstrip__live">
+          <span className="cg-led" aria-hidden="true" />
+          <a href={RELEASE_URL}>
+            <Translate id="cg.status.release" values={{version: RELEASE}}>
+              {'Release {version} disponibile'}
+            </Translate>
+          </a>
+        </li>
+        <li>Ubuntu 24.04 · 26.04</li>
+        <li>
+          <Translate id="cg.status.license">Licenza Elastic 2.0</Translate>
+        </li>
+        <li className="cg-hudstrip__end">
+          <Translate id="cg.status.price">Nessun abbonamento</Translate>
+        </li>
+      </ul>
+    </aside>
   );
 }

@@ -14,15 +14,6 @@
   "cg.admonition.note": {
     "message": "Nota"
   },
-  "cg.hud.docs": {
-    "message": "Documentazione"
-  },
-  "cg.hud.version": {
-    "message": "Versione [VERSIONE]"
-  },
-  "cg.hud.verified": {
-    "message": "Verificata su Ubuntu 24.04 · 26.04"
-  },
   "cg.paginator.next": {
     "message": "Successiva"
   },
@@ -32,9 +23,6 @@
   "theme.docs.paginator.navAriaLabel": {
     "message": "Pagina del documento",
     "description": "The ARIA label for the docs pagination"
-  },
-  "cg.footer.license": {
-    "message": "Testi con licenza [LICENZA DOCS]"
   },
   "cg.meta.time": {
     "message": "Tempo"

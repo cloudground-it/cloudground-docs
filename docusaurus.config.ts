@@ -26,10 +26,10 @@ const inkPrism: PrismTheme = {
 
 const config: Config = {
   title: 'CloudGround',
-  tagline: 'Documentazione',
+  tagline: 'Hosting che si misura',
   favicon: 'img/logo.svg',
 
-  url: 'https://docs.cloudground.it',
+  url: 'https://cloudground.it',
   baseUrl: '/',
   trailingSlash: false,
 
@@ -70,7 +70,7 @@ const config: Config = {
       'classic',
       {
         docs: {
-          routeBasePath: '/',
+          routeBasePath: 'docs',
           sidebarPath: './sidebars.ts',
           editUrl: `${DOCS_REPO}/edit/main/`,
           editLocalizedFiles: true,
@@ -91,12 +91,14 @@ const config: Config = {
           },
         },
         blog: false,
-        pages: false,
+        pages: {},
         theme: {
           customCss: './src/css/custom.css',
         },
         sitemap: {
           lastmod: null,
+          // The search results page is nobody's document.
+          ignorePatterns: ['/search', '/en/search'],
         },
       } satisfies Preset.Options,
     ],
@@ -112,7 +114,7 @@ const config: Config = {
         indexDocs: true,
         indexBlog: false,
         indexPages: false,
-        docsRouteBasePath: '/',
+        docsRouteBasePath: 'docs',
         highlightSearchTermsOnTargetPage: false,
         searchBarShortcut: true,
         searchBarShortcutHint: true,
@@ -123,7 +125,14 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/logo.svg',
+    // The card social networks show for every page: 1200×630, made from the
+    // mark and the wordmark (scripts/og-image.html).
+    image: 'img/og.png',
+    metadata: [
+      {name: 'theme-color', content: '#f2f1ec', media: '(prefers-color-scheme: light)'},
+      {name: 'theme-color', content: '#0f0f12', media: '(prefers-color-scheme: dark)'},
+      {name: 'referrer', content: 'strict-origin-when-cross-origin'},
+    ],
     colorMode: {
       defaultMode: 'light',
       disableSwitch: false,
@@ -139,7 +148,7 @@ const config: Config = {
         {type: 'docSidebar', sidebarId: 'guide', position: 'left', label: 'Guida'},
         {type: 'docSidebar', sidebarId: 'cli', position: 'left', label: 'CLI'},
         {type: 'docSidebar', sidebarId: 'api', position: 'left', label: 'API'},
-        {href: `${REPO}/releases`, position: 'left', label: 'Novità'},
+        {href: `${REPO}/releases`, position: 'left', label: 'Novità', className: 'cg-nav-releases'},
         {type: 'localeDropdown', position: 'right', className: 'cg-locale'},
         {href: REPO, position: 'right', label: 'GitHub ↗', className: 'cg-nav-github'},
       ],

@@ -1,0 +1,114 @@
+/* The installer's terminal: ink in both themes, like every code block. */
+
+.terminal {
+  width: 100%;
+  min-width: 0;
+  background: var(--cg-code-bg);
+  color: #f2f1ec;
+}
+:global(html[data-theme='dark']) .terminal {
+  box-shadow: inset 0 0 0 1px #2a2a30;
+}
+
+.bar {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid #2a2a30;
+}
+.tab {
+  padding: 14px 18px;
+  color: #b7b6ae;
+  border-right: 1px solid #2a2a30;
+}
+.quiet {
+  color: #8a8a92;
+  border-right: 0;
+}
+.copy {
+  margin-left: auto;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  background: #2f5bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.14s linear;
+}
+.copy:hover {
+  background: #1f4af0;
+}
+
+.body {
+  padding: 26px 24px 30px;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 15px;
+  line-height: 2;
+  display: flex;
+  flex-direction: column;
+}
+.body p {
+  margin: 0;
+}
+.command {
+  color: #f2f1ec;
+  overflow-wrap: anywhere;
+}
+.command code {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+.prompt {
+  color: #e0612b;
+}
+.caret {
+  display: inline-block;
+  width: 9px;
+  height: 17px;
+  margin-left: 6px;
+  vertical-align: -3px;
+  background: #f2f1ec;
+  animation: termBlink 1s steps(1) infinite;
+}
+.line {
+  color: #b7b6ae;
+  overflow-wrap: anywhere;
+  animation: termIn 0.4s ease-out both;
+}
+.last {
+  color: #f2f1ec;
+}
+
+@keyframes termBlink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes termIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .body {
+    padding: 20px 16px 24px;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .tab {
+    padding: 14px 12px;
+  }
+}

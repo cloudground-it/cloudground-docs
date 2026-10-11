@@ -41,15 +41,6 @@
   "cg.admonition.note": {
     "message": "Note"
   },
-  "cg.hud.docs": {
-    "message": "Documentation"
-  },
-  "cg.hud.version": {
-    "message": "Version [VERSIONE]"
-  },
-  "cg.hud.verified": {
-    "message": "Verified on Ubuntu 24.04 · 26.04"
-  },
   "cg.paginator.next": {
     "message": "Next"
   },
@@ -59,9 +50,6 @@
   "theme.docs.paginator.navAriaLabel": {
     "message": "Docs pages",
     "description": "The ARIA label for the docs pagination"
-  },
-  "cg.footer.license": {
-    "message": "Text licensed under [LICENZA DOCS]"
   },
   "theme.CodeBlock.copyButtonAriaLabel": {
     "message": "Copy code to clipboard",
@@ -447,5 +435,389 @@
   },
   "cg.meta.unverified": {
     "message": "Unverified"
+  },
+  "home.meta.title": {
+    "message": "CloudGround — hosting that’s measured"
+  },
+  "home.meta.description": {
+    "message": "One command installs the panel on your server. Every site starts with its own cache, its own PHP, its own certificate, and backups that are test-restored after every copy."
+  },
+  "home.scope.on": {
+    "message": "on"
+  },
+  "home.scope.off": {
+    "message": "off"
+  },
+  "home.scope.describeOn": {
+    "message": "With the cache, response time stays low and flat"
+  },
+  "home.scope.describeOff": {
+    "message": "Without the cache, response time climbs and swings"
+  },
+  "home.scope.cache": {
+    "message": "Cache"
+  },
+  "home.scope.php": {
+    "message": "Site PHP"
+  },
+  "home.scope.phpOn": {
+    "message": "idle"
+  },
+  "home.scope.phpOff": {
+    "message": "at the limit"
+  },
+  "home.scope.db": {
+    "message": "Database"
+  },
+  "home.scope.dbOn": {
+    "message": "idle"
+  },
+  "home.scope.dbOff": {
+    "message": "busy"
+  },
+  "home.scope.caption": {
+    "message": "Simulation · a WordPress site under traffic"
+  },
+  "home.scope.axis": {
+    "message": "Response time"
+  },
+  "home.scope.stable": {
+    "message": "Stable"
+  },
+  "home.scope.strained": {
+    "message": "Under strain"
+  },
+  "home.scope.note": {
+    "message": "An illustration, not a measurement. The real numbers are in {link}."
+  },
+  "home.scope.noteLink": {
+    "message": "section 03"
+  },
+  "home.terminal.line1": {
+    "message": "[ok] server checked: Ubuntu, memory, disk, ports"
+  },
+  "home.terminal.line2": {
+    "message": "[ok] release signature verified"
+  },
+  "home.terminal.line3": {
+    "message": "[ok] nginx · PHP-FPM · MariaDB · restic installed"
+  },
+  "home.terminal.line4": {
+    "message": "[ok] panel running on https://<ip>:8443"
+  },
+  "home.terminal.line5": {
+    "message": "→ create the administrator: https://<ip>:8443/setup/…"
+  },
+  "home.terminal.copied": {
+    "message": "Copied"
+  },
+  "home.terminal.copy": {
+    "message": "Copy"
+  },
+  "home.terminal.copyWhat": {
+    "message": "the command"
+  },
+  "home.terminal.copiedStatus": {
+    "message": "Command copied"
+  },
+  "home.hero.kicker": {
+    "message": "001 / A hosting panel on your own servers"
+  },
+  "home.hero.title1": {
+    "message": "Hosting"
+  },
+  "home.hero.title2": {
+    "message": "that’s {accent}"
+  },
+  "home.hero.titleAccent": {
+    "message": "measured."
+  },
+  "home.hero.lede": {
+    "message": "One command installs the panel on your server. Every site starts with its own cache, its own PHP, its own certificate, and backups that are test-restored after every copy."
+  },
+  "home.hero.install": {
+    "message": "Install with one command"
+  },
+  "home.hero.docs": {
+    "message": "Read the guide"
+  },
+  "home.hero.facts": {
+    "message": "Free · Source available · On your servers"
+  },
+  "home.tech.label": {
+    "message": "Technologies"
+  },
+  "home.features.1.tag": {
+    "message": "Speed"
+  },
+  "home.features.1.title": {
+    "message": "A page cache that aims"
+  },
+  "home.features.1.text": {
+    "message": "nginx serves pages without touching PHP. When you change a post or a price, only the pages that show it are purged."
+  },
+  "home.features.2.tag": {
+    "message": "Isolation"
+  },
+  "home.features.2.title": {
+    "message": "One PHP per site"
+  },
+  "home.features.2.text": {
+    "message": "Separate system user, PHP and database. A compromised site cannot see the others."
+  },
+  "home.features.3.tag": {
+    "message": "Backups"
+  },
+  "home.features.3.title": {
+    "message": "Restores already tested"
+  },
+  "home.features.3.text": {
+    "message": "Every copy goes, encrypted, where you choose, and is test-restored right after."
+  },
+  "home.features.4.tag": {
+    "message": "Staging"
+  },
+  "home.features.4.title": {
+    "message": "Try first, then measure"
+  },
+  "home.features.4.text": {
+    "message": "A password-protected copy. A release slower than production is stopped."
+  },
+  "home.features.5.title": {
+    "message": "Certificates that renew"
+  },
+  "home.features.5.text": {
+    "message": "Let’s Encrypt, wildcards included, or your own certificates."
+  },
+  "home.features.6.title": {
+    "message": "A real editor in the browser"
+  },
+  "home.features.6.text": {
+    "message": "It knows the language, uploads by dragging, and lets you download binaries."
+  },
+  "home.features.7.title": {
+    "message": "The database, inside the panel"
+  },
+  "home.features.7.text": {
+    "message": "Tables, data and SQL with the site’s own permissions only, no outside tools."
+  },
+  "home.features.8.tag": {
+    "message": "Access"
+  },
+  "home.features.8.title": {
+    "message": "Roles and two factors"
+  },
+  "home.features.8.text": {
+    "message": "Administrators, operators on their own sites, read-only. 2FA required if you want."
+  },
+  "home.features.kicker": {
+    "message": "01 / Features"
+  },
+  "home.features.title": {
+    "message": "The control a {accent} won’t give you."
+  },
+  "home.features.titleAccent": {
+    "message": "tutorial"
+  },
+  "home.features.intro": {
+    "message": "Eight things you usually set up by hand, one evening at a time. Here they are on from the first site."
+  },
+  "home.own.a.title": {
+    "message": "Source available"
+  },
+  "home.own.a.text": {
+    "message": "Read every line that runs as root on your server. Change it if you need to."
+  },
+  "home.own.b.title": {
+    "message": "Yours to keep"
+  },
+  "home.own.b.text": {
+    "message": "No licence to renew, no fee per server. If the project stopped, the panel would keep working."
+  },
+  "home.own.c.title": {
+    "message": "No middleman"
+  },
+  "home.own.c.text": {
+    "message": "No account with us, no service in between. Backups go where you choose."
+  },
+  "home.own.kicker": {
+    "message": "02 / Ownership"
+  },
+  "home.own.title": {
+    "message": "Stop {accent} your own server."
+  },
+  "home.own.titleAccent": {
+    "message": "renting"
+  },
+  "home.measures.cached": {
+    "message": "Cached page"
+  },
+  "home.measures.cachedMany.note": {
+    "message": "500 connections"
+  },
+  "home.measures.cachedOne.note": {
+    "message": "1 connection"
+  },
+  "home.measures.static": {
+    "message": "Static file"
+  },
+  "home.measures.static.note": {
+    "message": "1 KB, 200 connections"
+  },
+  "home.measures.browsers": {
+    "message": "Browser-like traffic"
+  },
+  "home.measures.browsers.note": {
+    "message": "mixed headers and links, 200 connections"
+  },
+  "home.measures.uncached": {
+    "message": "Without cache"
+  },
+  "home.measures.uncached.note": {
+    "message": "PHP + database, 10 connections"
+  },
+  "home.measures.caption": {
+    "message": "Measurement results, by scenario"
+  },
+  "home.measures.kicker": {
+    "message": "03 / Measurements"
+  },
+  "home.measures.title": {
+    "message": "Measured, not {accent}"
+  },
+  "home.measures.titleAccent": {
+    "message": "promised."
+  },
+  "home.measures.intro": {
+    "message": "Release v0.1.0 on a small VPS, under wrk: three runs per scenario, the mean shown here. The method and every single run are public."
+  },
+  "home.measures.scenario": {
+    "message": "Scenario"
+  },
+  "home.measures.rps": {
+    "message": "Requests / s"
+  },
+  "home.measures.errors": {
+    "message": "Errors"
+  },
+  "home.measures.server": {
+    "message": "Server: 2 vCPU VPS · Ubuntu 26.04"
+  },
+  "home.measures.site": {
+    "message": "Site: WooCommerce, the shop page"
+  },
+  "home.measures.load": {
+    "message": "Load: wrk on the same server"
+  },
+  "home.measures.date": {
+    "message": "Measured: 11 October 2026"
+  },
+  "home.measures.data": {
+    "message": "The data ↗"
+  },
+  "home.measures.method": {
+    "message": "The method ↗"
+  },
+  "home.install.step1": {
+    "message": "A freshly created Ubuntu 24.04 or 26.04 server, with root access."
+  },
+  "home.install.step2": {
+    "message": "The command alongside. It checks the server before it touches anything."
+  },
+  "home.install.step3": {
+    "message": "Open the one-time link, create the administrator, create the first site."
+  },
+  "home.install.kicker": {
+    "message": "04 / Installation"
+  },
+  "home.install.title": {
+    "message": "One command. {accent}"
+  },
+  "home.install.titleAccent": {
+    "message": "Really."
+  },
+  "home.install.guide": {
+    "message": "The installation guide"
+  },
+  "home.install.note": {
+    "message": "Output shortened. The full log stays in /var/log/cloudground-install.log."
+  },
+  "home.closing.kicker": {
+    "message": "Free · No subscription"
+  },
+  "home.closing.title1": {
+    "message": "Switch on"
+  },
+  "home.closing.title2": {
+    "message": "your {accent}"
+  },
+  "home.closing.titleAccent": {
+    "message": "server."
+  },
+  "home.closing.install": {
+    "message": "Install CloudGround"
+  },
+  "home.closing.github": {
+    "message": "The code on GitHub"
+  },
+  "cg.status.label": {
+    "message": "Project status"
+  },
+  "cg.status.release": {
+    "message": "Release {version} available"
+  },
+  "cg.status.license": {
+    "message": "Elastic License 2.0"
+  },
+  "cg.status.price": {
+    "message": "No subscription"
+  },
+  "cg.footer.tagline": {
+    "message": "Hosting that’s measured"
+  },
+  "cg.footer.licenseLine": {
+    "message": "CloudGround is source-available under the {license}: free to use on your own servers."
+  },
+  "cg.footer.label": {
+    "message": "Footer"
+  },
+  "cg.footer.product": {
+    "message": "Product"
+  },
+  "cg.footer.features": {
+    "message": "Features"
+  },
+  "cg.footer.measures": {
+    "message": "Measurements"
+  },
+  "cg.footer.install": {
+    "message": "Installation"
+  },
+  "cg.footer.resources": {
+    "message": "Resources"
+  },
+  "cg.footer.docs": {
+    "message": "Documentation"
+  },
+  "cg.footer.releases": {
+    "message": "What’s new"
+  },
+  "cg.footer.code": {
+    "message": "The code"
+  },
+  "cg.footer.issues": {
+    "message": "Report a problem"
+  },
+  "cg.footer.docsRepo": {
+    "message": "This site and the guide"
+  },
+  "cg.footer.legal": {
+    "message": "Legal"
+  },
+  "cg.footer.licence": {
+    "message": "Licence"
+  },
+  "cg.nav.home": {
+    "message": "CloudGround, home page"
   }
 }

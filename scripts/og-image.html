@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+  The social card (static/img/og.png, 1200×630). Not part of the site: open it
+  in a browser at 1200×630 and take a screenshot to make the PNG again, e.g.
+  with Playwright: page.setViewportSize({width: 1200, height: 630}) then
+  page.screenshot({path: 'static/img/og.png'}).
+-->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:Archivo;src:url(../static/fonts/Archivo-Variable.woff2) format('woff2');font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:'Instrument Serif';src:url(../static/fonts/InstrumentSerif-Italic.woff2) format('woff2');font-style:italic}
+@font-face{font-family:'Geist Mono';src:url(../static/fonts/GeistMono-Variable.woff2) format('woff2');font-weight:100 900}
+html,body{margin:0;width:1200px;height:630px;overflow:hidden;background:#f2f1ec;color:#0f0f12}
+.card{box-sizing:border-box;width:1200px;height:630px;padding:64px 72px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid #d6d4cc;position:relative}
+.top{display:flex;align-items:center;gap:20px}
+.word{font-family:Archivo;font-stretch:118%;font-weight:560;letter-spacing:-.045em;font-size:44px}
+.hud{font-family:'Geist Mono';font-size:20px;letter-spacing:.15em;text-transform:uppercase;font-weight:500;color:#55555d}
+h1{margin:0;font-family:Archivo;font-stretch:118%;font-weight:560;letter-spacing:-.045em;font-size:132px;line-height:.9}
+.ser{font-family:'Instrument Serif';font-style:italic;font-weight:400;letter-spacing:-.02em;font-stretch:100%;color:#2f5bff}
+.bars{position:absolute;right:72px;top:72px;display:flex;flex-direction:column;gap:12px;align-items:flex-end}
+.bars span{display:block;height:14px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top">
+    <svg viewBox="0 0 48 48" width="72" height="72"><rect width="48" height="48" rx="11" fill="#0F0F12"/><g transform="translate(4 3) scale(.84)"><path fill="#F2F1EC" d="M14 26A8 8 0 1 1 15.843 10.215A10 10 0 0 1 33.87 14.391A6 6 0 1 1 36 26Z"/><rect x="14" y="30" width="28" height="4.6" rx="1" fill="#2F5BFF"/><rect x="6" y="38" width="28" height="4.6" rx="1" fill="#E0612B"/></g></svg>
+    <span class="word">cloudground</span>
+  </div>
+  <div class="bars"><span style="width:220px;background:#2f5bff"></span><span style="width:160px;background:#e0612b"></span></div>
+  <h1>Hosting<br>che si <span class="ser">misura.</span></h1>
+  <div class="hud">Pannello di hosting · Ubuntu 24.04 · 26.04 · cloudground.it</div>
+</div>
+</body>
+</html>
