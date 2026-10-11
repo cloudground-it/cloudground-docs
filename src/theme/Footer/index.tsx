@@ -2,7 +2,7 @@ import React, {type ReactNode} from 'react';
 import Link from '@docusaurus/Link';
 import Translate, {translate} from '@docusaurus/Translate';
 import LogoMark from '@site/src/components/LogoMark';
-import {DOCS_REPO, ISSUES_URL, RELEASES_URL, REPO} from '@site/src/data/site';
+import {DOCS_REPO, ISSUES_URL, RELEASES_URL, REPO, SPONSORS_URL} from '@site/src/data/site';
 
 type FooterLink = {to?: string; href?: string; label: ReactNode};
 
@@ -78,6 +78,7 @@ function Footer(): ReactNode {
               {href: REPO, label: <Translate id="cg.footer.code">Il codice</Translate>},
               {href: ISSUES_URL, label: <Translate id="cg.footer.issues">Segnala un problema</Translate>},
               {href: DOCS_REPO, label: <Translate id="cg.footer.docsRepo">Il sito e la guida</Translate>},
+              {href: SPONSORS_URL, label: <Translate id="cg.footer.sponsor">Sostieni il progetto</Translate>},
             ]}
           />
           <Column

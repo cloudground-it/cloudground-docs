@@ -8,6 +8,8 @@ export const RELEASE = 'v0.1.0';
 export const RELEASE_URL = `${REPO}/releases/tag/${RELEASE}`;
 export const RELEASES_URL = `${REPO}/releases`;
 export const ISSUES_URL = `${REPO}/issues`;
+/** Donations, through GitHub Sponsors. */
+export const SPONSORS_URL = 'https://github.com/sponsors/manuto276';
 export const LICENSE_URL = `${REPO}/blob/main/LICENSE`;
 export const INSTALL_COMMAND = 'curl -fsSL https://get.cloudground.it | sudo bash';
 

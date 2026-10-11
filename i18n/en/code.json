@@ -819,5 +819,9 @@
   },
   "cg.nav.home": {
     "message": "CloudGround, home page"
+  },
+  "cg.footer.sponsor": {
+    "message": "Support the project",
+    "description": "Footer link to GitHub Sponsors"
   }
 }

@@ -121,3 +121,8 @@ Search is local (built at build time); there is no analytics and no external ser
 Initialised on 2026-10-09. The pages were rewritten from the product's code and specifications in
 Phase 9 of the CloudGround rewrite plan; every page stays `unverified` until it has been checked on
 a test server.
+
+## Support
+
+CloudGround is built and maintained by one person. If it saves you time, you can support it on
+[GitHub Sponsors](https://github.com/sponsors/manuto276).
