@@ -24,10 +24,15 @@ service that stopped.
 | **Task** | A task failed in the last 24 hours: a backup, a restore test, a release, a site creation. | error |
 | **Service** | A service is stopped or failed. | error |
 | **Service** | Something is trying many wrong WordPress connector tokens. | error |
+| **Uptime** | *Since v0.2.0.* A site with the [uptime check](/docs/sites/uptime-monitoring) on does not answer from its public address for two checks in a row. | error |
+| **Resources** | *Since v0.2.0.* A site stays above its CPU or memory threshold for 15 minutes, or its disk use passes its threshold (see [resource usage and limits](/docs/sites/resource-usage-and-limits)). | warning |
 | **Configuration** | Files the panel manages changed outside the panel. | warning |
 | Release | The site serves a release other than the one recorded, or a release did not finish its check after promotion. | warning |
 
 An operator sees only the alerts of its sites; the other roles see them all.
+
+*Since v0.2.0.* A **Task** alert names the task in words, in your language (*Restore test*,
+*Scheduled backup*), as the task list does, not by its internal name.
 
 ## Dismiss an alert {#dismiss}
 
@@ -62,12 +67,46 @@ Slack, Discord or Mattermost.
 Every five minutes the panel sends each undismissed alert it has not notified in the last six hours,
 in the administrators' language, in the form `CloudGround ERROR on <site>: <text>`. Until you dismiss
 it, an alert therefore comes back every six hours. A failed send is tried again on the next round.
+The language is that of the first enabled administrator who chose one.
 
 The URL must be `https` (an `http://` one is refused on save) and point to a public address: when it
 sends, the panel refuses local and private addresses, this server's own included, and follows no
 redirect. A send refused that way shows only in the API log (`alert webhook failed … not a public
 address`). The URL is a credential: other accounts see it masked, and the panel never
 writes it to the logs. To stop notifications, empty the field and press **Save**.
+
+## The webhook body {#webhook-body}
+
+*Since v0.2.0.* Each send is a `POST` with a JSON body. Chat tools read `text` or `content`; a program
+of yours can read the `cloudground` object instead, with the alert's fields as they are, in no
+language.
+
+```json
+{
+  "text": "CloudGround ERROR on shop.example.com: Restore test failed: <error>",
+  "content": "CloudGround ERROR on shop.example.com: Restore test failed: <error>",
+  "cloudground": {
+    "id": "<alert id>",
+    "level": "error",
+    "kind": "task",
+    "site": "shop.example.com",
+    "task_kind": "backup.verify",
+    "at": "2026-10-11T03:12:00Z"
+  }
+}
+```
+
+| Field | Content |
+| --- | --- |
+| `text`, `content` | The same text, in the administrators' language: the level, the site and the message. A task is named in words. |
+| `cloudground.id` | The alert's identifier. It stays the same while the condition does not change. |
+| `cloudground.level` | `error` or `warning`. |
+| `cloudground.kind` | The kind: `certificate`, `task`, `service`, `uptime`, `usage`, `drift` or `deploy`. |
+| `cloudground.site` | The site's domain. Absent for a server-wide alert. |
+| `cloudground.task_kind` | Only on a `task` alert: the task's internal name, for example `backup.run`. |
+| `cloudground.at` | The alert's moment, in RFC 3339 format: when the failed task started, when the site stopped answering, when the certificate expires. It can be missing. |
+
+{/* TODO(verify): the body a real webhook receives, and an example `at` in its exact format. */}
 
 ## Next step {#next}
 

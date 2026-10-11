@@ -92,7 +92,7 @@ cgctl --wait sites create shop.example.com laravel \
 | --- | --- | --- |
 | `cgctl backup run <id-sito>` | `POST /api/sites/<id>/backups` | Fa un backup ora. |
 | `cgctl backup verify <id-backup>` | `POST /api/backups/<id>/verify` | Esegue un ripristino di prova del backup. |
-| `cgctl backup restore <id-backup> <dominio> [full\|files\|database]` | `POST /api/backups/<id>/restore` | Ripristina il backup. `<dominio>` è la conferma e deve essere il dominio del sito; la modalità predefinita è `full`. |
+| `cgctl backup restore <id-backup> <dominio> [full\|files\|database] [--database <nome> ...]` | `POST /api/backups/<id>/restore` | Ripristina il backup. `<dominio>` è la conferma e deve essere il dominio del sito; la modalità predefinita è `full`. Da v0.2.0, ogni `--database <nome>` (anche `--database=<nome>`, in qualsiasi punto dopo `backup restore`) ripristina solo quel database dello snapshot; senza, tutti. Vedi [quali database](/docs/data/restore-a-backup#databases). |
 | `cgctl database list <id-sito>` | `GET /api/sites/<id>/databases` | I database del sito, con dimensioni e tabelle, e gli utenti database con i loro privilegi. |
 | `cgctl database create <id-sito> <nome>` | `POST /api/sites/<id>/databases` | Crea un database del sito. |
 | `cgctl database user-create <id-sito> <nome> [database:all\|read ...]` | `POST /api/sites/<id>/database-users` | Crea un utente database con i privilegi dati; la password generata compare una sola volta. |
@@ -101,12 +101,29 @@ cgctl --wait sites create shop.example.com laravel \
 
 ### SFTP {#sftp}
 
+*Da v0.2.0.*
+
 | Comando | Richiesta | Cosa fa |
 | --- | --- | --- |
 | `cgctl sftp keys <id-sito>` | `GET /api/sites/<id>/ssh-keys` | Le chiavi SSH del sito e la porta SSH. |
 | `cgctl sftp keys-only <id-sito> [file-chiave-pubblica]` | `POST /api/sites/<id>/sftp` | Attiva l'accesso SFTP con solo chiavi SSH (o ci passa). Con un file (`-` è lo standard input), prima aggiunge quella chiave. |
 | `cgctl sftp password <id-sito>` | `POST /api/sites/<id>/sftp` | Attiva l'accesso SFTP con una password, letta come una riga dallo standard input (mai dagli argomenti). |
 | `cgctl sftp off <id-sito>` | `POST /api/sites/<id>/sftp` | Disattiva l'accesso SFTP. |
+
+### Percorsi protetti {#protect}
+
+*Da v0.2.0.* Vedi [proteggi un percorso](/docs/access/protected-paths).
+
+| Comando | Richiesta | Cosa fa |
+| --- | --- | --- |
+| `cgctl protect add <id-sito> <percorso> <utente>` | `POST /api/sites/<id>/protected-paths` | Protegge `<percorso>` con un nome utente e una password, o ne cambia le credenziali. La password è una riga dello standard input (al massimo 4 KiB; vuota è un errore d'uso), mai un argomento. Stampa i percorsi protetti del sito. |
+| `cgctl protect remove <id-sito> <percorso>` | `DELETE /api/sites/<id>/protected-paths` | Toglie la protezione a `<percorso>`. Il percorso va nel corpo della richiesta, non nell'URL. |
+
+Per esempio, con la password in un file:
+
+```bash
+cgctl protect add 3 /wp-admin editor < password.txt
+```
 
 ### Server {#server}
 

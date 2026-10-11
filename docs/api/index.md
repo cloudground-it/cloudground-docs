@@ -4,8 +4,8 @@ description: Dove risponde l'API del pannello, come ci si autentica, quali richi
 type: reference
 prerequisites:
   - Un account nel pannello, o un token API
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.2.0
+last_verified: unverified
 sidebar_position: 1
 ---
 
@@ -46,7 +46,12 @@ ignorato. Per crearne uno vedi [token API e cgctl](/docs/access/api-tokens-and-c
 
 L'accesso con password ha dei limiti: 30 tentativi al minuto per rete (un indirizzo IPv4, una rete
 IPv6 /64) e 8 al minuto per rete ed email, oltre i quali la risposta è **429**. Dal quinto errore
-sulla stessa email ogni tentativo aspetta prima di essere valutato, da 1 a 60 secondi.
+sulla stessa email ogni tentativo aspetta prima di essere valutato, da 1 a 60 secondi (vedi
+[la protezione dell'accesso](/docs/explanation/sign-in-protection)).
+
+*Da v0.2.0.* Anche un'attesa più lunga di 30 secondi arriva in fondo: la risposta è quella del
+controllo, **401** o **200**, mai un errore del server. Se il client chiude la connessione mentre
+aspetta, il tentativo non viene valutato e riceve **429**.
 
 `GET /api/session` risponde `{"user": …}` o `{"user": null}`, mai 401.
 
@@ -58,17 +63,24 @@ sulla stessa email ogni tentativo aspetta prima di essere valutato, da 1 a 60 se
 - Se la richiesta porta `Origin`, il suo host deve essere quello della richiesta; se porta
   `Sec-Fetch-Site`, deve essere `same-origin` o `none`. Altrimenti: **403**. I client fuori dal
   browser, come `cgctl` e `curl`, non mandano questi header.
-- Il corpo è al massimo 4 MiB. Fanno eccezione: accesso, setup, password e profilo (8 KiB), un
+- Il corpo è al massimo 4 MiB. Fanno eccezione: accesso, setup, ogni rotta che riceve una password e
+  il profilo (8 KiB), un
   certificato personalizzato (256 KiB), un caricamento di file o una modifica in blocco di Quarry
   (16 MiB), un pezzo di caricamento di Quarry (8 MiB). Oltre: **413**.
 - Un campo JSON sconosciuto è un errore: **400** `malformed request`.
+- *Da v0.2.0.* Le intestazioni devono arrivare entro 5 secondi. Il corpo ha un tempo suo: 30 secondi
+  più 1 secondo per ogni 64 KiB del suo limite (o della sua lunghezza, se è minore), così un
+  caricamento da 16 MiB ha 4 minuti e 46 secondi. Un corpo che si ferma viene interrotto. Una volta
+  letto il corpo, questo tempo non vale più: una richiesta che lavora a lungo, come una lettura di
+  Quarry o la prova del repository dei backup, non viene interrotta dopo 30 secondi.
 
 ## Ruoli {#roles}
 
 Ogni rotta richiede uno di questi livelli: aperta, account collegato, tutto il server, gestione,
 amministratore. Un ruolo non ammesso riceve **403**; un sito che un operatore non può raggiungere
 risponde **404**. Alcune rotte sono solo per sessioni e rispondono **403** a un token: il proprio
-account, gli utenti, i token e la shell dei siti. La tabella completa è in
+account, gli utenti, i token, la shell e il routing dei siti, le regole del firewall e la sua
+accensione (`POST /api/firewall/enable`, da v0.2.0), il certificato e l'aggiornamento del pannello. La tabella completa è in
 [ruoli e permessi](/docs/reference/roles-and-permissions).
 
 ## Errori {#errors}
@@ -97,6 +109,11 @@ Le operazioni lunghe (creare un sito, un backup, un rilascio) rispondono **202**
 `{"task": {"id": …}}`. Segui l'attività con `GET /api/tasks/<id>`: il campo `status` vale `pending`,
 `running`, `succeeded` o `failed` (un'attività annullata è `failed` con l'errore `Canceled`).
 `POST /api/tasks/<id>/cancel` la annulla, se il tipo di attività lo permette.
+
+*Da v0.2.0.* Ogni attività ha, accanto a `kind` (il nome interno, come `backup.run`), il campo `name`:
+il suo nome a parole nella lingua di chi legge. `GET /api/tasks/names` restituisce tutti i nomi, per
+esempio `{"backup.run": "Backup", "backup.verify": "Ripristino di prova", …}`: serve a nominare le
+attività degli [eventi](#events), che portano solo `kind`.
 
 ## Eventi {#events}
 

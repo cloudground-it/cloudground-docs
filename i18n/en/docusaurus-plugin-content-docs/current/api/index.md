@@ -4,8 +4,8 @@ description: Where the panel's API answers, how to authenticate, which requests 
 type: reference
 prerequisites:
   - An account in the panel, or an API token
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.2.0
+last_verified: unverified
 sidebar_position: 1
 ---
 
@@ -46,7 +46,12 @@ most and ends after 2 hours unused. When the account has two-step verification, 
 
 Password sign-in has limits: 30 attempts a minute per network (an IPv4 address, an IPv6 /64) and 8 a
 minute per network and email, past which the answer is **429**. From the fifth failure on the same
-email, every attempt waits before it is evaluated, 1 to 60 seconds.
+email, every attempt waits before it is evaluated, 1 to 60 seconds (see
+[sign-in protection](/docs/explanation/sign-in-protection)).
+
+*Since v0.2.0.* A wait longer than 30 seconds also runs to its end: the answer is the check's,
+**401** or **200**, never a server error. If the client closes the connection while it waits, the
+attempt is not evaluated and gets **429**.
 
 `GET /api/session` answers `{"user": …}` or `{"user": null}`, never 401.
 
@@ -57,16 +62,24 @@ email, every attempt waits before it is evaluated, 1 to 60 seconds.
 - When the request carries `Origin`, its host must be the request's; when it carries
   `Sec-Fetch-Site`, it must be `same-origin` or `none`. Otherwise: **403**. Clients outside the
   browser, such as `cgctl` and `curl`, send neither header.
-- The body is 4 MiB at most. The exceptions: sign-in, setup, passwords and profile (8 KiB), a custom
+- The body is 4 MiB at most. The exceptions: sign-in, setup, every route that takes a password and
+  the profile (8 KiB), a custom
   certificate (256 KiB), a file upload or a Quarry edit batch (16 MiB), a Quarry upload chunk
   (8 MiB). Beyond: **413**.
 - An unknown JSON field is an error: **400** `malformed request`.
+- *Since v0.2.0.* The headers must arrive within 5 seconds. The body has a time of its own: 30
+  seconds plus 1 second per 64 KiB of its limit (or of its length, when smaller), so a 16 MiB upload
+  has 4 minutes 46 seconds. A body that stalls is cut. Once the body is read, that time no longer
+  applies: a request that works for a long time, such as a Quarry read or the backup repository
+  test, is not cut after 30 seconds.
 
 ## Roles {#roles}
 
 Every route needs one of these levels: open, signed in, whole server, manage, administrator. A role
 that is not allowed gets **403**; a site an operator cannot reach answers **404**. Some routes are
-session-only and answer a token with **403**: your own account, users, tokens and the site shell. The
+session-only and answer a token with **403**: your own account, users, tokens, the sites' shell and
+routing, the firewall's rules and turning it on (`POST /api/firewall/enable`, since v0.2.0), the
+panel's certificate and its update. The
 full table is in [roles and permissions](/docs/reference/roles-and-permissions).
 
 ## Errors {#errors}
@@ -95,6 +108,11 @@ Long operations (creating a site, a backup, a release) answer **202** with `{"ta
 Follow the task with `GET /api/tasks/<id>`: its `status` is `pending`, `running`, `succeeded` or
 `failed` (a cancelled task is `failed` with the error `Canceled`). `POST /api/tasks/<id>/cancel`
 cancels it, when the kind of task allows it.
+
+*Since v0.2.0.* Each task carries, beside `kind` (its internal name, such as `backup.run`), the field
+`name`: its name in words in the reader's language. `GET /api/tasks/names` returns every name, for
+example `{"backup.run": "Backup", "backup.verify": "Restore test", …}`: it names the tasks of the
+[events](#events), which carry only `kind`.
 
 ## Events {#events}
 

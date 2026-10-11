@@ -24,10 +24,15 @@ servizio che si ferma.
 | **Attività** | Un'attività è fallita nelle ultime 24 ore: un backup, un ripristino di prova, un rilascio, la creazione di un sito. | errore |
 | **Servizio** | Un servizio è fermo o in errore. | errore |
 | **Servizio** | Qualcuno prova molti token sbagliati del connettore WordPress. | errore |
+| **Disponibilità** | *Da v0.2.0.* Un sito con il [controllo di disponibilità](/docs/sites/uptime-monitoring) attivo non risponde dal suo indirizzo pubblico per due controlli di fila. | errore |
+| **Risorse** | *Da v0.2.0.* Un sito resta per 15 minuti sopra la sua soglia di CPU o di memoria, o il suo disco supera la soglia (vedi [uso delle risorse e limiti](/docs/sites/resource-usage-and-limits)). | attenzione |
 | **Configurazione** | File gestiti dal pannello sono cambiati fuori dal pannello. | attenzione |
 | Rilascio | Il sito serve un rilascio diverso da quello registrato, o un rilascio non ha finito la verifica dopo la promozione. | attenzione |
 
 Un operatore vede solo gli avvisi dei suoi siti; gli altri ruoli li vedono tutti.
+
+*Da v0.2.0.* Un avviso di tipo **Attività** nomina l'attività a parole, nella tua lingua (*Ripristino di
+prova*, *Backup programmato*), come l'elenco delle attività, non con il suo nome interno.
 
 ## Archivia un avviso {#dismiss}
 
@@ -62,6 +67,7 @@ di Slack, Discord o Mattermost.
 Ogni cinque minuti il pannello manda ogni avviso non archiviato che non ha notificato nelle ultime
 sei ore, nella lingua degli amministratori, nella forma `CloudGround ERRORE su <sito>: <testo>`. Finché
 non lo archivi, un avviso torna quindi ogni sei ore. Un invio fallito si riprova al giro successivo.
+La lingua è quella del primo amministratore attivo che ne ha scelta una.
 
 L'URL deve essere `https` (un `http://` è rifiutato al salvataggio) e puntare a un indirizzo
 pubblico: al momento dell'invio il pannello rifiuta gli indirizzi locali e privati, e anche quelli di
@@ -69,6 +75,39 @@ questo server, e non segue i redirect. Un invio rifiutato così compare solo nel
 (`alert webhook failed … not a public address`). L'URL è una credenziale: gli altri account lo vedono
 mascherato, e il pannello non lo scrive mai nei log. Per spegnere le notifiche, svuota il campo e
 premi **Salva**.
+
+## Il corpo del webhook {#webhook-body}
+
+*Da v0.2.0.* Ogni invio è un `POST` con un corpo JSON. Le chat leggono `text` o `content`; un tuo
+programma può leggere invece l'oggetto `cloudground`, con i campi dell'avviso così come sono, in
+nessuna lingua.
+
+```json
+{
+  "text": "CloudGround ERRORE su shop.example.com: operazione non riuscita (Ripristino di prova): <errore>",
+  "content": "CloudGround ERRORE su shop.example.com: operazione non riuscita (Ripristino di prova): <errore>",
+  "cloudground": {
+    "id": "<id dell'avviso>",
+    "level": "error",
+    "kind": "task",
+    "site": "shop.example.com",
+    "task_kind": "backup.verify",
+    "at": "2026-10-11T03:12:00Z"
+  }
+}
+```
+
+| Campo | Contenuto |
+| --- | --- |
+| `text`, `content` | Lo stesso testo, nella lingua degli amministratori: il livello, il sito e il messaggio. Un'attività è nominata a parole. |
+| `cloudground.id` | L'identificativo dell'avviso. Resta lo stesso finché la condizione non cambia. |
+| `cloudground.level` | `error` o `warning`. |
+| `cloudground.kind` | Il tipo: `certificate`, `task`, `service`, `uptime`, `usage`, `drift` o `deploy`. |
+| `cloudground.site` | Il dominio del sito. Assente per un avviso di tutto il server. |
+| `cloudground.task_kind` | Solo per un avviso di tipo `task`: il nome interno dell'attività, per esempio `backup.run`. |
+| `cloudground.at` | Il momento dell'avviso, in formato RFC 3339: quando è partita l'attività fallita, quando il sito ha smesso di rispondere, quando scade il certificato. Può mancare. |
+
+{/* TODO(verify): il corpo ricevuto da un webhook vero, e un `at` di esempio con il formato esatto. */}
 
 ## Prossimo passo {#next}
 
