@@ -4,8 +4,8 @@ description: Controlla lo stato dei servizi di sistema che fanno girare i siti e
 type: how-to
 prerequisites:
   - Un account amministratore per riavviare; sola lettura per guardare
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 2
 ---
 
@@ -15,12 +15,17 @@ La pagina **Servizi**, nel gruppo **Server**, elenca i servizi di sistema che fa
 | --- | --- |
 | `nginx` | `nginx` |
 | `mariadb` | `mariadb` |
-| `redis` | `redis-server` |
+| `redis` | `redis-server`, solo dove è installato |
 | **PHP dei siti** | ogni `cloudground-php-*.service`, uno per sito |
 
 Per ogni servizio vedi **Stato**, **All'avvio** (*sì* o *no*), **Memoria**,
 **Avviato** e **Versione**. La riga **PHP dei siti** riassume i processi PHP: quanti sono attivi e,
 se qualcuno è fermo, quale.
+
+Un servizio che non è installato non ha una riga. Su un server nuovo Redis non viene installato (la
+object cache dei siti usa APCu), quindi la riga `redis` non c'è. Un server aggiornato da una versione
+precedente tiene Redis spento, e la sua riga dice **disattivato**. Le righe `nginx` e `mariadb` ci sono
+sempre.
 
 ## Leggi lo stato {#read-the-state}
 
@@ -43,14 +48,15 @@ Un servizio **in errore** o **fermo** apre un avviso nella dashboard: vedi
 Il riavvio interrompe per qualche secondo le richieste in corso. Il pannello aspetta che il sistema
 abbia finito, al massimo 3 minuti: MariaDB può essere lento a ripartire.
 
-Un servizio **disattivato** non ha il pulsante **Riavvia**: è spento di proposito (Redis, per
-esempio, resta spento finché un sito non lo usa) e un riavvio lo accenderebbe. Anche la riga
-**PHP dei siti** non ha **Riavvia**.
+Un servizio **disattivato** non ha il pulsante **Riavvia**: è spento di proposito (Redis, su un server
+aggiornato) e un riavvio lo accenderebbe. Anche la riga **PHP dei siti** non ha **Riavvia**.
 
 ## Dall'API {#from-the-api}
 
 `GET /api/services` legge l'elenco; `POST /api/services/<nome>/restart` riavvia `nginx`, `mariadb`
-o `redis`. Ogni riavvio finisce nel **Registro attività**.
+o `redis`. Il riavvio di un servizio che non è installato viene rifiutato, senza avviare nulla, con
+**409** `<nome> is not installed on this server`; quello di un servizio disattivato con **409** anche
+lui. Ogni riavvio finisce nel **Registro attività**.
 
 ## Prossimo passo {#next}
 

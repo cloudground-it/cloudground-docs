@@ -3,8 +3,8 @@ title: Paths, ports and services
 description: The ports the server listens on, the systemd services, the system users and the paths CloudGround uses.
 type: reference
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 5
 ---
 
@@ -19,12 +19,13 @@ the panel, `<domain>` its domain.
 | 80/tcp | nginx | Internet | certificate challenges, then a redirect to HTTPS |
 | 443/tcp | nginx | Internet | the sites and the panel domain |
 | 443/udp | nginx | Internet | HTTP/3, when nginx has the module |
-| 8443/tcp | nginx | Internet | the panel by IP, with its own self-signed certificate |
+| 8443/tcp | nginx | Internet | the panel by IP, with its own self-signed certificate, and Quarry at `/quarry` |
 | 3306/tcp | MariaDB | the server only | the sites' databases |
 | 9080/tcp | panel-api | `127.0.0.1` only | the WordPress connector: cache purge and health check |
 
-The firewall, when active, opens 22, 80, 443, 443/udp and 8443. From the panel you cannot close the
-SSH port, 80, 443 or 8443.
+The installer never turns the firewall on. When it is already active, it opens the ports sshd listens
+on, 80, 443, 443/udp and 8443 (see [firewall](/access/firewall)). From the panel you cannot close the
+SSH ports, 80, 443 or 8443.
 
 The panel has no TCP port of its own: nginx talks to it on the socket `/run/cloudground/api.sock`.
 
@@ -39,7 +40,7 @@ The panel has no TCP port of its own: nginx talks to it on the socket `/run/clou
 | `cloudground-update-guard.service` | root | transient, during a panel update |
 | `nginx.service` | root and `www-data` | the web server |
 | `mariadb.service` | `mysql` | the databases |
-| `redis-server.service` | — | installed and switched off |
+| `redis-server.service` | — | not installed on a new server; a server upgraded from an earlier version keeps it switched off |
 
 ## Users and groups {#users}
 
@@ -49,7 +50,7 @@ The panel has no TCP port of its own: nginx talks to it on the socket `/run/clou
 | `cg-site-<id>` | a site's system user: owns its files, runs its PHP, signs in over SFTP |
 | `cg-shell-<id>` | the site shell's login, with the same uid as `cg-site-<id>` |
 | `cg-sftp-off` | group: its members can sign in over neither SSH nor SFTP |
-| `site_<id>` | a site's MariaDB database and user |
+| `site_<id>` | the default name of a site's primary MariaDB database and user, when you choose none (see [database names and passwords](/reference/database-names-and-passwords)) |
 
 ## The panel {#panel-paths}
 
@@ -63,6 +64,7 @@ The panel has no TCP port of its own: nginx talks to it on the socket `/run/clou
 | `/var/lib/cloudground/state.db` | the panel's database |
 | `/var/lib/cloudground/secret.key` | the key that encrypts the database's secrets: back it up with the database |
 | `/var/lib/cloudground-agent/` | the agent's working space and, after the first update, `highest-release` |
+| `/var/lib/cloudground-agent/databases.json` | the agent's record of which database and database user is which site's (see [recover the database record](/data/recover-the-database-record)) |
 | `/run/cloudground/agent.sock` | the agent's socket |
 | `/run/cloudground/shell.sock` | the socket on which the agent takes the site shells' sessions |
 | `/var/log/cloudground-install.log` | the installer's log |

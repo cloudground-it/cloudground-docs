@@ -4,8 +4,8 @@ description: Check the state of the system services that run the sites, and rest
 type: how-to
 prerequisites:
   - An administrator account to restart; read-only to look
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 2
 ---
 
@@ -15,12 +15,16 @@ The **Services** page, in the **Server** group, lists the system services that r
 | --- | --- |
 | `nginx` | `nginx` |
 | `mariadb` | `mariadb` |
-| `redis` | `redis-server` |
+| `redis` | `redis-server`, only where it is installed |
 | **Site PHP** | every `cloudground-php-*.service`, one per site |
 
 For each service you see **State**, **At boot** (*yes* or *no*), **Memory**,
 **Started** and **Version**. The **Site PHP** row sums up the PHP processes: how many are running
 and, when one is not, which.
+
+A service that is not installed has no row. A new server does not get Redis (the sites' object cache
+uses APCu), so there is no `redis` row. A server upgraded from an earlier version keeps Redis switched
+off, and its row says **disabled**. The `nginx` and `mariadb` rows are always there.
 
 ## Read the state {#read-the-state}
 
@@ -43,13 +47,15 @@ A **failed** or **stopped** service raises an alert on the dashboard: see
 A restart interrupts requests in flight for a few seconds. The panel waits for the system to finish,
 3 minutes at most: MariaDB can be slow to come back.
 
-A **disabled** service has no **Restart** button: it is off on purpose (Redis, for example, stays off
-until a site uses it) and a restart would turn it on. The **Site PHP** row has no **Restart** either.
+A **disabled** service has no **Restart** button: it is off on purpose (Redis, on an upgraded server)
+and a restart would turn it on. The **Site PHP** row has no **Restart** either.
 
 ## From the API {#from-the-api}
 
 `GET /api/services` reads the list; `POST /api/services/<name>/restart` restarts `nginx`, `mariadb`
-or `redis`. Every restart lands in the **Audit log**.
+or `redis`. The restart of a service that is not installed is refused, and nothing is started, with
+**409** `<name> is not installed on this server`; that of a disabled service with **409** too. Every
+restart lands in the **Audit log**.
 
 ## Next step {#next}
 

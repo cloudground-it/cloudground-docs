@@ -4,19 +4,49 @@ description: Open, block or limit to one address a TCP port of the server from t
 type: how-to
 prerequisites:
   - An administrator account
-  - The server's firewall (ufw) active
-version: a7d92ba
-last_verified: 2026-10-10
+  - The server's firewall (ufw) installed; active for the rules to take effect
+version: unreleased
+last_verified: unverified
 sidebar_position: 6
 ---
 
 The **Firewall** page, in the **Server** group, shows whether the firewall is active and its rules, as
 the system reports them. Administrators add and remove rules; read-only accounts only see them.
 
-When the firewall is active during installation, the installer opens ports 22, 80, 443 and 8443 over
-TCP and 443 over UDP. Neither the installer nor the panel turns the firewall on: on a freshly created
-cloud server ufw is usually off, and the page says **inactive**. While it is inactive, rules are
-saved but have no effect, and the page does not show them.
+Neither the installer nor the panel ever turns the firewall on: many servers already sit behind their
+provider's firewall, and a script that turns ufw on can lock you out, for example when SSH listens on
+another port. On a freshly created cloud server ufw is usually installed but off, and the page says
+**inactive**. While it is inactive, rules are saved but have no effect: the page shows them with
+*The firewall is inactive: these rules are stored, and apply only once it is enabled.*
+
+## What the installer does {#installer}
+
+- **ufw active**: it opens the ports SSH listens on (those `sshd -T` reports; 22 when it reports
+  none), 80/tcp, 443/tcp, 443/udp (HTTP/3) and 8443/tcp.
+- **ufw installed but off**: it changes nothing, and at the end of the installation prints the
+  commands that turn it on with SSH, the sites and the panel open.
+- **ufw not installed**: nothing.
+
+## Turn the firewall on {#enable}
+
+On the server, as root, run the commands the installer printed. They have this shape, with one
+`ufw allow <port>/tcp` for each port SSH listens on:
+
+```bash prompt
+sshd -T | grep '^port '
+ufw allow 22/tcp && ufw allow 80/tcp && ufw allow 443/tcp && ufw allow 8443/tcp && ufw allow 443/udp && ufw enable
+```
+
+The first line shows SSH's ports: if it is not just 22, put yours in its place.
+
+:::danger[SSH's port first]
+
+`ufw enable` without a rule for the port SSH listens on cuts your connection and every later access to
+the server.
+
+:::
+
+Once the firewall is active, the page says **active** and the saved rules apply.
 
 ## Open a port {#allow-a-port}
 

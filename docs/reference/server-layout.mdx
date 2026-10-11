@@ -3,8 +3,8 @@ title: Percorsi, porte e servizi
 description: Le porte su cui il server ascolta, i servizi systemd, gli utenti di sistema e i percorsi che CloudGround usa.
 type: reference
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 5
 ---
 
@@ -19,12 +19,13 @@ pannello, `<dominio>` il suo dominio.
 | 80/tcp | nginx | Internet | verifiche dei certificati, poi redirect a HTTPS |
 | 443/tcp | nginx | Internet | i siti e il dominio del pannello |
 | 443/udp | nginx | Internet | HTTP/3, quando nginx ha il modulo |
-| 8443/tcp | nginx | Internet | il pannello per IP, con il suo certificato autofirmato |
+| 8443/tcp | nginx | Internet | il pannello per IP, con il suo certificato autofirmato, e Quarry in `/quarry` |
 | 3306/tcp | MariaDB | solo il server | i database dei siti |
 | 9080/tcp | panel-api | solo `127.0.0.1` | il connettore WordPress: svuotamento della cache e controllo di salute |
 
-Il firewall, se attivo, apre 22, 80, 443, 443/udp e 8443. Dal pannello non puoi chiudere la porta
-di SSH, 80, 443 e 8443.
+L'installer non accende mai il firewall. Se è già attivo, apre le porte su cui ascolta sshd, 80, 443,
+443/udp e 8443 (vedi [firewall](/access/firewall)). Dal pannello non puoi chiudere le porte di SSH, 80,
+443 e 8443.
 
 Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudground/api.sock`.
 
@@ -39,7 +40,7 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `cloudground-update-guard.service` | root | temporanea, durante un aggiornamento del pannello |
 | `nginx.service` | root e `www-data` | il server web |
 | `mariadb.service` | `mysql` | i database |
-| `redis-server.service` | — | installato e spento |
+| `redis-server.service` | — | non installato su un server nuovo; un server aggiornato da una versione precedente lo tiene spento |
 
 ## Utenti e gruppi {#users}
 
@@ -49,7 +50,7 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `cg-site-<id>` | l'utente di sistema di un sito: possiede i suoi file, esegue il suo PHP, entra in SFTP |
 | `cg-shell-<id>` | l'accesso alla shell del sito, con lo stesso uid di `cg-site-<id>` |
 | `cg-sftp-off` | gruppo: i suoi membri non possono entrare né in SSH né in SFTP |
-| `site_<id>` | database e utente MariaDB di un sito |
+| `site_<id>` | il nome predefinito del database e dell'utente MariaDB principali di un sito, quando non ne scegli uno (vedi [nomi e password dei database](/reference/database-names-and-passwords)) |
 
 ## Il pannello {#panel-paths}
 
@@ -63,6 +64,7 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `/var/lib/cloudground/state.db` | il database del pannello |
 | `/var/lib/cloudground/secret.key` | la chiave che cifra i segreti del database: salvala insieme al database |
 | `/var/lib/cloudground-agent/` | lo spazio di lavoro dell'agent e, dopo il primo aggiornamento, `highest-release` |
+| `/var/lib/cloudground-agent/databases.json` | il registro dell'agent di quale database e utente database è di quale sito (vedi [recupera il registro dei database](/data/recover-the-database-record)) |
 | `/run/cloudground/agent.sock` | il socket dell'agent |
 | `/run/cloudground/shell.sock` | il socket con cui l'agent riceve le sessioni della shell dei siti |
 | `/var/log/cloudground-install.log` | il log dell'installer |
