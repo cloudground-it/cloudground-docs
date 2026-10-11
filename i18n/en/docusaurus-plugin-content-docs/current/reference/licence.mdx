@@ -1,0 +1,37 @@
+---
+title: Licence
+description: Under which licence CloudGround and its WordPress connector are released, and what it allows in plain words.
+type: reference
+prerequisites: []
+version: unreleased
+last_verified: unverified
+sidebar_position: 7
+---
+
+CloudGround is **source-available** under the **Elastic License 2.0**. Its source is at
+[github.com/cloudground-it/cloudground](https://github.com/cloudground-it/cloudground), which is also
+the module path of its Go code.
+
+## What each part is released under {#parts}
+
+| Part | Licence |
+| --- | --- |
+| The panel, the agent, cgctl, the installer and the interface | Elastic License 2.0 |
+| The WordPress connector (`connector/` in the source: the must-use plugin and the object-cache drop-in) | GPL-2.0-or-later |
+
+The connector has a licence of its own because it runs inside WordPress, as part of each site.
+
+## In plain words {#plain-words}
+
+| Case | In practice |
+| --- | --- |
+| **Allowed** | Using, modifying and self-hosting CloudGround: on your own servers, for your own sites, and for the client sites you build and host, as long as the clients do not get access to the panel. |
+| **Not allowed** | Offering CloudGround to others as a hosted or managed service: selling hosting where customers get the CloudGround panel or its features. |
+| **Anything else** | Ask the maintainer before you rely on it. |
+
+This summary is not the licence: the binding text is the `LICENSE` file in the source, and
+`connector/LICENSE` for the connector.
+
+## Next step {#next}
+
+To see what you would be running, read the [architecture](/explanation/architecture).

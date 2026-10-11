@@ -13,4 +13,5 @@ hide_table_of_contents: true
   <Card to="/reference/cache-behaviour" title="Comportamento della cache" />
   <Card to="/reference/server-layout" title="Percorsi, porte e servizi" />
   <Card to="/reference/database-names-and-passwords" title="Nomi e password dei database" />
+  <Card to="/reference/licence" title="Licenza" />
 </Cards>
