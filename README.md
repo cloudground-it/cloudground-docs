@@ -1,3 +1,11 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/media/banner-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset=".github/media/banner-light.svg">
+    <img alt="CloudGround" src=".github/media/banner-light.svg" width="100%">
+  </picture>
+</p>
+
 # cloudground.it — the website and the documentation
 
 The single public website of [CloudGround](https://github.com/cloudground-it/cloudground), published
