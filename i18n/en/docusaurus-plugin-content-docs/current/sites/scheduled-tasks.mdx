@@ -4,8 +4,8 @@ description: Add a command that runs on a schedule to a site, run it straight aw
 type: how-to
 prerequisites:
   - An administrator account, or an operator assigned to the site
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.2.0
+last_verified: unverified
 sidebar_position: 5
 ---
 
@@ -54,6 +54,13 @@ start another run.
 - **Remove** (the bin) deletes it, after you confirm.
 
 With cgctl you can run a task by its number: `cgctl cron run <id>`.
+
+## Who sees the command {#who-sees-the-command}
+
+*Since v0.2.0.* A command line can hold a token or a password. Administrators and operators see the
+command whole. A read-only account sees the tasks, their schedule and their last run, but the command
+only in a shortened form, the same as the **Audit log**: its first word, its number of words and a
+short fingerprint, for example `php … (3 words, sha256:1a2b3c4d)`.
 
 ## Next step {#next}
 

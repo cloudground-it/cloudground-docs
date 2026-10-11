@@ -1,0 +1,75 @@
+---
+title: Protect a path with a password
+description: Put a path of a site, such as /wp-admin or a private folder, behind a username and password the browser asks for.
+type: how-to
+prerequisites:
+  - A production site (not a staging copy)
+  - An administrator account, or an operator assigned to the site
+version: v0.2.0
+last_verified: unverified
+sidebar_position: 2.5
+---
+
+A protected path asks for a username and password before anything is served: the browser shows its
+sign-in window, and without the right credentials the answer is **401**. Each path has its own
+credentials and covers everything below it.
+
+Staging copies do not have this tab: they already ask for their own password on the whole site.
+
+## Protect a path {#protect-a-path}
+
+1. Open the site, then **More** and **Protected paths**.
+2. Press **Protect a path**.
+3. In **Path**, enter the path, for example `/wp-admin` or `/private/files`.
+4. Enter the **Username** and the **Password**.
+5. Press **Save**.
+
+The protection is live as soon as you save: the panel rewrites the site's configuration and nginx
+reloads it. If nginx does not accept it, nothing changes.
+
+The rules:
+
+- the **Path** starts with `/` and is made of letters, digits and `. _ ~ -` between slashes; it cannot
+  be `/` alone, nor hold `.` or `..` segments;
+- the **Username** has 1 to 64 letters, digits or `. _ @ -`;
+- the **Password** has 8 to 72 characters;
+- a site has at most 20 protected paths.
+
+## What it covers {#what-it-covers}
+
+- The path and everything below it: `/private` covers `/private/` and `/private/a/b.php`, but not
+  `/privateer`.
+- Every request, static files and PHP scripts included, and the pages in the page cache too.
+- The panel compares the path once normalised: another way of writing the same path asks for the same
+  password.
+- A path inside another protected one uses its own credentials: the longest path wins.
+- On a WordPress or WooCommerce site, `/wp-admin/admin-ajax.php` stays open to visitors: themes and
+  plugins call it from the public pages.
+
+The panel keeps only the password's bcrypt hash, in a file only root and nginx can read. The password
+cannot be read back: neither the panel nor the API shows it, nor its hash.
+
+## Change the credentials or remove the protection {#change-or-remove}
+
+- To change the username and password, press **Change** on the path's row, enter the new ones and
+  press **Save**.
+- To remove the protection, press the bin on the row and confirm. The path is open to everyone again.
+
+## With cgctl or the API {#with-cgctl-or-the-api}
+
+```bash
+printf '%s\n' "$PASSWORD" | cgctl protect add <site-id> /wp-admin <username>
+cgctl protect remove <site-id> /wp-admin
+```
+
+`protect add` reads the password as one line from standard input, never from the arguments, so it
+shows neither in `ps` nor in the shell's history. If the path is already protected, it changes its
+credentials.
+
+The API is `POST /api/sites/<id>/protected-paths` with `{"path": "/wp-admin", "username": "…",
+"password": "…"}`, and `DELETE` on the same address with `{"path": "/wp-admin"}`. Both answer with the
+site's protected paths and their usernames.
+
+## Next step {#next}
+
+[Give the people who work on the site SFTP access](/docs/access/sftp-and-ssh-keys).

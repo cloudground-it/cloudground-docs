@@ -25,7 +25,7 @@ flowchart TD
   R["Request to the API"] --> T{"Bearer cgt_… header?"}
   T -- yes --> TV{"Token valid, not expired,<br/>owner an enabled administrator?"}
   TV -- no --> E401a["401 invalid or revoked API token"]
-  TV -- yes --> SO{"Session-only route?<br/>account, users, tokens, shell"}
+  TV -- yes --> SO{"Session-only route?<br/>account, users, tokens, shell,<br/>routing, firewall, panel"}
   SO -- yes --> E403a["403"]
   SO -- no --> TF
   T -- no --> S{"Cookie of a live session<br/>of an enabled account?"}
@@ -64,6 +64,13 @@ only.
 | Site list and details | yes | sees its own | sees |
 | Create and delete sites | yes | no | no |
 | Site settings and PHP version | yes | yes | no |
+| PHP extensions: list | yes | yes | yes |
+| PHP extensions: install | yes | no | no |
+| Site resources: usage | sees | sees its own | sees |
+| Site resources: limits | yes | sees | sees |
+| Site resources: usage alerts | yes | yes | sees |
+| Uptime check | yes | yes | sees |
+| Protected paths | yes | yes | sees the paths |
 | Routing editor (Vhost) | yes | no | no |
 | Site certificates | yes | yes | sees |
 | Purge and warm the cache | yes | yes | sees the statistics |
@@ -80,11 +87,12 @@ only.
 | WordPress: wp-admin sign-in, updates, object cache | yes | yes | sees the plugins |
 | SFTP access and "SFTP only" keys | yes | yes | sees the keys |
 | Site shell and "shell" keys | yes, from a session | no | no |
-| Scheduled tasks | yes | yes | sees |
+| Scheduled tasks | yes | yes | sees, with commands shortened |
 | Import a migration | yes | yes, without changing the expansion limit | no |
 | A site's logs | yes | yes | yes |
 | Server logs, services, firewall, status and metrics | yes | no | sees |
 | Restart services, firewall rules | yes | no | no |
+| Turn on the firewall | yes, from a session | no | no |
 | Changes made outside the panel | yes | no | sees |
 | Audit log | sees | no | sees |
 | Panel settings | yes | no | sees (secrets masked) |
@@ -95,6 +103,10 @@ only.
 | API tokens | yes, from a session | no | no |
 | Your own account: password, 2FA, sessions, profile | yes | yes | yes |
 
+*Since v0.2.0.* The rows on PHP extensions, [site resources](/docs/sites/resource-usage-and-limits),
+the [uptime check](/docs/sites/uptime-monitoring), [protected paths](/docs/access/protected-paths)
+and turning on the firewall, and the shortened scheduled-task commands for read-only accounts.
+
 ## API tokens {#api-tokens}
 
 An API token has no permissions of its own: it acts as the administrator who created it, while that
@@ -102,7 +114,8 @@ owner is an enabled administrator, and follows the same two-step verification ru
 tokens limited to one area. Only an administrator creates tokens.
 
 A token never reaches the session-only routes: your own account (password, 2FA, sessions, profile),
-users, tokens and the site shell. Nor can it add a key of type "shell". These refusals answer
+users, tokens, the site shell, the routing editor, the firewall's rules and turning it on, the
+panel's certificate and its update. Nor can it add a key of type "shell". These refusals answer
 **403**. A token cannot open Quarry either.
 
 A database user signed in to Quarry with its own password has no panel role: its MariaDB privileges

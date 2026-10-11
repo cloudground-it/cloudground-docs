@@ -1,6 +1,6 @@
 ---
 title: Firewall
-description: Apri, blocca o limita a un indirizzo una porta TCP del server dalla pagina Firewall.
+description: Attiva il firewall dal pannello senza chiuderti fuori, poi apri, blocca o limita a un indirizzo una porta TCP del server.
 type: how-to
 prerequisites:
   - Un account amministratore
@@ -14,10 +14,10 @@ La pagina **Firewall**, nel gruppo **Server**, mostra se il firewall è attivo e
 come le riporta il sistema. Gli amministratori aggiungono e rimuovono regole; gli account in sola
 lettura le vedono soltanto.
 
-Né l'installer né il pannello accendono mai il firewall: molti server stanno già dietro il firewall
-del loro provider, e uno script che accende ufw può chiuderti fuori, per esempio quando SSH ascolta su
-un'altra porta. Su un server cloud appena creato ufw di solito è installato ma spento, e la pagina dice
-**inattivo**. Finché è inattivo le regole vengono salvate ma non hanno effetto: la pagina le mostra con
+L'installer non accende mai il firewall: molti server stanno già dietro il firewall del loro provider,
+e uno script che accende ufw può chiuderti fuori, per esempio quando SSH ascolta su un'altra porta. La
+scelta resta tua: dalla v0.2.0 la fai dal pannello, con un pulsante. Su un server cloud appena creato ufw
+di solito è installato ma spento, e la pagina dice **inattivo**. Finché è inattivo le regole vengono salvate ma non hanno effetto: la pagina le mostra con
 *Il firewall non è attivo: queste regole sono salvate e si applicano solo quando viene attivato.*
 
 ## Cosa fa l'installer {#installer}
@@ -28,9 +28,31 @@ un'altra porta. Su un server cloud appena creato ufw di solito è installato ma 
   accenderlo con SSH, i siti e il pannello aperti.
 - **ufw non installato**: niente.
 
-## Accendi il firewall {#enable}
+## Attiva il firewall {#enable}
 
-Sul server, da root, esegui i comandi che l'installer ha stampato. Hanno questa forma, con una riga
+*Da v0.2.0.* Serve un account amministratore, collegato con la sua sessione: un token API non può
+attivare il firewall.
+
+1. Apri **Firewall**. Con ufw installato e spento, la pagina mostra la sezione **Attiva il firewall**.
+2. Leggi le regole elencate, ognuna con quello che porta:
+   - la porta su cui ascolta davvero sshd (quella che riporta `sshd -T`; 22 se non ne riporta
+     nessuna): *SSH, la porta su cui ascolta sshd*;
+   - `80/tcp`: *Siti in HTTP*;
+   - `443/tcp`: *Siti in HTTPS*;
+   - `443/udp`: *Siti in HTTP/3*;
+   - `8443/tcp`: *Questo pannello*.
+3. Premi **Attiva il firewall** e conferma.
+
+Il pannello consente ogni regola, nell'ordine, e solo dopo accende ufw. Se una regola non passa, si
+ferma e ufw resta spento. Alla fine la pagina dice **attivo**: ogni altra porta in entrata è chiusa.
+L'operazione finisce nel **Registro attività** come `firewall.enable`, con le regole consentite.
+
+Se SSH ha cambiato porta dopo che hai aperto la pagina, il pannello rifiuta e non tocca ufw:
+ricarica la pagina, controlla le regole nuove e riprova.
+
+### Da root, sul server {#enable-from-the-shell}
+
+Puoi anche eseguire, da root, i comandi che l'installer ha stampato. Hanno questa forma, con una riga
 `ufw allow <porta>/tcp` per ogni porta su cui ascolta SSH:
 
 ```bash prompt
@@ -96,6 +118,11 @@ indirizzo. Per toglierla serve il server, da root, per esempio
 `{"action": "allow", "port": 3306, "proto": "tcp", "from": "203.0.113.7"}` applica una regola;
 `action` è `allow`, `deny` o `delete`, `proto` è `tcp` o `udp`. Ogni regola finisce nel **Registro
 attività**.
+
+Con ufw spento, `GET /api/firewall` riporta anche `plan`, le regole da consentire prima di accenderlo.
+`POST /api/firewall/enable` con `{"expect": ["22/tcp", "80/tcp", "443/tcp", "443/udp", "8443/tcp"]}`
+lo accende: `expect` è l'elenco che hai letto, e se non è più quello attuale la risposta è **409**.
+Queste rotte del firewall sono solo per sessioni: un token riceve **403**.
 
 ## Prossimo passo {#next}
 

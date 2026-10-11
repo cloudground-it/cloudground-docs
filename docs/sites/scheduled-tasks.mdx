@@ -4,8 +4,8 @@ description: Aggiungi a un sito un comando che gira a orari fissi, eseguilo subi
 type: how-to
 prerequisites:
   - Un account amministratore oppure operatore assegnato al sito
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.2.0
+last_verified: unverified
 sidebar_position: 5
 ---
 
@@ -57,6 +57,13 @@ rifiuta di avviarne un'altra.
 - **Rimuovi** (il cestino) la cancella, dopo la conferma.
 
 Con cgctl puoi eseguire un'attività per numero: `cgctl cron run <id>`.
+
+## Chi vede il comando {#who-sees-the-command}
+
+*Da v0.2.0.* Una riga di comando può contenere un token o una password. Amministratori e operatori
+vedono il comando intero. Un account in sola lettura vede le attività, la pianificazione e l'ultima
+esecuzione, ma il comando solo in forma ridotta, la stessa del **Registro attività**: la prima parola,
+il numero di parole e un'impronta breve, per esempio `php … (3 words, sha256:1a2b3c4d)`.
 
 ## Prossimo passo {#next}
 

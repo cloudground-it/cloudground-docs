@@ -25,7 +25,7 @@ flowchart TD
   R["Richiesta all'API"] --> T{"Header Bearer cgt_…?"}
   T -- sì --> TV{"Token valido, non scaduto,<br/>proprietario amministratore attivo?"}
   TV -- no --> E401a["401 invalid or revoked API token"]
-  TV -- sì --> SO{"Rotta solo per sessioni?<br/>account, utenti, token, shell"}
+  TV -- sì --> SO{"Rotta solo per sessioni?<br/>account, utenti, token, shell,<br/>routing, firewall, pannello"}
   SO -- sì --> E403a["403"]
   SO -- no --> TF
   T -- no --> S{"Cookie di una sessione viva<br/>di un account attivo?"}
@@ -64,6 +64,13 @@ assegnati.
 | Elenco e dettagli dei siti | sì | vede i suoi | vede |
 | Creare ed eliminare siti | sì | no | no |
 | Impostazioni del sito e versione PHP | sì | sì | no |
+| Estensioni PHP: elenco | sì | sì | sì |
+| Estensioni PHP: installare | sì | no | no |
+| Risorse del sito: uso | vede | vede i suoi | vede |
+| Risorse del sito: limiti | sì | vede | vede |
+| Risorse del sito: avvisi sull'uso | sì | sì | vede |
+| Controllo di disponibilità | sì | sì | vede |
+| Percorsi protetti | sì | sì | vede i percorsi |
 | Editor del routing (Vhost) | sì | no | no |
 | Certificati del sito | sì | sì | vede |
 | Svuotare e riscaldare la cache | sì | sì | vede le statistiche |
@@ -80,11 +87,12 @@ assegnati.
 | WordPress: accesso a wp-admin, aggiornamenti, object cache | sì | sì | vede i plugin |
 | Accesso SFTP e chiavi "solo SFTP" | sì | sì | vede le chiavi |
 | Shell del sito e chiavi "shell" | sì, da una sessione | no | no |
-| Attività pianificate | sì | sì | vede |
+| Attività pianificate | sì | sì | vede, con i comandi in forma ridotta |
 | Importare una migrazione | sì | sì, senza cambiare il limite di espansione | no |
 | Log di un sito | sì | sì | sì |
 | Log del server, servizi, firewall, stato e metriche | sì | no | vede |
 | Riavviare servizi, regole del firewall | sì | no | no |
+| Attivare il firewall | sì, da una sessione | no | no |
 | Modifiche fatte fuori dal pannello | sì | no | vede |
 | Registro attività | vede | no | vede |
 | Impostazioni del pannello | sì | no | vede (segreti mascherati) |
@@ -95,6 +103,10 @@ assegnati.
 | Token API | sì, da una sessione | no | no |
 | Il proprio account: password, 2FA, sessioni, profilo | sì | sì | sì |
 
+*Da v0.2.0.* Le righe su estensioni PHP, [risorse del sito](/docs/sites/resource-usage-and-limits),
+[controllo di disponibilità](/docs/sites/uptime-monitoring), [percorsi protetti](/docs/access/protected-paths)
+e attivazione del firewall, e i comandi in forma ridotta delle attività pianificate per la sola lettura.
+
 ## Token API {#api-tokens}
 
 Un token API non ha permessi propri: agisce come l'amministratore che l'ha creato, finché quel
@@ -102,7 +114,8 @@ proprietario è un amministratore attivo, e segue la sua stessa regola sulla ver
 Non ci sono token limitati a un'area. Solo un amministratore crea token.
 
 Un token non raggiunge mai le rotte solo per sessioni: il proprio account (password, 2FA, sessioni,
-profilo), gli utenti, i token e la shell dei siti. Non può nemmeno aggiungere una chiave di tipo
+profilo), gli utenti, i token, la shell dei siti, l'editor del routing, le regole del firewall e la
+sua attivazione, il certificato e l'aggiornamento del pannello. Non può nemmeno aggiungere una chiave di tipo
 "shell". Questi rifiuti rispondono **403**. Un token non apre nemmeno Quarry.
 
 Un utente database che accede a Quarry con la sua password non ha un ruolo del pannello: decidono i

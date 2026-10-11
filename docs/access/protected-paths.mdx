@@ -1,0 +1,76 @@
+---
+title: Proteggi un percorso con una password
+description: Metti un percorso di un sito, come /wp-admin o una cartella privata, dietro un nome utente e una password chiesti dal browser.
+type: how-to
+prerequisites:
+  - Un sito di produzione (non una copia di staging)
+  - Un account amministratore oppure operatore assegnato al sito
+version: v0.2.0
+last_verified: unverified
+sidebar_position: 2.5
+---
+
+Un percorso protetto chiede un nome utente e una password prima di servire qualsiasi cosa: il browser
+mostra la sua finestra di accesso, e senza le credenziali giuste la risposta è **401**. Ogni percorso
+ha le sue credenziali e copre tutto ciò che contiene.
+
+Le copie di staging non hanno questa scheda: chiedono già la loro password su tutto il sito.
+
+## Proteggi un percorso {#protect-a-path}
+
+1. Apri il sito, poi **Altro** e **Percorsi protetti**.
+2. Premi **Proteggi un percorso**.
+3. In **Percorso** scrivi il percorso, per esempio `/wp-admin` o `/private/files`.
+4. Scrivi il **Nome utente** e la **Password**.
+5. Premi **Salva**.
+
+La protezione è attiva appena salvi: il pannello riscrive la configurazione del sito e nginx la
+ricarica. Se nginx non la accetta, non cambia nulla.
+
+Le regole:
+
+- il **Percorso** inizia con `/` ed è fatto di lettere, cifre e `. _ ~ -` tra le barre; non può essere
+  `/` da solo, né contenere i segmenti `.` o `..`;
+- il **Nome utente** ha da 1 a 64 lettere, cifre o `. _ @ -`;
+- la **Password** ha da 8 a 72 caratteri;
+- un sito ha al massimo 20 percorsi protetti.
+
+## Cosa copre {#what-it-covers}
+
+- Il percorso e tutto quello che contiene: `/private` copre `/private/` e `/private/a/b.php`, ma non
+  `/privateer`.
+- Ogni richiesta, file statici e script PHP compresi, e anche le pagine nella cache di pagina.
+- Il pannello confronta il percorso già normalizzato: un altro modo di scrivere lo stesso percorso
+  chiede la stessa password.
+- Un percorso dentro un altro protetto usa le sue credenziali: vince il percorso più lungo.
+- Su un sito WordPress o WooCommerce `/wp-admin/admin-ajax.php` resta aperto ai visitatori: temi e
+  plugin lo chiamano dalle pagine pubbliche.
+
+Il pannello conserva solo l'hash bcrypt della password, in un file leggibile solo da root e da nginx.
+La password non si rilegge: né il pannello né l'API la mostrano, e nemmeno il suo hash.
+
+## Cambia le credenziali o togli la protezione {#change-or-remove}
+
+- Per cambiare nome utente e password, premi **Cambia** sulla riga del percorso, scrivi i nuovi e
+  premi **Salva**.
+- Per togliere la protezione, premi il cestino sulla riga e conferma. Il percorso torna aperto a
+  tutti.
+
+## Con cgctl o l'API {#with-cgctl-or-the-api}
+
+```bash
+printf '%s\n' "$PASSWORD" | cgctl protect add <id-sito> /wp-admin <utente>
+cgctl protect remove <id-sito> /wp-admin
+```
+
+`protect add` legge la password come una riga dallo standard input, mai dagli argomenti, così non
+compare in `ps` né nella cronologia della shell. Se il percorso è già protetto, ne cambia le
+credenziali.
+
+L'API è `POST /api/sites/<id>/protected-paths` con `{"path": "/wp-admin", "username": "…", "password":
+"…"}`, e `DELETE` sullo stesso indirizzo con `{"path": "/wp-admin"}`. Entrambe rispondono con i percorsi
+protetti del sito e i loro nomi utente.
+
+## Prossimo passo {#next}
+
+[Dai a chi lavora sul sito l'accesso SFTP](/docs/access/sftp-and-ssh-keys).

@@ -9,6 +9,7 @@ hide_table_of_contents: true
 <Cards>
   <Card to="/docs/access/sftp-and-ssh-keys" title="SFTP and SSH keys" />
   <Card to="/docs/access/site-shell" title="The site shell" />
+  <Card to="/docs/access/protected-paths" title="Protect a path with a password" />
   <Card to="/docs/access/users-and-roles" title="Users and roles" />
   <Card to="/docs/access/two-step-verification" title="Two-step verification" />
   <Card to="/docs/access/api-tokens-and-cgctl" title="API tokens and cgctl" />
