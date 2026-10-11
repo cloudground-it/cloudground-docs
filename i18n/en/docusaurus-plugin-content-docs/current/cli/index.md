@@ -98,6 +98,15 @@ cgctl --wait sites create shop.example.com laravel \
 | `cgctl database import <site-id> <domain> <file.sql> [database]` | `POST /api/sites/<id>/database/import` | Imports a SQL file, into the primary database or the one named. The path is relative to the site's folder; `<domain>` is the confirmation. A rollback point is saved first. |
 | `cgctl cron run <cron-id>` | `POST /api/cron/<id>/run` | Runs a scheduled task now. |
 
+### SFTP {#sftp}
+
+| Command | Request | What it does |
+| --- | --- | --- |
+| `cgctl sftp keys <site-id>` | `GET /api/sites/<id>/ssh-keys` | The site's SSH keys and the SSH port. |
+| `cgctl sftp keys-only <site-id> [public-key-file]` | `POST /api/sites/<id>/sftp` | Turns SFTP access on with SSH keys only (or switches to it). With a file (`-` is standard input), adds that key first. |
+| `cgctl sftp password <site-id>` | `POST /api/sites/<id>/sftp` | Turns SFTP access on with a password, read as one line from standard input (never from the arguments). |
+| `cgctl sftp off <site-id>` | `POST /api/sites/<id>/sftp` | Turns SFTP access off. |
+
 ### Server {#server}
 
 | Command | Request | What it does |

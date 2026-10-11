@@ -1,12 +1,12 @@
 ---
 title: SFTP e chiavi SSH
-description: Attiva l'accesso SFTP di un sito, scegli la password e aggiungi le chiavi SSH di chi ci lavora.
+description: Attiva l'accesso SFTP di un sito con solo chiavi SSH o con una password, e aggiungi le chiavi SSH di chi ci lavora.
 type: how-to
 prerequisites:
   - Un sito
   - Un account amministratore, o operatore assegnato al sito
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 1
 ---
 
@@ -17,8 +17,30 @@ parte con l'accesso SFTP **disattivato**, chiavi comprese.
 ## Attiva l'accesso SFTP {#enable-sftp}
 
 1. Apri il sito e vai alla scheda **SFTP / SSH**.
-2. In **Accesso SFTP**, scrivi una **Password SFTP** di almeno 12 caratteri.
+2. In **Accesso SFTP**, sotto **Come si accede**, lascia selezionato **Solo chiavi SSH**.
+3. Se il sito non ha ancora chiavi SSH, incolla in **Chiave pubblica** quella che userai per accedere.
+4. Premi **Attiva con solo chiavi**.
+
+Con solo chiavi l'accesso non ha una password: il server non la chiede nemmeno, quindi non c'è
+niente da indovinare. Per aggiungere altre chiavi vedi [sotto](#add-a-key).
+
+### Con una password {#enable-with-a-password}
+
+1. Sotto **Come si accede**, scegli **Password o chiave SSH**.
+2. Scrivi una **Password SFTP** di almeno 12 caratteri.
 3. Premi **Attiva SFTP**.
+
+:::caution[Una password si può indovinare]
+
+Gli utenti SFTP hanno la forma `cg-site-<id>`, quindi sono facili da indovinare. Contro i tentativi
+ripetuti con password sbagliate, per ora valgono solo i limiti per connessione del server SSH:
+CloudGround non blocca ancora un indirizzo che continua a sbagliare. Usa una password lunga e
+casuale, oppure solo chiavi.
+
+:::
+
+Per passare da un modo all'altro, sceglilo e premi **Passa a solo chiavi** o **Passa a una
+password**.
 
 Il riquadro **Dati di connessione** mostra quello che serve al client: **Host**, **Porta**,
 **Utente**, **Cartella** e il **Comando** pronto da copiare:
@@ -30,7 +52,7 @@ sftp cg-site-<id>@<host>
 `<host>` è l'indirizzo con cui hai aperto il pannello. Se SSH sul server non ascolta sulla porta 22,
 il comando contiene anche `-P <porta>`. Dentro la sessione la cartella del sito è la radice `/`.
 
-Per cambiare la password, scrivine una nuova e premi **Cambia password**.
+Per cambiare la password di un accesso con password, scrivine una nuova e premi **Cambia password**.
 
 ## Aggiungi una chiave SSH {#add-a-key}
 
@@ -68,9 +90,21 @@ chiave. Le chiavi restano nell'elenco e tornano a funzionare quando riattivi l'a
 
 ## Da cgctl o dall'API {#from-the-api}
 
-L'API espone le stesse operazioni: `POST /api/sites/<id>/sftp` con `{"enable": true, "password": "…"}`
-o `{"enable": false}`, e `GET`, `POST`, `DELETE` su `/api/sites/<id>/ssh-keys`. `cgctl` non ha un
-comando dedicato.
+L'API espone le stesse operazioni su `POST /api/sites/<id>/sftp`:
+
+- `{"enable": true, "public_key": "ssh-ed25519 …"}` aggiunge la chiave e attiva l'accesso con solo chiavi;
+- `{"enable": true, "keys_only": true}` attiva l'accesso (o lo passa) a solo chiavi;
+- `{"enable": true, "keys_only": false, "password": "…"}` lo attiva con una password;
+- `{"enable": false}` lo disattiva.
+
+`GET`, `POST` e `DELETE` su `/api/sites/<id>/ssh-keys` elencano, aggiungono e rimuovono le chiavi.
+Con [cgctl](/docs/cli#sftp):
+
+```bash
+cgctl sftp keys-only <id-sito> ~/.ssh/id_ed25519.pub
+cgctl sftp password <id-sito> < password.txt
+cgctl sftp off <id-sito>
+```
 
 ## Prossimo passo {#next}
 
