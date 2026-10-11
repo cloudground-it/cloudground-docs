@@ -1,8 +1,34 @@
-# CloudGround documentation
+# cloudground.it — the website and the documentation
 
-The user documentation for [CloudGround](https://github.com/cloudground-it/cloudground): how
-to install it, run sites on it and look after the server. It is published as the docs site of
-the project.
+The single public website of [CloudGround](https://github.com/cloudground-it/cloudground), published
+on GitHub Pages at **https://cloudground.it**:
+
+| Address | What | Source |
+| --- | --- | --- |
+| `/` (`/en/`) | the home: what CloudGround is, its measurements, the install command | `src/pages/index.tsx`, `src/components/Home/` |
+| `/docs` (`/en/docs`) | the user documentation: install it, run sites on it, look after the server | `docs/`, `i18n/en/docusaurus-plugin-content-docs/` |
+| `/privacy` (`/en/privacy`) | what the site collects (nothing) | `src/pages/privacy.mdx`, `i18n/en/docusaurus-plugin-content-pages/` |
+
+The installer (`get.cloudground.it`) is not here: the product repository's own Pages serve it.
+
+## The home
+
+React components and CSS modules in `src/components/Home/`, ported from the approved design
+(`design/reference/home.dc.html` of the former WordPress project). Italian copy in the components,
+English in `i18n/en/code.json` (keys `home.*`, `cg.*`; `npm run write-translations -- --locale en`
+adds new keys). The rules it keeps:
+
+- **Every number is measured.** The table under *Misure* quotes the means in
+  `bench/phase-10-fresh.md` of the product repository (section *The release candidate on the
+  purged box*); `src/data/site.ts` links it. A number that is not in a benchmark record is not
+  written. No other panel or host is named or compared.
+- **No JavaScript needed for the content**: the cache switch and the copy button are the only
+  controls, and without JavaScript they are not drawn. Motion stops with `prefers-reduced-motion`.
+- **No external requests**: fonts, search and images are served by the site; no analytics, no
+  forms. `/privacy` says so, and changes in the same commit as anything that changes it.
+- Light and dark from the tokens in `src/css/custom.css`; 16px gutters on a phone.
+
+The social card is `static/img/og.png` (1200×630), drawn from `scripts/og-image.html`.
 
 ## Structure
 
@@ -29,11 +55,12 @@ third-party product names or comparisons; written from scratch; Italian and Engl
 
 ## Run it
 
-Docusaurus 3, Italian by default and English under `/en/`. Node 20 or later.
+Docusaurus 3, Italian by default and English under `/en/`; the guide under `/docs`. Node 20 or
+later.
 
 ```sh
 npm ci
-npm start              # Italian, live reload on http://localhost:3000
+npm start              # Italian, live reload on http://localhost:3000 (guide at /docs)
 npm run start:en       # English (one locale at a time in dev mode)
 npm run build          # both locales into build/
 npm run serve          # serve build/ to check it as it will be published
@@ -65,9 +92,19 @@ bar, `:::note`, `:::info` and `:::tip` a blue one. Code blocks have line numbers
 (`noLineNumbers` turns them off); `prompt` in the meta draws a root `#` before each command and
 leaves comments out of Copy.
 
+## Publishing
+
+`.github/workflows/build.yml` checks and builds every push and pull request; a push to `main` also
+deploys `build/` to GitHub Pages (source: GitHub Actions). `static/CNAME` holds `cloudground.it`;
+`static/.nojekyll` keeps Pages from running Jekyll. DNS for the apex: `A` records to
+185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153, `AAAA` records to
+2606:50c0:8000::153, 2606:50c0:8001::153, 2606:50c0:8002::153, 2606:50c0:8003::153, and
+`www` as a `CNAME` to `cloudground-it.github.io`.
+
 ## Design
 
-The theme implements `design/reference/docs.dc.html`. Fonts are self-hosted from
+The docs theme implements `design/reference/docs.dc.html`; the home, navbar, status strip and
+footer follow the website's home design, so the two read as one site. Fonts are self-hosted from
 `static/fonts/` (Archivo, Instrument Serif, Geist Mono — SIL Open Font License, texts alongside).
 Search is local (built at build time); there is no analytics and no external service.
 
