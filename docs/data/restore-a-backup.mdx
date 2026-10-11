@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - Un sito con almeno un backup
   - Un account amministratore oppure operatore assegnato al sito
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 5
 ---
 
@@ -40,10 +40,27 @@ quello.
 - **File**: la cartella del sito viene sostituita con quella dello snapshot in un solo passo, senza
   un momento in cui il sito non ha file. Poi PHP del sito riparte e nginx ricarica la
   configurazione. Se il sito non riparte, il pannello rimette la cartella di prima.
-- **Database**: il database viene svuotato e ricreato dal dump dello snapshot. Le tabelle create
-  dopo lo snapshot non restano. Se l'importazione fallisce, il database torna com'era.
+- **Database**: ogni database che il backup contiene viene svuotato e ricreato dal suo dump. Le
+  tabelle create dopo lo snapshot non restano. Se un'importazione fallisce, quel database e tutti
+  quelli ripristinati prima tornano com'erano.
 - Alla fine la cache di pagina del sito viene svuotata. Con *Solo il database*, anche la object
   cache viene svuotata, così il sito non serve dati vecchi.
+
+## Quali database {#databases}
+
+Dal pannello e con cgctl, *Tutto* e *Solo il database* ripristinano ogni database che il backup
+contiene e che il sito ha ancora.
+
+- Un database che il backup contiene e il sito non ha più viene saltato, e l'attività lo nomina. Per
+  ripristinarlo, crealo di nuovo con lo stesso nome nella [scheda Database](/data/manage-databases),
+  poi ripristina.
+- Un database creato dopo il backup non c'è, e resta com'è.
+- Un sito senza database non può ricevere un ripristino *Solo il database*.
+
+Per ripristinare solo alcuni database, usa l'API: `POST /api/backups/<backup-id>/restore` con
+`{"confirm": "<dominio>", "mode": "database", "databases": ["shop_data"]}`. Ogni nome deve essere nel
+backup ed essere ancora un database del sito; con `"mode": "files"` non si può nominare nessun
+database.
 
 ## Da riga di comando {#cli}
 

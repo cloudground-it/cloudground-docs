@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - A site with at least one backup
   - An administrator account, or an operator assigned to the site
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 5
 ---
 
@@ -39,10 +39,26 @@ The safety snapshot appears in the list of backups: if you need to go back, rest
 - **Files**: the site folder is swapped for the snapshot's in one step, with no moment where the
   site has no files. Then the site's PHP restarts and nginx reloads its configuration. If the site
   does not come back, the panel puts the previous folder back.
-- **Database**: the database is emptied and recreated from the snapshot's dump. Tables created
-  after the snapshot do not stay. If the import fails, the database goes back to what it was.
+- **Databases**: each database the backup holds is emptied and recreated from its dump. Tables
+  created after the snapshot do not stay. If one import fails, that database and every one restored
+  before it go back to what they were.
 - At the end the site's page cache is emptied. With *Database only*, the object cache is flushed
   too, so the site does not serve stale data.
+
+## Which databases {#databases}
+
+From the panel and with cgctl, *Everything* and *Database only* restore every database the backup
+holds that the site still has.
+
+- A database the backup holds and the site no longer has is skipped, and the task names it. To
+  restore it, create it again with the same name in the [Database tab](/data/manage-databases), then
+  restore.
+- A database created after the backup is not in it, and stays as it is.
+- A site with no database cannot take a *Database only* restore.
+
+To restore only some databases, use the API: `POST /api/backups/<backup-id>/restore` with
+`{"confirm": "<domain>", "mode": "database", "databases": ["shop_data"]}`. Each name must be in the
+backup and still a database of the site; with `"mode": "files"` no database can be named.
 
 ## From the command line {#cli}
 
