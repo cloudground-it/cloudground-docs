@@ -244,6 +244,9 @@
   font-size: 28px;
   line-height: 1.02;
   font-stretch: 110%;
+  /* Infima paints headings with --ifm-heading-color; follow the card instead,
+     so the title inverts with it on hover. */
+  color: inherit;
 }
 
 /* ---------- Ownership (the dark band) ---------- */
