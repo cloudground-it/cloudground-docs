@@ -1,6 +1,5 @@
 import React, {type ReactNode} from 'react';
 import Translate, {translate} from '@docusaurus/Translate';
-import Icon from '@site/src/components/Icon';
 import {RELEASE, RELEASE_URL} from '@site/src/data/site';
 
 /**
@@ -16,8 +15,7 @@ export default function AnnouncementBar(): ReactNode {
       <ul className="cg-hudstrip__inner hud">
         <li className="cg-hudstrip__live">
           <span className="cg-led" aria-hidden="true" />
-          <a href={RELEASE_URL} className="cg-ghlink">
-            <Icon name="github" size={14} />
+          <a href={RELEASE_URL}>
             <Translate id="cg.status.release" values={{version: RELEASE}}>
               {'Release {version} disponibile'}
             </Translate>

@@ -1,9 +1,8 @@
 import React, {type ReactNode} from 'react';
 import Link from '@docusaurus/Link';
 import Translate, {translate} from '@docusaurus/Translate';
-import Icon from '@site/src/components/Icon';
 import LogoMark from '@site/src/components/LogoMark';
-import {DOCS_REPO, ISSUES_URL, RELEASES_URL, REPO, isGitHub} from '@site/src/data/site';
+import {DOCS_REPO, ISSUES_URL, RELEASES_URL, REPO} from '@site/src/data/site';
 
 type FooterLink = {to?: string; href?: string; label: ReactNode};
 
@@ -11,7 +10,7 @@ type FooterLink = {to?: string; href?: string; label: ReactNode};
  * The footer of every page: the mark and its line, short columns of links
  * grouped by kind, and the name drawn as large as the page allows, cut off by
  * the bottom edge. Nothing in it needs a server: questions and reports go to
- * GitHub, and every link there leads with the GitHub mark.
+ * GitHub.
  */
 function Column({title, links}: {title: ReactNode; links: FooterLink[]}): ReactNode {
   return (
@@ -23,10 +22,7 @@ function Column({title, links}: {title: ReactNode; links: FooterLink[]}): ReactN
             {link.to ? (
               <Link to={link.to}>{link.label}</Link>
             ) : (
-              <a href={link.href} className={isGitHub(link.href) ? 'cg-ghlink' : undefined}>
-                {isGitHub(link.href) && <Icon name="github" />}
-                {link.label}
-              </a>
+              <a href={link.href}>{link.label}</a>
             )}
           </li>
         ))}

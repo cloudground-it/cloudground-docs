@@ -408,14 +408,12 @@ function Measures(): ReactNode {
           <Translate id="home.measures.date">Misura: 11 ottobre 2026</Translate>
         </li>
         <li>
-          <a href={BENCH_URL} className={styles.ghLink}>
-            <Icon name="github" size={14} />
+          <a href={BENCH_URL}>
             <Translate id="home.measures.data">I dati</Translate>
           </a>
         </li>
         <li>
-          <a href={BENCH_METHOD_URL} className={styles.ghLink}>
-            <Icon name="github" size={14} />
+          <a href={BENCH_METHOD_URL}>
             <Translate id="home.measures.method">Il metodo</Translate>
           </a>
         </li>

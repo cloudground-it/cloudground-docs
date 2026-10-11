@@ -560,8 +560,3 @@
   align-items: center;
   gap: 8px;
 }
-.ghLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}

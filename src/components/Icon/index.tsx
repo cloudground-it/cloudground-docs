@@ -5,6 +5,7 @@ import ArrowRight from '@site/src/icons/arrow-right.svg';
 import Browser from '@site/src/icons/browser.svg';
 import Check from '@site/src/icons/check.svg';
 import ChevronDown from '@site/src/icons/chevron-down.svg';
+import Edit from '@site/src/icons/edit.svg';
 import Copy from '@site/src/icons/copy.svg';
 import ExternalLink from '@site/src/icons/external-link.svg';
 import GitHub from '@site/src/icons/github.svg';
@@ -28,6 +29,7 @@ const ICONS = {
   check: Check,
   'chevron-down': ChevronDown,
   copy: Copy,
+  edit: Edit,
   'external-link': ExternalLink,
   github: GitHub,
   language: Language,

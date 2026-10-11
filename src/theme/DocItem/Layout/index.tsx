@@ -20,7 +20,7 @@ function EditLink(): ReactNode {
   }
   return (
     <a className="hud cg-editlink cg-ghlink" href={metadata.editUrl} target="_blank" rel="noopener noreferrer">
-      <Icon name="github" />
+      <Icon name="edit" />
       <Translate id="cg.editThisPage">Modifica questa pagina</Translate>
     </a>
   );
