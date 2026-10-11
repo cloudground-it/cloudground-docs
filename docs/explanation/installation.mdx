@@ -1,76 +1,92 @@
 ---
 title: Cosa fa l'installer
-description: Il controllo e i nove passi dell'installer, in ordine, e le scelte dietro ognuno. Rilanciarlo su un server CloudGround lo aggiorna sul posto.
+description: Il controllo e i nove passi dell'installer, in ordine, e le scelte dietro ognuno. Rilanciarlo sulla stessa release ripara il server.
 type: explanation
 prerequisites: []
-version: unreleased
+version: v0.1.0
 last_verified: unverified
 sidebar_position: 2
 ---
 
-`installer/install.sh` prepara un server Ubuntu vuoto e avvia il pannello. Tutto ciò che stampano
-i programmi che lancia finisce in `/var/log/cloudground-install.log`; sul terminale vedi solo i
-nove passi e la loro durata.
+`install.sh` è un breve script di avvio: scarica una release da GitHub, la controlla e passa la mano
+a `cgctl install`, che prepara un server Ubuntu vuoto e avvia il pannello. Tutto ciò che stampano i
+programmi che lancia finisce in `/var/log/cloudground-install.log`; sul terminale vedi solo i nove
+passi e la loro durata.
 
 ## I passi {#steps}
 
 ```mermaid
 flowchart TD
-  start(["bash install.sh, come root"]) --> check["Controlla la macchina"]
+  start(["curl … install.sh | bash, come root"]) --> dl["Scarica la release indicata nello script"]
+  dl --> pin{"cgctl ha lo SHA-256<br/>indicato nello script?"}
+  pin -- "no" --> refuse(["Non lancia nulla"])
+  pin -- "sì" --> verify{"Manifesto firmato da una chiave di cgctl,<br/>versione chiesta, non più vecchia<br/>di quella installata?"}
+  verify -- "no" --> refuse2(["Rifiuta di installare"])
+  verify -- "sì" --> check["Controlla la macchina"]
   check --> ok{"Tutti i controlli<br/>passano?"}
-  ok -- "no" --> stop(["Elenca tutti i problemi<br/>e si ferma senza toccare nulla"])
-  ok -- "sì" --> pkgs["1 · Installa nginx, PHP, MariaDB,<br/>Redis, restic, certbot, wp-cli, composer"]
-  pkgs --> users["2 · Crea utente cloudground, cartelle,<br/>token dell'agent, certificati autofirmati"]
-  users --> src{"Da dove arrivano<br/>i binari?"}
-  src -- "build locale" --> bins["3 · Installa panel-api,<br/>panel-agent, cgctl"]
-  src -- "release scaricata" --> verify{"Firma valida, versione richiesta,<br/>non più vecchia dell'installata?"}
-  verify -- "no" --> refuse(["Si rifiuta di installare"])
-  verify -- "sì" --> bins
-  bins --> kernel["4 · Parametri del kernel<br/>e dei worker di nginx"]
+  ok -- "no" --> stop(["Elenca ogni problema<br/>e si ferma senza toccare nulla"])
+  ok -- "sì" --> pkgs["1 · Installa nginx, PHP, MariaDB,<br/>restic, certbot, wp-cli, composer"]
+  pkgs --> users["2 · Crea l'utente cloudground, le cartelle,<br/>il token dell'agent, i certificati autofirmati"]
+  users --> bins["3 · Installa panel-api, panel-agent,<br/>cgctl, cg-site-shell"]
+  bins --> kernel["4 · Impostazioni del kernel<br/>e dei worker di nginx"]
   kernel --> nginx["5 · Server di default di nginx:<br/>:80, :443 e il pannello su :8443"]
   nginx --> maria["6 · Avvia MariaDB"]
-  maria --> svc["7 · Unità systemd: agent, API e socket;<br/>attende che nginx ascolti su :443"]
-  svc --> fw["8 · Firewall e SFTP chiuso in chroot"]
+  maria --> svc["7 · Unità systemd: agent, API e socket;<br/>aspetta che il pannello risponda"]
+  svc --> fw["8 · Regole del firewall, se ufw è acceso,<br/>e SFTP in chroot"]
   fw --> rot["9 · Rotazione dei log<br/>e rinnovo dei certificati"]
   rot --> link(["Stampa il link di setup monouso"])
 ```
 
 ## Cosa controlla prima {#preflight}
 
-Il controllo iniziale, prima dei passi, fa tutte le verifiche e riporta tutti i problemi insieme, così correggi la macchina in
-un solo giro:
+Il controllo iniziale, prima dei passi, fa tutte le verifiche e riporta tutti i problemi insieme, così
+correggi la macchina in un solo giro:
 
 - Ubuntu 24.04 o 26.04 LTS, architettura amd64;
 - almeno 900 MB di `MemTotal`: un server da 1 GB ne riporta un po' meno di 1024, e deve passare;
 - almeno 10 GB liberi su `/`;
-- porte 80 e 443 libere, perché nginx di CloudGround deve averle;
-- nessun altro pannello di controllo installato.
+- porte 80 e 443 libere, perché nginx di CloudGround deve averle.
 
 ## I pacchetti {#packages}
 
 PHP arriva in una versione diversa per sistema: 8.4 dal repository `ondrej/php` su Ubuntu 24.04,
 8.5 dai pacchetti di Ubuntu su 26.04. Il servizio PHP-FPM della distribuzione viene spento: ogni
-sito avrà il suo processo PHP-FPM, avviato dall'agent. Anche Redis resta spento.
+sito avrà il suo processo PHP-FPM, avviato dall'agent.
 
-restic e composer sono scaricati in una versione fissata e installati solo se il loro SHA-256
-corrisponde a quello scritto nell'installer. wp-cli è controllato contro lo SHA-512 pubblicato
-accanto al file.
+Redis non viene installato: la object cache dei siti usa APCu. Un server aggiornato da una versione
+precedente tiene il suo Redis, spento.
+
+Vengono installati solo i pacchetti che mancano. Rilanciare l'installer non aggiorna quelli già
+presenti: è compito degli aggiornamenti di sicurezza del sistema o del tuo `apt upgrade`.
+
+restic 0.19.1, wp-cli 2.12.0 e composer 2.10.3 sono scaricati in quelle versioni e installati solo se
+il loro SHA-256 corrisponde a quello scritto nell'installer.
 
 ## I binari {#binaries}
 
-{/* TODO(verify): il percorso della release scaricata (firma del manifest, versione, downgrade). Non verificabile il 2026-10-10: non esiste ancora una release firmata pubblica. Verificati la build locale e la riesecuzione. */}
+Lo script indica una release e lo SHA-256 del `cgctl` di quella release. Scarica la release da GitHub
+Releases, mai dall'indirizzo che ha servito lo script, e lancia `cgctl` solo se ha quell'hash. Poi
+`cgctl` installa i binari solo se:
 
-Con `CLOUDGROUND_LOCAL_BUILD` l'installer copia i binari da una cartella locale. Altrimenti scarica
-la release e la installa solo se:
-
-- il manifesto `SHA256SUMS` è firmato dalla chiave ed25519 in `CLOUDGROUND_RELEASE_PUBKEY`;
-- il manifesto nomina la versione chiesta in `CLOUDGROUND_VERSION` (o una qualsiasi, con `latest`);
+- il manifesto `SHA256SUMS` è firmato da una chiave delle release compilata in `cgctl` (con
+  `CLOUDGROUND_RELEASE_PUBKEY`, da quella chiave, che deve essere anche una di quelle);
+- il manifesto nomina la versione che lo script ha chiesto;
 - la versione non è più vecchia di quella già installata, né della più recente a cui il pannello si
-  è aggiornato. `CLOUDGROUND_ALLOW_DOWNGRADE=1` toglie solo quest'ultimo controllo, per un ritorno
-  indietro voluto;
+  è aggiornato;
 - ogni binario corrisponde al suo hash nel manifesto.
 
-Le unità systemd scaricate passano dallo stesso manifesto.
+Le unità systemd viaggiano dentro `cgctl`, quindi un `cgctl` verificato rende verificate anche loro.
+
+## La fiducia {#trust}
+
+Una volta che lanci lo script autentico, l'indirizzo che lo ha servito non ha più voce: non ha né i
+file che l'hash dello script indica né la chiave di firma. Ma quell'indirizzo potrebbe servire uno
+script diverso, e uno script decide tutto. Per non doverti fidare, scarica lo script di una release
+precisa e controllalo con il manifesto firmato e la chiave delle release pubblicata in questa
+documentazione: [verifica l'installer](/server/verify-the-installer).
+
+Dopo l'installazione, gli aggiornamenti del pannello controllano le release con le chiavi compilate
+nei binari installati.
 
 ## Le scelte sul server {#server-choices}
 
@@ -82,16 +98,25 @@ Le unità systemd scaricate passano dallo stesso manifesto.
   resta anche dopo aver dato un dominio al pannello: puoi sempre raggiungerlo per IP.
 - **MariaDB.** L'installer lo avvia soltanto; la sua configurazione la calcola l'agent in base a
   memoria e CPU del server.
-- **Firewall.** Se ufw è attivo, apre 22, 80, 443, 443/udp e 8443.
+- **Firewall.** L'installer non accende mai ufw: molti server stanno dietro il firewall del loro
+  provider, e uno script che accende ufw può chiuderti fuori. Se ufw è già attivo, apre le porte su
+  cui ascolta sshd (quelle che riporta `sshd -T`, la 22 se non ne riporta nessuna), 80, 443, 443/udp e
+  8443. Se ufw è installato ma spento, non cambia nulla e alla fine stampa i comandi che lo accendono
+  con quelle porte aperte (vedi [firewall](/access/firewall#enable)).
 - **SFTP.** Gli utenti di sistema dei siti (`cg-site-*`) entrano solo in SFTP, chiusi nella
   cartella del sito. La [shell del sito](/access/site-shell) usa un accesso a parte.
 - **Log.** I log dei siti ruotano ogni giorno, o a 1 GB, e se ne tengono 14.
 
 ## Rilanciarlo {#rerun}
 
-Se trova un pannello già attivo, l'installer lo aggiorna sul posto: i controlli sulle porte lasciano
-passare il suo nginx, i segreti e i certificati esistenti restano, e i servizi vengono riavviati
-sui nuovi binari.
+Ogni passo prima guarda la macchina e cambia solo ciò che è diverso. Così l'installer della release
+già installata ripara il server: ciò che corrisponde resta com'è, e i servizi ripartono solo quando è
+cambiato qualcosa che leggono. `cgctl doctor` fa gli stessi controlli e dice cosa è diverso senza
+cambiare nulla.
+
+L'installer di un'altra release si rifiuta di girare sopra un pannello installato e indica
+`cgctl update --to <release>`: l'installer non ha snapshot né rollback, un aggiornamento li ha
+entrambi (vedi [aggiorna CloudGround](/server/update-cloudground)).
 
 ## Prossimo passo {#next}
 

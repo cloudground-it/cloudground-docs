@@ -1,0 +1,130 @@
+---
+title: Disinstalla CloudGround
+description: Togli CloudGround da un server con cgctl uninstall, tenendo i siti e i loro database, oppure eliminando anche quelli.
+type: how-to
+prerequisites:
+  - Root sul server
+  - Nessun backup, ripristino o attività che non può riprendere in corso
+version: v0.1.0
+last_verified: unverified
+sidebar_position: 7
+---
+
+`cgctl uninstall` toglie CloudGround dal server. Di default tiene i file dei siti, i loro database e
+ogni backup; con le opzioni elimina anche i siti e rimuove i pacchetti portati dall'installer. Dal
+pannello non si disinstalla.
+
+## Guarda cosa farebbe {#plan}
+
+Sul server, da root:
+
+```bash prompt
+cgctl uninstall --plan
+```
+
+Stampa ogni azione, una per riga, poi cosa verrà tenuto, e non cambia nulla. Aggiungi le stesse
+opzioni che userai (`--remove-sites`, `--purge-packages`) per vedere anche le loro azioni.
+
+## Disinstalla e tieni i siti {#keep-the-sites}
+
+```bash prompt
+cgctl uninstall
+```
+
+Elenca cosa tiene e chiede `Remove CloudGround? [y/N]`. Scrivi `y`. Con `--yes` non chiede.
+
+Cosa succede a ogni parte:
+
+| Cosa | Senza opzioni | Con `--remove-sites` |
+| --- | --- | --- |
+| servizi, unità, binari di CloudGround, i suoi file di nginx, sshd, kernel, rotazione dei log, cron e hook di certbot, l'utente `cloudground`, lo stato del pannello | rimossi | rimossi |
+| `nginx.conf` e il sito di default della distribuzione | rimessi com'erano | rimessi com'erano |
+| i file dei siti in `/srv/sites` | **tenuti**, nessuno li serve | eliminati |
+| gli utenti dei siti `cg-site-<id>` | **tenuti e bloccati**: sono i proprietari dei file | eliminati, con i loro gruppi |
+| i database dei siti e i loro utenti, MariaDB e il suo file di tuning | **tenuti**, MariaDB resta acceso | quelli di CloudGround eliminati; file di tuning rimosso |
+| i certificati dei siti (`/etc/letsencrypt/live/<dominio>`) | tenuti | eliminati |
+| i certificati caricati per un sito | spostati in `/root/cloudground-uninstall/custom-certs` | eliminati |
+| i backup, nel loro repository | **mai toccati** | **mai toccati** |
+
+I certificati tenuti smettono di rinnovarsi: il rinnovo usava la cartella web di CloudGround per le
+verifiche dei certificati, che non c'è più. Alla fine la disinstallazione li elenca, con i comandi per
+rinnovarne uno con un altro web server (`certbot certonly --webroot -w <root> --cert-name <dominio> -d <dominio>`)
+o per rimuoverlo (`certbot delete --cert-name <dominio>`).
+
+## Disinstalla ed elimina i siti {#remove-sites}
+
+:::danger[Così elimini i siti]
+
+`--remove-sites` elimina i file e gli utenti di ogni sito, i database e gli utenti database di
+CloudGround e i certificati dei siti. Non si può annullare. I backup nel loro repository restano.
+
+:::
+
+```bash prompt
+cgctl uninstall --remove-sites
+```
+
+Dice quanti siti e database elimina e ti chiede di scrivere l'hostname del server. Qui `--yes` non
+basta; per confermare senza la domanda, passa l'hostname:
+
+```bash prompt
+cgctl uninstall --remove-sites --confirm <hostname>
+```
+
+`<hostname>` è quello che stampa il comando `hostname` sul server. Un nome diverso non cambia nulla.
+
+## Rimuovi anche i pacchetti {#purge-packages}
+
+```bash prompt
+cgctl uninstall --remove-sites --purge-packages
+```
+
+`--purge-packages` rimuove, per ultimi, i pacchetti che l'installer ha installato perché mancavano:
+nginx, certbot e PHP, poi le dipendenze che servivano solo a loro (la regola di autoremove di apt; un
+pacchetto che hai messo in hold resta). Rimuove anche il repository `ondrej/php` che aveva aggiunto e
+restic, wp-cli e composer che aveva messo in `/usr/local/bin`, e scarica i profili AppArmor dei
+pacchetti rimossi.
+
+- Un pacchetto che c'era già prima dell'installazione non viene mai rimosso, e nemmeno `curl`, `git`,
+  `cron` e gli altri strumenti di base.
+- MariaDB viene rimosso solo con `--remove-sites`, e solo se non contiene altri database. La sua
+  cartella dei dati `/var/lib/mysql` resta.
+
+## Cosa resta per te {#kept}
+
+Prima di rimuovere qualsiasi cosa, la disinstallazione copia in `/root/cloudground-uninstall/` (solo
+root):
+
+| Percorso | Contenuto |
+| --- | --- |
+| `state/` | il database del pannello e la sua chiave, com'erano: un CloudGround della stessa release o di una più recente sa leggerli |
+| `backup.env` | il repository dei backup e la sua password: senza, nessun backup si può leggere |
+| `README.txt` | cosa sono i file, e ogni repository usato dal pannello |
+| `custom-certs/` | i certificati che avevi caricato, senza `--remove-sites` |
+| `uninstall.log` | cosa ha fatto la disinstallazione |
+
+:::warning[`backup.env` è in chiaro]
+
+Contiene la password del repository. Conservalo in un posto sicuro, fuori dal server, poi
+cancellalo.
+
+:::
+
+Per elencare i backup con quel file:
+
+```bash prompt
+cd /root/cloudground-uninstall && set -a && . ./backup.env && set +a && restic snapshots
+```
+
+Se disinstalli di nuovo più avanti, ciò che una disinstallazione precedente aveva tenuto viene
+spostato in `earlier-<data>/`, mai sovrascritto.
+
+## Se si ferma a metà {#rerun}
+
+Un'azione che fallisce viene segnalata e le altre proseguono; il comando finisce con uscita 1 e gli
+errori. Correggi la causa e rilancia `cgctl uninstall`: ogni azione si può ripetere. Su un server dove
+non resta nulla di CloudGround dice `CloudGround is not installed here: nothing to remove`.
+
+## Prossimo passo {#next}
+
+Per installare di nuovo CloudGround, segui il [tutorial di installazione](/tutorials/install).

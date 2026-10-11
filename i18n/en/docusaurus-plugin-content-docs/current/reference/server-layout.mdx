@@ -3,7 +3,7 @@ title: Paths, ports and services
 description: The ports the server listens on, the systemd services, the system users and the paths CloudGround uses.
 type: reference
 prerequisites: []
-version: unreleased
+version: v0.1.0
 last_verified: unverified
 sidebar_position: 5
 ---
@@ -56,7 +56,7 @@ The panel has no TCP port of its own: nginx talks to it on the socket `/run/clou
 
 | Path | Contents |
 | --- | --- |
-| `/usr/local/bin/panel-api`, `panel-agent`, `cgctl` | the binaries |
+| `/usr/local/bin/panel-api`, `panel-agent`, `cgctl`, `cg-site-shell` | the binaries |
 | `/etc/cloudground/panel.env` | the panel's and the agent's configuration |
 | `/etc/cloudground/cgctl.env` | cgctl's configuration |
 | `/etc/cloudground/agent.token` | the secret shared by the panel and the agent |
@@ -64,10 +64,14 @@ The panel has no TCP port of its own: nginx talks to it on the socket `/run/clou
 | `/var/lib/cloudground/state.db` | the panel's database |
 | `/var/lib/cloudground/secret.key` | the key that encrypts the database's secrets: back it up with the database |
 | `/var/lib/cloudground-agent/` | the agent's working space and, after the first update, `highest-release` |
+| `/var/lib/cloudground-agent/installed.json` | what the installer installed because it was missing: packages, repository, tools (read by `cgctl uninstall --purge-packages`) |
+| `/var/lib/cloudground-agent/update-result.json` | the outcome of the last update |
+| `/var/lib/cloudground-agent/update-snapshots/` | the snapshots taken before an update, the newest three |
 | `/var/lib/cloudground-agent/databases.json` | the agent's record of which database and database user is which site's (see [recover the database record](/data/recover-the-database-record)) |
 | `/run/cloudground/agent.sock` | the agent's socket |
 | `/run/cloudground/shell.sock` | the socket on which the agent takes the site shells' sessions |
 | `/var/log/cloudground-install.log` | the installer's log |
+| `/root/cloudground-uninstall/` | after an uninstall: the panel's state, `backup.env`, `README.txt` (see [uninstall CloudGround](/server/uninstall-cloudground#kept)) |
 
 ## The sites {#site-paths}
 
@@ -100,6 +104,36 @@ The panel has no TCP port of its own: nginx talks to it on the socket `/run/clou
 | `/var/cache/cloudground/restic/` | restic's cache for the backup repository |
 | `/etc/logrotate.d/cloudground` | rotation of the sites' logs |
 | `/var/log/mysql/slow.log` | MariaDB's slow queries, over 1 second |
+| `/etc/nginx/sites-enabled/cloudground-panel-bootstrap.conf` | the default servers on :80 and :443 and the panel on :8443 |
+| `/etc/nginx/nginx.conf.cloudground-pre` | `nginx.conf` as it was before the installer, put back by the uninstall |
+| `/etc/letsencrypt/renewal-hooks/deploy/cloudground-reload-nginx.sh` | reloads nginx after a certificate renewal |
+| `/usr/local/bin/restic`, `wp`, `composer` | restic, wp-cli and composer, at the versions the installer pins |
+
+## Directories the installer creates {#directories}
+
+The installer creates these directories, or fixes their mode, on every run. "Unchanged" means an
+existing directory keeps its owner, and a new one belongs to root.
+
+| Directory | Mode | Owner |
+| --- | --- | --- |
+| `/srv/sites` | 0755 | unchanged |
+| `/var/log/cloudground` | 0755 | unchanged |
+| `/var/cache/cloudground` | 0755 | unchanged |
+| `/var/lib/cloudground` | 0750 | `cloudground:cloudground` |
+| `/var/www/cloudground-acme` | 0755 | unchanged |
+| `/run/cloudground` | 0755 | unchanged |
+| `/run/cloudground/php` | 0755 | unchanged |
+| `/etc/cloudground-php` | 0755 | `root:root` |
+| `/var/lib/cloudground-agent` | 0700 | `root:root` |
+| `/var/lib/cloudground-agent/work` | 0700 | `root:root` |
+| `/etc/cloudground` | 0750 | group `cloudground` |
+| `/etc/cloudground/certs` | 0750 | group `cloudground` |
+| `/var/lib/letsencrypt` | 0755 | unchanged |
+| `/var/spool/cron` | 0755 | unchanged |
+
+`/var/www/cloudground-acme` is the web folder for certificate challenges. `/var/lib/letsencrypt` and
+`/var/spool/cron` belong to certbot and cron: the installer creates them before they exist so that
+the agent can start.
 
 ## Next step {#next}
 

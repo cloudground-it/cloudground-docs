@@ -3,7 +3,7 @@ title: Percorsi, porte e servizi
 description: Le porte su cui il server ascolta, i servizi systemd, gli utenti di sistema e i percorsi che CloudGround usa.
 type: reference
 prerequisites: []
-version: unreleased
+version: v0.1.0
 last_verified: unverified
 sidebar_position: 5
 ---
@@ -56,7 +56,7 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 
 | Percorso | Contenuto |
 | --- | --- |
-| `/usr/local/bin/panel-api`, `panel-agent`, `cgctl` | i binari |
+| `/usr/local/bin/panel-api`, `panel-agent`, `cgctl`, `cg-site-shell` | i binari |
 | `/etc/cloudground/panel.env` | la configurazione del pannello e dell'agent |
 | `/etc/cloudground/cgctl.env` | la configurazione di cgctl |
 | `/etc/cloudground/agent.token` | il segreto condiviso tra pannello e agent |
@@ -64,10 +64,14 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `/var/lib/cloudground/state.db` | il database del pannello |
 | `/var/lib/cloudground/secret.key` | la chiave che cifra i segreti del database: salvala insieme al database |
 | `/var/lib/cloudground-agent/` | lo spazio di lavoro dell'agent e, dopo il primo aggiornamento, `highest-release` |
+| `/var/lib/cloudground-agent/installed.json` | cosa ha installato l'installer perché mancava: pacchetti, repository, strumenti (lo legge `cgctl uninstall --purge-packages`) |
+| `/var/lib/cloudground-agent/update-result.json` | l'esito dell'ultimo aggiornamento |
+| `/var/lib/cloudground-agent/update-snapshots/` | gli snapshot presi prima di un aggiornamento, gli ultimi tre |
 | `/var/lib/cloudground-agent/databases.json` | il registro dell'agent di quale database e utente database è di quale sito (vedi [recupera il registro dei database](/data/recover-the-database-record)) |
 | `/run/cloudground/agent.sock` | il socket dell'agent |
 | `/run/cloudground/shell.sock` | il socket con cui l'agent riceve le sessioni della shell dei siti |
 | `/var/log/cloudground-install.log` | il log dell'installer |
+| `/root/cloudground-uninstall/` | dopo una disinstallazione: lo stato del pannello, `backup.env`, `README.txt` (vedi [disinstalla CloudGround](/server/uninstall-cloudground#kept)) |
 
 ## I siti {#site-paths}
 
@@ -100,6 +104,36 @@ Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudgrou
 | `/var/cache/cloudground/restic/` | la cache di restic per il repository dei backup |
 | `/etc/logrotate.d/cloudground` | rotazione dei log dei siti |
 | `/var/log/mysql/slow.log` | le query lente di MariaDB, oltre 1 secondo |
+| `/etc/nginx/sites-enabled/cloudground-panel-bootstrap.conf` | i server di default su :80 e :443 e il pannello su :8443 |
+| `/etc/nginx/nginx.conf.cloudground-pre` | `nginx.conf` com'era prima dell'installer, rimesso dalla disinstallazione |
+| `/etc/letsencrypt/renewal-hooks/deploy/cloudground-reload-nginx.sh` | ricarica nginx dopo il rinnovo di un certificato |
+| `/usr/local/bin/restic`, `wp`, `composer` | restic, wp-cli e composer, nelle versioni fissate dall'installer |
+
+## Cartelle create dall'installer {#directories}
+
+L'installer crea queste cartelle, o ne corregge il modo, a ogni esecuzione. "Invariato" vuol dire che una
+cartella esistente tiene il suo proprietario, e una nuova appartiene a root.
+
+| Cartella | Modo | Proprietario |
+| --- | --- | --- |
+| `/srv/sites` | 0755 | invariato |
+| `/var/log/cloudground` | 0755 | invariato |
+| `/var/cache/cloudground` | 0755 | invariato |
+| `/var/lib/cloudground` | 0750 | `cloudground:cloudground` |
+| `/var/www/cloudground-acme` | 0755 | invariato |
+| `/run/cloudground` | 0755 | invariato |
+| `/run/cloudground/php` | 0755 | invariato |
+| `/etc/cloudground-php` | 0755 | `root:root` |
+| `/var/lib/cloudground-agent` | 0700 | `root:root` |
+| `/var/lib/cloudground-agent/work` | 0700 | `root:root` |
+| `/etc/cloudground` | 0750 | gruppo `cloudground` |
+| `/etc/cloudground/certs` | 0750 | gruppo `cloudground` |
+| `/var/lib/letsencrypt` | 0755 | invariato |
+| `/var/spool/cron` | 0755 | invariato |
+
+`/var/www/cloudground-acme` è la cartella web delle verifiche dei certificati. `/var/lib/letsencrypt`
+e `/var/spool/cron` appartengono a certbot e cron: l'installer le crea prima che esistano perché
+l'agent possa partire.
 
 ## Prossimo passo {#next}
 

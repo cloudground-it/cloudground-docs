@@ -1,16 +1,18 @@
 ---
 title: Aggiorna CloudGround
-description: Installa una nuova release dal pannello, che la verifica e torna indietro da solo se non parte, oppure rilanciando l'installer.
+description: Installa una release firmata più recente dal pannello o con cgctl update; una release che non parte viene annullata, con lo stato del pannello com'era.
 type: how-to
 prerequisites:
-  - Un account amministratore
-version: unreleased
+  - Un account amministratore, per il pannello; root sul server, per cgctl update
+version: v0.1.0
 last_verified: unverified
 sidebar_position: 5
 ---
 
-Il pannello installa solo release firmate. Se la nuova versione non parte bene entro 60 secondi,
-rimette quella di prima da solo.
+Il pulsante **Aggiorna ora** del pannello e `cgctl update` avviano lo stesso aggiornamento. Installa
+solo release firmate con una chiave che il CloudGround installato conosce, prima fa uno snapshot dello
+stato del pannello, e rimette da solo la release precedente se la nuova non è in salute entro 60
+secondi.
 
 ## Controlla se c'è una nuova versione {#check}
 
@@ -22,37 +24,79 @@ Per non controllare più, apri **Impostazioni**, riquadro **Aggiornamenti del pa
 **Controlla gli aggiornamenti quando apri il pannello** e premi **Salva**. Il controllo non installa
 mai nulla da solo.
 
+Nello stesso riquadro, **Canale degli aggiornamenti** sceglie cosa ti viene proposto: **Stabile** solo
+le versioni finali, **Beta (anche versioni di prova)** anche quelle di prova.
+
+Dalla shell, da root sul server:
+
+```bash prompt
+cgctl update --check
+```
+
+Stampa `update available: <installata> -> <release> (signature verified)`, oppure `up to date`, e non
+cambia nulla.
+
 ## Aggiorna dal pannello {#update-from-the-panel}
 
 1. Nella dashboard premi **Aggiorna ora**. In alternativa, in **Impostazioni**, riquadro
    **Aggiornamenti del pannello**, premi **Aggiorna ora** e conferma.
 2. Il pannello dice **Aggiornamento avviato: il pannello si riavvierà.**
 
-{/* TODO(verify): cosa mostra l'interfaccia durante il riavvio e quando torna disponibile, e tutto il percorso di aggiornamento firmato (manifest, guard, update-result.json). Non verificabile il 2026-10-10: la build a7d92ba non ha una chiave di firma compilata e non esiste una release firmata da cui aggiornare. */}
-
-Cosa succede, in ordine:
-
-1. L'agent scarica il manifesto firmato e controlla la firma. Rifiuta una versione che non è più
-   recente dell'ultima mai installata su questo server.
-2. Scarica `panel-api`, `panel-agent`, `cgctl` e le unità systemd, e controlla l'hash di ognuno.
-3. Mette i nuovi file al posto dei vecchi, tenendo una copia dei vecchi.
-4. Un processo di guardia, che gira con la versione vecchia, riavvia agent e pannello e aspetta fino
-   a 60 secondi che rispondano con i nuovi binari.
-5. Se rispondono, l'aggiornamento è fatto. Se no, la guardia rimette i vecchi binari e le vecchie
-   unità e riavvia di nuovo.
-
 Con l'API la richiesta è `POST /api/panel/update`, con `{"version": "<versione>"}` o `{}` per la più
 recente.
 
-:::note[Build senza aggiornamenti]
+## Aggiorna con cgctl {#update-with-cgctl}
 
-Una build fatta con `make dist` senza una chiave di firma delle release (`UPDATE_PUBKEY` vuota, come
-finché non esiste una release pubblica) non può aggiornarsi da sola: **Aggiorna ora** risponde
-`self-update is not available in this build: this build has no release signing key compiled in`
-(`… no update origin compiled in` se manca anche `UPDATE_URL`). In quel caso aggiorna con
-l'installer.
+Sul server, da root:
 
-:::
+```bash prompt
+cgctl update
+```
+
+Installa la release più recente del canale che segue il pannello. Le varianti:
+
+| Comando | Cosa installa |
+| --- | --- |
+| `cgctl update` | la release più recente del canale del pannello |
+| `cgctl update --to <vX.Y.Z>` | quella release, mai una più vecchia |
+| `cgctl update --channel beta` | la release più recente di quel canale (`stable` o `beta`), solo questa volta |
+| `cgctl update --timeout <durata>` | lo stesso, aspettando il verdetto per quel tempo (predefinito `10m`) |
+
+`cgctl update` aspetta il riavvio e stampa `updated: <precedente> -> <release>` e lo snapshot che ha
+fatto, uscita 0. Se la release è stata annullata stampa `rolled back: <precedente> runs again, with
+its state from <snapshot>`, uscita 1.
+
+## Cosa fa un aggiornamento {#what-happens}
+
+1. Controlla la release prima di cambiare qualsiasi cosa: il manifesto firmato si verifica con una
+   chiave compilata nel CloudGround installato, il canale la accetta (una beta mai sul canale
+   stabile), ed è più recente della release in uso e di ogni release mai installata su questo server.
+2. Scarica ogni file e lo controlla con il manifesto, poi scambia i binari, tenendo quelli vecchi.
+3. Un processo di guardia, che gira con la release precedente, ferma il pannello, fa uno snapshot
+   dello stato del pannello e dei registri dell'agent, e avvia la nuova release.
+4. Se agent e pannello rispondono con i nuovi binari entro 60 secondi, l'aggiornamento è fatto.
+   Altrimenti la guardia rimette i binari, le unità e lo snapshot precedenti, e riavvia la release
+   precedente.
+
+Il nuovo pannello migra il suo database in avanti al primo avvio, attraverso ogni passo tra le due
+release: puoi passare da una release a una qualsiasi più recente con un solo aggiornamento. La
+migrazione non va mai all'indietro, quindi la strada per tornare è lo snapshot, che un aggiornamento
+fallito rimette da solo.
+
+## Cosa tiene {#what-it-keeps}
+
+Un aggiornamento sostituisce i binari e, quando la release le cambia, le unità systemd. Non tocca mai i
+file dei siti, i loro database, i certificati o i backup. I siti continuano a rispondere per tutto il
+tempo: nginx e il PHP dei siti non vengono riavviati. Solo il pannello risponde con un errore per i
+pochi secondi del suo riavvio.
+
+Rifiuta, senza cambiare nulla:
+
+- una release non firmata con una chiave che il CloudGround installato conosce;
+- una release che non è più recente di quella in uso o della più recente mai installata qui
+  (`refusing to downgrade`);
+- un aggiornamento mentre è in corso un backup, un ripristino o un'attività che non può riprendere:
+  aspetta che finisca.
 
 ## Controlla com'è andata {#check-the-result}
 
@@ -61,21 +105,19 @@ cat /var/lib/cloudground-agent/update-result.json
 journalctl -u cloudground-update-guard
 ```
 
-Il file dice a quale versione sei passato, oppure `rolled_back` e il motivo. Il journal mostra ogni
-passo della guardia.
+Il file dice a quale versione sei passato, oppure che l'aggiornamento è stato annullato e perché. Il
+journal mostra ogni passo della guardia. Gli ultimi tre snapshot restano in
+`/var/lib/cloudground-agent/update-snapshots/`.
 
-## Aggiorna con l'installer {#update-with-the-installer}
+:::note[L'installer non è un aggiornamento]
 
-Rilancia l'installer con la nuova build: trova il pannello già attivo e lo aggiorna sul posto,
-senza toccare siti, segreti e certificati.
+Lanciare l'`install.sh` di una release più recente su un server già installato viene rifiutato: indica
+`cgctl update --to <release>`, perché l'installer non ha snapshot né rollback. L'installer della
+release già installata ripara il server (vedi
+[cosa fa l'installer](/explanation/installation#rerun)).
 
-```bash prompt
-CLOUDGROUND_LOCAL_BUILD=/root/cloudground/dist bash /root/cloudground/installer/install.sh
-```
-
-Prima copia sul server le nuove cartelle `dist/` e `installer/`, come nel
-[tutorial di installazione](/tutorials/install#copy-the-release).
+:::
 
 ## Prossimo passo {#next}
 
-Per sapere come l'installer verifica una release, leggi [cosa fa l'installer](/explanation/installation#binaries).
+Per togliere CloudGround da un server, vedi [disinstalla CloudGround](/server/uninstall-cloudground).

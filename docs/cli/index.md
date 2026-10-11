@@ -128,8 +128,10 @@ Questi comandi girano da root sul server e non parlano con il pannello.
 
 | Comando | Cosa fa |
 | --- | --- |
-| `cgctl install [--plan] [--from <cartella> \| --release <cartella>] [--skip-packages] [--container]` | Installa CloudGround o lo aggiorna sul posto; `--plan` mostra cosa cambierebbe senza cambiare niente. È il comando che lancia `install.sh`. |
+| `cgctl install [--plan] [--from <cartella> \| --release <cartella>] [--skip-packages] [--container]` | Installa CloudGround, o ripara un server con la stessa release (un'altra release va installata con `cgctl update`); `--plan` mostra cosa cambierebbe senza cambiare niente. È il comando che lancia `install.sh`. |
 | `cgctl doctor [--skip-packages] [--container]` | Controlla ogni passo dell'installazione e dice cosa non corrisponde; esce con 1 se trova differenze, altrimenti stampa `no drift`. |
+| `cgctl update [--to <vX.Y.Z>] [--channel stable\|beta] [--check] [--timeout <durata>]` | Aggiorna CloudGround a una release firmata più recente, con snapshot e rollback automatico, come **Aggiorna ora** nel pannello; `--check` dice solo cosa installerebbe. Vedi [aggiorna CloudGround](/server/update-cloudground). |
+| `cgctl uninstall [--plan] [--yes] [--remove-sites [--confirm <hostname>]] [--purge-packages]` | Toglie CloudGround dal server, tenendo i siti e i loro database se non c'è `--remove-sites`; `--plan` elenca ogni azione senza cambiare nulla. Vedi [disinstalla CloudGround](/server/uninstall-cloudground). |
 | `cgctl release verify <cartella> [file ...]` | Verifica una release scaricata con le chiavi di firma compilate in cgctl; non serve il pannello né un token. |
 
 ## Autenticazione {#authentication}

@@ -1,6 +1,6 @@
 ---
 title: "Guide · Server"
-description: "Il dominio del pannello, i servizi, i log, gli avvisi e gli aggiornamenti."
+description: "Il dominio del pannello, i servizi, i log, gli avvisi, gli aggiornamenti e la disinstallazione."
 type: index
 last_verified: 2026-10-10
 hide_table_of_contents: true
@@ -12,4 +12,6 @@ hide_table_of_contents: true
   <Card to="/server/logs" title="Leggi i log" />
   <Card to="/server/alerts-and-notifications" title="Avvisi e notifiche" />
   <Card to="/server/update-cloudground" title="Aggiorna CloudGround" />
+  <Card to="/server/verify-the-installer" title="Verifica l'installer" />
+  <Card to="/server/uninstall-cloudground" title="Disinstalla CloudGround" />
 </Cards>

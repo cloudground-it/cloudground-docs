@@ -1,0 +1,76 @@
+---
+title: Verifica l'installer
+description: Controlla lo script dell'installer con il manifesto firmato della release prima di lanciarlo, così installi CloudGround senza fidarti dell'indirizzo che ti ha dato lo script.
+type: how-to
+prerequisites:
+  - Un server Ubuntu 24.04 o 26.04 LTS appena creato, come nel tutorial di installazione
+  - Accesso root via SSH
+version: v0.1.0
+last_verified: unverified
+sidebar_position: 6
+---
+
+L'installazione in una riga si fida dell'indirizzo da cui arriva lo script: è lo script a decidere
+cosa gira. Qui scarichi lo script di una release, ne controlli la firma con la chiave delle release
+pubblicata qui sotto, e lo lanci solo se corrisponde.
+
+## La chiave delle release {#release-key}
+
+Ogni release di CloudGround è firmata con questa chiave ed25519 (base64):
+
+```text
+KDquuxOG12M2ejsCCSLPKnH70SvmHtiX9MnMB/SbJs4=
+```
+
+È la stessa chiave compilata in `cgctl` (`releaseKeys` in `internal/version/keys.go` nel codice del
+prodotto).
+
+## Scarica i file della release {#download}
+
+Sul server, da root, in una cartella vuota:
+
+```bash prompt
+v=v0.1.0
+key='KDquuxOG12M2ejsCCSLPKnH70SvmHtiX9MnMB/SbJs4='
+base=https://github.com/cloudground-it/cloudground/releases/download/$v
+curl -fsSLO "$base/install.sh" -O "$base/SHA256SUMS" -O "$base/SHA256SUMS.sig"
+```
+
+`v` è la release che installi; `install.sh` installa esattamente quella release.
+
+## Controlla la firma e lo script {#check}
+
+```bash prompt
+{ printf '\x30\x2a\x30\x05\x06\x03\x2b\x65\x70\x03\x21\x00'; printf %s "$key" | base64 -d; } > release.der
+openssl pkey -pubin -inform DER -in release.der -out release.pem
+base64 -d SHA256SUMS.sig > SHA256SUMS.bin
+openssl pkeyutl -verify -pubin -inkey release.pem -rawin -in SHA256SUMS -sigfile SHA256SUMS.bin
+grep -qx "version $v" SHA256SUMS && grep '  install.sh$' SHA256SUMS | sha256sum -c -
+```
+
+La prima riga trasforma la chiave in un file di chiave pubblica. `openssl pkeyutl` stampa
+`Signature Verified Successfully`: il manifesto `SHA256SUMS` è firmato con la chiave delle release.
+L'ultima riga controlla che il manifesto sia della release che hai chiesto e stampa
+`install.sh: OK`: lo script è quello elencato nel manifesto.
+
+Se uno dei due controlli fallisce, non lanciare lo script.
+
+## Lancialo {#run}
+
+```bash prompt
+bash install.sh
+```
+
+Da qui l'installazione è la stessa del [tutorial](/tutorials/install#run-the-installer): lo script
+scarica i binari della release da GitHub, lancia `cgctl` solo se ha lo SHA-256 che lo script indica,
+e `cgctl` non installa nulla il cui manifesto non si verifica.
+
+Con la GitHub CLI puoi controllare anche dove è stato costruito lo script:
+
+```bash prompt
+gh attestation verify install.sh --repo cloudground-it/cloudground
+```
+
+## Prossimo passo {#next}
+
+Per sapere da cosa protegge ogni controllo, leggi [cosa fa l'installer](/explanation/installation#trust).

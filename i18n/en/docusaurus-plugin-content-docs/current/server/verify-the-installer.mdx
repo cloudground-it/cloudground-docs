@@ -1,0 +1,76 @@
+---
+title: Verify the installer
+description: Check the installer script against the release's signed manifest before you run it, so you install CloudGround without trusting the address that served the script.
+type: how-to
+prerequisites:
+  - A freshly created Ubuntu 24.04 or 26.04 LTS server, as in the installation tutorial
+  - Root access over SSH
+version: v0.1.0
+last_verified: unverified
+sidebar_position: 6
+---
+
+The one-line install trusts the address the script comes from: a script decides what runs. Here you
+download the script of one release, check its signature with the release key published below, and run
+it only if it matches.
+
+## The release key {#release-key}
+
+Every CloudGround release is signed with this ed25519 key (base64):
+
+```text
+KDquuxOG12M2ejsCCSLPKnH70SvmHtiX9MnMB/SbJs4=
+```
+
+It is the same key compiled into `cgctl` (`releaseKeys` in `internal/version/keys.go` in the product's
+source).
+
+## Download the release's files {#download}
+
+On the server, as root, in an empty folder:
+
+```bash prompt
+v=v0.1.0
+key='KDquuxOG12M2ejsCCSLPKnH70SvmHtiX9MnMB/SbJs4='
+base=https://github.com/cloudground-it/cloudground/releases/download/$v
+curl -fsSLO "$base/install.sh" -O "$base/SHA256SUMS" -O "$base/SHA256SUMS.sig"
+```
+
+`v` is the release you install; `install.sh` installs exactly that release.
+
+## Check the signature and the script {#check}
+
+```bash prompt
+{ printf '\x30\x2a\x30\x05\x06\x03\x2b\x65\x70\x03\x21\x00'; printf %s "$key" | base64 -d; } > release.der
+openssl pkey -pubin -inform DER -in release.der -out release.pem
+base64 -d SHA256SUMS.sig > SHA256SUMS.bin
+openssl pkeyutl -verify -pubin -inkey release.pem -rawin -in SHA256SUMS -sigfile SHA256SUMS.bin
+grep -qx "version $v" SHA256SUMS && grep '  install.sh$' SHA256SUMS | sha256sum -c -
+```
+
+The first line turns the key into a public key file. `openssl pkeyutl` prints
+`Signature Verified Successfully`: the manifest `SHA256SUMS` was signed with the release key. The
+last line checks that the manifest is for the release you asked for and prints `install.sh: OK`: the
+script is the one the manifest lists.
+
+If either check fails, do not run the script.
+
+## Run it {#run}
+
+```bash prompt
+bash install.sh
+```
+
+From here the install is the same as in the [tutorial](/tutorials/install#run-the-installer): the
+script downloads the release's binaries from GitHub, runs `cgctl` only if it has the SHA-256 the
+script names, and `cgctl` installs nothing whose manifest does not verify.
+
+With the GitHub CLI you can also check where the script was built:
+
+```bash prompt
+gh attestation verify install.sh --repo cloudground-it/cloudground
+```
+
+## Next step {#next}
+
+To see what each check protects, read [what the installer does](/explanation/installation#trust).

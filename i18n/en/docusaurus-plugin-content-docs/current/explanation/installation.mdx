@@ -1,74 +1,92 @@
 ---
 title: What the installer does
-description: The installer's check and nine steps, in order, and the choices behind each. Running it again on a CloudGround server upgrades it in place.
+description: The installer's check and nine steps, in order, and the choices behind each. Running it again on the same release repairs the server.
 type: explanation
 prerequisites: []
-version: unreleased
+version: v0.1.0
 last_verified: unverified
 sidebar_position: 2
 ---
 
-`installer/install.sh` prepares an empty Ubuntu server and starts the panel. Everything the programs
-it runs print goes to `/var/log/cloudground-install.log`; on the terminal you see only the nine steps
-and how long each took.
+`install.sh` is a short bootstrap: it downloads one release from GitHub, checks it, and hands over
+to `cgctl install`, which prepares an empty Ubuntu server and starts the panel. Everything the
+programs it runs print goes to `/var/log/cloudground-install.log`; on the terminal you see only the
+nine steps and how long each took.
 
 ## The steps {#steps}
 
 ```mermaid
 flowchart TD
-  start(["bash install.sh, as root"]) --> check["Check the machine"]
+  start(["curl … install.sh | bash, as root"]) --> dl["Download the release named in the script"]
+  dl --> pin{"cgctl has the SHA-256<br/>the script names?"}
+  pin -- "no" --> refuse(["Run nothing"])
+  pin -- "yes" --> verify{"Manifest signed by a key in cgctl,<br/>requested version, not older<br/>than what is installed?"}
+  verify -- "no" --> refuse2(["Refuse to install"])
+  verify -- "yes" --> check["Check the machine"]
   check --> ok{"Every check<br/>passes?"}
   ok -- "no" --> stop(["List every problem<br/>and stop without touching anything"])
-  ok -- "yes" --> pkgs["1 · Install nginx, PHP, MariaDB,<br/>Redis, restic, certbot, wp-cli, composer"]
+  ok -- "yes" --> pkgs["1 · Install nginx, PHP, MariaDB,<br/>restic, certbot, wp-cli, composer"]
   pkgs --> users["2 · Create the cloudground user, folders,<br/>agent token, self-signed certificates"]
-  users --> src{"Where do the<br/>binaries come from?"}
-  src -- "local build" --> bins["3 · Install panel-api,<br/>panel-agent, cgctl"]
-  src -- "downloaded release" --> verify{"Valid signature, requested version,<br/>not older than what is installed?"}
-  verify -- "no" --> refuse(["Refuse to install"])
-  verify -- "yes" --> bins
+  users --> bins["3 · Install panel-api, panel-agent,<br/>cgctl, cg-site-shell"]
   bins --> kernel["4 · Kernel and nginx<br/>worker settings"]
   kernel --> nginx["5 · nginx default servers:<br/>:80, :443 and the panel on :8443"]
   nginx --> maria["6 · Start MariaDB"]
-  maria --> svc["7 · systemd units: agent, API and socket;<br/>wait for nginx to listen on :443"]
-  svc --> fw["8 · Firewall and chrooted SFTP"]
+  maria --> svc["7 · systemd units: agent, API and socket;<br/>wait for the panel to answer"]
+  svc --> fw["8 · Firewall rules, if ufw is on,<br/>and chrooted SFTP"]
   fw --> rot["9 · Log rotation<br/>and certificate renewal"]
   rot --> link(["Print the one-time setup link"])
 ```
 
 ## What it checks first {#preflight}
 
-The initial check, before the steps, runs every test and reports every problem together, so you fix the machine in one
-pass:
+The initial check, before the steps, runs every test and reports every problem together, so you fix
+the machine in one pass:
 
 - Ubuntu 24.04 or 26.04 LTS, amd64 architecture;
 - at least 900 MB of `MemTotal`: a 1 GB server reports a little under 1024, and must pass;
 - at least 10 GB free on `/`;
-- ports 80 and 443 free, because CloudGround's nginx must own them;
-- no other control panel installed.
+- ports 80 and 443 free, because CloudGround's nginx must own them.
 
 ## The packages {#packages}
 
 PHP comes in a different version per system: 8.4 from the `ondrej/php` repository on Ubuntu 24.04,
 8.5 from Ubuntu's own packages on 26.04. The distribution's PHP-FPM service is switched off: each
-site gets its own PHP-FPM process, started by the agent. Redis stays off too.
+site gets its own PHP-FPM process, started by the agent.
 
-restic and composer are downloaded at a pinned version and installed only if their SHA-256 matches
-the one written in the installer. wp-cli is checked against the SHA-512 published next to it.
+Redis is not installed: the sites' object cache uses APCu. A server upgraded from an earlier version
+keeps its Redis, switched off.
+
+Only missing packages are installed. Running the installer again does not upgrade the ones already
+there: that is the job of the system's own security updates or of your `apt upgrade`.
+
+restic 0.19.1, wp-cli 2.12.0 and composer 2.10.3 are downloaded at those versions and installed only
+if their SHA-256 matches the one written in the installer.
 
 ## The binaries {#binaries}
 
-{/* TODO(verify): the downloaded-release path (manifest signature, version, downgrade). Not verifiable on 2026-10-10: no signed public release exists yet. The local build and the rerun were verified. */}
+The script names one release and the SHA-256 of that release's `cgctl`. It downloads the release
+from GitHub Releases, never from the address that served the script, and runs `cgctl` only if it has
+that hash. `cgctl` then installs the binaries only when:
 
-With `CLOUDGROUND_LOCAL_BUILD` the installer copies the binaries from a local folder. Otherwise it
-downloads the release and installs it only when:
-
-- the `SHA256SUMS` manifest is signed by the ed25519 key in `CLOUDGROUND_RELEASE_PUBKEY`;
-- the manifest names the version asked for in `CLOUDGROUND_VERSION` (or any, with `latest`);
+- the `SHA256SUMS` manifest is signed by a release key compiled into `cgctl` (with
+  `CLOUDGROUND_RELEASE_PUBKEY`, by that key, which must also be one of them);
+- the manifest names the version the script asked for;
 - the version is not older than the one already installed, nor than the newest the panel has updated
-  itself to. `CLOUDGROUND_ALLOW_DOWNGRADE=1` lifts only that last check, for a deliberate step back;
+  itself to;
 - every binary matches its hash in the manifest.
 
-The downloaded systemd units go through the same manifest.
+The systemd units travel inside `cgctl`, so a verified `cgctl` makes them verified too.
+
+## Trust {#trust}
+
+Once you run the genuine script, the address that served it has no further say: it holds neither the
+files the script's hash names nor the signing key. But that address could serve a different script,
+and a script decides everything. To avoid trusting it, download the script of a named release and
+check it against the signed manifest with the release key published in this documentation:
+[verify the installer](/server/verify-the-installer).
+
+After the install, the panel's updates check releases with the keys compiled into the installed
+binaries.
 
 ## The choices on the server {#server-choices}
 
@@ -80,16 +98,25 @@ The downloaded systemd units go through the same manifest.
   you give the panel a domain: you can always reach it by IP.
 - **MariaDB.** The installer only starts it; the agent calculates its configuration from the
   server's memory and CPUs.
-- **Firewall.** If ufw is active, it opens 22, 80, 443, 443/udp and 8443.
+- **Firewall.** The installer never turns ufw on: many servers sit behind their provider's firewall,
+  and a script that turns ufw on can lock you out. If ufw is already active, it opens the ports sshd
+  listens on (those `sshd -T` reports, 22 when it reports none), 80, 443, 443/udp and 8443. If ufw is
+  installed but off, it changes nothing and, at the end, prints the commands that turn it on with
+  those ports open (see [firewall](/access/firewall#enable)).
 - **SFTP.** The sites' system users (`cg-site-*`) get SFTP only, locked in the site's folder. The
   [site shell](/access/site-shell) uses a separate login.
 - **Logs.** Site logs rotate daily, or at 1 GB, and 14 are kept.
 
 ## Running it again {#rerun}
 
-When it finds a panel already running, the installer upgrades it in place: the port checks let its
-own nginx through, the existing secrets and certificates stay, and the services restart on the new
-binaries.
+Each step first checks the machine and changes only what differs. So the installer of the release
+already installed repairs the server: what still matches stays as it is, and the services restart
+only when something they read has changed. `cgctl doctor` runs the same checks and reports what
+differs without changing anything.
+
+The installer of another release refuses to run over an installed panel and names
+`cgctl update --to <release>`: the installer has no snapshot and no rollback, an update has both (see
+[update CloudGround](/server/update-cloudground)).
 
 ## Next step {#next}
 

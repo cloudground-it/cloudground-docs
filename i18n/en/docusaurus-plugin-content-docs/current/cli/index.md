@@ -127,8 +127,10 @@ These commands run as root on the server and do not talk to the panel.
 
 | Command | What it does |
 | --- | --- |
-| `cgctl install [--plan] [--from <dir> \| --release <dir>] [--skip-packages] [--container]` | Installs CloudGround or upgrades it in place; `--plan` shows what would change without changing anything. It is the command `install.sh` runs. |
+| `cgctl install [--plan] [--from <dir> \| --release <dir>] [--skip-packages] [--container]` | Installs CloudGround, or repairs a server running the same release (another release goes in with `cgctl update`); `--plan` shows what would change without changing anything. It is the command `install.sh` runs. |
 | `cgctl doctor [--skip-packages] [--container]` | Checks every installation step and reports what does not match; exits with 1 when it finds differences, otherwise prints `no drift`. |
+| `cgctl update [--to <vX.Y.Z>] [--channel stable\|beta] [--check] [--timeout <duration>]` | Updates CloudGround to a newer signed release, with a snapshot and an automatic rollback, like the panel's **Update now**; `--check` only says what would be installed. See [update CloudGround](/server/update-cloudground). |
+| `cgctl uninstall [--plan] [--yes] [--remove-sites [--confirm <hostname>]] [--purge-packages]` | Removes CloudGround from the server, keeping the sites and their databases unless `--remove-sites`; `--plan` lists every action without changing anything. See [uninstall CloudGround](/server/uninstall-cloudground). |
 | `cgctl release verify <dir> [file ...]` | Checks a downloaded release against the signing keys built into cgctl; needs neither the panel nor a token. |
 
 ## Authentication {#authentication}
