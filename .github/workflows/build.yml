@@ -1,11 +1,13 @@
 name: build
 
-# Checks the pages against STANDARD.md, then builds the site in both
-# languages. Deployment is not set up yet.
+# Checks the pages against STANDARD.md, builds the site in both languages and,
+# on main, publishes it to GitHub Pages: cloudground.it, the website and the
+# guide under /docs.
 on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -19,8 +21,8 @@ jobs:
     name: check and build
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -28,3 +30,30 @@ jobs:
       - run: npm run check
       - run: npm run typecheck
       - run: npm run build
+      - if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: build/
+
+  deploy:
+    name: deploy to GitHub Pages
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    # Only this job may publish: Pages write and the OIDC token deploy-pages
+    # asks for, nothing else.
+    permissions:
+      pages: write
+      id-token: write
+    # A deploy that has started finishes; the next push waits for it.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      # Checks that Pages is enabled with the "GitHub Actions" source.
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - id: deploy
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
