@@ -552,3 +552,16 @@
     font-size: 16px;
   }
 }
+
+/* ---------- Icons ---------- */
+
+.home .more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ghLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

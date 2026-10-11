@@ -5,6 +5,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import CacheScope from './CacheScope';
 import Terminal from './Terminal';
 import useAnchor from './useAnchor';
+import Icon from '@site/src/components/Icon';
 import {BENCH_METHOD_URL, BENCH_URL, REPO} from '@site/src/data/site';
 import styles from './Home.module.css';
 
@@ -51,9 +52,7 @@ function Hero(): ReactNode {
         <div className={styles.actions}>
           <a href="#installa" className={`${styles.btn} ${styles.btnInk}`}>
             <Translate id="home.hero.install">Installa in un comando</Translate>
-            <span className="hud" aria-hidden="true">
-              →
-            </span>
+            <Icon name="arrow-right" />
           </a>
           <Link to="/docs" className={`${styles.btn} ${styles.btnLine}`}>
             <Translate id="home.hero.docs">Leggi la guida</Translate>
@@ -409,13 +408,15 @@ function Measures(): ReactNode {
           <Translate id="home.measures.date">Misura: 11 ottobre 2026</Translate>
         </li>
         <li>
-          <a href={BENCH_URL}>
-            <Translate id="home.measures.data">I dati ↗</Translate>
+          <a href={BENCH_URL} className={styles.ghLink}>
+            <Icon name="github" size={14} />
+            <Translate id="home.measures.data">I dati</Translate>
           </a>
         </li>
         <li>
-          <a href={BENCH_METHOD_URL}>
-            <Translate id="home.measures.method">Il metodo ↗</Translate>
+          <a href={BENCH_METHOD_URL} className={styles.ghLink}>
+            <Icon name="github" size={14} />
+            <Translate id="home.measures.method">Il metodo</Translate>
           </a>
         </li>
       </ul>
@@ -462,7 +463,7 @@ function Install(): ReactNode {
           </ol>
           <Link to="/docs/tutorials/install" className={styles.more}>
             <Translate id="home.install.guide">La guida all’installazione</Translate>
-            <span aria-hidden="true"> →</span>
+            <Icon name="arrow-right" />
           </Link>
         </div>
         <div className={styles.installTerm}>
@@ -501,11 +502,10 @@ function Closing(): ReactNode {
         <div className={styles.actions}>
           <a href="#installa" className={`${styles.btn} ${styles.btnInk} ${styles.btnBig}`}>
             <Translate id="home.closing.install">Installa CloudGround</Translate>
-            <span className="hud" aria-hidden="true">
-              →
-            </span>
+            <Icon name="arrow-right" size={18} />
           </a>
           <a href={REPO} className={`${styles.btn} ${styles.btnLine} ${styles.btnBig}`}>
+            <Icon name="github" size={20} />
             <Translate id="home.closing.github">Il codice su GitHub</Translate>
           </a>
         </div>

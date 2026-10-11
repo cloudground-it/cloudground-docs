@@ -5,6 +5,7 @@ import {useCodeBlockContext} from '@docusaurus/theme-common/internal';
 import Container from '@theme/CodeBlock/Container';
 import Content from '@theme/CodeBlock/Content';
 import type {Props} from '@theme/CodeBlock/Layout';
+import Icon from '@site/src/components/Icon';
 
 async function copyToClipboard(text: string) {
   if (navigator.clipboard) {
@@ -31,6 +32,7 @@ function CopyButton({text}: {text: string}): ReactNode {
       className="hud cg-copy"
       onClick={onClick}
       aria-label={translate({id: 'theme.CodeBlock.copyButtonAriaLabel', message: 'Copia il codice negli appunti'})}>
+      <Icon name={copied ? 'check' : 'copy'} size={14} />
       <span aria-live="polite">
         {copied
           ? translate({id: 'theme.CodeBlock.copied', message: 'Copiato'})

@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useId, useRef, useState, type KeyboardEve
 import clsx from 'clsx';
 import NavbarItem from '@theme/NavbarItem';
 import type {Props} from '@theme/NavbarItem/DropdownNavbarItem/Desktop';
+import Icon from '@site/src/components/Icon';
 
 function menuLinks(menu: HTMLUListElement | null): HTMLAnchorElement[] {
   return menu ? Array.from(menu.querySelectorAll<HTMLAnchorElement>('a[href]')) : [];
@@ -91,9 +92,7 @@ export default function DropdownNavbarItemDesktop({items, position, className, o
         onClick={() => setOpen((v) => !v)}
         onKeyDown={onButtonKeyDown}>
         <span className="cg-dropdown__label">{props.children ?? props.label}</span>
-        <svg className="cg-dropdown__chevron" viewBox="0 0 10 6" width="10" height="6" aria-hidden="true">
-          <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.4" />
-        </svg>
+        <Icon name="chevron-down" size={14} className="cg-dropdown__chevron" />
       </button>
       <ul id={menuId} ref={menuRef} className="dropdown__menu cg-dropdown__menu" onKeyDown={onMenuKeyDown}>
         {items.map((childItemProps, i) => (

@@ -9,6 +9,7 @@ import NavbarItem, {type Props as NavbarItemConfig} from '@theme/NavbarItem';
 import NavbarColorModeToggle from '@theme/Navbar/ColorModeToggle';
 import NavbarMobileSidebarToggle from '@theme/Navbar/MobileSidebar/Toggle';
 import SearchBar from '@theme/SearchBar';
+import Icon from '@site/src/components/Icon';
 import LogoMark from '@site/src/components/LogoMark';
 
 function NavbarItems({items}: {items: NavbarItemConfig[]}): ReactNode {
@@ -60,6 +61,7 @@ export default function NavbarContent(): ReactNode {
         </Link>
       </div>
       <div className="cg-nav__search">
+        <Icon name="search" className="cg-nav__searchicon" />
         <SearchBar />
       </div>
       <div className="cg-nav__links">

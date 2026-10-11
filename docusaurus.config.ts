@@ -1,6 +1,7 @@
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import type {PrismTheme} from 'prism-react-renderer';
+import path from 'node:path';
 
 const REPO = 'https://github.com/cloudground-it/cloudground';
 const DOCS_REPO = 'https://github.com/cloudground-it/cloudground-docs';
@@ -104,6 +105,23 @@ const config: Config = {
     ],
   ],
 
+  plugins: [
+    // The search results draw their icons from a module of HTML strings:
+    // swap it for ours (src/components/Icon/searchHitIcons.ts).
+    () => ({
+      name: 'search-icons',
+      configureWebpack: (_config, _isServer, {currentBundler}) => ({
+        plugins: [
+          new currentBundler.instance.NormalModuleReplacementPlugin(/^\.\/icons$/, (resource) => {
+            if (/docusaurus-search-local[\\/].*[\\/]SearchBar$/.test(resource.context)) {
+              resource.request = path.resolve(__dirname, 'src/components/Icon/searchHitIcons.ts');
+            }
+          }),
+        ],
+      }),
+    }),
+  ],
+
   themes: [
     '@docusaurus/theme-mermaid',
     [
@@ -150,7 +168,7 @@ const config: Config = {
         {type: 'docSidebar', sidebarId: 'api', position: 'left', label: 'API'},
         {href: `${REPO}/releases`, position: 'left', label: 'Novità', className: 'cg-nav-releases'},
         {type: 'localeDropdown', position: 'right', className: 'cg-locale'},
-        {href: REPO, position: 'right', label: 'GitHub ↗', className: 'cg-nav-github'},
+        {href: REPO, position: 'right', label: 'GitHub', className: 'cg-nav-github'},
       ],
     },
     footer: {
