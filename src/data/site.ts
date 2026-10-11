@@ -19,3 +19,6 @@ export const INSTALL_COMMAND = 'curl -fsSL https://get.cloudground.it | sudo bas
  */
 export const BENCH_URL = `${REPO}/blob/main/bench/phase-10-fresh.md`;
 export const BENCH_METHOD_URL = `${REPO}/blob/main/bench/README.md`;
+
+/** True for an address on GitHub: such links carry the GitHub mark. */
+export const isGitHub = (href: string | undefined): boolean => !!href && href.startsWith('https://github.com/');

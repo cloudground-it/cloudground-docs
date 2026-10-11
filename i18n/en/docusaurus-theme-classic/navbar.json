@@ -23,8 +23,8 @@
     "message": "What's new",
     "description": "Navbar item with label Novità"
   },
-  "item.label.GitHub ↗": {
-    "message": "GitHub ↗",
-    "description": "Navbar item with label GitHub ↗"
+  "item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar item with label GitHub"
   }
 }

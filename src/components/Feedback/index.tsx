@@ -1,5 +1,6 @@
 import React, {useState, type ReactNode} from 'react';
 import Translate from '@docusaurus/Translate';
+import Icon from '@site/src/components/Icon';
 
 const ISSUES = 'https://github.com/cloudground-it/cloudground-docs/issues';
 
@@ -34,7 +35,12 @@ export default function Feedback(): ReactNode {
           <Translate
             id="cg.feedback.thanksNo"
             values={{
-              github: <a href={ISSUES}>GitHub</a>,
+              github: (
+                <a href={ISSUES} className="cg-ghlink">
+                  <Icon name="github" />
+                  GitHub
+                </a>
+              ),
             }}>
             {'Grazie: dicci cosa manca su {github}.'}
           </Translate>

@@ -64,7 +64,7 @@
     "description": "The copy button label on code blocks"
   },
   "cg.editThisPage": {
-    "message": "Edit this page ↗"
+    "message": "Edit this page"
   },
   "cg.toc.title": {
     "message": "On this page"
@@ -301,7 +301,7 @@
     "description": "The ARIA label for close button of mobile sidebar"
   },
   "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
-    "message": "← Back to main menu",
+    "message": "Back to main menu",
     "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
   },
   "theme.docs.sidebar.expandButtonTitle": {
@@ -713,10 +713,10 @@
     "message": "Measured: 11 October 2026"
   },
   "home.measures.data": {
-    "message": "The data ↗"
+    "message": "The data"
   },
   "home.measures.method": {
-    "message": "The method ↗"
+    "message": "The method"
   },
   "home.install.step1": {
     "message": "A freshly created Ubuntu 24.04 or 26.04 server, with root access."

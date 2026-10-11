@@ -64,7 +64,7 @@
     "description": "The copy button label on code blocks"
   },
   "cg.editThisPage": {
-    "message": "Modifica questa pagina ↗"
+    "message": "Modifica questa pagina"
   },
   "cg.toc.title": {
     "message": "In questa pagina"
@@ -301,7 +301,7 @@
     "description": "The ARIA label for close button of mobile sidebar"
   },
   "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
-    "message": "← Indietro al menu principale",
+    "message": "Indietro al menu principale",
     "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
   },
   "theme.docs.sidebar.toggleSidebarButtonAriaLabel": {

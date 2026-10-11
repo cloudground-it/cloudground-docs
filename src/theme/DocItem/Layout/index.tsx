@@ -11,6 +11,7 @@ import TOCItems from '@theme/TOCItems';
 import type {Props} from '@theme/DocItem/Layout';
 import {DocHeader, DocMetaStrip} from '@site/src/components/DocHeader';
 import Feedback from '@site/src/components/Feedback';
+import Icon from '@site/src/components/Icon';
 
 function EditLink(): ReactNode {
   const {metadata} = useDoc();
@@ -18,8 +19,9 @@ function EditLink(): ReactNode {
     return null;
   }
   return (
-    <a className="hud cg-editlink" href={metadata.editUrl} target="_blank" rel="noopener noreferrer">
-      <Translate id="cg.editThisPage">Modifica questa pagina ↗</Translate>
+    <a className="hud cg-editlink cg-ghlink" href={metadata.editUrl} target="_blank" rel="noopener noreferrer">
+      <Icon name="github" />
+      <Translate id="cg.editThisPage">Modifica questa pagina</Translate>
     </a>
   );
 }
