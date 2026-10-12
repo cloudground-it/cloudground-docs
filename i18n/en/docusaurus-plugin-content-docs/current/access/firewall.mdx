@@ -1,61 +1,64 @@
 ---
 title: Firewall
-description: Turn the firewall on from the panel without locking yourself out, then open, block or limit to one address a TCP port of the server.
+description: Turn on the firewall from the panel without locking yourself out, then open a TCP port, block it, or restrict it to a single address.
 type: how-to
 prerequisites:
   - An administrator account
-  - The server's firewall (ufw) installed; active for the rules to take effect
+  - The server's firewall (ufw) installed, and active for rules to take effect
 version: v0.3.0
 last_verified: unverified
 sidebar_position: 6
 ---
 
-The **Firewall** page, in the **Server** group, shows whether the firewall is active and its rules, as
-the system reports them. Administrators add and remove rules; read-only accounts only see them.
+The **Firewall** page, under the **Server** group, shows whether the firewall is active and lists its
+rules as the system reports them. Administrators can add and remove rules. Read-only accounts can
+only view them.
 
-The installer never turns the firewall on: many servers already sit behind their provider's
-firewall, and a script that turns ufw on can lock you out, for example when SSH listens on another
-port. The choice stays yours: since v0.2.0 you make it from the panel, with one button. On a freshly
-created cloud server ufw is usually installed but off, and the page says **inactive**. While it is inactive, rules are saved but have no effect: the page shows them with
+The installer never turns on the firewall. Many servers already sit behind their provider's firewall,
+and a script that enables ufw can lock you out, for example when SSH runs on a non-standard port. The
+decision is yours. Since v0.2.0, you can make it from the panel with a single button. On a freshly
+created cloud server, ufw is usually installed but off, and the page shows **inactive**. While it's
+inactive, rules are saved but have no effect. The page lists them with the note
 *The firewall is inactive: these rules are stored, and apply only once it is enabled.*
 
-*Since v0.3.0.* Addresses that fail to sign in too often are blocked by a separate table, nftables'
-`inet cloudground`, which does not depend on ufw: it works with the firewall off too. See [block
-addresses that keep failing to sign in](/docs/access/block-addresses).
+*Since v0.3.0.* Addresses that fail to sign in too many times are blocked through a separate
+nftables table, `inet cloudground`, which doesn't depend on ufw. It works even with the firewall off.
+See [Block addresses that keep failing to sign in](/docs/access/block-addresses).
 
 ## What the installer does {#installer}
 
-- **ufw active**: it opens the ports SSH listens on (those `sshd -T` reports; 22 when it reports
-  none), 80/tcp, 443/tcp, 443/udp (HTTP/3) and 8443/tcp.
-- **ufw installed but off**: it changes nothing, and at the end of the installation prints the
-  commands that turn it on with SSH, the sites and the panel open.
-- **ufw not installed**: nothing.
+- **ufw active**: it opens the ports SSH listens on (as reported by `sshd -T`, or 22 if it reports
+  none), plus 80/tcp, 443/tcp, 443/udp (HTTP/3) and 8443/tcp.
+- **ufw installed but off**: it changes nothing. At the end of the install, it prints the commands
+  that enable ufw with SSH, the sites and the panel allowed through.
+- **ufw not installed**: it does nothing.
 
-## Turn the firewall on {#enable}
+## Turn on the firewall {#enable}
 
-*Since v0.2.0.* You need an administrator account, signed in with its own session: an API token
-cannot turn the firewall on.
+*Since v0.2.0.* You need an administrator account signed in with its own browser session. An API
+token can't turn on the firewall.
 
-1. Open **Firewall**. With ufw installed and off, the page shows the **Turn on the firewall** section.
-2. Read the rules it lists, each with what it carries:
-   - the port sshd really listens on (the one `sshd -T` reports; 22 when it reports none):
-     *SSH, the port sshd listens on*;
-   - `80/tcp`: *Sites over HTTP*;
-   - `443/tcp`: *Sites over HTTPS*;
-   - `443/udp`: *Sites over HTTP/3*;
-   - `8443/tcp`: *This panel*.
+1. Open **Firewall**. If ufw is installed and off, the page shows the **Turn on the firewall**
+   section.
+2. Review the rules it lists, each with a note on the traffic it allows:
+   - The port sshd is actually listening on (as reported by `sshd -T`, or 22 if it reports none):
+     *SSH, the port sshd listens on*
+   - `80/tcp`: *Sites over HTTP*
+   - `443/tcp`: *Sites over HTTPS*
+   - `443/udp`: *Sites over HTTP/3*
+   - `8443/tcp`: *This panel*
 3. Press **Turn on the firewall** and confirm.
 
-The panel allows every rule, in order, and only then turns ufw on. If a rule fails, it stops and ufw
-stays off. At the end the page says **active**: every other incoming port is closed. The operation
-lands in the **Audit log** as `firewall.enable`, with the rules allowed.
+The panel adds each allow rule in order and only then enables ufw. If any rule fails, it stops and ufw
+stays off. When it's done, the page shows **active** and every other incoming port is closed. The
+action is recorded in the **Audit log** as `firewall.enable`, with the rules it allowed.
 
-If SSH moved to another port after you opened the page, the panel refuses and leaves ufw alone:
-reload the page, check the new rules and try again.
+If SSH moved to a different port after you opened the page, the panel refuses and leaves ufw
+untouched. Reload the page, review the updated rules and try again.
 
-### As root, on the server {#enable-from-the-shell}
+### Turn it on as root from the shell {#enable-from-the-shell}
 
-You can also run, as root, the commands the installer printed. They have this shape, with one
+You can also run the commands the installer printed, as root. They look like this, with one
 `ufw allow <port>/tcp` for each port SSH listens on:
 
 ```bash prompt
@@ -63,70 +66,72 @@ sshd -T | grep '^port '
 ufw allow 22/tcp && ufw allow 80/tcp && ufw allow 443/tcp && ufw allow 8443/tcp && ufw allow 443/udp && ufw enable
 ```
 
-The first line shows SSH's ports: if it is not just 22, put yours in its place.
+The first line shows which ports SSH uses. If it's anything other than just 22, substitute your
+ports.
 
-:::danger[SSH's port first]
+:::danger[Allow the SSH port first]
 
-`ufw enable` without a rule for the port SSH listens on cuts your connection and every later access to
-the server.
+Running `ufw enable` without a rule for SSH's port drops your connection and blocks every future
+connection to the server.
 
 :::
 
-Once the firewall is active, the page says **active** and the saved rules apply.
+Once the firewall is active, the page shows **active** and the saved rules take effect.
 
 ## Open a port {#allow-a-port}
 
 1. Open **Firewall**.
-2. In **Add or remove a rule**, choose the **Action** **Allow port**.
-3. Type the **Port**, 1 to 65535.
-4. To open it to one address only, type the IP or the network (for example `203.0.113.7` or
-   `203.0.113.0/24`) into **Only from this IP**.
+2. In **Add or remove a rule**, set **Action** to **Allow port**.
+3. Enter the **Port**, from 1 to 65535.
+4. To open it to a single address only, enter the IP or network (for example `203.0.113.7` or
+   `203.0.113.0/24`) in **Only from this IP**.
 5. Press **Apply**.
 
-From the panel, rules are always TCP.
+Rules created from the panel are always TCP.
 
 ## Block a port {#deny-a-port}
 
-As above, with the **Action** **Deny port**. With **Only from this IP** you block the port for that
-address only.
+Follow the same steps with **Action** set to **Deny port**. If you fill in **Only from this IP**, the
+port is blocked for that address only.
 
 ## Remove a rule {#delete-a-rule}
 
-Choose the **Action** **Delete rule**, with the same **Port** and the same **Only from this IP** as
-the rule to remove, and press **Apply**. The panel removes the allow and the deny rule of exactly
-that shape, and leaves the port's other rules alone.
+Set **Action** to **Delete rule**, enter the same **Port** and **Only from this IP** as the rule you
+want to remove, and press **Apply**. The panel removes the allow and deny rules that match exactly,
+and leaves the port's other rules alone.
 
-## The ports that stay open {#essential-ports}
+## Ports that always stay open {#essential-ports}
 
-The panel refuses any rule that would lock you or the sites out:
+The panel rejects any rule that would lock you or your sites out:
 
-- the ports SSH listens on (usually 22);
-- 80 and 443, the sites';
-- 8443, the panel's.
+- the ports SSH listens on (usually 22)
+- 80 and 443, used by the sites
+- 8443, used by the panel
 
-For these ports you cannot remove the rule or block them for everyone. You can block them for a
+You can't remove the rule for these ports or block them for everyone. You can block them for a
 single address, or add allow rules.
 
-:::warning[A block on these ports cannot be removed from the panel]
+:::warning[You can't remove a block on these ports from the panel]
 
-**Delete rule** on these ports is refused too, including the one that blocks a single address. To
-remove it you need the server, as root, for example
+The panel also rejects **Delete rule** on these ports, even for a rule that blocks a single address.
+To remove one, run a command on the server as root, for example
 `ufw delete deny from 203.0.113.9 to any port 8443 proto tcp`.
 
 :::
 
-## From the API {#from-the-api}
+## Use the API {#from-the-api}
 
-`GET /api/firewall` reads the status. `POST /api/firewall/rule` with
-`{"action": "allow", "port": 3306, "proto": "tcp", "from": "203.0.113.7"}` applies a rule; `action`
-is `allow`, `deny` or `delete`, `proto` is `tcp` or `udp`. Every rule lands in the **Audit log**.
+`GET /api/firewall` returns the status. `POST /api/firewall/rule` with
+`{"action": "allow", "port": 3306, "proto": "tcp", "from": "203.0.113.7"}` applies a rule. `action`
+is `allow`, `deny` or `delete`, and `proto` is `tcp` or `udp`. Every rule is recorded in the
+**Audit log**.
 
-With ufw off, `GET /api/firewall` also reports `plan`, the rules to allow before turning it on.
+When ufw is off, `GET /api/firewall` also returns `plan`, the rules to allow before enabling it.
 `POST /api/firewall/enable` with `{"expect": ["22/tcp", "80/tcp", "443/tcp", "443/udp", "8443/tcp"]}`
-turns it on: `expect` is the list you read, and when it is no longer the current one the answer is
-**409**. These firewall routes are for sessions only: a token gets **403**.
+enables it. `expect` is the list you reviewed. If it no longer matches the current plan, the response
+is **409**. These firewall routes only accept browser sessions. A token gets **403**.
 
 ## Next step {#next}
 
-Keep a way back in should you lose the password:
-[recover administrator access](./recover-admin-access.mdx).
+Keep a way back in if you ever lose your password:
+[Recover administrator access](./recover-admin-access.mdx).

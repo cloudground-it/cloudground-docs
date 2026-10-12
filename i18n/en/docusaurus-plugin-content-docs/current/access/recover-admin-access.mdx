@@ -1,6 +1,6 @@
 ---
 title: Recover administrator access
-description: Get back into the panel from the server when you have lost the password or the phone with two-step verification.
+description: Get back into the panel from the server if you've lost your password, or the phone you use for two-step verification.
 type: how-to
 prerequisites:
   - Root access to the server over SSH
@@ -9,9 +9,9 @@ last_verified: 2026-10-10
 sidebar_position: 7
 ---
 
-When nobody can sign in to the panel any more, root access to the server is the credential. The
-`panel-api recover-admin` command opens the panel's database directly: it works with the panel
-running, stopped, or with the installation never finished.
+If nobody can sign in to the panel anymore, root access to the server is your way back in. The
+`panel-api recover-admin` command works directly on the panel's database, whether the panel is
+running, stopped, or was never fully set up.
 
 ## List the accounts {#list-the-accounts}
 
@@ -21,8 +21,8 @@ Connect to the server as root and run:
 panel-api recover-admin
 ```
 
-The command lists every account with its role and tells you to run it again with
-`--email <address>` to reset one. It never picks one by itself.
+The command lists every account with its role, and tells you to run it again with
+`--email <address>` to reset one. It never picks an account for you.
 
 ## Reset the password {#reset-the-password}
 
@@ -30,32 +30,32 @@ The command lists every account with its role and tells you to run it again with
 panel-api recover-admin --email <email>
 ```
 
-The command generates a new 24-character password and prints it **once**, with the account. You do
-not type it: that way it never reaches the shell history. Sign in with that password and change it
+The command generates a new 24-character password and prints it **once**, alongside the account. You
+never type it, so it never ends up in your shell history. Sign in with that password, then change it
 from **Security**.
 
-The reset closes all the account's sessions and revokes its API tokens. If the account had two-step
-verification, it stays on and the command reminds you.
+The reset ends all of the account's sessions and revokes its API tokens. If the account had two-step
+verification, it stays on, and the command reminds you of that.
 
-## You lost the phone too {#lost-device}
+## If you've also lost your phone {#lost-device}
 
 ```bash prompt
 panel-api recover-admin --email <email> --disable-2fa
 ```
 
-It also turns two-step verification off and says whether it was on. Once signed in, turn it on again
-from **Security** with the new phone.
+This also turns off two-step verification and tells you whether it was on. Once you're signed in,
+turn it back on from **Security** with your new phone.
 
 ## Special cases {#special-cases}
 
-- **No account exists yet.** With `--email` the command creates that administrator; without it, it
-  stops and asks for `--email`.
-- **The account is disabled.** When no enabled administrator is left, the command enables the
-  administrator you reset. Any other disabled account stays disabled, and the command says so.
-- **The database is not in the default place.** Name the file with `--state <path>`; the default is
-  `/var/lib/cloudground/state.db`.
+- **No accounts exist yet.** With `--email`, the command creates that administrator. Without it, the
+  command stops and asks for `--email`.
+- **The account is disabled.** If there's no enabled administrator left, the command re-enables the
+  administrator you reset. Any other disabled account stays disabled, and the command tells you so.
+- **The database isn't in the default location.** Point to the file with `--state <path>`. The
+  default is `/var/lib/cloudground/state.db`.
 
-The command works only as root, and every step lands in the **Audit log** with the actor
+The command only runs as root, and every step is recorded in the **Audit log** with the actor
 `root (console)`.
 
 ## Next step {#next}

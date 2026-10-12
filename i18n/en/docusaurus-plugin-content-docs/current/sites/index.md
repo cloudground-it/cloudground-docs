@@ -12,7 +12,7 @@ hide_table_of_contents: true
   <Card to="/docs/sites/domains-and-certificates" title="Domains and certificates" />
   <Card to="/docs/sites/edit-routing" title="Edit the routing" />
   <Card to="/docs/sites/scheduled-tasks" title="Scheduled tasks" />
-  <Card to="/docs/sites/resource-usage-and-limits" title="A site's resources and limits" />
-  <Card to="/docs/sites/uptime-monitoring" title="Check that a site answers" />
+  <Card to="/docs/sites/resource-usage-and-limits" title="Site resources and limits" />
+  <Card to="/docs/sites/uptime-monitoring" title="Monitor a site's uptime" />
   <Card to="/docs/sites/delete-a-site" title="Delete a site" />
 </Cards>

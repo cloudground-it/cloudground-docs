@@ -1,91 +1,91 @@
 ---
 title: Block addresses that keep failing to sign in
-description: Let the server block, by itself, the addresses that fail to sign in to SSH, WordPress or the panel too many times, and manage the blocks and the addresses that are always allowed.
+description: Have the server automatically block addresses that fail too many sign-ins to SSH, WordPress or the panel, and manage blocks and always-allowed addresses.
 type: how-to
 prerequisites:
-  - An administrator account (read-only to look)
+  - An administrator account (read-only accounts can view)
   - The nftables package on the server (the installer and updates install it)
 version: v0.3.0
 last_verified: unverified
 sidebar_position: 6.5
 ---
 
-Anyone who tries passwords in bulk on SSH, `wp-login.php`, `xmlrpc.php` or the panel is blocked for a
-while: their packets are dropped on every port of the server. The **Blocking** page, in the **Server**
-group, shows the blocked addresses and the always allowed ones, and changes their settings. How it works
-inside is in [address blocking](/docs/explanation/blocking).
+Anyone who brute-forces passwords against SSH, `wp-login.php`, `xmlrpc.php` or the panel gets blocked
+for a while: the server drops their packets on every port. The **Blocking** page, under the
+**Server** group, lists blocked and always-allowed addresses and lets you change the settings. For
+how it works under the hood, see [address blocking](/docs/explanation/blocking).
 
 ## Automatic blocking {#automatic-blocking}
 
-Failed sign-ins count towards a block in three places:
+Failed sign-ins in three places count towards a block:
 
-- **SSH**: the passwords and keys sshd refuses;
-- **WordPress**: wrong passwords on `wp-login.php`, on XML-RPC and for application passwords, and wrong
-  codes of the site's [two-factor sign-in](/docs/access/wordpress-two-factor);
-- **the panel**: wrong passwords and wrong two-step verification codes.
+- **SSH**: passwords and keys that sshd rejects.
+- **WordPress**: wrong passwords on `wp-login.php`, over XML-RPC and for application passwords, plus
+  wrong codes for the site's [two-factor sign-in](/docs/access/wordpress-two-factor).
+- **The panel**: wrong passwords and wrong two-step verification codes.
 
-An address over the threshold is blocked. The **Automatic blocking** box has these settings:
+An address that crosses the threshold is blocked. The **Automatic blocking** box has these settings:
 
-| Field | Default | Bounds |
+| Field | Default | Range |
 | --- | --- | --- |
 | **Block addresses that keep failing to sign in** | on | |
 | **Failed sign-ins** | 6 | 3 to 100 |
 | **Within (minutes)** | 10 | 1 to 1440 |
 | **Block for (minutes)** | 60 | 1 to 43200 |
 
-An IPv6 address counts together with its whole /64. The box also says which readers are on (**SSH:
-read**, **WordPress: read**, **Panel sign-in: counted**). If the server does not enforce the list, the top
-of the page says **The block list is not enforced**.
+An IPv6 address is counted together with its whole /64. The box also shows which sources are being
+read (**SSH: read**, **WordPress: read**, **Panel sign-in: counted**). If the server isn't enforcing
+the list, the top of the page shows **The block list is not enforced**.
 
-These are never blocked: loopback, the server's own addresses and the addresses on the always allowed
-list.
+The following are never blocked: loopback, the server's own addresses and anything on the
+always-allowed list.
 
-## Always allow your address {#allow-yours}
+## Always allow your own address {#allow-yours}
 
-Do this first: a few mistyped passwords must never lock you out.
+Do this first, so a few mistyped passwords can never lock you out.
 
-1. Open **Blocking**. The page shows **Your address** at the top.
-2. In the **Always allowed** box press **Always allow it**, or type an **Address or network** (an IP
+1. Open **Blocking**. The top of the page shows **Your address**.
+2. In the **Always allowed** box, press **Always allow it**, or enter an **Address or network** (an IP
    address, or a network such as `203.0.113.0/24`) and press **Allow**.
 
-An allowed address is never blocked, however many sign-ins fail from it. To remove it, press the bin
-icon on its row and confirm: its failed sign-ins count again.
+An allowed address is never blocked, no matter how many sign-ins fail from it. To remove it, press
+the bin icon on its row and confirm. Its failed sign-ins start counting again.
 
-## Block or unblock by hand {#manual}
+## Block or unblock manually {#manual}
 
-- To block, in the **Blocked addresses** box press **Block an address**, type the **Address or
-  network**, choose **For** (**One hour**, **One day**, **One week** or **Until removed**) and save.
-  The address's packets are dropped at once, on every port.
-- To unblock, press **Unblock** on its row and confirm. Its packets get through again at once, and its
-  failed sign-ins count from zero.
+- To block, press **Block an address** in the **Blocked addresses** box, enter the
+  **Address or network**, choose a duration under **For** (**One hour**, **One day**, **One week** or
+  **Until removed**) and save. Packets from that address are dropped immediately, on every port.
+- To unblock, press **Unblock** on its row and confirm. Packets get through again immediately, and the
+  failed sign-in count resets to zero.
 
-Each row says **Why** (**by hand**, **SSH**, **WordPress** or **panel sign-in**) and **Until**. The panel
-refuses a block that holds your address, the server, loopback or an allowed address, and a block wider
-than /8 for IPv4 or /16 for IPv6.
+Each row shows **Why** (**by hand**, **SSH**, **WordPress** or **panel sign-in**) and **Until**. The
+panel rejects a block that includes your address, the server, loopback or an allowed address, and any
+block wider than /8 for IPv4 or /16 for IPv6.
 
-## If you locked yourself out {#locked-out}
+## If you've locked yourself out {#locked-out}
 
-Get in from your provider's console and, as root on the server:
+Sign in through your provider's console and run this on the server as root:
 
 ```bash prompt
 cgctl blocklist unblock <address>
 ```
 
-`<address>` is your address. On the server `cgctl` talks to the API socket, which has no address to block,
-so the command works even when you are blocked from the panel and from SSH.
+`<address>` is your IP address. On the server, `cgctl` talks to the API socket, which has no address
+that could be blocked. The command works even when you're blocked from both the panel and SSH.
 
-## With cgctl or the API {#with-cgctl-or-the-api}
+## Use cgctl or the API {#with-cgctl-or-the-api}
 
 | Command | What it does |
 | --- | --- |
 | `cgctl blocklist` | Prints the block list. |
-| `cgctl blocklist block <address-or-network> [minutes]` | Blocks; without minutes, until removed. |
-| `cgctl blocklist unblock <address-or-network>` | Removes the block. |
-| `cgctl blocklist allow <address-or-network>` | Always allows. |
-| `cgctl blocklist disallow <address-or-network>` | Takes the address off the always allowed list. |
+| `cgctl blocklist block <address-or-network> [minutes]` | Blocks an address. Without minutes, the block lasts until removed. |
+| `cgctl blocklist unblock <address-or-network>` | Removes a block. |
+| `cgctl blocklist allow <address-or-network>` | Adds an address to the always-allowed list. |
+| `cgctl blocklist disallow <address-or-network>` | Removes an address from the always-allowed list. |
 
-The changes are session-only routes: `cgctl` signs in with an email and password (and the 2FA code), as
-for tokens, never with a token. The routes are in [the API](/docs/api).
+Changes go through session-only routes. Like the token commands, `cgctl` signs in with an email and
+password (plus the 2FA code), never with a token. The routes are documented in [the API](/docs/api).
 
 ## Next step {#next}
 

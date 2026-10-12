@@ -1,11 +1,11 @@
 ---
 title: Install CloudGround
-description: From a freshly created Ubuntu server to a panel answering on port 8443, with your administrator account.
+description: Go from a fresh Ubuntu server to a running panel on port 8443, signed in with your own administrator account.
 type: tutorial
 prerequisites:
-  - A freshly created Ubuntu 24.04 or 26.04 LTS server, amd64, with at least 1 GB of RAM and 10 GB of free disk
+  - A fresh Ubuntu 24.04 or 26.04 LTS server (amd64) with at least 1 GB of RAM and 10 GB of free disk space
   - Root access over SSH
-  - Ports 80 and 443 free
+  - Nothing else listening on ports 80 and 443
 version: v0.1.0
 last_verified: unverified
 sidebar_position: 1
@@ -15,44 +15,44 @@ meta:
   level: Basic
 ---
 
-In this tutorial you install CloudGround on a new server and create the administrator account. At
-the end you open the panel in your browser.
+This tutorial walks you through installing CloudGround on a new server and creating the
+administrator account. By the end, you have the panel open in your browser.
 
 :::warning[Use a dedicated server]
 
-The installer takes over nginx, PHP, MariaDB and the SSH configuration. Install it only on a new
-server, or on one you can rebuild.
+The installer takes over nginx, PHP, MariaDB and the SSH configuration. Only run it on a new server,
+or on one you can rebuild from scratch.
 
 :::
 
 ## Run the installer {#run-the-installer}
 
-Sign in to the server as root:
+Connect to the server as root:
 
 ```bash
 ssh root@<server-ip>
 ```
 
-`<server-ip>` is the server's public address. Then run the installer:
+Replace `<server-ip>` with the server's public IP address. Then run the installer:
 
 ```bash prompt
 curl -fsSL https://get.cloudground.it | bash
 ```
 
-:::note[The installer's address]
+:::note[Installer URL]
 
-The same script also answers at `https://cloudground-it.github.io/cloudground/install.sh`, the GitHub
-Pages address that `get.cloudground.it` is served from.
+The same script is also available at `https://cloudground-it.github.io/cloudground/install.sh`.
+That is the GitHub Pages address behind `get.cloudground.it`.
 
 :::
 
-The script installs CloudGround v0.3.1. It downloads the release from GitHub, runs its `cgctl` only
-if it has the SHA-256 the script names, and `cgctl` installs nothing whose signed manifest does not
-verify. To check the script itself before you run it, see
-[verify the installer](/docs/server/verify-the-installer).
+The script installs CloudGround v0.3.1. It downloads the release from GitHub and only runs the
+bundled `cgctl` if its SHA-256 matches the one pinned in the script. `cgctl` in turn refuses to
+install anything whose signed manifest fails verification. To check the script itself before you
+run it, see [Verify the installer](/docs/server/verify-the-installer).
 
-It checks the machine first, then shows nine steps, each with its duration (below without the times,
-which depend on the server):
+The installer checks the machine first, then runs nine steps and prints how long each one took. The
+output below leaves out the timings, since they vary by server:
 
 ```text
   ✓   1/9  Installing nginx, PHP, MariaDB, restic
@@ -66,12 +66,13 @@ which depend on the server):
   ✓   9/9  Log rotation and certificate renewal
 ```
 
-If the machine check finds problems (system, architecture, memory, disk, ports in use), it lists them
-all together and stops without touching anything. Fix them and run the same command again.
+If the pre-flight check finds problems (OS, architecture, memory, disk space, ports already in use),
+it reports all of them at once and exits without changing anything. Fix them and run the same
+command again.
 
 ## Open the setup link {#open-the-setup-link}
 
-At the end the installer prints an address like this one:
+When it finishes, the installer prints a URL like this:
 
 ```text
   ✓  CloudGround is running
@@ -83,25 +84,27 @@ At the end the installer prints an address like this one:
      until you issue a real one. That is expected on first boot.
 ```
 
-When the server's firewall (ufw) is off, two more lines follow: the installer does not turn it on, it
-prints the commands that would, with SSH, the sites and the panel open. Leave them for now; the
-[firewall](/docs/access/firewall#enable) page explains them.
+If the server's firewall (ufw) is disabled, you also see two extra lines. The installer does not
+enable ufw for you. Instead, it prints the commands that would enable it with SSH, the sites and the
+panel allowed through. You can ignore them for now. The [firewall](/docs/access/firewall#enable)
+page covers them.
 
-Open the link in your browser. The browser warns that the certificate is not valid: it is
-self-signed, which is expected on first boot. Accept the warning for this address.
+Open the link in your browser. You get a certificate warning because the certificate is self-signed.
+That is expected on first boot, so accept the warning for this address.
 
 ## Create the administrator account {#create-the-administrator}
 
-The **First sign-in** page asks for an email and a password.
+The **First sign-in** page asks for an email address and a password.
 
 1. **First name** and **Last name** are optional.
-1. Type your email.
-1. Choose a password of at least 12 characters and repeat it in **Confirm password**.
+1. Enter your email address.
+1. Choose a password with at least 12 characters and enter it again in **Confirm password**.
 1. Press **Create account**.
 
-The panel creates the first administrator and signs you in. You see the dashboard, with no sites yet.
+The panel creates the first administrator account and signs you in. The dashboard opens, empty for
+now.
 
-## Check that it runs {#check-it-runs}
+## Check that the panel is running {#check-it-runs}
 
 On the server, check the panel's two services:
 
@@ -109,8 +112,8 @@ On the server, check the panel's two services:
 systemctl is-active cloudground-agent cloudground-api
 ```
 
-Both lines say `active`.
+You should see `active` on both lines.
 
 ## Next step {#next}
 
-The panel is ready. [Create your first site](./first-site.mdx).
+The panel is ready. Now [create your first site](./first-site.mdx).
