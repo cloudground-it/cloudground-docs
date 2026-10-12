@@ -4,7 +4,7 @@
  */
 export const REPO = 'https://github.com/cloudground-it/cloudground';
 export const DOCS_REPO = 'https://github.com/cloudground-it/cloudground-docs';
-export const RELEASE = 'v0.2.0';
+export const RELEASE = 'v0.3.0';
 export const RELEASE_URL = `${REPO}/releases/tag/${RELEASE}`;
 export const RELEASES_URL = `${REPO}/releases`;
 export const ISSUES_URL = `${REPO}/issues`;
