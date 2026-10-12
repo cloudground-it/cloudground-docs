@@ -1,37 +1,37 @@
 ---
 title: Read the logs
-description: Read the logs of the server, its services and every site from the panel, and find them on disk.
+description: Read server, service and site logs in the panel, and find them on disk.
 type: how-to
 prerequisites:
-  - For the server's logs, an administrator or read-only account
+  - For server logs, an administrator or read-only account
   - For a site's logs, an account that can see that site
 version: a7d92ba
 last_verified: 2026-10-10
 sidebar_position: 3
 ---
 
-There are two kinds of logs: the server's, on the **Logs** page, and each site's, on its **Logs**
-tab. The panel shows the last lines; press **Refresh** to read them again.
+There are two sets of logs: server logs, on the **Logs** page, and per-site logs, on each site's
+**Logs** tab. The panel shows the most recent lines. Click **Refresh** to reload them.
 
-## The server's logs {#server-logs}
+## Server logs {#server-logs}
 
-Open **Logs** from the menu. The tabs are:
+Open **Logs** from the menu. It has these tabs:
 
-| Tab | What it holds | Where it is |
+| Tab | Contents | Location |
 | --- | --- | --- |
-| **Nginx access** | nginx's general access log. | `/var/log/nginx/access.log` |
-| **Nginx error** | nginx's errors. | `/var/log/nginx/error.log` |
+| **Nginx access** | nginx's main access log. | `/var/log/nginx/access.log` |
+| **Nginx error** | nginx errors. | `/var/log/nginx/error.log` |
 | **PHP-FPM** | The journal of every site's PHP processes. | journal, `cloudground-php-*.service` |
-| **MariaDB** | The database's errors. | `/var/log/mysql/error.log` |
+| **MariaDB** | Database errors. | `/var/log/mysql/error.log` |
 | **API** | The panel. | journal, `cloudground-api.service` |
-| **Agent** | The agent that does the root work. | journal, `cloudground-agent.service` |
+| **Agent** | The agent that does the root-level work. | journal, `cloudground-agent.service` |
 
-Operators do not see this page: the server's logs concern every site.
+Operators can't see this page, because server logs cover every site.
 
-## A site's logs {#site-logs}
+## Site logs {#site-logs}
 
-Open the site and go to the **Logs** tab. Its tabs are **Access**, **Errors** and **PHP errors**, with
-the last 200 lines. On disk they are in `/var/log/cloudground/<domain>/`:
+Open the site and go to the **Logs** tab. It has **Access**, **Errors** and **PHP errors** tabs, each
+showing the last 200 lines. On disk, they live in `/var/log/cloudground/<domain>/`:
 
 | Tab | File |
 | --- | --- |
@@ -39,11 +39,11 @@ the last 200 lines. On disk they are in `/var/log/cloudground/<domain>/`:
 | **Errors** | `error.log` |
 | **PHP errors** | `php-error.log` |
 
-A file that does not exist yet reads *(log is empty or not created yet)*.
+A log that doesn't exist yet shows *(log is empty or not created yet)*.
 
 ## On the server {#on-the-server}
 
-As root, the logs in the journal are read with `journalctl`:
+As root, read the journal logs with `journalctl`:
 
 ```bash prompt
 journalctl -u cloudground-api -u cloudground-agent -n 100
@@ -51,12 +51,12 @@ journalctl -u cloudground-api -u cloudground-agent -n 100
 
 ## From the API {#from-the-api}
 
-`GET /api/logs?source=<source>&lines=<n>` reads a server log; `source` is `nginx-access`,
-`nginx-error`, `php-error`, `mariadb`, `api` or `agent`, and `lines` is 1 to 2000 (200 when absent).
-`GET /api/sites/<id>/logs?source=<kind>` reads a site log; `source` is `access`, `error` or `php`.
-A line longer than 8 KiB is cut.
+`GET /api/logs?source=<source>&lines=<n>` returns a server log. `source` is `nginx-access`,
+`nginx-error`, `php-error`, `mariadb`, `api` or `agent`, and `lines` is 1 to 2000 (200 by default).
+`GET /api/sites/<id>/logs?source=<kind>` returns a site log, where `source` is `access`, `error` or
+`php`. Lines longer than 8 KiB are truncated.
 
 ## Next step {#next}
 
-Do not wait to read a log to notice a problem: set up
+Don't rely on reading logs to spot problems. Set up
 [alerts and notifications](./alerts-and-notifications.mdx).

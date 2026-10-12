@@ -1,6 +1,6 @@
 ---
 title: "How-to · Data"
-description: "Cache, staging, backups, restores, releases and databases."
+description: "Purge the cache, use staging, back up and restore sites, ship releases and manage databases."
 type: index
 last_verified: 2026-10-10
 hide_table_of_contents: true
@@ -17,5 +17,5 @@ hide_table_of_contents: true
   <Card to="/docs/data/roll-back-a-release" title="Roll back a release" />
   <Card to="/docs/data/manage-databases" title="Manage databases" />
   <Card to="/docs/data/use-quarry" title="Use Quarry" />
-  <Card to="/docs/data/recover-the-database-record" title="Recover the database record" />
+  <Card to="/docs/data/recover-the-database-record" title="Rebuild the database record" />
 </Cards>

@@ -1,6 +1,6 @@
 ---
 title: Restore a backup
-description: Bring a site back to the state of a snapshot, everything, files only or database only, with a safety snapshot taken first.
+description: Roll a site back to a snapshot, in full, files only or database only. The panel takes a safety snapshot first.
 type: how-to
 prerequisites:
   - A site with at least one backup
@@ -10,91 +10,91 @@ last_verified: unverified
 sidebar_position: 5
 ---
 
-A restore replaces the production site with the contents of a snapshot. Before it touches
-anything, the panel takes a new backup of the site and checks it: if that backup fails its restore
-test, the restore stops and the site stays as it was.
+A restore replaces the production site with the contents of a snapshot. Before it changes anything,
+the panel takes a fresh backup of the site and tests it. If that backup fails its restore test, the
+restore stops and the site is left untouched.
 
 :::danger[A restore replaces the current data]
 
-Whatever changed on the site after the snapshot disappears from the site. It survives only in the
-safety snapshot taken at the start of the restore.
+Anything that changed on the site since the snapshot is gone from the site. The only copy left is in
+the safety snapshot taken at the start of the restore.
 
 :::
 
 ## Restore from the panel {#restore}
 
-1. Open the site and choose the **Backups** tab.
-2. Pick a snapshot whose test *passed* and press **Restore** on its row.
-3. In **What to restore** choose:
-   - **Everything (files and database)**;
-   - **Files only**;
-   - **Database only**.
-4. With *Everything* or *Database only*, in **Databases to restore** leave checked the databases to
-   bring back (see [below](#databases)).
-5. Press **Continue**, type the site's domain to confirm, and press **Restore**.
-6. Follow the task *Restore started* to its end.
+1. Open the site and go to the **Backups** tab.
+2. Find a snapshot whose test *passed* and click **Restore** on its row.
+3. Under **What to restore**, choose one of:
+   - **Everything (files and database)**
+   - **Files only**
+   - **Database only**
+4. For *Everything* or *Database only*, leave checked the databases you want back under **Databases
+   to restore** (see [below](#databases)).
+5. Click **Continue**, type the site's domain to confirm, and click **Restore**.
+6. Follow the *Restore started* task until it finishes.
 
-The safety snapshot appears in the list of backups: if you need to go back, restore that one.
+The safety snapshot appears in the backup list. To undo the restore, restore that snapshot.
 
-## What changes on the site {#what-changes}
+## What happens to the site {#what-changes}
 
-- **Files**: the site folder is swapped for the snapshot's in one step, with no moment where the
-  site has no files. Then the site's PHP restarts and nginx reloads its configuration. If the site
-  does not come back, the panel puts the previous folder back.
-- **Databases**: each database the backup holds is emptied and recreated from its dump. Tables
-  created after the snapshot do not stay. If one import fails, that database and every one restored
-  before it go back to what they were.
-- At the end the site's page cache is emptied. With *Database only*, the object cache is flushed
-  too, so the site does not serve stale data.
+- **Files**: the site folder is swapped for the snapshot's copy in a single step, so the site is
+  never without files. The site's PHP then restarts and nginx reloads its configuration. If the site
+  doesn't come back up, the panel puts the previous folder back.
+- **Databases**: each database in the backup is emptied and rebuilt from its dump. Tables created
+  after the snapshot are dropped. If one import fails, that database and every database restored
+  before it are rolled back.
+- When the restore finishes, the site's page cache is cleared. With *Database only*, the object
+  cache is flushed too, so the site doesn't serve stale data.
 
-## Which databases {#databases}
+## Choose which databases to restore {#databases}
 
-*Since v0.2.0.* With *Everything* and *Database only* you choose which of the backup's databases to
-restore. The restore dialog lists, in **Databases to restore**, the databases the snapshot holds, all
+*Since v0.2.0.* With *Everything* and *Database only*, you pick which databases from the backup to
+restore. **Databases to restore** in the restore dialog lists every database in the snapshot, all
 checked.
 
 - Leave them all checked to restore them all.
-- Uncheck the ones not to touch: only the checked databases are replaced, the others keep what they
-  hold now.
-- With no database checked **Continue** stays disabled: choose at least one, or restore **Files
+- Uncheck any you want to leave alone. Only checked databases are replaced. The others keep their
+  current data.
+- If no database is checked, **Continue** stays disabled. Check at least one, or choose **Files
   only**.
 
-A backup taken before v0.2.0 does not record its databases: for it the dialog lists the databases the
-site has now, and the restore puts back the ones the snapshot really holds.
+Backups taken before v0.2.0 don't record their databases. For those, the dialog lists the site's
+current databases, and the restore brings back the ones the snapshot actually contains.
 
-These rules also apply:
+A few more rules:
 
-- A database the backup holds and the site no longer has is skipped, and the task names it. To
-  restore it, create it again with the same name in the [Database tab](/docs/data/manage-databases), then
-  restore.
-- A database created after the backup is not in the snapshot and stays as it is. If you name it with
-  the API or cgctl, the restore is refused.
-- A site with no database cannot take a *Database only* restore.
+- If the backup holds a database the site no longer has, it's skipped and the task names it. To
+  restore it, recreate it with the same name in the [Database tab](/docs/data/manage-databases), then
+  run the restore again.
+- A database created after the backup isn't in the snapshot and is left as it is. Naming it through
+  the API or cgctl makes the restore fail.
+- A site without databases can't do a *Database only* restore.
 
-With the API, the list `GET /api/sites/<site-id>/backups` gives each backup a `databases` field: the
-names of the snapshot's databases, `[]` when it has none, `null` for a backup taken before v0.2.0. To
-restore only some, `POST /api/backups/<backup-id>/restore` with
-`{"confirm": "<domain>", "mode": "database", "databases": ["shop_data"]}`. Each name must be a
-database of the site; a name the snapshot does not hold gets **400**
-`snapshot <id> holds no database "<name>"`, before anything starts. With `"mode": "files"` no
-database can be named.
+In the API, `GET /api/sites/<site-id>/backups` returns a `databases` field for each backup: the names
+of the databases in the snapshot, `[]` if it has none, or `null` for backups taken before v0.2.0. To
+restore only some of them, send `POST /api/backups/<backup-id>/restore` with
+`{"confirm": "<domain>", "mode": "database", "databases": ["shop_data"]}`. Every name must be one of
+the site's databases. A name the snapshot doesn't contain returns **400**
+`snapshot <id> holds no database "<name>"` before anything starts. With `"mode": "files"` you can't
+name any databases.
 
-## From the command line {#cli}
+## Restore from the command line {#cli}
 
 ```bash
 cgctl --wait backup restore <backup-id> <domain> files
 cgctl --wait backup restore <backup-id> <domain> database --database shop_data
 ```
 
-`<backup-id>` is the `id` field of a backup in the list `GET /api/sites/<site-id>/backups`;
-`<domain>` is the site's domain, as confirmation. The word after the domain is `full` (the value when
-you leave it out), `files` or `database`.
+`<backup-id>` is a backup's `id` field from `GET /api/sites/<site-id>/backups`. `<domain>` is the
+site's domain, which acts as confirmation. The word after the domain is `full` (the default if you
+leave it out), `files` or `database`.
 
-*Since v0.2.0.* `--database <name>` restores only that database of the snapshot. Repeat it for each
-database to restore; the form `--database=<name>` works too, anywhere after `backup restore`. Without
-`--database` the restore puts back every database.
+*Since v0.2.0.* `--database <name>` restores only that database from the snapshot. Repeat it once per
+database. `--database=<name>` also works, anywhere after `backup restore`. Without `--database`,
+every database is restored.
 
 ## Next step {#next}
 
-To see why a backup that counts can always be restored, read
+To learn why a backup that counts can always be restored, read
 [Backups and restore tests](/docs/explanation/backups-and-restore-tests).

@@ -1,24 +1,24 @@
 ---
 title: Connect a backup repository
-description: Tell the panel where to keep the encrypted backups of every site, with the password that protects them, and check that the repository answers.
+description: Point the panel at the storage that holds every site's encrypted backups, set the password that protects them, and test the connection.
 type: how-to
 prerequisites:
   - An administrator account
-  - Storage outside this server (an object storage bucket, an SFTP server, or a REST server for restic)
+  - Storage outside this server (an object storage bucket, an SFTP server, or a restic REST server)
 version: v0.2.0
 last_verified: unverified
 sidebar_position: 3
 ---
 
-Every site keeps its backups in one restic repository. The data is encrypted on the server, with
-the repository password, before it leaves. You set both in **Settings**, in the **Off-site backups
+All sites store their backups in a single restic repository. Data is encrypted on the server with the
+repository password before it leaves. You configure both in **Settings**, in the **Off-site backups
 (restic)** panel.
 
-## Choose the destination {#destination}
+## Choose a destination {#destination}
 
 1. Open **Settings** and find the **Off-site backups (restic)** panel.
-2. In **Backup destination**, choose where the snapshots go.
-3. Fill in the fields of that destination.
+2. Under **Backup destination**, choose where snapshots go.
+3. Fill in the fields for that destination.
 
 | Backup destination | Fields | Repository the panel saves |
 | --- | --- | --- |
@@ -27,75 +27,76 @@ the repository password, before it leaves. You set both in **Settings**, in the 
 | **Cloudflare R2** | **Account ID** (on the R2 page of the Cloudflare dashboard, under *Account details*), **Bucket**, **Folder in the bucket** | `s3:https://<account-id>.r2.cloudflarestorage.com/<bucket>[/<folder>]`, region `auto` |
 | **Backblaze B2** | **Region** (for example `eu-central-003`), **Bucket**, **Folder in the bucket** | `s3:https://s3.<region>.backblazeb2.com/<bucket>[/<folder>]` |
 | **Wasabi** | **Region** (for example `eu-central-1`), **Bucket**, **Folder in the bucket** | `s3:https://s3.<region>.wasabisys.com/<bucket>[/<folder>]` |
-| **Hetzner Object Storage** | **Region**, the location (for example `fsn1`), **Bucket**, **Folder in the bucket** | `s3:https://<region>.your-objectstorage.com/<bucket>[/<folder>]` |
+| **Hetzner Object Storage** | **Region**, which is the location (for example `fsn1`), **Bucket**, **Folder in the bucket** | `s3:https://<region>.your-objectstorage.com/<bucket>[/<folder>]` |
 | **OVHcloud Object Storage** | **Region** (for example `gra`), **Bucket**, **Folder in the bucket** | `s3:https://s3.<region>.io.cloud.ovh.net/<bucket>[/<folder>]` |
-| **MinIO or another S3-compatible service** | **Endpoint** (for example `https://minio.example.com`), **Region** (only if the service asks for one), **Bucket**, **Folder in the bucket** | `s3:https://<endpoint>/<bucket>[/<folder>]` |
-| **Other restic repository (advanced)** | **Repository**, as restic writes it, and an optional **Region** | what you type |
+| **MinIO or another S3-compatible service** | **Endpoint** (for example `https://minio.example.com`), **Region** (only if the service needs one), **Bucket**, **Folder in the bucket** | `s3:https://<endpoint>/<bucket>[/<folder>]` |
+| **Other restic repository (advanced)** | **Repository**, in restic's own syntax, and an optional **Region** | exactly what you type |
 
-- **Folder in the bucket** is optional: use it to share a bucket with other data, for example
+- **Folder in the bucket** is optional. Use it when the bucket also holds other data, for example
   `cloudground`.
-- **Bucket**: create it first at the provider. It can stay private.
-- Every object storage destination also asks for the **Access key** and the **Secret key**: a key with
-  read and write access to this bucket only. **Advanced** shows them too, for an `s3:` repository.
-- Under the fields, **Repository** shows what the panel will save, as restic reads it.
+- **Bucket**: create it with your provider first. It can stay private.
+- Every object storage destination also needs an **Access key** and a **Secret key**. Use a key that
+  can read and write this bucket and nothing else. **Advanced** shows these fields too when the
+  repository starts with `s3:`.
+- Below the fields, **Repository** shows the address the panel will save, as restic reads it.
 
-A repository saved earlier that the destinations above do not produce exactly (an SFTP or REST
-server, credentials in the address, another path) appears as **Other restic repository (advanced)**,
-with the address as it is.
+If a repository saved earlier doesn't match any of the destinations above exactly (an SFTP or REST
+server, credentials in the address, a different path), it shows up as **Other restic repository
+(advanced)** with its address unchanged.
 
 :::warning[A folder on this server is not an off-site backup]
 
-If you lose the server, you lose the backups too. For real off-site backups choose object storage.
+If you lose the server, you lose the backups with it. For real off-site backups, use object storage.
 
 :::
 
-- **SFTP** (advanced, `sftp:<user>@<host>:/<path>`): restic connects with `ssh` as root, with root's
-  key and `known_hosts` (`/root/.ssh/`). Before saving, put root's public key on the remote server and
-  connect once by hand as root to accept its host key: otherwise the test fails with
+- **SFTP** (advanced, `sftp:<user>@<host>:/<path>`): restic connects over `ssh` as root, using
+  root's key and `known_hosts` (`/root/.ssh/`). Before you save, add root's public key to the remote
+  server and connect once by hand as root to accept its host key. Otherwise the test fails with
   `Host key verification failed`.
-- **Backblaze B2**: the destination uses B2's S3-compatible API. A `b2:` address typed as advanced does
-  not work: the panel passes restic only the S3 keys, and the test fails with
+- **Backblaze B2**: this destination uses B2's S3-compatible API. A `b2:` address entered as an
+  advanced repository won't work. The panel only passes S3 keys to restic, so the test fails with
   `Account ID ($B2_ACCOUNT_ID) is empty`.
 
 ## Set the repository password {#password}
 
-The repository password encrypts every snapshot. Without it no backup can be restored, not even by
-the panel: keep a copy outside this server.
+The repository password encrypts every snapshot. Without it, nobody can restore a backup, not even
+the panel. Keep a copy somewhere other than this server.
 
-1. Next to **Repository password**, press **Generate**. The panel makes a password of 32 characters
-   and shows it.
-2. In **Keep this password safe**, press **Copy** or **Download**. **Download** saves
-   `cloudground-backup-password.txt`, with the password and the repository.
-3. Store it outside this server.
+1. Next to **Repository password**, click **Generate**. The panel creates a 32-character password and
+   shows it.
+2. Under **Keep this password safe**, click **Copy** or **Download**. **Download** saves
+   `cloudground-backup-password.txt`, which holds the password and the repository.
+3. Store it off this server.
 
-You can type your own password instead of generating one. Once saved, the password is never shown
-again, and **Generate** no longer appears: the field says it is **Set**. Change it only for a new,
-empty repository: the snapshots already there open only with the old one.
+You can also type your own password instead of generating one. Once saved, the password is never
+shown again. **Generate** disappears and the field reads **Set**. Only change the password when you
+switch to a new, empty repository: existing snapshots open only with the old one.
 
 ## Save the settings {#save}
 
-Press **Save**.
+Click **Save**.
 
-When you change the repository or the password, the panel tries the pair before saving it. If the
-repository does not exist yet, it is created. If it exists with another password, the panel refuses
-to save: the existing backups would become unreadable.
+When you change the repository or the password, the panel tests them together before saving. If the
+repository doesn't exist yet, the panel creates it. If it exists and the password doesn't open it, the
+panel refuses to save, because the existing backups would become unreadable.
 
-### A password in the address {#password-in-the-address}
+### Passwords in the repository address {#password-in-the-address}
 
-*Since v0.2.0.* An advanced repository can carry a password in its address, for example
-`rest:https://<user>:<password>@<host>/`. The panel keeps it encrypted, like the other backup
-credentials, with the server's secrets key (`/var/lib/cloudground/secret.key`): in the panel's
-database the address stays without its password. In **Settings** and in the list of backups the
-address shows masked. A panel upgraded from an earlier version encrypts, at its first start, the
-passwords it had stored in clear.
+*Since v0.2.0.* An advanced repository address can include a password, for example
+`rest:https://<user>:<password>@<host>/`. The panel encrypts it like the other backup credentials,
+with the server's secrets key (`/var/lib/cloudground/secret.key`), and stores the address in its
+database without the password. **Settings** and the backup list show the address masked. When you
+upgrade from an earlier version, the panel encrypts any plaintext passwords it had stored the first
+time it starts.
 
 ## Test the connection {#test}
 
-Press **Test connection**. It connects with the saved settings, so it is available only once nothing
-is left unsaved (*Save first: the test reads the saved settings*). If the repository answers, the
-panel shows *Repository reachable* and the number of snapshots it holds.
+Click **Test connection**. The test uses the saved settings, so it's only available when there are no
+unsaved changes (*Save first: the test reads the saved settings*). If the repository responds, the
+panel shows *Repository reachable* and how many snapshots it holds.
 
-## From the command line {#cli}
+## Configure it from the command line {#cli}
 
 ```bash
 cgctl settings set backup_s3_access_key '<access-key>'
@@ -105,12 +106,13 @@ cgctl settings set backup_password '<password>'
 cgctl settings set backup_repository 's3:https://<endpoint>/<bucket>'
 ```
 
-`backup_repository` takes the repository as the table above shows it; for Cloudflare R2 the region is
-`auto`. Each command changes one key, so set the S3 keys before the repository: whenever the
-repository or the password changes, the panel tries the pair with the values already saved. On a
-server that already has a repository, a new repository is created with the saved password;
-`backup_password` changed on its own is refused, because it does not open the previous repository.
-For a new repository with a new password, save both fields together in **Settings**.
+`backup_repository` takes the repository in the form shown in the table above. For Cloudflare R2, the
+region is `auto`. Each command sets one key, so set the S3 keys before the repository: every time the
+repository or the password changes, the panel tests the pair with whatever values are already saved.
+On a server that already has a repository, a new repository is created with the saved password.
+Changing `backup_password` on its own is refused, because the new password won't open the existing
+repository. To start a new repository with a new password, save both fields together in
+**Settings**.
 
 ## Next step {#next}
 

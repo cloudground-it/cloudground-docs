@@ -1,57 +1,57 @@
 ---
 title: Give the panel a domain
-description: Make the panel answer on https://<domain>, with a Let's Encrypt certificate that renews by itself.
+description: Serve the panel on https://<domain> with a Let's Encrypt certificate that renews automatically.
 type: how-to
 prerequisites:
   - An administrator account
-  - A domain whose DNS A record points at the server's address
-  - Port 80 reachable from the Internet
+  - A domain with a DNS A record pointing at the server's address
+  - Port 80 reachable from the internet
 version: v0.2.0
 last_verified: unverified
 sidebar_position: 1
 ---
 
-The panel always answers on `https://<server-ip>:8443`, with a self-signed certificate. With a
-domain it also answers on `https://<domain>`, with a valid certificate. The address by IP stays: if
-the domain stops working, the panel is still reachable.
+The panel is always available at `https://<server-ip>:8443`, with a self-signed certificate. Once you
+give it a domain, it's also available at `https://<domain>` with a valid certificate. The IP address
+keeps working, so you can still reach the panel if the domain breaks.
 
 ## Set the Let's Encrypt email {#set-the-email}
 
 1. Open **Settings**.
-2. In the **Certificates** card, type an address in **Let's Encrypt email**. It is used to register
-   and for expiry notices.
-3. Press **Save**.
+2. In the **Certificates** card, enter an address under **Let's Encrypt email**. Let's Encrypt uses it
+   for registration and expiry notices.
+3. Click **Save**.
 
 ## Request the certificate {#request-the-certificate}
 
 {/* TODO(verify): requesting the panel certificate and moving to another domain. Not verified on 2026-10-10: the test server already has the domain panel.148-113-252-80.sslip.io, and moving it away and back would need new certificates for a name under the Let's Encrypt limit until 2026-10-11 15:00 UTC. The card's text and panel-access.conf were verified. */}
 
-1. In the **Panel domain and HTTPS** card, type the domain in **Domain**, for example
+1. In the **Panel domain and HTTPS** card, enter the domain under **Domain**, for example
    `panel.example.com`.
-2. Press **Secure the panel with Let's Encrypt**.
+2. Click **Secure the panel with Let's Encrypt**.
 
-The panel starts a task: it writes the nginx configuration for the domain, checks that the domain
-reaches this server and requests the certificate. When the task finishes, the card says **The panel
-answers on `<domain>`, with a certificate that renews automatically.**
+The panel starts a task that writes the nginx configuration for the domain, checks that the domain
+resolves to this server, and requests the certificate. When the task finishes, the card reads **The
+panel answers on `<domain>`, with a certificate that renews automatically.**
 
-Open `https://<domain>` and sign in.
+Go to `https://<domain>` and sign in.
 
-With the API, the same request is `POST /api/panel/certificate` with `{"domain": "<domain>"}`.
+The API equivalent is `POST /api/panel/certificate` with `{"domain": "<domain>"}`.
 
 ## Move the panel to another domain {#move-the-panel}
 
-Type the new domain in **Domain** and press **Move the panel to this domain**. Point the new domain
-at the server first.
+Point the new domain at the server first. Then enter it under **Domain** and click **Move the panel
+to this domain**.
 
 ## Renewal {#renewal}
 
-Every 12 hours the panel checks the certificate and renews it when it is due. When the certificate
-has not changed it touches nothing; when it has, nginx loads it without dropping open connections.
+Every 12 hours the panel checks the certificate and renews it when it's due. If the certificate
+hasn't changed, nothing happens. If it has, nginx loads it without dropping open connections.
 
-## Limit who can reach the panel {#restrict-access}
+## Restrict access to the panel {#restrict-access}
 
-The rules you write in `/etc/cloudground/panel-access.conf` apply to both the panel domain and port
-8443, and the panel never overwrites them. For example, to let a single address in:
+Rules you add to `/etc/cloudground/panel-access.conf` apply to both the panel domain and port 8443,
+and the panel never overwrites them. For example, to allow a single address:
 
 ```nginx
 allow <your-ip>;
@@ -64,14 +64,14 @@ Then, on the server:
 nginx -t && systemctl reload nginx
 ```
 
-:::warning[Do not lock yourself out]
+:::warning[Don't lock yourself out]
 
-If your address changes, the panel stops answering you. Keep SSH access to the server so you can
-remove the rule.
+If your IP address changes, the panel stops responding to you. Keep SSH access to the server so you
+can remove the rule.
 
 :::
 
 ## Next step {#next}
 
-The panel is reachable over HTTPS. To keep it current, follow
-[update CloudGround](./update-cloudground.mdx).
+The panel is now on HTTPS. To keep it up to date, see
+[Update CloudGround](./update-cloudground.mdx).

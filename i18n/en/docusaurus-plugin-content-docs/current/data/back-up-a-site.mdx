@@ -1,6 +1,6 @@
 ---
 title: Back up a site
-description: How scheduled backups start, how to take one now, how long they stay in the repository, and how to delete one.
+description: Set the backup schedule, take a backup on demand, control how long backups are kept, and delete one.
 type: how-to
 prerequisites:
   - A connected backup repository
@@ -10,91 +10,92 @@ last_verified: unverified
 sidebar_position: 4
 ---
 
-Every backup is one snapshot for each of the site's databases, with its dump, then one snapshot of
-its files. A site without a database saves its files alone. Right
-after it is taken, the backup goes through a [restore test](/docs/data/run-a-restore-test): until the
-test ends it is *pending*, and it counts only once it has *passed*.
+A backup is one snapshot per database (holding its dump), plus one snapshot of the site's files. Sites
+without a database get the files snapshot only. Every new backup then goes through a
+[restore test](/docs/data/run-a-restore-test). It shows as *pending* until the test finishes, and it
+only counts once it has *passed*.
 
 ## Scheduled backups {#scheduled}
 
-A production site starts with backups on: one a day, kept for 30 days. Every 5 minutes the panel
-checks which sites are due and starts their backup. There is nothing else to do.
+Production sites are backed up daily out of the box, and each backup is kept for 30 days. Every 5
+minutes the panel looks for sites that are due and starts their backups. You don't need to set
+anything up.
 
-- They run only for active sites, and only with a repository and password set.
-- Staging copies have no scheduled backups.
-- A reverse proxy site is never backed up: it has no content of its own (its application has) and no
-  database. It starts with backups off, and **Back up now** is refused.
-- A scheduled backup that fails is tried again at the site's next slot (in an hour, a day or a
-  week), not at the next check.
+- Scheduled backups run only for active sites, and only once a repository and password are set.
+- Staging copies are never backed up on a schedule.
+- Reverse proxy sites are never backed up. They have no database, and their content belongs to the
+  application behind them. Backups start switched off, and **Back up now** is refused.
+- If a scheduled backup fails, the panel retries it at the site's next slot (an hour, a day or a week
+  later), not at the next 5-minute check.
 
-To change the schedule, in the site's **Backups** tab, **Schedule** card:
+To change the schedule, go to the site's **Backups** tab and use the **Schedule** card:
 
-1. In **Frequency** pick **Off**, **Every hour**, **Every day** or **Every week**.
-2. In **Keep** choose how long to keep the snapshots: **Keep 7 days**, 14, 30, 60, 90, 180 or 365
-   days, or **Keep every snapshot**. Only an administrator changes this field. A value set another way
-   (with cgctl or the API, 0 to 3650 days) stays among the choices.
-3. Press **Save**.
+1. Under **Frequency**, pick **Off**, **Every hour**, **Every day** or **Every week**.
+2. Under **Keep**, pick how long snapshots are kept: **Keep 7 days**, 14, 30, 60, 90, 180 or 365
+   days, or **Keep every snapshot**. Only administrators can change this field. If the value was set
+   some other way (cgctl and the API accept 0 to 3650 days), it still appears in the list.
+3. Click **Save**.
 
-With the API it is `PUT /api/sites/<site-id>/backups/policy` with `enabled`, `schedule` (`hourly`,
-`daily`, `weekly`), `retention_days` and `hour`. Send only the fields to change: the others keep
-their value.
+The API equivalent is `PUT /api/sites/<site-id>/backups/policy` with `enabled`, `schedule` (`hourly`,
+`daily`, `weekly`), `retention_days` and `hour`. Send only the fields you want to change. The rest
+keep their current values.
 
-### Choose the time {#hour}
+### Pick a start time {#hour}
 
-*Since v0.2.0.* A daily or weekly backup can start at a fixed hour, at night for example.
+*Since v0.2.0.* Daily and weekly backups can start at a set hour, for example overnight.
 
-1. In **Frequency** pick **Every day** or **Every week**. The **Time** field appears.
-2. In **Time** pick the hour. Under the field the panel shows the server's time zone: the hour is in
-   that zone.
-3. Press **Save**.
+1. Under **Frequency**, pick **Every day** or **Every week**. A **Time** field appears.
+2. Under **Time**, pick the hour. The server's time zone is shown below the field, and the hour is
+   in that zone.
+3. Click **Save**.
 
-The backup starts at the first check (every 5 minutes) after that hour. A weekly backup keeps its
-weekday. If you change the hour, no second backup runs that day. If the panel was down at the chosen
-hour, the backup starts at the first check after it is back.
+The backup starts at the first 5-minute check after that hour. Weekly backups stay on the same
+weekday. Changing the hour never triggers a second backup on the same day. If the panel was down at
+the chosen hour, the backup starts at the first check after it comes back.
 
-With **Any time** the backup starts a day or a week after the previous one, as before v0.2.0. With
-the API, `hour` goes from 0 to 23; `-1` clears it.
+**Any time** keeps the pre-v0.2.0 behavior: each backup starts a day or a week after the previous
+one. In the API, `hour` takes 0 to 23, and `-1` clears it.
 
-## Take a backup now {#back-up-now}
+## Back up now {#back-up-now}
 
-1. Open the site and choose the **Backups** tab.
-2. Press **Back up now**. The task *Backup started* begins.
-3. The new snapshot appears at the top of the list. The **Restore test** column goes from
-   *pending* to *passed* (or *failed*) when the test ends.
+1. Open the site and go to the **Backups** tab.
+2. Click **Back up now**. A *Backup started* task begins.
+3. The new snapshot appears at the top of the list. Its **Restore test** column changes from
+   *pending* to *passed* (or *failed*) when the test finishes.
 
-At the top of the tab are **Last backup**, **Last restore test** and **Estimated restore time**,
-which is how long the last backup's test took.
+The top of the tab shows **Last backup**, **Last restore test** and **Estimated restore time**. The
+estimate is how long the restore test of the latest backup took.
 
 ```bash
 cgctl --wait backup run <site-id>
 ```
 
-## What a backup holds {#contents}
+## What gets backed up {#contents}
 
-- Each of the site's databases, if the panel manages it on this server. The dump streams straight into
-  restic and is never written to disk.
-- The whole site folder, `/srv/sites/<domain>`: releases, `shared/` (configuration and uploaded
-  files), SFTP keys and the site's `logs/` folder.
-- Only `tmp/`, where PHP keeps temporary files and sessions, is left out.
+- Every database of the site that the panel manages on this server. The dump streams straight into
+  restic and never touches the disk.
+- The whole site folder, `/srv/sites/<domain>`: releases, `shared/` (configuration and uploads),
+  SFTP keys and the site's `logs/` folder.
+- The only thing left out is `tmp/`, where PHP keeps temporary files and sessions.
 
-If even one file cannot be read, the backup fails and is not recorded: an incomplete backup does
-not count.
+If a single file can't be read, the backup fails and isn't recorded. A partial backup never counts.
 
-## How long backups stay {#retention}
+## Retention {#retention}
 
-Once a day the panel removes the site's snapshots older than the days in **Keep** from the
-repository (30 at first; with **Keep every snapshot** it removes nothing). It never removes the newest backup that passed its restore test, nor one whose test has not run yet. The
-rule touches only that site's snapshots from this server.
+Once a day the panel deletes the site's snapshots that are older than the **Keep** setting (30 days
+by default, never with **Keep every snapshot**). It never deletes the newest backup that passed its
+restore test, or a backup whose test hasn't run yet. Retention only touches this site's snapshots
+from this server.
 
 ## Delete a backup {#delete}
 
 You need an administrator account.
 
-1. In the **Backups** tab, press the bin on the snapshot's row.
-2. Confirm. The snapshot is removed from the repository together with its database backup.
+1. In the **Backups** tab, click the trash icon on the snapshot's row.
+2. Confirm. The snapshot and its database backup are removed from the repository.
 
-The bin is disabled for the newest backup that passed its test, and for one whose test has not
-run yet. The space in the repository is freed by the daily clean-up.
+The trash icon is disabled for the newest backup that passed its test, and for any backup whose test
+hasn't run yet. The daily cleanup frees the space in the repository.
 
 ## Next step {#next}
 

@@ -1,6 +1,6 @@
 ---
 title: Staging and Safe Push
-description: Make a private copy of a site, try changes there, and publish them to production with Safe Push, which blocks them if they make the site slower.
+description: Create a private copy of a site, test changes there, and ship them to production with Safe Push, which blocks any change that makes the site slower.
 type: how-to
 prerequisites:
   - An active production site
@@ -11,77 +11,79 @@ last_verified: unverified
 sidebar_position: 2
 ---
 
-Staging is a copy of production at `staging.<domain>`, password-protected and not indexed. Safe
-Push publishes staging's code only after Performance Guard has measured both versions. The reason
-for each step is in [Staging, Safe Push and Performance Guard](/docs/explanation/staging-and-safe-push).
+Staging is a copy of production at `staging.<domain>`. It's password-protected and hidden from
+search engines. Safe Push ships staging's code only after Performance Guard has measured both
+versions. The reasoning behind each step is in
+[Staging, Safe Push and Performance Guard](/docs/explanation/staging-and-safe-push).
 
 ## Create staging {#create-staging}
 
-1. Open the production site and choose the **Staging** tab.
-2. Press **Create staging**. The task *Staging clone started* begins.
-3. When the task ends, the tab shows the staging domain and the **User** and **Password** that
-   protect it. Press **Visit** to open it, or **Open staging** to manage it as a site.
+1. Open the production site and go to the **Staging** tab.
+2. Click **Create staging**. A *Staging clone started* task begins.
+3. When the task finishes, the tab shows the staging domain and the **User** and **Password** that
+   protect it. Click **Visit** to open the site, or **Open staging** to manage it like any other
+   site.
 
-A site has at most one staging copy, and a staging copy cannot be staged itself. A WordPress site
-with an external database cannot be cloned.
+A site can have one staging copy, and a staging copy can't have its own staging. WordPress sites
+with an external database can't be cloned.
 
-Staging gets only production's **primary database**, in a database of its own
-(`site_<staging-id>`, with its own user). The site's other databases are not copied: they stay in
-production only, and staging does not see them.
+Staging only gets production's **primary database**, copied into its own database
+(`site_<staging-id>`, with its own user). The site's other databases aren't copied. They exist only
+in production, and staging can't see them.
 
-:::note[The staging certificate]
+:::note[Staging certificate]
 
-Staging starts without a certificate: until you issue one it answers with the server's self-signed
-fallback certificate, which browsers refuse. Point `staging.<domain>` at the server too (an A or AAAA
-record, or a wildcard `*.<domain>`), then press **Open staging**, **SSL** tab, **Issue / renew**, or
-run `cgctl --wait cert issue <staging-id>`. **Recreate staging** makes a new site: issue the
-certificate again.
+Staging starts without a certificate. Until you issue one, it serves the server's self-signed
+fallback certificate, which browsers reject. Point `staging.<domain>` at the server too (an A or AAAA
+record, or a `*.<domain>` wildcard), then click **Open staging**, go to the **SSL** tab and click
+**Issue / renew**, or run `cgctl --wait cert issue <staging-id>`. **Recreate staging** creates a new
+site, so you need to issue the certificate again afterwards.
 
 :::
 
-## Compare staging and production {#compare}
+## Compare staging with production {#compare}
 
-The **Staging vs production** section lists the files *added*, *modified* and *removed* on
-staging. Press **Refresh** after a change. The comparison skips `wp-content/uploads` and `.git`
-folders, and stops at 1000 files per list: beyond that the page says *List truncated*.
+The **Staging vs production** section lists files *added*, *modified* and *removed* on staging.
+Click **Refresh** after making changes. The comparison skips `wp-content/uploads` and `.git` folders,
+and stops at 1000 files per list. Past that, the page shows *List truncated*.
 
-## Publish all the code {#publish-everything}
+## Publish all code {#publish-everything}
 
-1. In the **Safe Push** panel, type in **Pages to measure** the paths to compare, separated by
-   spaces or commas (at most 10, each starting with `/`). The initial value is `/`.
-2. Press **Publish everything** and confirm.
-3. Follow the task. Performance Guard requests each page 200 times from staging and 200 from
-   production, then the release is built, made live and verified. For a page PHP renders in 60 ms
-   the whole push takes about 30 seconds; at 300 ms, about 2 minutes per page.
-4. Open the **Releases** tab: the new release is *live*, or *blocked* with the reason. Press
+1. In the **Safe Push** panel, enter the paths to compare under **Pages to measure**, separated by
+   spaces or commas (up to 10, each starting with `/`). The default is `/`.
+2. Click **Publish everything** and confirm.
+3. Follow the task. Performance Guard requests each page 200 times from staging and 200 times from
+   production. The release is then built, put live and verified. For a page PHP renders in 60 ms,
+   the whole push takes about 30 seconds. At 300 ms, expect about 2 minutes per page.
+4. Open the **Releases** tab. The new release is either *live*, or *blocked* with the reason. Click
    **Guard: …** on its row to see the report.
 
-## Publish only some files {#publish-selection}
+## Publish selected files {#publish-selection}
 
-1. In the list of differences, select the files to publish. To add a path that is not in the
-   list, type it in **Add a file or folder** and press **Add**.
-2. Press **Publish selection** and confirm.
+1. In the list of differences, select the files to publish. To add a path that isn't in the list,
+   type it under **Add a file or folder** and click **Add**.
+2. Click **Publish selection** and confirm.
 
-The release starts from production's code, with the chosen paths taken from staging.
-`wp-config.php` and paths under `wp-content/uploads` cannot be chosen: configuration and uploaded
-files always stay production's.
+The release starts from production's code and takes only the selected paths from staging. You can't
+select `wp-config.php` or anything under `wp-content/uploads`: configuration and uploads always stay
+as they are in production.
 
 ## Publish database tables {#publish-tables}
 
-The tables go from staging's primary database to production's. Production's other databases never
-change with a publish.
+Tables are copied from staging's primary database to production's. A publish never touches
+production's other databases.
 
 1. In the **Database tables** panel, select the tables (1 to 50).
-2. Press **Publish tables**, type the production domain to confirm, and confirm.
+2. Click **Publish tables**, type the production domain, and confirm.
 
-Before it touches production, the panel takes a safety snapshot and checks it with a restore
-test. If the snapshot fails the test, production stays as it was. Tables marked *protected live
-data* cannot be published: users, and on a store orders, customers and sessions.
+Before it touches production, the panel takes a safety snapshot and runs a restore test on it. If the
+snapshot fails the test, production is left as it was. Tables marked *protected live data* can't be
+published: users and, on a store, orders, customers and sessions.
 
 ## Recreate staging {#recreate}
 
-Press **Recreate staging** and type the staging domain to confirm. The current staging copy, files
-and database, is deleted and replaced by a fresh copy of production.
+Click **Recreate staging** and type the staging domain to confirm. The current staging copy, files and
+database, is deleted and replaced with a fresh copy of production.
 
 ## From the command line {#cli}
 
@@ -90,9 +92,9 @@ cgctl --wait staging create <site-id>
 cgctl --wait safe-push <site-id> / /shop/
 ```
 
-`<site-id>` is the production site's number; the paths after it are the pages to measure. With
-no paths, Performance Guard measures `/` and `/?cloudground-probe=uncached`.
+`<site-id>` is the production site's number, and the paths after it are the pages to measure.
+Without paths, Performance Guard measures `/` and `/?cloudground-probe=uncached`.
 
 ## Next step {#next}
 
-If a published release misbehaves, [roll back a release](/docs/data/roll-back-a-release).
+If a published release misbehaves, [roll it back](/docs/data/roll-back-a-release).
