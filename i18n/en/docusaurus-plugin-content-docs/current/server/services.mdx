@@ -1,76 +1,75 @@
 ---
-title: Manage services
-description: Check the state of the system services that run the sites, and restart the one that stopped.
+title: Check and restart services
+description: See the state of the system services that run your sites, and restart one that has stopped.
 type: how-to
 prerequisites:
-  - An administrator account to restart; read-only to look
+  - An administrator account to restart services; a read-only account to view them
 version: v0.3.0
 last_verified: unverified
 sidebar_position: 2
 ---
 
-The **Services** page, in the **Server** group, lists the system services that run the sites:
+The **Services** page, in the **Server** group, lists the system services that run your sites:
 
 | Row | System service |
 | --- | --- |
 | `nginx` | `nginx` |
 | `mariadb` | `mariadb` |
-| `redis` | `redis-server`, only where it is installed |
+| `redis` | `redis-server`, only where it's installed |
 | **Site PHP** | every `cloudground-php-*.service`, one per site |
 
-For each service you see **State**, **At boot** (*yes* or *no*), **Memory**,
-**Started** and **Version**. The **Site PHP** row sums up the PHP processes: how many are running
-and, when one is not, which.
+Each row shows **State**, **At boot** (*yes* or *no*), **Memory**, **Started** and **Version**. The
+**Site PHP** row summarizes the PHP processes: how many are running and, if any aren't, which ones.
 
-A service that is not installed has no row. A new server does not get Redis (the sites' object cache
-uses APCu), so there is no `redis` row. A server upgraded from an earlier version keeps Redis switched
-off, and its row says **disabled**. The `nginx` and `mariadb` rows are always there.
+Services that aren't installed have no row. New servers don't get Redis (the sites' object cache
+uses APCu), so there's no `redis` row. Servers upgraded from an earlier version keep Redis switched
+off, and the row shows **disabled**. The `nginx` and `mariadb` rows are always present.
 
-## Read the state {#read-the-state}
+## Service states {#read-the-state}
 
 | State | Meaning |
 | --- | --- |
 | **running** | The service is running. |
 | **failed** | The service stopped with an error. |
-| **disabled** | The service is off and does not start on boot, on purpose. |
-| **stopped** | The service is not running, but it is meant to. |
+| **disabled** | The service is intentionally off and doesn't start at boot. |
+| **stopped** | The service isn't running, but it should be. |
 
-A **failed** or **stopped** service raises an alert on the dashboard: see
+A **failed** or **stopped** service raises an alert on the dashboard. See
 [alerts and notifications](./alerts-and-notifications.mdx).
 
-## The tools' units {#helper-units}
+## Helper units {#helper-units}
 
-*Since v0.3.0.* For a backup, a database dump or a certificate, the agent does not run `restic`,
-`mariadb-dump`, the `mariadb` client or `certbot` in its own process: each runs in a transient unit
-`cg-helper-<tool>-<n>.service`, in the `cg-helper.slice` slice, with the agent's own sandbox and a
-memory cap of its own, 75% of the server's memory. If one of these tools goes over the cap, the kernel
-stops it: that operation, for example a backup, fails, and the panel and the agent carry on. At start the
-agent stops any units left by an earlier run of itself.
+*Since v0.3.0.* For backups, database dumps and certificates, the agent doesn't run `restic`,
+`mariadb-dump`, the `mariadb` client or `certbot` inside its own process. Each one runs in a transient
+`cg-helper-<tool>-<n>.service` unit, in the `cg-helper.slice` slice, with the agent's sandbox and its
+own memory cap of 75% of the server's memory. If a tool exceeds the cap, the kernel kills it. That
+operation (a backup, for example) fails, but the panel and the agent keep running. On startup the
+agent stops any units left over from a previous run.
 
-The `cloudground-agent.service` unit has a memory limit of its own: over 768 MB the kernel slows it, and
-over 1 GB it stops the process that exceeded it. The transient units show in `systemctl list-units
-'cg-helper-*'` only while they work. Why they sit outside the agent's unit is explained in
-[the architecture](/docs/explanation/architecture#the-agent).
+The `cloudground-agent.service` unit has its own memory limit: above 768 MB the kernel throttles it,
+and above 1 GB it kills the process that went over. Transient units only show up in
+`systemctl list-units 'cg-helper-*'` while they're working. For why they live outside the agent's
+unit, see [the architecture](/docs/explanation/architecture#the-agent).
 
 ## Restart a service {#restart}
 
 1. Open **Services**.
-2. Press **Restart** on the service's row.
+2. Click **Restart** on the service's row.
 3. Confirm.
 
-A restart interrupts requests in flight for a few seconds. The panel waits for the system to finish,
-3 minutes at most: MariaDB can be slow to come back.
+A restart interrupts in-flight requests for a few seconds. The panel waits up to 3 minutes for the
+system to finish, since MariaDB can be slow to come back.
 
-A **disabled** service has no **Restart** button: it is off on purpose (Redis, on an upgraded server)
-and a restart would turn it on. The **Site PHP** row has no **Restart** either.
+**Disabled** services have no **Restart** button. They're off on purpose (Redis, on an upgraded
+server), and restarting would turn them on. The **Site PHP** row has no **Restart** button either.
 
 ## From the API {#from-the-api}
 
-`GET /api/services` reads the list; `POST /api/services/<name>/restart` restarts `nginx`, `mariadb`
-or `redis`. The restart of a service that is not installed is refused, and nothing is started, with
-**409** `<name> is not installed on this server`; that of a disabled service with **409** too. Every
-restart lands in the **Audit log**.
+`GET /api/services` returns the list. `POST /api/services/<name>/restart` restarts `nginx`, `mariadb`
+or `redis`. Restarting a service that isn't installed is refused with **409**
+`<name> is not installed on this server`, and nothing is started. Restarting a disabled service also
+returns **409**. Every restart is recorded in the **Audit log**.
 
 ## Next step {#next}
 
-When a service stops, the reason is in the [logs](./logs.mdx).
+When a service stops, the [logs](./logs.mdx) tell you why.

@@ -1,20 +1,20 @@
 ---
 title: Uninstall CloudGround
-description: Remove CloudGround from a server with cgctl uninstall, keeping the sites and their databases, or deleting them too.
+description: Remove CloudGround from a server with cgctl uninstall, either keeping the sites and their databases or deleting them as well.
 type: how-to
 prerequisites:
   - Root on the server
-  - No backup, restore or task that cannot resume running
+  - No backup, restore or non-resumable task running
 version: v0.3.0
 last_verified: unverified
 sidebar_position: 7
 ---
 
 `cgctl uninstall` removes CloudGround from the server. By default it keeps the sites' files, their
-databases and every backup; options delete the sites too and remove the packages the installer
-brought. There is no uninstall from the panel.
+databases and every backup. Options let you delete the sites too, and remove the packages the
+installer added. You can't uninstall from the panel.
 
-## See what it would do {#plan}
+## Preview the changes {#plan}
 
 On the server, as root:
 
@@ -22,8 +22,8 @@ On the server, as root:
 cgctl uninstall --plan
 ```
 
-It prints every action, one per line, then what will be kept, and changes nothing. Add the same
-options you will use (`--remove-sites`, `--purge-packages`) to see their actions too.
+It prints every action, one per line, followed by what will be kept, and changes nothing. Add the
+options you plan to use (`--remove-sites`, `--purge-packages`) to include their actions too.
 
 ## Uninstall and keep the sites {#keep-the-sites}
 
@@ -31,34 +31,35 @@ options you will use (`--remove-sites`, `--purge-packages`) to see their actions
 cgctl uninstall
 ```
 
-It lists what it keeps and asks `Remove CloudGround? [y/N]`. Type `y`. With `--yes` it does not ask.
+It lists what it will keep and asks `Remove CloudGround? [y/N]`. Type `y`. With `--yes` it skips the
+question.
 
 What happens to each part:
 
-| What | Without options | With `--remove-sites` |
+| What | No options | With `--remove-sites` |
 | --- | --- | --- |
 | CloudGround's services, units, binaries, its nginx, sshd, kernel, log rotation, cron and certbot hook files, the `cloudground` user, the panel's state | removed | removed |
 | *Since v0.3.0.* quarantined files and the malware scan's signatures (the ClamAV package stays) | removed | removed |
 | *Since v0.3.0.* the block list's `inet cloudground` table | removed | removed |
-| `nginx.conf` and the distribution's default site | put back as they were | put back as they were |
-| the sites' files under `/srv/sites` | **kept**, nothing serves them | deleted |
-| the site users `cg-site-<id>` | **kept and locked**: they own the files | deleted, with their groups |
-| the sites' databases and database users, MariaDB and its tuning file | **kept**, MariaDB keeps running | CloudGround's dropped; tuning file removed |
-| the sites' certificates (`/etc/letsencrypt/live/<domain>`) | kept | deleted |
+| `nginx.conf` and the distribution's default site | restored to their original state | restored to their original state |
+| site files under `/srv/sites` | **kept**, but nothing serves them | deleted |
+| site users `cg-site-<id>` | **kept and locked**, since they own the files | deleted, along with their groups |
+| site databases and database users, MariaDB and its tuning file | **kept**, and MariaDB keeps running | CloudGround's dropped; tuning file removed |
+| site certificates (`/etc/letsencrypt/live/<domain>`) | kept | deleted |
 | certificates you uploaded for a site | moved to `/root/cloudground-uninstall/custom-certs` | deleted |
 | backups, in their repository | **never touched** | **never touched** |
 
-The kept certificates stop renewing: their renewal used CloudGround's web folder for certificate
-challenges, which is gone. At the end the uninstall lists them, with the commands to renew one with
-another web server (`certbot certonly --webroot -w <root> --cert-name <domain> -d <domain>`) or to
-remove it (`certbot delete --cert-name <domain>`).
+Kept certificates stop renewing, because renewal relied on CloudGround's web folder for certificate
+challenges, and that folder is gone. At the end, the uninstall lists them along with the commands to
+renew one through another web server (`certbot certonly --webroot -w <root> --cert-name <domain> -d <domain>`)
+or remove it (`certbot delete --cert-name <domain>`).
 
 ## Uninstall and delete the sites {#remove-sites}
 
-:::danger[This deletes the sites]
+:::danger[This deletes your sites]
 
-`--remove-sites` deletes every site's files, users, CloudGround's databases and database users, and
-the sites' certificates. It cannot be undone. The backups in their repository stay.
+`--remove-sites` deletes every site's files and users, CloudGround's databases and database users,
+and the sites' certificates. This can't be undone. Backups in the repository are kept.
 
 :::
 
@@ -66,63 +67,64 @@ the sites' certificates. It cannot be undone. The backups in their repository st
 cgctl uninstall --remove-sites
 ```
 
-It says how many sites and databases it deletes and asks you to type the server's hostname. `--yes`
-is not enough here; to confirm without the question, pass the hostname:
+It tells you how many sites and databases it will delete and asks you to type the server's hostname.
+`--yes` isn't enough here. To confirm without the prompt, pass the hostname:
 
 ```bash prompt
 cgctl uninstall --remove-sites --confirm <hostname>
 ```
 
-`<hostname>` is what the `hostname` command prints on the server. A different name changes nothing.
+`<hostname>` is what the `hostname` command prints on the server. Any other value changes nothing.
 
-## Also remove the packages {#purge-packages}
+## Remove the packages too {#purge-packages}
 
 ```bash prompt
 cgctl uninstall --remove-sites --purge-packages
 ```
 
-`--purge-packages` removes, last, the packages the installer installed because they were missing:
-nginx, certbot and PHP, then the dependencies only they needed (apt's autoremove rule; a package you
-put on hold stays). It also removes the `ondrej/php` repository it added and the restic, wp-cli and
-composer it put in `/usr/local/bin`, and unloads the AppArmor profiles of the packages it purged.
+`--purge-packages` runs last. It removes the packages the installer added because they were missing
+(nginx, certbot and PHP), then any dependencies only they needed (apt's autoremove rule; packages you
+put on hold stay). It also removes the `ondrej/php` repository it added, the restic, wp-cli and
+composer binaries it placed in `/usr/local/bin`, and unloads the AppArmor profiles of the packages it
+purged.
 
-- A package that was already on the server before the install is never removed, nor are `curl`,
-  `git`, `cron` and the other base tools.
-- MariaDB is removed only with `--remove-sites`, and only when it holds no other database. Its data
+- Packages that were on the server before the install are never removed, and neither are `curl`,
+  `git`, `cron` or the other base tools.
+- MariaDB is removed only with `--remove-sites`, and only if it holds no other databases. Its data
   folder `/var/lib/mysql` stays.
 
-## What is kept for you {#kept}
+## What's saved for you {#kept}
 
-Before removing anything, the uninstall copies to `/root/cloudground-uninstall/` (root only):
+Before removing anything, the uninstall copies these to `/root/cloudground-uninstall/` (root only):
 
 | Path | Contents |
 | --- | --- |
-| `state/` | the panel's database and its key, as they were: a CloudGround of the same or a newer release can read them |
-| `backup.env` | the backup repository and its password: without them no backup can be read |
-| `README.txt` | what the files are, and every repository the panel used |
+| `state/` | the panel's database and its key, unchanged, readable by a CloudGround of the same or a newer release |
+| `backup.env` | the backup repository and its password, without which no backup can be read |
+| `README.txt` | what each file is, and every repository the panel used |
 | `custom-certs/` | the certificates you uploaded, without `--remove-sites` |
 | `uninstall.log` | what the run did |
 
 :::warning[`backup.env` is plain text]
 
-It holds the repository's password. Store it somewhere safe, off the server, then delete it.
+It contains the repository password. Store it somewhere safe, off the server, then delete it.
 
 :::
 
-To list the backups with it:
+To list your backups with it:
 
 ```bash prompt
 cd /root/cloudground-uninstall && set -a && . ./backup.env && set +a && restic snapshots
 ```
 
-If you uninstall again later, what an earlier uninstall kept is moved into `earlier-<date>/`, never
-overwritten.
+If you uninstall again later, whatever an earlier uninstall saved is moved into `earlier-<date>/`,
+never overwritten.
 
-## If it stops half way {#rerun}
+## If it stops partway {#rerun}
 
-A failing action is reported and the others go on; the command ends with exit 1 and the failures. Fix
-the cause and run `cgctl uninstall` again: every action can run again. On a server with nothing of
-CloudGround's left it says `CloudGround is not installed here: nothing to remove`.
+When an action fails, it's reported and the rest carry on. The command then exits with 1 and lists the
+failures. Fix the cause and run `cgctl uninstall` again: every action is safe to repeat. On a server
+with nothing of CloudGround left, it prints `CloudGround is not installed here: nothing to remove`.
 
 ## Next step {#next}
 

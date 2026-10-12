@@ -1,6 +1,6 @@
 ---
 title: Update CloudGround
-description: Install a newer signed release from the panel or with cgctl update; a release that does not come up is rolled back with the panel's state as it was.
+description: Install a newer signed release from the panel or with cgctl update. If the new release doesn't come up, the previous one returns with the panel's state intact.
 type: how-to
 prerequisites:
   - An administrator account, for the panel; root on the server, for cgctl update
@@ -9,21 +9,21 @@ last_verified: unverified
 sidebar_position: 5
 ---
 
-The panel's **Update now** button and `cgctl update` start the same update. It installs only releases
-signed with a key the installed CloudGround carries, takes a snapshot of the panel's state first, and
-puts the previous release back by itself if the new one is not healthy within 60 seconds.
+The panel's **Update now** button and `cgctl update` run the same update. It only installs releases
+signed with a key built into the installed CloudGround, snapshots the panel's state first, and
+restores the previous release automatically if the new one isn't healthy within 60 seconds.
 
 ## Check for a new version {#check}
 
-When a newer release exists, the dashboard shows **CloudGround `<version>` is available**, with the
-version you are running and a **What's new** link. The panel checks when you open it and keeps the
-answer for six hours.
+When a newer release is out, the dashboard shows **CloudGround `<version>` is available**, along with
+the version you're running and a **What's new** link. The panel checks when you open it and caches
+the result for six hours.
 
-To stop checking, open **Settings**, card **Panel updates**, switch off **Check for updates when the
-panel is opened** and press **Save**. The check never installs anything by itself.
+To turn the check off, open **Settings**, go to the **Panel updates** card, switch off **Check for
+updates when the panel is opened** and click **Save**. The check never installs anything on its own.
 
-In the same card, **Update channel** chooses what you are offered: **Stable** only final versions,
-**Beta (pre-release versions too)** also the pre-release ones.
+In the same card, **Update channel** controls what you're offered: **Stable** for final releases
+only, or **Beta (pre-release versions too)** to include pre-releases.
 
 From the shell, as root on the server:
 
@@ -31,17 +31,17 @@ From the shell, as root on the server:
 cgctl update --check
 ```
 
-It prints `update available: <installed> -> <release> (signature verified)`, or `up to date`, and
+It prints `update available: <installed> -> <release> (signature verified)` or `up to date`, and
 changes nothing.
 
 ## Update from the panel {#update-from-the-panel}
 
-1. On the dashboard press **Update now**. Or, in **Settings**, card **Panel updates**, press
+1. Click **Update now** on the dashboard. Or go to **Settings**, **Panel updates** card, click
    **Update now** and confirm.
-2. The panel says **Update started: the panel will restart.**
+2. The panel shows **Update started: the panel will restart.**
 
-With the API the request is `POST /api/panel/update`, with `{"version": "<version>"}` or `{}` for the
-newest.
+The API equivalent is `POST /api/panel/update`, with `{"version": "<version>"}`, or `{}` for the
+latest release.
 
 ## Update with cgctl {#update-with-cgctl}
 
@@ -51,88 +51,87 @@ On the server, as root:
 cgctl update
 ```
 
-This installs the newest release of the channel the panel follows. The variations:
+This installs the latest release on the panel's channel. Other forms:
 
 | Command | What it installs |
 | --- | --- |
-| `cgctl update` | the newest release of the panel's channel |
-| `cgctl update --to <vX.Y.Z>` | that release, never an older one |
-| `cgctl update --channel beta` | the newest release of that channel (`stable` or `beta`), this once |
-| `cgctl update --timeout <duration>` | the same, waiting that long for the verdict (default `10m`) |
+| `cgctl update` | the latest release on the panel's channel |
+| `cgctl update --to <vX.Y.Z>` | that release, and never an older one |
+| `cgctl update --channel beta` | the latest release on that channel (`stable` or `beta`), this time only |
+| `cgctl update --timeout <duration>` | the same, waiting that long for the result (default `10m`) |
 
-`cgctl update` waits for the restart and prints `updated: <previous> -> <release>` and the snapshot it
-took, exit 0. If the release was rolled back it prints `rolled back: <previous> runs again, with its
-state from <snapshot>`, exit 1.
+`cgctl update` waits for the restart, then prints `updated: <previous> -> <release>` and the snapshot
+it took, and exits 0. If the release was rolled back, it prints `rolled back: <previous> runs again,
+with its state from <snapshot>` and exits 1.
 
 ## What an update does {#what-happens}
 
-1. It checks the release before changing anything: the signed manifest verifies with a key compiled
-   into the installed CloudGround, the channel takes it (a beta never on stable), and it is newer
-   than the running release and than any release ever installed on this server.
-2. It downloads every file and checks it against the manifest, then swaps the binaries, keeping the
-   old ones.
-3. A guard process, running the previous release, stops the panel, takes a snapshot of the panel's
-   state and the agent's records, and starts the new release.
-4. If the agent and the panel answer on the new binaries within 60 seconds, the update is done.
-   Otherwise the guard puts back the previous binaries, units and the snapshot, and starts the
-   previous release again.
+1. It checks the release before changing anything. The signed manifest must verify against a key
+   compiled into the installed CloudGround, the release must belong to the channel (a beta never
+   reaches stable), and it must be newer than both the running release and any release ever
+   installed on this server.
+2. It downloads every file, checks each one against the manifest, then swaps in the new binaries and
+   keeps the old ones.
+3. A guard process, running the previous release, stops the panel, snapshots the panel's state and
+   the agent's records, and starts the new release.
+4. If the agent and the panel respond on the new binaries within 60 seconds, the update is done.
+   Otherwise the guard restores the previous binaries, units and snapshot, and starts the previous
+   release again.
 
-The new panel migrates its database forward at its first start, through every step between the two
-releases: you can go from one release to any newer one in a single update. The migration never runs
-backwards, so the way back is the snapshot, which a failed update restores by itself.
+On first start, the new panel migrates its database forward through every step between the two
+releases, so you can jump from any release to any newer one in a single update. Migrations never run
+backwards. The way back is the snapshot, which a failed update restores automatically.
 
 ## New system packages {#packages}
 
-*Since v0.3.0.* A release can need a system package that servers installed earlier do not have: v0.3.0
-needs `nftables`, for the [block list](/docs/access/block-addresses). Before the new release's agent
-starts, a check looks at which of the release's packages are missing and installs them with `apt-get`,
-in a transient unit with root privileges. If the install fails the first time, it tries a second time
-after `apt-get update`. The check has a time limit of 100 seconds, inside the 2 minutes the guard waits
-for the agent to restart.
+*Since v0.3.0.* A release can need a system package that older servers don't have. v0.3.0 needs
+`nftables` for the [block list](/docs/access/block-addresses). Before the new release's agent starts,
+a check finds which of the release's packages are missing and installs them with `apt-get`, in a
+transient unit running as root. If the install fails, it runs `apt-get update` and tries once more.
+The check has a 100-second time limit, within the 2 minutes the guard waits for the agent to restart.
 
-- During an update, an install that fails makes the agent's start fail: the update is rolled back like
-  any update that does not come up, and the previous release returns.
-- At any other start (for example a server reboot without a network) the check writes a warning to the
-  journal, with the `apt-get install` command to run, and the agent starts anyway.
+- During an update, a failed install makes the agent fail to start. The update is then rolled back
+  like any update that doesn't come up, and the previous release returns.
+- On any other start (for example a reboot without network access), the check logs a warning to the
+  journal with the `apt-get install` command to run, and the agent starts anyway.
 
-The check also runs from an update of an older release, v0.2.0 included: it needs only the unit file the
-new release installs.
+The check also runs when updating from an older release, v0.2.0 included. It only needs the unit file
+the new release installs.
 
-## What it keeps {#what-it-keeps}
+## What an update leaves alone {#what-it-keeps}
 
-An update replaces the binaries and, when the release changes them, the systemd units. It never
-touches the sites' files, their databases, certificates or backups. The sites keep serving
-throughout: nginx and the sites' PHP are not restarted. Only the panel answers with an error for the
-few seconds of its restart.
+An update replaces the binaries and, if the release changes them, the systemd units. It never touches
+the sites' files, databases, certificates or backups. Sites keep serving throughout, because nginx
+and the sites' PHP aren't restarted. Only the panel returns errors, for the few seconds it takes to
+restart.
 
-It refuses, and changes nothing:
+The update refuses to run, and changes nothing, when:
 
-- a release that is not signed with a key the installed CloudGround carries;
-- a release that is not newer than the running one or than the newest ever installed here
+- the release isn't signed with a key built into the installed CloudGround;
+- the release isn't newer than the running one or than the newest one ever installed here
   (`refusing to downgrade`);
-- an update while a backup, a restore or a task that cannot resume is running: wait until it has
-  finished.
+- a backup, a restore or a task that can't resume is running. Wait for it to finish.
 
-## Check how it went {#check-the-result}
+## Check the result {#check-the-result}
 
 ```bash prompt
 cat /var/lib/cloudground-agent/update-result.json
 journalctl -u cloudground-update-guard
 ```
 
-The file says which version you moved to, or that the update was rolled back and why. The journal
-shows every step of the guard. The newest three snapshots stay in
+The file records the version you moved to, or that the update was rolled back and why. The journal
+shows every step the guard took. The three most recent snapshots are kept in
 `/var/lib/cloudground-agent/update-snapshots/`.
 
 :::note[The installer is not an update]
 
-Running a newer release's `install.sh` on an installed server is refused: it names
-`cgctl update --to <release>`, because the installer has no snapshot and no rollback. The installer of
-the release already installed repairs the server (see
+Running a newer release's `install.sh` on a server that already has CloudGround is refused. The error
+points you to `cgctl update --to <release>`, because the installer takes no snapshot and can't roll
+back. Running the installer of the release that's already installed repairs the server (see
 [what the installer does](/docs/explanation/installation#rerun)).
 
 :::
 
 ## Next step {#next}
 
-To take CloudGround off a server, see [uninstall CloudGround](/docs/server/uninstall-cloudground).
+To remove CloudGround from a server, see [Uninstall CloudGround](/docs/server/uninstall-cloudground).

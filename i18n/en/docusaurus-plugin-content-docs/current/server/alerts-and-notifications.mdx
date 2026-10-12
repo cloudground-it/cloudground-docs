@@ -1,89 +1,91 @@
 ---
 title: Alerts and notifications
-description: Read and dismiss the panel's alerts, and get them in a chat through a webhook.
+description: Review and dismiss the panel's alerts, and send them to a chat channel through a webhook.
 type: how-to
 prerequisites:
-  - An account in the panel to read alerts
-  - An administrator account to set the webhook up
+  - A panel account to view alerts
+  - An administrator account to set up the webhook
 version: v0.3.0
 last_verified: unverified
 sidebar_position: 4
 ---
 
-An alert says that something needs attention. Alerts are in the **Alerts** panel, which the bell at
-the top right opens, and at the top of the **Dashboard**. The panel works them out again every five
-minutes and right after every event that concerns them: a task that finished, a site that changed, a
-service that stopped.
+An alert flags something that needs your attention. Alerts appear in the **Alerts** panel, which
+opens from the bell at the top right, and at the top of the **Dashboard**. The panel re-evaluates them
+every five minutes, and immediately after any related event: a task finishing, a site changing, a
+service stopping.
 
-## What raises an alert {#what-raises-an-alert}
+## What triggers an alert {#what-raises-an-alert}
 
 | Kind | When | Level |
 | --- | --- | --- |
-| **Certificate** | A site's certificate renewal failed. | error |
+| **Certificate** | A site's certificate failed to renew. | error |
 | **Certificate** | A site's certificate expires within 14 days. | warning; error under 3 days |
 | **Task** | A task failed in the last 24 hours: a backup, a restore test, a release, a site creation. | error |
 | **Service** | A service is stopped or failed. | error |
-| **Service** | Something is trying many wrong WordPress connector tokens. | error |
-| **Uptime** | *Since v0.2.0.* A site with the [uptime check](/docs/sites/uptime-monitoring) on does not answer from its public address for two checks in a row. | error |
-| **Resources** | *Since v0.2.0.* A site stays above its CPU or memory threshold for 15 minutes, or its disk use passes its threshold (see [resource usage and limits](/docs/sites/resource-usage-and-limits)). | warning |
-| **Vulnerability** | *Since v0.3.0.* A WordPress site has a known vulnerability in WordPress, a plugin or a theme (see [check WordPress for vulnerabilities](/docs/access/wordpress-vulnerabilities)). It comes back when a new one appears. | error if high or critical, otherwise warning |
-| **Malware** | *Since v0.3.0.* The [malware scan](/docs/access/malware-scan) finds infected files in a site. | error |
-| **Configuration** | Files the panel manages changed outside the panel. | warning |
-| Release | The site serves a release other than the one recorded, or a release did not finish its check after promotion. | warning |
+| **Service** | Something is trying lots of invalid WordPress connector tokens. | error |
+| **Uptime** | *Since v0.2.0.* A site with the [uptime check](/docs/sites/uptime-monitoring) on fails to respond on its public address for two checks in a row. | error |
+| **Resources** | *Since v0.2.0.* A site stays above its CPU or memory threshold for 15 minutes, or its disk usage crosses its threshold (see [resource usage and limits](/docs/sites/resource-usage-and-limits)). | warning |
+| **Vulnerability** | *Since v0.3.0.* A WordPress site has a known vulnerability in WordPress core, a plugin or a theme (see [check WordPress for vulnerabilities](/docs/access/wordpress-vulnerabilities)). It fires again when a new one turns up. | error if high or critical, otherwise warning |
+| **Malware** | *Since v0.3.0.* The [malware scan](/docs/access/malware-scan) finds infected files on a site. | error |
+| **Configuration** | Files the panel manages were changed outside the panel. | warning |
+| Release | The site is serving a different release from the one on record, or a release didn't finish its post-promotion check. | warning |
 
-An operator sees only the alerts of its sites; the other roles see them all.
+Operators only see alerts for their own sites. All other roles see every alert.
 
-*Since v0.3.0.* **Vulnerability** and **Malware** alerts name the components or the files, and like the others reach the notification channels and the webhook.
+*Since v0.3.0.* **Vulnerability** and **Malware** alerts name the affected components or files. Like
+any other alert, they go to the notification channels and the webhook.
 
-*Since v0.2.0.* A **Task** alert names the task in words, in your language (*Restore test*,
-*Scheduled backup*), as the task list does, not by its internal name.
+*Since v0.2.0.* **Task** alerts name the task in plain words, in your language (*Restore test*,
+*Scheduled backup*), the same way the task list does, rather than by its internal name.
 
 ## Dismiss an alert {#dismiss}
 
-In the **Alerts** panel, press **Dismiss** on the alert. Administrators and operators can do it; the
-alert goes away for everyone. When the condition changes (a different renewal error, a certificate
-going from warning to error) or comes back after it cleared, the alert shows again.
+In the **Alerts** panel, click **Dismiss** on the alert. Administrators and operators can dismiss
+alerts, and a dismissed alert disappears for everyone. If the condition changes (a different renewal
+error, a certificate going from warning to error) or comes back after clearing, the alert reappears.
 
-An alert clears by itself when its condition ends: a service that starts again, a renewed
-certificate.
+Alerts clear themselves once the condition goes away, for example when a service starts again or a
+certificate is renewed.
 
 ## Changes made outside the panel {#drift}
 
-When someone edits by hand a file the panel manages (a site's nginx configuration, its PHP pool), the
-**Dashboard** shows the **Configuration changed outside the panel** section, with every file. The
-panel has overwritten nothing. An administrator chooses, file by file:
+When someone hand-edits a file the panel manages (a site's nginx configuration, its PHP pool), the
+**Dashboard** shows a **Configuration changed outside the panel** section listing every such file.
+The panel hasn't overwritten anything. An administrator decides, file by file:
 
-- **Restore**: the panel writes the file again as it configured it;
-- **Keep**: the change stays and becomes the expected one.
+- **Restore**: the panel rewrites the file the way it configured it.
+- **Keep**: the change stays and becomes the new expected version.
 
-## Get notifications in a chat {#webhook}
+## Send notifications to a chat {#webhook}
 
 {/* TODO(verify): delivery to a real webhook (Slack, Discord, Mattermost), the message form and the six-hour rhythm. Not verified on 2026-10-10: no external webhook available; a receiver on this server is refused (`not a public address`). */}
 
-The panel can send alerts to a webhook that takes a `text` field, such as the incoming webhooks of
-Slack, Discord or Mattermost.
+The panel can post alerts to any webhook that accepts a `text` field, such as Slack, Discord or
+Mattermost incoming webhooks.
 
-1. Create an incoming webhook in your chat and copy its `https://` URL.
-2. In the panel open **Settings**.
+1. Create an incoming webhook in your chat tool and copy its `https://` URL.
+2. In the panel, open **Settings**.
 3. In the **Notifications** section, paste the URL into **Webhook**.
-4. Press **Save**.
+4. Click **Save**.
 
-Every five minutes the panel sends each undismissed alert it has not notified in the last six hours,
-in the administrators' language, in the form `CloudGround ERROR on <site>: <text>`. Until you dismiss
-it, an alert therefore comes back every six hours. A failed send is tried again on the next round.
-The language is that of the first enabled administrator who chose one.
+Every five minutes, the panel sends each undismissed alert it hasn't sent in the last six hours, in
+the administrators' language, formatted as `CloudGround ERROR on <site>: <text>`. So until you dismiss
+an alert, it repeats every six hours. A failed send is retried on the next round. The language is
+the one chosen by the first enabled administrator who set one.
 
-The URL must be `https` (an `http://` one is refused on save) and point to a public address: when it
-sends, the panel refuses local and private addresses, this server's own included, and follows no
-redirect. A send refused that way shows only in the API log (`alert webhook failed … not a public
-address`). The URL is a credential: other accounts see it masked, and the panel never
-writes it to the logs. To stop notifications, empty the field and press **Save**.
+The URL must use `https` (an `http://` URL is rejected when you save) and point to a public address.
+When sending, the panel refuses local and private addresses, including this server's own, and
+doesn't follow redirects. A send refused for that reason only shows up in the API log
+(`alert webhook failed … not a public address`). Treat the URL as a credential: other accounts see it
+masked, and the panel never writes it to the logs. To stop notifications, clear the field and click
+**Save**.
 
-## The webhook body {#webhook-body}
+## Webhook payload {#webhook-body}
 
-*Since v0.2.0.* Each send is a `POST` with a JSON body. Chat tools read `text` or `content`; a program
-of yours can read the `cloudground` object instead, with the alert's fields as they are, in no
-language.
+*Since v0.2.0.* Each notification is a `POST` with a JSON body. Chat tools read `text` or `content`.
+Your own code can read the `cloudground` object instead, which carries the alert's raw fields,
+untranslated.
 
 ```json
 {
@@ -100,18 +102,18 @@ language.
 }
 ```
 
-| Field | Content |
+| Field | Contents |
 | --- | --- |
-| `text`, `content` | The same text, in the administrators' language: the level, the site and the message. A task is named in words. |
-| `cloudground.id` | The alert's identifier. It stays the same while the condition does not change. |
+| `text`, `content` | The same message, in the administrators' language: level, site and text. Tasks are named in plain words. |
+| `cloudground.id` | The alert's ID. It stays the same as long as the condition doesn't change. |
 | `cloudground.level` | `error` or `warning`. |
 | `cloudground.kind` | The kind: `certificate`, `task`, `service`, `uptime`, `usage`, `vulnerability`, `malware`, `drift` or `deploy`. |
-| `cloudground.site` | The site's domain. Absent for a server-wide alert. |
-| `cloudground.task_kind` | Only on a `task` alert: the task's internal name, for example `backup.run`. |
-| `cloudground.at` | The alert's moment, in RFC 3339 format: when the failed task started, when the site stopped answering, when the certificate expires. It can be missing. |
+| `cloudground.site` | The site's domain. Omitted for server-wide alerts. |
+| `cloudground.task_kind` | Only on `task` alerts: the task's internal name, for example `backup.run`. |
+| `cloudground.at` | When the alert happened, in RFC 3339 format: when the failed task started, when the site stopped responding, when the certificate expires. Can be missing. |
 
 {/* TODO(verify): the body a real webhook receives, and an example `at` in its exact format. */}
 
 ## Next step {#next}
 
-Keep the panel current: [update CloudGround](./update-cloudground.mdx).
+Keep the panel up to date: [Update CloudGround](./update-cloudground.mdx).

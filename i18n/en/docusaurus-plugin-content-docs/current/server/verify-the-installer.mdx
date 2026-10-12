@@ -1,6 +1,6 @@
 ---
 title: Verify the installer
-description: Check the installer script against the release's signed manifest before you run it, so you install CloudGround without trusting the address that served the script.
+description: Check the install script against the release's signed manifest before running it, so you don't have to trust the server that delivered the script.
 type: how-to
 prerequisites:
   - A freshly created Ubuntu 24.04 or 26.04 LTS server, as in the installation tutorial
@@ -10,9 +10,9 @@ last_verified: unverified
 sidebar_position: 6
 ---
 
-The one-line install trusts the address the script comes from: a script decides what runs. Here you
-download the script of one release, check its signature with the release key published below, and run
-it only if it matches.
+The one-line install trusts whatever address serves the script, and the script decides what runs. In
+this guide you download the script for a specific release, verify its signature against the release
+key published below, and run it only if the check passes.
 
 ## The release key {#release-key}
 
@@ -22,10 +22,10 @@ Every CloudGround release is signed with this ed25519 key (base64):
 KDquuxOG12M2ejsCCSLPKnH70SvmHtiX9MnMB/SbJs4=
 ```
 
-It is the same key compiled into `cgctl` (`releaseKeys` in `internal/version/keys.go` in the product's
-source).
+It's the same key compiled into `cgctl` (`releaseKeys` in `internal/version/keys.go` in the product's
+source code).
 
-## Download the release's files {#download}
+## Download the release files {#download}
 
 On the server, as root, in an empty folder:
 
@@ -36,9 +36,9 @@ base=https://github.com/cloudground-it/cloudground/releases/download/$v
 curl -fsSLO "$base/install.sh" -O "$base/SHA256SUMS" -O "$base/SHA256SUMS.sig"
 ```
 
-`v` is the release you install; `install.sh` installs exactly that release.
+`v` is the release you want to install. `install.sh` installs exactly that release.
 
-## Check the signature and the script {#check}
+## Verify the signature and the script {#check}
 
 ```bash prompt
 { printf '\x30\x2a\x30\x05\x06\x03\x2b\x65\x70\x03\x21\x00'; printf %s "$key" | base64 -d; } > release.der
@@ -49,23 +49,23 @@ grep -qx "version $v" SHA256SUMS && grep '  install.sh$' SHA256SUMS | sha256sum 
 ```
 
 The first line turns the key into a public key file. `openssl pkeyutl` prints
-`Signature Verified Successfully`: the manifest `SHA256SUMS` was signed with the release key. The
-last line checks that the manifest is for the release you asked for and prints `install.sh: OK`: the
-script is the one the manifest lists.
+`Signature Verified Successfully`, which means the `SHA256SUMS` manifest was signed with the release
+key. The last line confirms the manifest belongs to the release you asked for, then prints
+`install.sh: OK`, which means the script matches the one listed in the manifest.
 
-If either check fails, do not run the script.
+If either check fails, don't run the script.
 
-## Run it {#run}
+## Run the script {#run}
 
 ```bash prompt
 bash install.sh
 ```
 
-From here the install is the same as in the [tutorial](/docs/tutorials/install#run-the-installer): the
-script downloads the release's binaries from GitHub, runs `cgctl` only if it has the SHA-256 the
-script names, and `cgctl` installs nothing whose manifest does not verify.
+From here on, the install is the same as in the [tutorial](/docs/tutorials/install#run-the-installer).
+The script downloads the release's binaries from GitHub and only runs `cgctl` if its SHA-256 matches
+the one in the script. `cgctl` in turn installs nothing whose manifest fails verification.
 
-With the GitHub CLI you can also check where the script was built:
+With the GitHub CLI, you can also check where the script was built:
 
 ```bash prompt
 gh attestation verify install.sh --repo cloudground-it/cloudground
@@ -73,4 +73,4 @@ gh attestation verify install.sh --repo cloudground-it/cloudground
 
 ## Next step {#next}
 
-To see what each check protects, read [what the installer does](/docs/explanation/installation#trust).
+To see what each check protects against, read [what the installer does](/docs/explanation/installation#trust).
