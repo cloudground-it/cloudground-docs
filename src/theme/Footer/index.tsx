@@ -60,8 +60,8 @@ function Footer(): ReactNode {
           <Column
             title={<Translate id="cg.footer.product">Prodotto</Translate>}
             links={[
+              {to: '/#funzioni', label: <Translate id="cg.footer.features">Funzioni</Translate>},
               {to: '/#misure', label: <Translate id="cg.footer.measures">Misure</Translate>},
-              {to: '/#prove', label: <Translate id="cg.footer.tests">Prove di sicurezza</Translate>},
               {to: '/#installa', label: <Translate id="cg.footer.install">Installazione</Translate>},
             ]}
           />

@@ -89,6 +89,10 @@
   --cg-code-rule: #2c2e35;
   --cg-code-control: #6c6f78;
   --cg-code-hover: #24262d;
+  /* On ink in both themes (home terminal, ownership band): the dark theme's
+     ok and blue, which reach 4.5:1 on --cg-code-bg. */
+  --cg-code-ok: #63cf8a;
+  --cg-code-accent: #93a8ff;
   --cg-logo-orange: #e0612b; /* the logo's lower bar, in both themes */
 
   --cg-nav-h: 60px;
@@ -342,6 +346,13 @@ button {
   background: var(--cg-paper);
   border-bottom: 1px solid var(--cg-rule);
   box-shadow: none;
+}
+/* On the home the navbar scrolls away with the page; the docs keep it fixed. */
+html.cg-home .navbar--fixed-top {
+  position: relative;
+}
+html.cg-home {
+  scroll-padding-top: 0;
 }
 .cg-nav {
   width: 100%;

@@ -443,7 +443,7 @@
     "message": "One command installs the panel on your server. Every site starts with its own cache, its own PHP, its own certificate, and backups that are test-restored after every copy."
   },
   "home.hero.lede": {
-    "message": "One command installs CloudGround. Every site starts cached, sized for the machine, isolated from the others and backed up off the server. The measurements are published, with the method."
+    "message": "One command installs the panel on your Ubuntu server. Every site starts with its own cache, its own PHP, its own certificate, and backups that are test-restored after every copy."
   },
   "home.measures.cached": {
     "message": "Cached page"
@@ -473,28 +473,25 @@
     "message": "PHP + database, 10 connections"
   },
   "home.measures.caption": {
-    "message": "Requests per second by scenario"
+    "message": "Measurement results, by scenario"
   },
   "home.measures.title": {
-    "message": "Every measurement of release v0.1.0"
+    "message": "Measured, not {accent}"
   },
   "home.measures.intro": {
-    "message": "Five scenarios on the same machine. The numbers are those of the published benchmark file: nothing rounded in our favour."
+    "message": "Release v0.1.0 on a small VPS, under wrk: three runs per scenario, the mean shown here. The method and every run are public."
   },
   "home.measures.scenario": {
     "message": "Scenario"
   },
   "home.measures.rps": {
-    "message": "Requests per second"
-  },
-  "home.measures.errors": {
-    "message": "Errors"
+    "message": "Requests / s"
   },
   "home.measures.data": {
-    "message": "the data"
+    "message": "The data"
   },
   "home.measures.method": {
-    "message": "the method"
+    "message": "The method"
   },
   "cg.footer.tagline": {
     "message": "Hosting that’s measured"
@@ -541,269 +538,8 @@
   "cg.crumbs.docs": {
     "message": "Documentation"
   },
-  "cg.footer.tests": {
-    "message": "Safety tests"
-  },
   "cg.footer.release": {
     "message": "Release {version}"
-  },
-  "home.install.copyLabel": {
-    "message": "Copy the install command"
-  },
-  "home.protocol.object": {
-    "message": "Object of the test"
-  },
-  "home.protocol.objectValue": {
-    "message": "An Ubuntu server running CloudGround"
-  },
-  "home.protocol.document": {
-    "message": "Document"
-  },
-  "home.protocol.revision": {
-    "message": "Revision"
-  },
-  "home.protocol.date": {
-    "message": "Date"
-  },
-  "home.result.title": {
-    "message": "WooCommerce shop page"
-  },
-  "home.result.condition": {
-    "message": "Test condition"
-  },
-  "home.result.with": {
-    "message": "With cache"
-  },
-  "home.result.without": {
-    "message": "Without cache"
-  },
-  "home.result.unit": {
-    "message": "requests per second, mean of 3 runs"
-  },
-  "home.result.connections": {
-    "message": "Concurrent connections"
-  },
-  "home.result.who": {
-    "message": "What answers"
-  },
-  "home.result.whoCache": {
-    "message": "nginx page cache"
-  },
-  "home.result.whoPhp": {
-    "message": "PHP and the database, on every request"
-  },
-  "home.result.errors": {
-    "message": "Errors"
-  },
-  "home.result.errorsValue": {
-    "message": "{n} in 3 runs"
-  },
-  "home.result.passed": {
-    "message": "Passed"
-  },
-  "home.result.reference": {
-    "message": "Reference"
-  },
-  "home.result.criterion": {
-    "message": "criterion: zero errors"
-  },
-  "home.result.referenceNote": {
-    "message": "the same page without cache"
-  },
-  "home.result.methodWith": {
-    "message": "Method: wrk, 500 connections for 3 runs, the mean is reported. Release v0.1.0 on a 2 vCPU VPS with Ubuntu 26.04."
-  },
-  "home.result.methodWithout": {
-    "message": "Method: wrk, 10 connections for 3 runs, the mean is reported. Every request goes through PHP and the database. Same machine, same page."
-  },
-  "home.result.methodLink": {
-    "message": "Method and raw data in the repository’s bench/ folder"
-  },
-  "home.hero.title": {
-    "message": "The control panel for an Ubuntu server that measures its own sites"
-  },
-  "home.install.label": {
-    "message": "On a fresh server, as root:"
-  },
-  "home.install.requirements": {
-    "message": "Ubuntu 24.04 or 26.04 LTS, amd64, at least 1 GB of RAM, ports 80 and 443 free."
-  },
-  "home.hero.guide": {
-    "message": "Installation guide"
-  },
-  "home.hero.verify": {
-    "message": "Verify the installer before you run it"
-  },
-  "home.measures.conditions": {
-    "message": "Conditions"
-  },
-  "home.measures.note": {
-    "message": "2 vCPU VPS, Ubuntu 26.04, WooCommerce shop page, wrk on the same server, 3 runs per scenario, mean; measured on 11 October 2026. The figures hold for that machine: on your server, repeat them with the same method. Both {data} and {method} are public."
-  },
-  "home.guard.ok": {
-    "message": "OK"
-  },
-  "home.guard.blocked": {
-    "message": "blocked"
-  },
-  "home.guard.label": {
-    "message": "Example of a Guard report in the panel, with notes"
-  },
-  "home.guard.caption": {
-    "message": "Guard report, in the panel"
-  },
-  "home.guard.sample": {
-    "message": "Example, illustrative data"
-  },
-  "home.guard.page": {
-    "message": "Page"
-  },
-  "home.guard.pairs": {
-    "message": "Pairs"
-  },
-  "home.guard.median": {
-    "message": "Median"
-  },
-  "home.guard.interval": {
-    "message": "95% interval"
-  },
-  "home.guard.verdict": {
-    "message": "Verdict"
-  },
-  "home.guard.note1": {
-    "message": "{b} of the server-time difference between staging and production, with its 95% interval."
-  },
-  "home.guard.note1.b": {
-    "message": "Median"
-  },
-  "home.guard.note2": {
-    "message": "{b} per page. A page that is slower with certainty stops the release: it is the only row that breaks the table."
-  },
-  "home.guard.note2.b": {
-    "message": "The verdict"
-  },
-  "home.guard.stopped": {
-    "message": "Release stopped: /cart/ is slower than production. Production was not touched."
-  },
-  "home.guard.note3": {
-    "message": "{b}, and rolling back is a single command if you need to undo a publication."
-  },
-  "home.guard.note3.b": {
-    "message": "Production stays as it is"
-  },
-  "home.tests.guard.when": {
-    "message": "Before every Safe Push from staging"
-  },
-  "home.tests.guard.method": {
-    "message": "Pairs of requests to the same pages on staging and production, timed on the server. The median of the difference and its 95% interval are computed."
-  },
-  "home.tests.guard.outcome": {
-    "message": "A release slower than production is not published. Verdicts: pass, warning, blocked, inconclusive."
-  },
-  "home.tests.restore.name": {
-    "message": "Test restore"
-  },
-  "home.tests.restore.when": {
-    "message": "After every restic backup"
-  },
-  "home.tests.restore.method": {
-    "message": "Every snapshot, encrypted and deduplicated off the server, is restored separately and checked. The restore time is measured, not estimated."
-  },
-  "home.tests.restore.outcome": {
-    "message": "A backup counts only once its test restore has succeeded. The last verified one is never removed."
-  },
-  "home.tests.isolation.name": {
-    "message": "Isolation"
-  },
-  "home.tests.isolation.when": {
-    "message": "For every site, when it is created"
-  },
-  "home.tests.isolation.method": {
-    "message": "One Unix user, one PHP-FPM master, one systemd sandbox and one database account per site. SFTP locked into the site’s folder."
-  },
-  "home.tests.isolation.outcome": {
-    "message": "A compromised site cannot see the files or the database of the others."
-  },
-  "home.tests.drift.name": {
-    "message": "Configuration drift"
-  },
-  "home.tests.drift.when": {
-    "message": "On the files the panel manages"
-  },
-  "home.tests.drift.method": {
-    "message": "The panel compares the managed files with the ones it wrote. If someone changes them by hand, it reports it."
-  },
-  "home.tests.drift.outcome": {
-    "message": "It overwrites nothing on its own: you choose whether to restore or keep the change."
-  },
-  "home.tests.method": {
-    "message": "Method"
-  },
-  "home.tests.outcome": {
-    "message": "Outcome"
-  },
-  "home.tests.title": {
-    "message": "Safety tests"
-  },
-  "home.tests.intro": {
-    "message": "Every guarantee of the panel has a check that verifies it. For each one: how it is tested, and what happens when the test fails."
-  },
-  "home.limits.release.title": {
-    "message": "Pre-release"
-  },
-  "home.limits.release.text": {
-    "message": "The latest release is {version}. Interfaces may change before 1.0."
-  },
-  "home.limits.audit.title": {
-    "message": "No external audit"
-  },
-  "home.limits.audit.text": {
-    "message": "The code has had an internal security review. No outside firm has checked it yet."
-  },
-  "home.limits.machine.title": {
-    "message": "One machine only"
-  },
-  "home.limits.machine.text": {
-    "message": "The measurements hold for a 2 vCPU VPS. The method is public: repeat it on your server."
-  },
-  "home.limits.licence.title": {
-    "message": "Source available, not open source"
-  },
-  "home.limits.licence.text": {
-    "message": "Elastic License 2.0. Read every line that runs as root on your server; no account with us, no per-server fee."
-  },
-  "home.limits.title": {
-    "message": "Limits of this test"
-  },
-  "home.limits.intro": {
-    "message": "A test report also says what it does not cover."
-  },
-  "home.procedure.title": {
-    "message": "Installation procedure"
-  },
-  "home.procedure.intro": {
-    "message": "Three steps, in order. The installer checks the server before it touches anything."
-  },
-  "home.procedure.1.title": {
-    "message": "Prepare a fresh server"
-  },
-  "home.procedure.1.text": {
-    "message": "A freshly created Ubuntu 24.04 or 26.04 LTS, amd64, at least 1 GB of RAM and 10 GB of free disk, root access over SSH. The installer takes over nginx, PHP, MariaDB and SSH: use a dedicated server."
-  },
-  "home.procedure.2.title": {
-    "message": "Run the command"
-  },
-  "home.procedure.2.text": {
-    "message": "If it finds problems (system, memory, disk, ports in use) it lists them all at once and stops without touching anything. The script checks the release’s SHA-256 and the signed manifest."
-  },
-  "home.procedure.3.title": {
-    "message": "Open the setup link"
-  },
-  "home.procedure.3.text": {
-    "message": "At the end it prints an address {url}, valid for 24 hours, that works once. You create the administrator, then the first site."
-  },
-  "home.procedure.guide": {
-    "message": "The full installation guide"
   },
   "home.terminal.line1": {
     "message": "[ok] server checked: Ubuntu, memory, disk, ports"
@@ -819,5 +555,281 @@
   },
   "home.terminal.line5": {
     "message": "→ create the administrator: https://<ip>:8443/setup/…"
+  },
+  "home.hero.kicker": {
+    "message": "A hosting panel on your own servers"
+  },
+  "home.hero.title1": {
+    "message": "Hosting"
+  },
+  "home.hero.title2": {
+    "message": "that’s {accent}"
+  },
+  "home.hero.titleAccent": {
+    "message": "measured."
+  },
+  "home.hero.install": {
+    "message": "Install with one command"
+  },
+  "home.hero.docs": {
+    "message": "Read the guide"
+  },
+  "home.hero.fact1": {
+    "message": "Free"
+  },
+  "home.hero.fact2": {
+    "message": "Source available"
+  },
+  "home.hero.fact3": {
+    "message": "On your servers"
+  },
+  "home.scope.cache": {
+    "message": "Cache"
+  },
+  "home.scope.php": {
+    "message": "Site PHP"
+  },
+  "home.scope.phpOn": {
+    "message": "idle"
+  },
+  "home.scope.phpOff": {
+    "message": "at the limit"
+  },
+  "home.scope.db": {
+    "message": "Database"
+  },
+  "home.scope.dbOn": {
+    "message": "idle"
+  },
+  "home.scope.dbOff": {
+    "message": "busy"
+  },
+  "home.scope.caption": {
+    "message": "Simulation · a WordPress site under traffic"
+  },
+  "home.scope.switch": {
+    "message": "Page cache"
+  },
+  "home.scope.with": {
+    "message": "With cache"
+  },
+  "home.scope.without": {
+    "message": "Without cache"
+  },
+  "home.scope.describeOn": {
+    "message": "With the cache, response time stays low and flat"
+  },
+  "home.scope.describeOff": {
+    "message": "Without the cache, response time climbs and swings"
+  },
+  "home.scope.axis": {
+    "message": "Response time"
+  },
+  "home.scope.stable": {
+    "message": "Stable"
+  },
+  "home.scope.strained": {
+    "message": "Under strain"
+  },
+  "home.scope.note": {
+    "message": "An illustration, not a measurement. The real numbers are in the {link}."
+  },
+  "home.scope.noteLink": {
+    "message": "measurements"
+  },
+  "home.tech.label": {
+    "message": "Technologies"
+  },
+  "home.features.kicker": {
+    "message": "01 / Features"
+  },
+  "home.features.title": {
+    "message": "The control a {accent} won’t give you."
+  },
+  "home.features.titleAccent": {
+    "message": "tutorial"
+  },
+  "home.features.intro": {
+    "message": "Eight things you usually set up by hand, one evening at a time. Here they are on from the first site."
+  },
+  "home.features.1.tag": {
+    "message": "Speed"
+  },
+  "home.features.1.title": {
+    "message": "A page cache that aims"
+  },
+  "home.features.1.text": {
+    "message": "nginx serves pages without touching PHP. When you change a post or a price, only the pages that show it are purged."
+  },
+  "home.features.2.tag": {
+    "message": "Isolation"
+  },
+  "home.features.2.title": {
+    "message": "One PHP per site"
+  },
+  "home.features.2.text": {
+    "message": "Separate system user, PHP and database. A compromised site cannot see the others."
+  },
+  "home.features.3.tag": {
+    "message": "Backups"
+  },
+  "home.features.3.title": {
+    "message": "Restores already tested"
+  },
+  "home.features.3.text": {
+    "message": "Every copy goes, encrypted, where you choose, and is test-restored right after."
+  },
+  "home.features.4.tag": {
+    "message": "Staging"
+  },
+  "home.features.4.title": {
+    "message": "Try first, then measure"
+  },
+  "home.features.4.text": {
+    "message": "A password-protected copy. A release slower than production is stopped."
+  },
+  "home.features.security.tag": {
+    "message": "Security"
+  },
+  "home.features.security.title": {
+    "message": "Vulnerabilities and malware"
+  },
+  "home.features.security.text": {
+    "message": "Plugins with known flaws flagged, suspicious files found, 2FA for wp-admin and blocking by country."
+  },
+  "home.features.5.title": {
+    "message": "Certificates that renew"
+  },
+  "home.features.5.text": {
+    "message": "Let’s Encrypt, wildcards included, or your own certificates."
+  },
+  "home.features.7.title": {
+    "message": "The database, inside the panel"
+  },
+  "home.features.7.text": {
+    "message": "Tables, data and SQL with the site’s own permissions only, no outside tools."
+  },
+  "home.features.8.tag": {
+    "message": "Access"
+  },
+  "home.features.8.title": {
+    "message": "Roles and two factors"
+  },
+  "home.features.8.text": {
+    "message": "Administrators, operators on their own sites, read-only. 2FA required if you want."
+  },
+  "home.own.kicker": {
+    "message": "02 / Ownership"
+  },
+  "home.own.title": {
+    "message": "Stop {accent} your own server."
+  },
+  "home.own.titleAccent": {
+    "message": "renting"
+  },
+  "home.own.a.title": {
+    "message": "Source available"
+  },
+  "home.own.a.text": {
+    "message": "Read every line that runs as root on your server. Change it if you need to."
+  },
+  "home.own.b.title": {
+    "message": "Yours to keep"
+  },
+  "home.own.b.text": {
+    "message": "No licence to renew, no fee per server. If the project stopped, the panel would keep working."
+  },
+  "home.own.c.title": {
+    "message": "No middleman"
+  },
+  "home.own.c.text": {
+    "message": "No account with us, no service in between. Backups go where you choose."
+  },
+  "home.measures.kicker": {
+    "message": "03 / Measurements"
+  },
+  "home.measures.titleAccent": {
+    "message": "promised."
+  },
+  "home.measures.outcome": {
+    "message": "Outcome"
+  },
+  "home.measures.noErrors": {
+    "message": "0 errors"
+  },
+  "home.measures.passed": {
+    "message": "Passed"
+  },
+  "home.measures.reference": {
+    "message": "Baseline"
+  },
+  "home.measures.server": {
+    "message": "Server: 2 vCPU VPS · Ubuntu 26.04"
+  },
+  "home.measures.site": {
+    "message": "Site: WooCommerce, the shop page"
+  },
+  "home.measures.load": {
+    "message": "Load: wrk on the same server"
+  },
+  "home.measures.date": {
+    "message": "Measured: 11 October 2026"
+  },
+  "home.install.kicker": {
+    "message": "04 / Installation"
+  },
+  "home.install.title": {
+    "message": "One command. {accent}"
+  },
+  "home.install.titleAccent": {
+    "message": "Really."
+  },
+  "home.install.step1": {
+    "message": "A freshly created Ubuntu 24.04 or 26.04 server, with root access."
+  },
+  "home.install.step2": {
+    "message": "The command alongside. It checks the server before it touches anything."
+  },
+  "home.install.step3": {
+    "message": "Open the one-time link, create the administrator, create the first site."
+  },
+  "home.install.guide": {
+    "message": "The installation guide"
+  },
+  "home.install.note": {
+    "message": "Output shortened. The full log stays in {path}."
+  },
+  "home.terminal.copy": {
+    "message": "Copy"
+  },
+  "home.terminal.copied": {
+    "message": "Copied"
+  },
+  "home.terminal.copyWhat": {
+    "message": "the command"
+  },
+  "home.terminal.copiedStatus": {
+    "message": "Command copied"
+  },
+  "home.closing.kicker": {
+    "message": "Free · No subscription"
+  },
+  "home.closing.title1": {
+    "message": "Switch on"
+  },
+  "home.closing.title2": {
+    "message": "your {accent}"
+  },
+  "home.closing.titleAccent": {
+    "message": "server."
+  },
+  "home.closing.install": {
+    "message": "Install CloudGround"
+  },
+  "home.closing.github": {
+    "message": "The code on GitHub"
+  },
+  "cg.footer.features": {
+    "message": "Features"
   }
 }
