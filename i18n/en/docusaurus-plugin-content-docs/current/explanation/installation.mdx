@@ -1,6 +1,6 @@
 ---
 title: What the installer does
-description: The installer's check and nine steps, in order, and the choices behind each. Running it again on the same release repairs the server.
+description: The installer's preflight check and nine steps, in order, with the reasoning behind each. Re-running it on the same release repairs the server.
 type: explanation
 prerequisites: []
 version: v0.1.0
@@ -8,115 +8,115 @@ last_verified: unverified
 sidebar_position: 2
 ---
 
-`install.sh` is a short bootstrap: it downloads one release from GitHub, checks it, and hands over
-to `cgctl install`, which prepares an empty Ubuntu server and starts the panel. Everything the
-programs it runs print goes to `/var/log/cloudground-install.log`; on the terminal you see only the
-nine steps and how long each took.
+`install.sh` is a small bootstrap script. It downloads one release from GitHub, verifies it, and
+hands off to `cgctl install`, which sets up a blank Ubuntu server and starts the panel. All output
+from the programs it runs goes to `/var/log/cloudground-install.log`. The terminal shows only the
+nine steps and how long each one took.
 
-## The steps {#steps}
+## Steps {#steps}
 
 ```mermaid
 flowchart TD
-  start(["curl … install.sh | bash, as root"]) --> dl["Download the release named in the script"]
-  dl --> pin{"cgctl has the SHA-256<br/>the script names?"}
+  start(["curl … install.sh | bash, as root"]) --> dl["Download the release pinned in the script"]
+  dl --> pin{"Does cgctl match the SHA-256<br/>pinned in the script?"}
   pin -- "no" --> refuse(["Run nothing"])
-  pin -- "yes" --> verify{"Manifest signed by a key in cgctl,<br/>requested version, not older<br/>than what is installed?"}
+  pin -- "yes" --> verify{"Manifest signed by a key in cgctl,<br/>requested version, not older<br/>than the installed one?"}
   verify -- "no" --> refuse2(["Refuse to install"])
   verify -- "yes" --> check["Check the machine"]
-  check --> ok{"Every check<br/>passes?"}
-  ok -- "no" --> stop(["List every problem<br/>and stop without touching anything"])
+  check --> ok{"All checks<br/>pass?"}
+  ok -- "no" --> stop(["List every problem<br/>and stop without changing anything"])
   ok -- "yes" --> pkgs["1 · Install nginx, PHP, MariaDB,<br/>restic, certbot, wp-cli, composer"]
-  pkgs --> users["2 · Create the cloudground user, folders,<br/>agent token, self-signed certificates"]
+  pkgs --> users["2 · Create the cloudground user, directories,<br/>agent token, self-signed certificates"]
   users --> bins["3 · Install panel-api, panel-agent,<br/>cgctl, cg-site-shell"]
   bins --> kernel["4 · Kernel and nginx<br/>worker settings"]
   kernel --> nginx["5 · nginx default servers:<br/>:80, :443 and the panel on :8443"]
   nginx --> maria["6 · Start MariaDB"]
-  maria --> svc["7 · systemd units: agent, API and socket;<br/>wait for the panel to answer"]
-  svc --> fw["8 · Firewall rules, if ufw is on,<br/>and chrooted SFTP"]
+  maria --> svc["7 · systemd units: agent, API and socket;<br/>wait for the panel to respond"]
+  svc --> fw["8 · Firewall rules if ufw is on,<br/>plus chrooted SFTP"]
   fw --> rot["9 · Log rotation<br/>and certificate renewal"]
   rot --> link(["Print the one-time setup link"])
 ```
 
-## What it checks first {#preflight}
+## Preflight check {#preflight}
 
-The initial check, before the steps, runs every test and reports every problem together, so you fix
-the machine in one pass:
+Before any step runs, the installer checks everything and reports all problems at once, so you
+can fix the machine in a single pass:
 
-- Ubuntu 24.04 or 26.04 LTS, amd64 architecture;
-- at least 900 MB of `MemTotal`: a 1 GB server reports a little under 1024, and must pass;
+- Ubuntu 24.04 or 26.04 LTS on amd64;
+- at least 900 MB of `MemTotal` (a 1 GB server reports a bit under 1024, and has to pass);
 - at least 10 GB free on `/`;
-- ports 80 and 443 free, because CloudGround's nginx must own them.
+- ports 80 and 443 free, because CloudGround's nginx needs them.
 
-## The packages {#packages}
+## Packages {#packages}
 
-PHP comes in a different version per system: 8.4 from the `ondrej/php` repository on Ubuntu 24.04,
-8.5 from Ubuntu's own packages on 26.04. The distribution's PHP-FPM service is switched off: each
-site gets its own PHP-FPM process, started by the agent.
+The PHP version depends on the OS release: 8.4 from the `ondrej/php` repository on Ubuntu 24.04,
+and 8.5 from Ubuntu's own packages on 26.04. The distribution's PHP-FPM service is disabled,
+because the agent starts a separate PHP-FPM process for each site.
 
-Redis is not installed: the sites' object cache uses APCu. A server upgraded from an earlier version
-keeps its Redis, switched off.
+Redis is not installed, since the sites' object cache uses APCu. A server upgraded from an earlier
+version keeps its Redis, stopped.
 
-Only missing packages are installed. Running the installer again does not upgrade the ones already
-there: that is the job of the system's own security updates or of your `apt upgrade`.
+The installer only installs packages that are missing. Re-running it does not upgrade packages
+already present. That is left to the system's security updates or your own `apt upgrade`.
 
-restic 0.19.1, wp-cli 2.12.0 and composer 2.10.3 are downloaded at those versions and installed only
-if their SHA-256 matches the one written in the installer.
+restic 0.19.1, wp-cli 2.12.0 and composer 2.10.3 are downloaded at exactly those versions, and
+installed only if their SHA-256 matches the hash hard-coded in the installer.
 
-## The binaries {#binaries}
+## Binaries {#binaries}
 
-The script names one release and the SHA-256 of that release's `cgctl`. It downloads the release
-from GitHub Releases, never from the address that served the script, and runs `cgctl` only if it has
-that hash. `cgctl` then installs the binaries only when:
+The script pins one release and the SHA-256 of that release's `cgctl`. It downloads the release
+from GitHub Releases, never from the host that served the script, and runs `cgctl` only if the
+hash matches. `cgctl` then installs the binaries only if all of these are true:
 
-- the `SHA256SUMS` manifest is signed by a release key compiled into `cgctl` (with
-  `CLOUDGROUND_RELEASE_PUBKEY`, by that key, which must also be one of them);
+- the `SHA256SUMS` manifest is signed by a release key compiled into `cgctl` (or, with
+  `CLOUDGROUND_RELEASE_PUBKEY` set, by that key, which must also be one of the compiled-in keys);
 - the manifest names the version the script asked for;
-- the version is not older than the one already installed, nor than the newest the panel has updated
-  itself to;
+- the version is not older than the one already installed, or than the newest version the panel
+  has updated itself to;
 - every binary matches its hash in the manifest.
 
-The systemd units travel inside `cgctl`, so a verified `cgctl` makes them verified too.
+The systemd units ship inside `cgctl`, so once `cgctl` is verified, so are they.
 
-## Trust {#trust}
+## Trust model {#trust}
 
-Once you run the genuine script, the address that served it has no further say: it holds neither the
-files the script's hash names nor the signing key. But that address could serve a different script,
-and a script decides everything. To avoid trusting it, download the script of a named release and
-check it against the signed manifest with the release key published in this documentation:
-[verify the installer](/docs/server/verify-the-installer).
+Once you run the genuine script, the host that served it has no further control. It holds neither
+the files the script's hash pins nor the signing key. That host could still serve you a different
+script, though, and a script can do anything. If you do not want to trust it, download the script
+for a specific release and check it against the signed manifest, using the release key published
+in these docs: [Verify the installer](/docs/server/verify-the-installer).
 
-After the install, the panel's updates check releases with the keys compiled into the installed
+After installation, panel updates verify releases with the keys compiled into the installed
 binaries.
 
-## The choices on the server {#server-choices}
+## Server configuration choices {#server-choices}
 
-- **Kernel and nginx.** Longer accept queues and more open files, so a burst does not drop
-  connections before any worker is busy. `worker_connections` goes up to 4096; if nginx refuses the
-  changed configuration, the installer puts the original back.
-- **Default servers.** On :80 and :443 an unknown name gets nothing (`444`), except certificate
-  challenges. On :8443 the panel answers, with a self-signed certificate of its own that stays after
-  you give the panel a domain: you can always reach it by IP.
-- **MariaDB.** The installer only starts it; the agent calculates its configuration from the
-  server's memory and CPUs.
-- **Firewall.** The installer never turns ufw on: many servers sit behind their provider's firewall,
-  and a script that turns ufw on can lock you out. If ufw is already active, it opens the ports sshd
-  listens on (those `sshd -T` reports, 22 when it reports none), 80, 443, 443/udp and 8443. If ufw is
-  installed but off, it changes nothing and, at the end, prints the commands that turn it on with
-  those ports open (see [firewall](/docs/access/firewall#enable)).
-- **SFTP.** The sites' system users (`cg-site-*`) get SFTP only, locked in the site's folder. The
+- **Kernel and nginx.** Longer accept queues and a higher open-file limit, so a traffic spike does
+  not drop connections before a worker can pick them up. `worker_connections` goes up to 4096. If
+  nginx rejects the changed config, the installer restores the original.
+- **Default servers.** On :80 and :443, an unknown hostname gets no response (`444`), except for
+  certificate challenges. On :8443 the panel answers with its own self-signed certificate. That
+  certificate stays even after you give the panel a domain, so you can always reach it by IP.
+- **MariaDB.** The installer only starts it. The agent works out its configuration from the
+  server's memory and CPU count.
+- **Firewall.** The installer never turns ufw on. Many servers sit behind a provider firewall, and
+  a script that enables ufw can lock you out. If ufw is already active, the installer opens the
+  ports sshd listens on (as reported by `sshd -T`, or 22 if it reports none), plus 80, 443, 443/udp
+  and 8443. If ufw is installed but inactive, nothing changes, and at the end the installer prints
+  the commands to enable it with those ports open (see [Firewall](/docs/access/firewall#enable)).
+- **SFTP.** Site system users (`cg-site-*`) get SFTP only, chrooted to the site directory. The
   [site shell](/docs/access/site-shell) uses a separate login.
-- **Logs.** Site logs rotate daily, or at 1 GB, and 14 are kept.
+- **Logs.** Site logs rotate daily or at 1 GB, and 14 rotations are kept.
 
-## Running it again {#rerun}
+## Re-running the installer {#rerun}
 
-Each step first checks the machine and changes only what differs. So the installer of the release
-already installed repairs the server: what still matches stays as it is, and the services restart
-only when something they read has changed. `cgctl doctor` runs the same checks and reports what
-differs without changing anything.
+Each step inspects the machine first and changes only what differs. So running the installer for
+the release that is already installed repairs the server: anything that still matches is left
+alone, and services restart only when a file they read has changed. `cgctl doctor` runs the same
+checks and reports differences without changing anything.
 
-The installer of another release refuses to run over an installed panel and names
-`cgctl update --to <release>`: the installer has no snapshot and no rollback, an update has both (see
-[update CloudGround](/docs/server/update-cloudground)).
+The installer for a different release refuses to run over an existing panel and points you to
+`cgctl update --to <release>` instead. The installer takes no snapshot and cannot roll back; an
+update does both (see [Update CloudGround](/docs/server/update-cloudground)).
 
 ## Next step {#next}
 

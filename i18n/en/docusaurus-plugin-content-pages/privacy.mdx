@@ -1,48 +1,48 @@
 ---
 title: Privacy
-description: "What this site collects: no cookies, no analytics, no outside service. Only the logs of the service that hosts it, GitHub Pages."
+description: "What this site collects: no cookies, no analytics, no third-party services. Only the server logs kept by its host, GitHub Pages."
 ---
 
 # Privacy
 
-This page says what the cloudground.it site does, and is written from its code
-([the repository](https://github.com/cloudground-it/cloudground-docs) is public).
+This page describes what the cloudground.it website does, based on its source code. [The
+repository](https://github.com/cloudground-it/cloudground-docs) is public, so you can check.
 
 ## What the site collects {#what-it-collects}
 
-Nothing. The site is made of static pages:
+Nothing. The site is a set of static pages:
 
-- **no cookies** and no visitor statistics;
-- **no forms**: for a question or a problem, open an
-  [issue on GitHub](https://github.com/cloudground-it/cloudground/issues);
-- **no outside service**: fonts, search and images are served by the site itself. Search runs in
-  your browser, on an index downloaded with the pages, and the words you search for do not leave
-  your device;
-- the question "Was this page useful?" at the end of the guide only changes what the page shows:
-  the answer is neither saved nor sent.
+- **no cookies** and no visitor analytics;
+- **no forms**: if you have a question or hit a problem, open an [issue on
+  GitHub](https://github.com/cloudground-it/cloudground/issues);
+- **no third-party services**: fonts, search and images are all served by the site itself. Search
+  runs in your browser against an index downloaded with the pages, so your search terms never
+  leave your device;
+- the "Was this page useful?" question at the bottom of the docs only changes what the page
+  displays. Your answer is not stored or sent anywhere.
 
 ## What stays in your browser {#what-stays-in-your-browser}
 
-If you choose the light or dark theme with the button in the bar, the browser remembers the choice in
-the `theme` entry of its local storage (*localStorage*). It stays on your device, the site does not
-receive it, and you can clear it with the site's data in the browser's settings. If you do not touch
-the button, the site follows your system's setting and writes nothing.
+If you pick the light or dark theme with the toggle in the navigation bar, your browser saves that
+choice under the `theme` key in its local storage (*localStorage*). It stays on your device and is
+never sent to the site. You can clear it by deleting the site's data in your browser settings. If
+you never touch the toggle, the site follows your system setting and stores nothing.
 
-## Who hosts the site {#hosting}
+## Hosting {#hosting}
 
-The pages are served by GitHub Pages, a service of GitHub, Inc. Like every web server, GitHub
-receives the IP address and the request headers of whoever visits the site, and handles them under
-its [privacy statement](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
+The pages are served by GitHub Pages, a service run by GitHub, Inc. Like any web server, GitHub
+receives the IP address and request headers of every visitor, and handles them under its [privacy
+statement](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
 This site has no access to that data.
 
-The links to GitHub (the code, the releases, the issues) lead off this site: from there, GitHub's
-rules apply.
+Links to GitHub (the source code, releases and issues) take you off this site. Once you are there,
+GitHub's policies apply.
 
-## Who is responsible {#controller}
+## Data controller {#controller}
 
-The site belongs to Emanuele Frascella, who is its data controller. For any question about this page,
-write to [emanuele@frascella.dev](mailto:emanuele@frascella.dev).
+The site is owned by Emanuele Frascella, who is the data controller. If you have any questions
+about this page, email [emanuele@frascella.dev](mailto:emanuele@frascella.dev).
 
 ## Next step {#next}
 
-To learn what the panel does on your server, start from the [architecture](/docs/explanation/architecture).
+To find out what the panel does on your server, start with the [architecture](/docs/explanation/architecture).

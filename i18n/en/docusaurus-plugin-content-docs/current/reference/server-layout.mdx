@@ -1,6 +1,6 @@
 ---
 title: Paths, ports and services
-description: The ports the server listens on, the systemd services, the system users and the paths CloudGround uses.
+description: The ports the server listens on, the systemd services, the system users and the file paths CloudGround uses.
 type: reference
 prerequisites: []
 version: v0.3.0
@@ -8,122 +8,122 @@ last_verified: unverified
 sidebar_position: 5
 ---
 
-The values are those of an installation made with the installer. `<id>` is the site's number in
-the panel, `<domain>` its domain.
+These values apply to a server set up with the installer. `<id>` is the site's number in the
+panel, and `<domain>` is its domain.
 
 ## Ports {#ports}
 
-| Port | Who listens | From where | Use |
+| Port | Listener | Reachable from | Purpose |
 | --- | --- | --- | --- |
 | 22/tcp | sshd | Internet | SSH for root, SFTP and site shells |
-| 80/tcp | nginx | Internet | certificate challenges, then a redirect to HTTPS |
-| 443/tcp | nginx | Internet | the sites and the panel domain |
-| 443/udp | nginx | Internet | HTTP/3, when nginx has the module |
-| 8443/tcp | nginx | Internet | the panel by IP, with its own self-signed certificate, and Quarry at `/quarry` |
-| 3306/tcp | MariaDB | the server only | the sites' databases |
-| 9080/tcp | panel-api | `127.0.0.1` only | the WordPress connector: cache purge and health check |
+| 80/tcp | nginx | Internet | Certificate challenges, then redirect to HTTPS |
+| 443/tcp | nginx | Internet | Sites and the panel domain |
+| 443/udp | nginx | Internet | HTTP/3, if nginx has the module |
+| 8443/tcp | nginx | Internet | Panel by IP, with its own self-signed certificate, and Quarry at `/quarry` |
+| 3306/tcp | MariaDB | This server only | Site databases |
+| 9080/tcp | panel-api | `127.0.0.1` only | WordPress connector: cache purge and health check |
 
-The installer never turns the firewall on. When it is already active, it opens the ports sshd listens
-on, 80, 443, 443/udp and 8443 (see [firewall](/docs/access/firewall)). From the panel you cannot close the
-SSH ports, 80, 443 or 8443.
+The installer never turns the firewall on. If it is already active, the installer opens the ports
+sshd listens on, plus 80, 443, 443/udp and 8443 (see [Firewall](/docs/access/firewall)). You cannot
+close the SSH ports, 80, 443 or 8443 from the panel.
 
-The panel has no TCP port of its own: nginx talks to it on the socket `/run/cloudground/api.sock`.
+The panel has no TCP port of its own. nginx talks to it over the socket `/run/cloudground/api.sock`.
 
 ## Services {#services}
 
-| systemd unit | Runs as | What it does |
+| systemd unit | Runs as | Purpose |
 | --- | --- | --- |
-| `cloudground-api.service` | `cloudground` | the panel's API and interface |
-| `cloudground-api.socket` | — | opens `/run/cloudground/api.sock` for the API |
-| `cloudground-agent.service` | root, sandboxed | the privileged work |
-| `cloudground-php-cg-site-<id>.service` | `cg-site-<id>` | a site's PHP-FPM, in the slice `cg-site-<id>.slice` |
-| `cg-site-<id>.slice` | — | a site's slice: all its processes, with their counters and [limits](/docs/sites/resource-usage-and-limits) (unit in `/etc/systemd/system/`) |
-| `cloudground-update-guard.service` | root | transient, during a panel update |
-| `cg-helper-<tool>-<n>.service` | root, sandboxed | *Since v0.3.0.* transient, in the `cg-helper.slice` slice: a `restic`, `mariadb-dump`, `mariadb` or `certbot` run by the agent (see [services](/docs/server/services#helper-units)) |
-| `nginx.service` | root and `www-data` | the web server |
-| `mariadb.service` | `mysql` | the databases |
-| `redis-server.service` | — | not installed on a new server; a server upgraded from an earlier version keeps it switched off |
+| `cloudground-api.service` | `cloudground` | Panel API and UI |
+| `cloudground-api.socket` | — | Opens `/run/cloudground/api.sock` for the API |
+| `cloudground-agent.service` | root, sandboxed | Privileged operations |
+| `cloudground-php-cg-site-<id>.service` | `cg-site-<id>` | A site's PHP-FPM, in the `cg-site-<id>.slice` slice |
+| `cg-site-<id>.slice` | — | A site's slice: all its processes, with their counters and [limits](/docs/sites/resource-usage-and-limits) (unit file in `/etc/systemd/system/`) |
+| `cloudground-update-guard.service` | root | Transient, runs during a panel update |
+| `cg-helper-<tool>-<n>.service` | root, sandboxed | *Since v0.3.0.* Transient, in the `cg-helper.slice` slice: a `restic`, `mariadb-dump`, `mariadb` or `certbot` run started by the agent (see [Services](/docs/server/services#helper-units)) |
+| `nginx.service` | root and `www-data` | Web server |
+| `mariadb.service` | `mysql` | Databases |
+| `redis-server.service` | — | Not installed on new servers; servers upgraded from an earlier version keep it, stopped |
 
 ## Users and groups {#users}
 
-| Name | What it is |
+| Name | Description |
 | --- | --- |
-| `cloudground` | the panel's user, without a shell |
-| `cg-site-<id>` | a site's system user: owns its files, runs its PHP, signs in over SFTP |
-| `cg-shell-<id>` | the site shell's login, with the same uid as `cg-site-<id>` |
-| `cg-sftp-off` | group: its members can sign in over neither SSH nor SFTP |
-| `cg-sftp-keys` | group: the keys-only SFTP logins, which the SSH server asks for no password |
-| `site_<id>` | the default name of a site's primary MariaDB database and user, when you choose none (see [database names and passwords](/docs/reference/database-names-and-passwords)) |
+| `cloudground` | Panel user, no shell |
+| `cg-site-<id>` | A site's system user: owns its files, runs its PHP, signs in over SFTP |
+| `cg-shell-<id>` | Site shell login, sharing the uid of `cg-site-<id>` |
+| `cg-sftp-off` | Group whose members cannot sign in over SSH or SFTP |
+| `cg-sftp-keys` | Group for key-only SFTP logins, which the SSH server never asks for a password |
+| `site_<id>` | Default name for a site's primary MariaDB database and user, if you do not pick one (see [Database names and passwords](/docs/reference/database-names-and-passwords)) |
 
-## The panel {#panel-paths}
+## Panel paths {#panel-paths}
 
 | Path | Contents |
 | --- | --- |
-| `/usr/local/bin/panel-api`, `panel-agent`, `cgctl`, `cg-site-shell` | the binaries |
-| `/etc/cloudground/panel.env` | the panel's and the agent's configuration |
-| `/etc/cloudground/cgctl.env` | cgctl's configuration |
-| `/etc/cloudground/agent.token` | the secret shared by the panel and the agent |
-| `/etc/cloudground/certs/` | the panel's certificates (`panel.pem`, `panel-ip.pem`), the fallback (`fallback.pem`) and uploaded ones (`custom/`) |
-| `/var/lib/cloudground/state.db` | the panel's database |
-| `/var/lib/cloudground/secret.key` | the key that encrypts the database's secrets: back it up with the database |
-| `/var/lib/cloudground-agent/` | the agent's working space and, after the first update, `highest-release` |
-| `/var/lib/cloudground-agent/installed.json` | what the installer installed because it was missing: packages, repository, tools (read by `cgctl uninstall --purge-packages`) |
-| `/var/lib/cloudground-agent/update-result.json` | the outcome of the last update |
-| `/var/lib/cloudground-agent/update-snapshots/` | the snapshots taken before an update, the newest three |
-| `/var/lib/cloudground-agent/databases.json` | the agent's record of which database and database user is which site's (see [recover the database record](/docs/data/recover-the-database-record)) |
-| `/run/cloudground/agent.sock` | the agent's socket |
-| `/run/cloudground/shell.sock` | the socket on which the agent takes the site shells' sessions |
-| `/var/log/cloudground-install.log` | the installer's log |
-| `/root/cloudground-uninstall/` | after an uninstall: the panel's state, `backup.env`, `README.txt` (see [uninstall CloudGround](/docs/server/uninstall-cloudground#kept)) |
+| `/usr/local/bin/panel-api`, `panel-agent`, `cgctl`, `cg-site-shell` | Binaries |
+| `/etc/cloudground/panel.env` | Panel and agent configuration |
+| `/etc/cloudground/cgctl.env` | cgctl configuration |
+| `/etc/cloudground/agent.token` | Secret shared between the panel and the agent |
+| `/etc/cloudground/certs/` | Panel certificates (`panel.pem`, `panel-ip.pem`), the fallback certificate (`fallback.pem`) and uploaded certificates (`custom/`) |
+| `/var/lib/cloudground/state.db` | Panel database |
+| `/var/lib/cloudground/secret.key` | Key that encrypts secrets in the database. Back it up together with the database. |
+| `/var/lib/cloudground-agent/` | Agent working directory and, after the first update, `highest-release` |
+| `/var/lib/cloudground-agent/installed.json` | What the installer added because it was missing: packages, repository, tools (read by `cgctl uninstall --purge-packages`) |
+| `/var/lib/cloudground-agent/update-result.json` | Outcome of the last update |
+| `/var/lib/cloudground-agent/update-snapshots/` | Snapshots taken before updates (the three most recent) |
+| `/var/lib/cloudground-agent/databases.json` | Agent's record of which database and database user belong to which site (see [Recover the database record](/docs/data/recover-the-database-record)) |
+| `/run/cloudground/agent.sock` | Agent socket |
+| `/run/cloudground/shell.sock` | Socket where the agent receives site shell sessions |
+| `/var/log/cloudground-install.log` | Installer log |
+| `/root/cloudground-uninstall/` | After an uninstall: panel state, `backup.env`, `README.txt` (see [Uninstall CloudGround](/docs/server/uninstall-cloudground#kept)) |
 
-## The sites {#site-paths}
+## Site paths {#site-paths}
 
 | Path | Contents |
 | --- | --- |
-| `/srv/sites/<domain>/` | the site's folder |
-| `/srv/sites/<domain>/current` | the link to the live release, `releases/<id>` |
-| `/srv/sites/<domain>/releases/` | the releases |
-| `/srv/sites/<domain>/shared/` | what stays across releases: `wp-config.php`, `uploads` |
-| `/srv/sites/<domain>/tmp/` | PHP's temporary files and sessions |
+| `/srv/sites/<domain>/` | Site directory |
+| `/srv/sites/<domain>/current` | Symlink to the live release, `releases/<id>` |
+| `/srv/sites/<domain>/releases/` | Releases |
+| `/srv/sites/<domain>/shared/` | Files kept across releases: `wp-config.php`, `uploads` |
+| `/srv/sites/<domain>/tmp/` | PHP temporary files and sessions |
 | `/var/log/cloudground/<domain>/` | `access.log`, `error.log`, `php-error.log` |
-| `/var/cache/cloudground/<domain>/` | the page cache |
-| `/etc/nginx/sites-enabled/<domain>.conf` | the vhost |
-| `/etc/nginx/conf.d/cloudground-cache-<id>.conf` | the site's cache zone |
-| `/etc/nginx/conf.d/cloudground-global.conf` | nginx settings shared by every site |
-| `/etc/cloudground-php/cg-site-<id>.conf` | the site's PHP-FPM configuration |
-| `/run/cloudground/php/cg-site-<id>/php.sock` | the site's PHP-FPM socket |
-| `/etc/nginx/cloudground-auth/<domain>.htpasswd` | a staging copy's password |
-| `/etc/nginx/cloudground-auth/<domain>.path-<hash>.htpasswd` | the password hash of a [protected path](/docs/access/protected-paths), one per path (root:www-data, 0640) |
-| `/etc/systemd/system/cg-site-<id>.slice` | the site's slice, with its limits |
-| `/etc/cron.d/` and `/etc/cloudground/cron/` | the sites' scheduled tasks |
-| `/etc/letsencrypt/live/<domain>/` | the site's certificate |
+| `/var/cache/cloudground/<domain>/` | Page cache |
+| `/etc/nginx/sites-enabled/<domain>.conf` | Vhost |
+| `/etc/nginx/conf.d/cloudground-cache-<id>.conf` | Site's cache zone |
+| `/etc/nginx/conf.d/cloudground-global.conf` | nginx settings shared by all sites |
+| `/etc/cloudground-php/cg-site-<id>.conf` | Site's PHP-FPM configuration |
+| `/run/cloudground/php/cg-site-<id>/php.sock` | Site's PHP-FPM socket |
+| `/etc/nginx/cloudground-auth/<domain>.htpasswd` | Password for a staging copy |
+| `/etc/nginx/cloudground-auth/<domain>.path-<hash>.htpasswd` | Password hash for a [protected path](/docs/access/protected-paths), one file per path (root:www-data, 0640) |
+| `/etc/systemd/system/cg-site-<id>.slice` | Site's slice, with its limits |
+| `/etc/cron.d/` and `/etc/cloudground/cron/` | Site scheduled tasks |
+| `/etc/letsencrypt/live/<domain>/` | Site certificate |
 
-## Server {#server-paths}
+## Server paths {#server-paths}
 
 | Path | Contents |
 | --- | --- |
-| `/etc/mysql/mariadb.conf.d/99-cloudground.cnf` | MariaDB's configuration, calculated for the server |
-| `/etc/sysctl.d/60-cloudground.conf` | the kernel settings |
-| `/etc/ssh/sshd_config.d/10-cloudground-sftp.conf` | chrooted SFTP for the sites |
-| `/etc/ssh/sshd_config.d/09-cloudground-sftp-keys.conf` | no password for the SFTP logins of the group `cg-sftp-keys` (written on first use) |
-| `/etc/ssh/sshd_config.d/11-cloudground-shell.conf` | the site shells' `cg-shell-*` logins, keys only |
-| `/var/cache/cloudground/restic/` | restic's cache for the backup repository |
-| `/etc/logrotate.d/cloudground` | rotation of the sites' logs |
-| `/var/log/mysql/slow.log` | MariaDB's slow queries, over 1 second |
-| `/etc/nginx/sites-enabled/cloudground-panel-bootstrap.conf` | the default servers on :80 and :443 and the panel on :8443 |
-| `/etc/nginx/nginx.conf.cloudground-pre` | `nginx.conf` as it was before the installer, put back by the uninstall |
-| `/etc/letsencrypt/renewal-hooks/deploy/cloudground-reload-nginx.sh` | reloads nginx after a certificate renewal |
-| `/var/lib/cloudground-agent/quarantine/<site-id>/` | *Since v0.3.0.* files put in [quarantine](/docs/access/malware-scan#quarantine), with a `.json` file beside each that records the site, the path and the SHA-256 (folder 0700, files 0600, root's) |
-| `/var/lib/cloudground-agent/geo/` | *Since v0.3.0.* the copy of DB-IP *IP to Country Lite* for the [country rules](/docs/access/refuse-visitors#country-data) |
-| `/etc/nginx/conf.d/cloudground-block-<id>.conf` | *Since v0.3.0.* a site's per-site rules; absent for a site without rules |
-| nft table `inet cloudground` | *Since v0.3.0.* the block list, in the kernel; uninstalling removes it |
-| `/run/cloudground/auth-log.sock` | *Since v0.3.0.* the socket the agent reads failed WordPress sign-ins from |
+| `/etc/mysql/mariadb.conf.d/99-cloudground.cnf` | MariaDB configuration, tuned for this server |
+| `/etc/sysctl.d/60-cloudground.conf` | Kernel parameters |
+| `/etc/ssh/sshd_config.d/10-cloudground-sftp.conf` | Chrooted SFTP for sites |
+| `/etc/ssh/sshd_config.d/09-cloudground-sftp-keys.conf` | Disables passwords for SFTP logins in the `cg-sftp-keys` group (written on first use) |
+| `/etc/ssh/sshd_config.d/11-cloudground-shell.conf` | Key-only `cg-shell-*` logins for site shells |
+| `/var/cache/cloudground/restic/` | restic cache for the backup repository |
+| `/etc/logrotate.d/cloudground` | Site log rotation |
+| `/var/log/mysql/slow.log` | MariaDB slow queries, over 1 second |
+| `/etc/nginx/sites-enabled/cloudground-panel-bootstrap.conf` | Default servers on :80 and :443, and the panel on :8443 |
+| `/etc/nginx/nginx.conf.cloudground-pre` | `nginx.conf` as it was before the installer ran; restored on uninstall |
+| `/etc/letsencrypt/renewal-hooks/deploy/cloudground-reload-nginx.sh` | Reloads nginx after a certificate renewal |
+| `/var/lib/cloudground-agent/quarantine/<site-id>/` | *Since v0.3.0.* Files moved to [quarantine](/docs/access/malware-scan#quarantine), each with a `.json` file recording the site, path and SHA-256 hash (directory 0700, files 0600, owned by root) |
+| `/var/lib/cloudground-agent/geo/` | *Since v0.3.0.* Local copy of DB-IP *IP to Country Lite* for [country rules](/docs/access/refuse-visitors#country-data) |
+| `/etc/nginx/conf.d/cloudground-block-<id>.conf` | *Since v0.3.0.* A site's per-site rules; not present for sites without rules |
+| nft table `inet cloudground` | *Since v0.3.0.* The block list, in the kernel; removed on uninstall |
+| `/run/cloudground/auth-log.sock` | *Since v0.3.0.* Socket the agent reads failed WordPress sign-ins from |
 | `/usr/local/bin/restic`, `wp`, `composer` | restic, wp-cli and composer, at the versions the installer pins |
 
-## Directories the installer creates {#directories}
+## Directories created by the installer {#directories}
 
 The installer creates these directories, or fixes their mode, on every run. "Unchanged" means an
-existing directory keeps its owner, and a new one belongs to root.
+existing directory keeps its owner and a new one is owned by root.
 
 | Directory | Mode | Owner |
 | --- | --- | --- |
@@ -142,10 +142,10 @@ existing directory keeps its owner, and a new one belongs to root.
 | `/var/lib/letsencrypt` | 0755 | unchanged |
 | `/var/spool/cron` | 0755 | unchanged |
 
-`/var/www/cloudground-acme` is the web folder for certificate challenges. `/var/lib/letsencrypt` and
-`/var/spool/cron` belong to certbot and cron: the installer creates them before they exist so that
-the agent can start.
+`/var/www/cloudground-acme` is the web root for certificate challenges. `/var/lib/letsencrypt` and
+`/var/spool/cron` belong to certbot and cron. The installer creates them ahead of time so the agent
+can start.
 
 ## Next step {#next}
 
-To see how these pieces work together, read the [architecture](/docs/explanation/architecture).
+To see how these pieces fit together, read about the [architecture](/docs/explanation/architecture).

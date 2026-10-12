@@ -1,6 +1,6 @@
 ---
-title: The path of a request
-description: What happens to a visit, from nginx to the page cache and, only when needed, to PHP-FPM, OPcache, the object cache and MariaDB.
+title: How a request is served
+description: What happens to a visit, from nginx to the page cache and, only when needed, on to PHP-FPM, OPcache, the object cache and MariaDB.
 type: explanation
 prerequisites: []
 version: v0.2.0
@@ -8,93 +8,98 @@ last_verified: unverified
 sidebar_position: 3
 ---
 
-A page served from the cache never touches PHP: nginx reads it from disk. This page follows a
-request to a PHP site (WordPress, WooCommerce, PHP, Laravel) and shows where it stops. The exact
-values are in the [cache reference](/docs/reference/cache-behaviour).
+A page served from the cache never touches PHP: nginx reads it straight from disk. This page
+traces a request to a PHP site (WordPress, WooCommerce, PHP, Laravel) and shows where it can stop
+along the way. For exact values, see the [cache reference](/docs/reference/cache-behaviour).
 
-## The path {#diagram}
+## Request flow {#diagram}
 
 ```mermaid
 flowchart TD
-  req(["HTTPS request on :443"]) --> tls["nginx<br/>TLS, HTTP/2, HTTP/3 when available"]
+  req(["HTTPS request on :443"]) --> tls["nginx<br/>TLS, HTTP/2, HTTP/3 if available"]
   tls --> auth{"Protected path?"}
-  auth -- "yes, without the right credentials" --> e401["401"]
-  auth -- "no, or the right credentials" --> left{"File left in the folder?<br/>copy, dump, archive"}
+  auth -- "yes, wrong or no credentials" --> e401["401"]
+  auth -- "no, or valid credentials" --> left{"Leftover file?<br/>backup copy, dump, archive"}
   left -- "yes" --> e404["404"]
   left -- "no" --> asset{"Static file?<br/>css, js, images, fonts"}
-  asset -- "yes" --> disk["Served from disk<br/>with a 30-day browser cache"]
-  asset -- "no" --> skip{"Skip the cache?<br/>POST, query string, session<br/>cookie, excluded path"}
+  asset -- "yes" --> disk["Served from disk<br/>with 30-day browser caching"]
+  asset -- "no" --> skip{"Bypass the cache?<br/>POST, query string, session<br/>cookie, excluded path"}
   skip -- "yes" --> php
-  skip -- "no" --> lookup{"Page in the cache?"}
+  skip -- "no" --> lookup{"Page in cache?"}
   lookup -- "fresh" --> hit["HIT<br/>served from disk"]
-  lookup -- "expired, but within<br/>the stale window" --> stale["STALE or UPDATING<br/>served at once, refreshed behind"]
-  lookup -- "missing" --> lock["One request goes to PHP,<br/>the others wait up to 5 s"]
+  lookup -- "expired, within<br/>the stale window" --> stale["STALE or UPDATING<br/>served now, refreshed in background"]
+  lookup -- "missing" --> lock["One request goes to PHP,<br/>the rest wait up to 5 s"]
   stale -.-> php
-  lock --> php["The site's PHP-FPM"]
-  php --> opc["OPcache<br/>code already compiled"]
-  opc --> oc["APCu object cache<br/>when on"]
+  lock --> php["Site's PHP-FPM"]
+  php --> opc["OPcache<br/>precompiled code"]
+  opc --> oc["APCu object cache<br/>if enabled"]
   oc --> maria[("MariaDB")]
   maria --> resp["Response"]
-  resp --> store{"Sets a cookie,<br/>or says no-store / private?"}
-  store -- "no" --> save["Stored in the cache<br/>for the profile's lifetime"]
-  store -- "yes" --> nosave["Not stored"]
+  resp --> store{"Sets a cookie,<br/>or no-store / private?"}
+  store -- "no" --> save["Cached<br/>for the profile's lifetime"]
+  store -- "yes" --> nosave["Not cached"]
 ```
 
 ## Before the cache {#before-the-cache}
 
-*Since v0.2.0.* Two checks come before everything else:
+*Since v0.2.0.* Two checks run before anything else:
 
-- **Protected paths.** When the site asks for a username and password on a path, nginx checks them for
-  the site's whole server, before it chooses where the request goes: they hold for static files, for
-  the cache and for PHP. A cached page of a protected path does not go out without the password. See
-  [protected paths](/docs/access/protected-paths).
-- **Files left in the folder.** Backup copies, SQL dumps and archives at the top of the public folder
-  get **404**: the list is in [site isolation](/docs/explanation/site-isolation#leftovers).
+- **Protected paths.** If the site requires a username and password on a path, nginx checks them
+  at the level of the site's whole server block, before it decides where to route the request. So
+  the check applies to static files, the cache and PHP alike, and a cached page on a protected path
+  is never served without the password. See [Protected paths](/docs/access/protected-paths).
+- **Leftover files.** Backup copies, SQL dumps and archives at the top level of the public
+  directory return **404**. The full list is in [Site
+  isolation](/docs/explanation/site-isolation#leftovers).
 
 ## nginx and the page cache {#page-cache}
 
-The page cache is nginx's FastCGI cache, one per site, on disk under
-`/var/cache/cloudground/<domain>`. A page's key is scheme, method, host and address. Every response
-from PHP, when the page cache is on, carries the `X-CloudGround-Cache` header with the status nginx
-gave the request: `HIT`, `MISS`, `BYPASS`, `EXPIRED`, `STALE`, `UPDATING` or `REVALIDATED`.
+The page cache is nginx's FastCGI cache, one per site, stored on disk under
+`/var/cache/cloudground/<domain>`. The cache key is scheme, method, host and URI. When the page
+cache is on, every response from PHP carries an `X-CloudGround-Cache` header with the cache status
+nginx assigned to the request: `HIT`, `MISS`, `BYPASS`, `EXPIRED`, `STALE`, `UPDATING` or
+`REVALIDATED`.
 
-Three mechanisms keep the load on PHP low:
+Three mechanisms keep the load on PHP down:
 
-- **Coalescing.** When a hundred visitors ask for the same expired page at the same moment, only one
-  reaches PHP. The others wait for its answer, up to 5 seconds.
-- **Stale-while-revalidate.** A page that has just expired is served at once as it was, and nginx
-  regenerates it in the background. The same happens when PHP answers with an error or not at all.
-- **Tracking parameters.** An address with only parameters such as `utm_*`, `fbclid` or `gclid`
-  uses the same entry as the page without them: a campaign does not send every click to PHP.
+- **Request coalescing.** If a hundred visitors request the same expired page at the same moment,
+  only one request reaches PHP. The rest wait up to 5 seconds for its response.
+- **Stale-while-revalidate.** A page that has just expired is served immediately as it was, while
+  nginx regenerates it in the background. The same happens when PHP returns an error or does not
+  respond.
+- **Tracking parameters.** A URL whose only parameters are things like `utm_*`, `fbclid` or `gclid`
+  shares a cache entry with the same page without them. A marketing campaign does not send every
+  click through to PHP.
 
-## When the cache stays out of it {#bypass}
+## When the cache is bypassed {#bypass}
 
-Each site type has its own rules for skipping the cache: a `POST`, a query string that is not only
-tracking, a session cookie (for WordPress the login, WooCommerce's cart), a path such as `/wp-admin`
-or `/checkout`. A request with an `Authorization` header always skips the cache.
+Each site type has its own bypass rules: a `POST`, a query string that contains more than tracking
+parameters, a session cookie (the sign-in cookie for WordPress, the cart for WooCommerce), or a
+path such as `/wp-admin` or `/checkout`. A request with an `Authorization` header always bypasses
+the cache.
 
-The most important rule holds for all of them: **a response that sets a cookie is never cached.**
-A page generated for a visitor with a session is never served to someone else.
+One rule applies to every type and matters most: **a response that sets a cookie is never
+cached.** A page generated for a visitor with a session is never served to anyone else.
 
 ## PHP {#php}
 
-When the request reaches PHP, the site's own PHP-FPM process serves it, holding only that site's
-data:
+When a request reaches PHP, the site's own PHP-FPM process handles it. That process holds only
+this site's data:
 
-- **OPcache** keeps the compiled PHP code in memory. It checks whether a file changed at most every
-  60 seconds; after a release the panel reloads PHP so the new code shows at once.
-- **Object cache** (WordPress, when you turn it on) keeps the results of repeated queries in APCu:
-  it speeds up wp-admin, the cart and every page the page cache cannot serve.
-- **MariaDB** runs on the same server, configured for its memory and CPUs.
+- **OPcache** keeps compiled PHP code in memory. It checks for changed files at most every 60
+  seconds, so after a release the panel reloads PHP to make the new code take effect at once.
+- **Object cache** (WordPress, if you enable it) stores the results of repeated queries in APCu.
+  It speeds up wp-admin, the cart and every page the page cache cannot serve.
+- **MariaDB** runs on the same server, tuned to its memory and CPU count.
 
 PHP compresses its own response, so the cache stores the page already compressed and serves it
 without compressing it again.
 
-## The other site types {#other-types}
+## Other site types {#other-types}
 
-A static site has no PHP: nginx serves the files from disk. A reverse proxy passes every request to
-its upstream. Neither has a page cache.
+A static site has no PHP: nginx serves files straight from disk. A reverse proxy forwards every
+request to its upstream. Neither type has a page cache.
 
 ## Next step {#next}
 
-To take a page or a whole site out of the cache, follow [purge the cache](/docs/data/purge-the-cache).
+To remove one page or a whole site from the cache, see [Purge the cache](/docs/data/purge-the-cache).

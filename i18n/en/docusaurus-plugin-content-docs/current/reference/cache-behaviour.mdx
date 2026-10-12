@@ -1,6 +1,6 @@
 ---
 title: Cache behaviour
-description: Profiles, lifetimes, bypass rules per site type, the response header, the key and the automatic purges of the page cache.
+description: Page cache profiles, lifetimes, bypass rules per site type, the response header, the cache key, and automatic purges.
 type: reference
 prerequisites: []
 version: a7d92ba
@@ -8,101 +8,101 @@ last_verified: 2026-10-10
 sidebar_position: 4
 ---
 
-The values on this page are the ones the panel writes into the nginx configuration. They change
-only with new measurements.
+These are the values the panel writes into the nginx configuration. They only change when new
+measurements justify it.
 
-## Which sites have the cache {#which-sites}
+## Sites with a page cache {#which-sites}
 
 | Type | Page cache |
 | --- | --- |
-| WordPress, WooCommerce, PHP, Laravel | yes, on at creation; switched off with the **Page cache** switch |
-| Static | no: files are served from disk |
-| Reverse proxy | no |
+| WordPress, WooCommerce, PHP, Laravel | Yes, on by default. Turn it off with the **Page cache** switch. |
+| Static | No. Files are served straight from disk. |
+| Reverse proxy | No |
 
 ## Profiles {#profiles}
 
-The site's **Performance profile** sets the lifetimes.
+The site's **Performance profile** sets the cache lifetimes.
 
-| Profile | Fresh | Served expired for up to | Disk space |
+| Profile | Fresh for | Served stale for up to | Disk space |
 | --- | --- | --- | --- |
 | Balanced (default, except WooCommerce) | 600 s | 7200 s | 1024 MB |
 | Commerce (default for WooCommerce) | 300 s | 3600 s | 1024 MB |
 | Maximum | 86400 s | 259200 s | 4096 MB |
 
-- **Lifetime (TTL)** on the **Cache** tab replaces the profile's "fresh" lifetime; `0` uses the
-  profile's. It does not change the window in which an expired page is still served.
-- `200` and `301` responses stay cached for the lifetime; `404` responses for 60 seconds.
-- Only `GET` and `HEAD` are cached.
-- An expired page is served while it is refreshed, and also when PHP answers with an error, a
-  timeout or a `500`/`503`.
-- Simultaneous requests for the same missing page wait for a single regeneration, up to 5 s.
+- **Lifetime (TTL)** on the **Cache** tab overrides the profile's "fresh" lifetime. `0` means use
+  the profile's value. It does not change how long an expired page can still be served.
+- `200` and `301` responses are cached for the full lifetime; `404` responses for 60 seconds.
+- Only `GET` and `HEAD` requests are cached.
+- An expired page is served while it is being refreshed, and also when PHP returns an error, times
+  out, or returns `500`/`503`.
+- Concurrent requests for the same uncached page wait for a single regeneration, for up to 5 s.
 
-## Bypass per site type {#bypass}
+## Bypass rules by site type {#bypass}
 
-A request skips the cache when it is a `POST`, has a query string that is not only tracking, has an
-`Authorization` header, carries one of the cookies, or its path starts with one of the prefixes
-below.
+A request bypasses the cache if it is a `POST`, has a query string with anything other than
+tracking parameters, has an `Authorization` header, carries one of the cookies below, or has a
+path starting with one of the prefixes below.
 
-| Type | Cookies (the name starts with) | Paths |
+| Type | Cookies (name starts with) | Paths |
 | --- | --- | --- |
 | WordPress | `wordpress_logged_in_`, `wp-postpass_`, `comment_author_`, `woocommerce_cart_hash`, `woocommerce_items_in_cart`, `wp_woocommerce_session_` | `/wp-admin`, `/wp-login.php`, `/wp-cron.php`, `/xmlrpc.php`, `/wp-json/`, `/feed` |
-| WooCommerce | WordPress's | WordPress's and the commerce paths |
-| PHP | WordPress's and `PHPSESSID` | WordPress's |
+| WooCommerce | Same as WordPress | WordPress paths plus the store paths |
+| PHP | WordPress cookies plus `PHPSESSID` | Same as WordPress |
 | Laravel | any `*_session`, `XSRF-TOKEN`, `remember_web_` | `/login`, `/logout`, `/register`, `/password/`, `/forgot-password`, `/reset-password`, `/email/verify`, `/admin`, `/nova`, `/horizon`, `/telescope`, `/sanctum/`, `/livewire/`, `/broadcasting/` |
 
-The commerce paths are `/cart`, `/checkout`, `/my-account`, `/addons`, `/wc-api` and `/?wc-ajax=`.
-Every WooCommerce site has them, and so does a WordPress or PHP site on the Commerce profile. A
-Laravel site never does.
+The store paths are `/cart`, `/checkout`, `/my-account`, `/addons`, `/wc-api` and `/?wc-ajax=`.
+Every WooCommerce site bypasses them, as does any WordPress or PHP site on the Commerce profile.
+Laravel sites never do.
 
-A prefix holds up to the end of a path segment: `/feed` excludes `/feed/` but not `/feedback`.
+A prefix matches up to the end of a path segment: `/feed` excludes `/feed/` but not `/feedback`.
 
-A response that sets a cookie (`Set-Cookie`), or carries `Cache-Control: no-store` or `private`, is
-never stored, whatever the type.
+A response that sets a cookie (`Set-Cookie`), or sends `Cache-Control: no-store` or `private`, is
+never cached, whatever the site type.
 
 ## Tracking parameters {#tracking}
 
-A query string made only of these parameters uses the cached entry of the page without them:
-`utm_*`, `fbclid`, `gclid`, `gbraid`, `wbraid`, `msclkid`, `dclid`, `mc_cid`, `mc_eid`, `_ga`, `_gl`,
-`igshid`, `yclid`, `twclid`, `ttclid`.
+A query string made up only of these parameters shares the cache entry of the same page without
+them: `utm_*`, `fbclid`, `gclid`, `gbraid`, `wbraid`, `msclkid`, `dclid`, `mc_cid`, `mc_eid`,
+`_ga`, `_gl`, `igshid`, `yclid`, `twclid`, `ttclid`.
 
 ## Response header {#header}
 
-`X-CloudGround-Cache` appears on PHP responses of sites with the cache on.
+`X-CloudGround-Cache` is added to PHP responses on sites with the page cache on.
 
 | Value | Meaning |
 | --- | --- |
-| `HIT` | served from the cache |
-| `MISS` | not there: generated by PHP |
-| `BYPASS` | a bypass rule sent it to PHP |
-| `EXPIRED` | it had expired: regenerated by PHP |
-| `STALE` | expired, served as it was |
-| `UPDATING` | expired, served as it was while another request regenerates it |
-| `REVALIDATED` | expired and confirmed still valid |
+| `HIT` | Served from cache |
+| `MISS` | Not in cache; rendered by PHP |
+| `BYPASS` | A bypass rule sent it to PHP |
+| `EXPIRED` | Cache entry had expired; re-rendered by PHP |
+| `STALE` | Expired, served as-is |
+| `UPDATING` | Expired, served as-is while another request regenerates it |
+| `REVALIDATED` | Expired, then confirmed still valid |
 
-## Key and files {#storage}
+## Cache key and storage {#storage}
 
-| What | Value |
+| Item | Value |
 | --- | --- |
-| Folder | `/var/cache/cloudground/<domain>` |
-| Key | scheme, method, host (lower case, no port) and the request's address |
-| File of an entry | the key's MD5, in two levels of folders |
-| An entry nobody reads is dropped after | a week, or the lifetime plus the stale window when longer |
+| Directory | `/var/cache/cloudground/<domain>` |
+| Key | Scheme, method, host (lowercase, no port) and request URI |
+| Entry file | MD5 of the key, in a two-level directory tree |
+| Unread entries are evicted after | One week, or lifetime plus stale window if that is longer |
 
 ## Automatic purges {#automatic-purges}
 
-On WordPress and WooCommerce the panel's connector purges the right pages by itself:
+On WordPress and WooCommerce, the panel's connector purges the affected pages automatically:
 
-| What changes | What is purged |
+| Change | Purged |
 | --- | --- |
-| A post or page published, edited or deleted | its address, the home page, the archives it appears in and the feeds |
-| A post's categories or tags | the post and the archives of the terms added or removed |
-| An approved comment | the post and its comment feeds |
-| A product's price, stock status or image | the product and the archives it appears in |
-| Theme, plugins, menus, widgets, customisations, site options, updates | the whole site |
+| A post or page is published, edited or deleted | Its URL, the home page, the archives it appears in, and the feeds |
+| A post's categories or tags change | The post, and the archives for the terms added or removed |
+| A comment is approved | The post and its comment feeds |
+| A product's price, stock status or image changes | The product and the archives it appears in |
+| Theme, plugins, menus, widgets, Customizer settings, site options, updates | The whole site |
 
 The panel also purges the whole site after a WordPress update run from the panel, a release, a
-restore and a publish from staging.
+restore, and a publish from staging.
 
 ## Next step {#next}
 
-To purge the cache by hand, follow [purge the cache](/docs/data/purge-the-cache).
+To purge the cache manually, see [Purge the cache](/docs/data/purge-the-cache).

@@ -1,6 +1,6 @@
 ---
 title: Site types
-description: The six site types, what the panel makes for each and with which defaults.
+description: The six site types, what the panel creates for each one, and their defaults.
 type: reference
 prerequisites: []
 version: v0.2.0
@@ -8,10 +8,10 @@ last_verified: unverified
 sidebar_position: 1
 ---
 
-You pick the type when you create the site, and it does not change. In the API it is the `type`
-field.
+You choose a site's type when you create it, and you cannot change it later. In the API, it is the
+`type` field.
 
-## At a glance {#summary}
+## Overview {#summary}
 
 | | `wordpress` | `woocommerce` | `php` | `laravel` | `static` | `proxy` |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -20,79 +20,80 @@ field.
 | Database at creation | yes | yes | optional | yes | optional | no |
 | Page cache at creation | on | on | on | on | no | no |
 | Default profile | Balanced | Commerce | Balanced | Balanced | Balanced | Balanced |
-| Default public folder | release root | release root | release root | `public` | release root | — |
+| Default public directory | release root | release root | release root | `public` | release root | — |
 | Object cache | yes | yes | no | no | no | no |
 | System scheduled tasks | WordPress cron every 5 minutes | WordPress cron every 5 minutes | — | — | — | — |
 
-For a static or reverse proxy site the page cache stays off even when the request asks for it.
+Static and reverse proxy sites never get a page cache, even if the request asks for one.
 
-## What creation makes {#what-creation-makes}
+## What gets created {#what-creation-makes}
 
-For every type: the system user `cg-site-<id>`, the folder `/srv/sites/<domain>` with `releases/`,
-`current`, `shared/uploads`, `logs` and `tmp/sessions`, and the vhost. For the types with PHP, also a
-PHP-FPM service of the site's own. SFTP access starts off.
+Every type gets the system user `cg-site-<id>`, the directory `/srv/sites/<domain>` containing
+`releases/`, `current`, `shared/uploads`, `logs` and `tmp/sessions`, and a vhost. Types with PHP
+also get their own PHP-FPM service. SFTP access starts turned off.
 
-WordPress, WooCommerce and Laravel also get their primary database and its user, with all privileges
-on it; a PHP or static site only if you ask for one at creation. You choose the names, or the panel
-proposes them: see [database names and passwords](/docs/reference/database-names-and-passwords). More
-databases and users are added later, to any site, from the **Database** tab.
+WordPress, WooCommerce and Laravel sites also get a primary database and a database user with all
+privileges on it. PHP and static sites get one only if you ask for it at creation. You can pick the
+names or let the panel suggest them: see [Database names and
+passwords](/docs/reference/database-names-and-passwords). You can add more databases and users to
+any site later from the **Database** tab.
 
-| Type | Content of the first release |
+| Type | Contents of the first release |
 | --- | --- |
-| `wordpress` | WordPress installed with wp-cli, with the administrator given, `/%postname%/` permalinks, the panel's connector in `wp-content/mu-plugins/` and `DISABLE_WP_CRON` on |
-| `woocommerce` | as `wordpress`, plus the WooCommerce plugin installed and activated |
+| `wordpress` | WordPress installed with wp-cli, with the administrator you specified, `/%postname%/` permalinks, the panel connector in `wp-content/mu-plugins/` and `DISABLE_WP_CRON` set |
+| `woocommerce` | same as `wordpress`, plus the WooCommerce plugin installed and activated |
 | `php` | a placeholder `index.php` |
 | `laravel` | a placeholder `index.php` in `public/` |
 | `static` | a placeholder `index.html` |
-| `proxy` | nothing: requests go to the upstream URL |
+| `proxy` | nothing; requests are forwarded to the upstream URL |
 
-`wp-config.php` lives in `shared/` (mode 0600) and the release points at it with a relative link; the
-same for `wp-content/uploads`, which points at `shared/uploads`.
+`wp-config.php` lives in `shared/` (mode 0600), and the release points to it with a relative
+symlink. `wp-content/uploads` works the same way, pointing to `shared/uploads`.
 
 ## Creation fields {#creation-fields}
 
 | Field | Types | Rule |
 | --- | --- | --- |
-| `domain` | all | required; a plain host name, lowercased |
-| `type` | all | required; one of the six |
-| `aliases` | all | plain host names, none used by another site |
+| `domain` | all | required; a plain hostname, converted to lowercase |
+| `type` | all | required; one of the six types |
+| `aliases` | all | plain hostnames, none used by another site |
 | `profile` | all | `balanced`, `commerce` or `maximum` |
-| `php_version` | with PHP | an installed version; absent, the server's default when installed, else the newest |
-| `cache_enabled` | with PHP | absent, on |
-| `object_cache` | `wordpress`, `woocommerce` | absent, off |
-| `title` | `wordpress`, `woocommerce` | optional; empty, the domain |
-| `admin_email` | `wordpress`, `woocommerce` | required; a valid address |
+| `php_version` | with PHP | an installed version; if omitted, the server default if installed, otherwise the newest |
+| `cache_enabled` | with PHP | on if omitted |
+| `object_cache` | `wordpress`, `woocommerce` | off if omitted |
+| `title` | `wordpress`, `woocommerce` | optional; defaults to the domain if empty |
+| `admin_email` | `wordpress`, `woocommerce` | required; a valid email address |
 | `admin_user` | `wordpress`, `woocommerce` | required |
 | `admin_password` | `wordpress`, `woocommerce` | required; at least 12 bytes |
-| `proxy_upstream` | `proxy` | required; an `http` or `https` URL with no credentials, query or fragment |
+| `proxy_upstream` | `proxy` | required; an `http` or `https` URL with no credentials, query string or fragment |
 
-## PHP by type {#php-by-type}
+## PHP defaults by type {#php-by-type}
 
-| | WooCommerce | Every other type with PHP |
+| | WooCommerce | All other types with PHP |
 | --- | --- | --- |
-| default `memory_limit` | 512 MB | 256 MB |
+| Default `memory_limit` | 512 MB | 256 MB |
 | `upload_max_filesize` and `post_max_size` | 64 MB | 64 MB |
 | `max_execution_time` | 120 s | 120 s |
-| OPcache | 128 MB, 16 MB of strings, 20000 files | 64 MB, 8 MB of strings, 10000 files |
+| OPcache | 128 MB, 16 MB interned strings, 20000 files | 64 MB, 8 MB interned strings, 10000 files |
 | APCu | 64 MB | 32 MB |
 
-The process manager is `ondemand` (no idle workers) for a Balanced site that is not WooCommerce, and
-`dynamic` for every other.
+The process manager is `ondemand` (no idle workers) for non-WooCommerce sites on the Balanced
+profile, and `dynamic` for everything else.
 
 ## Cache bypass rules {#cache-bypass}
 
-A request carrying one of these cookies, or under one of these paths, is not served from the page
-cache. Neither is a `POST`, nor a response that sets a cookie.
+Requests that carry one of these cookies, or fall under one of these paths, are not served from
+the page cache. Neither are `POST` requests or responses that set a cookie.
 
 | Type | Cookies | Paths |
 | --- | --- | --- |
 | `wordpress` | `wordpress_logged_in_`, `wp-postpass_`, `comment_author_`, `woocommerce_cart_hash`, `woocommerce_items_in_cart`, `wp_woocommerce_session_` | `/wp-admin`, `/wp-login.php`, `/wp-cron.php`, `/xmlrpc.php`, `/wp-json/`, `/feed` |
-| `woocommerce` | those of `wordpress` | those of `wordpress` plus `/cart`, `/checkout`, `/my-account`, `/addons`, `/wc-api`, `/?wc-ajax=` |
-| `php` | those of `wordpress` plus `PHPSESSID` | those of `wordpress` |
+| `woocommerce` | same as `wordpress` | same as `wordpress`, plus `/cart`, `/checkout`, `/my-account`, `/addons`, `/wc-api`, `/?wc-ajax=` |
+| `php` | same as `wordpress`, plus `PHPSESSID` | same as `wordpress` |
 | `laravel` | `_session=`, `XSRF-TOKEN=`, `remember_web_` | `/login`, `/logout`, `/register`, `/password/`, `/forgot-password`, `/reset-password`, `/email/verify`, `/admin`, `/nova`, `/horizon`, `/telescope`, `/sanctum/`, `/livewire/`, `/broadcasting/` |
 
-With the Commerce profile, a `wordpress` or `php` site also takes WooCommerce's paths.
+On the Commerce profile, `wordpress` and `php` sites also bypass the WooCommerce paths.
 
 ## Next step {#next}
 
-[A site's settings](./site-settings.mdx), field by field.
+See [Site settings](./site-settings.mdx) for every setting, field by field.
