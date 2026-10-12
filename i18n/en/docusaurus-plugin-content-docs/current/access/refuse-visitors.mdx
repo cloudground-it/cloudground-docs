@@ -1,6 +1,6 @@
 ---
 title: Refuse visitors by address, user agent or country
-description: Make a site answer 403 to certain addresses or networks, certain user agents (AI and SEO crawlers too) or certain countries, or serve only some countries.
+description: Make a site return 403 to specific addresses or networks, user agents (including AI and SEO crawlers) or countries, or serve only selected countries.
 type: how-to
 prerequisites:
   - An administrator account (an operator assigned to the site can use cgctl or the API)
@@ -9,57 +9,60 @@ last_verified: unverified
 sidebar_position: 6.6
 ---
 
-Each site can refuse visitors with **403**, without touching the other sites. The rules are per site
-and take effect right after you save. A site without rules pays nothing. How nginx does it is in
-[address blocking](/docs/explanation/blocking#site-rules).
+You can make any site turn visitors away with **403** without affecting other sites. Rules are set per
+site and take effect as soon as you save. Sites with no rules pay no performance cost. For how nginx
+applies the rules, see [address blocking](/docs/explanation/blocking#site-rules).
 
 ## Write the rules {#write-the-rules}
 
-1. Open **Blocking**, in the **Server** group, and go to the **Per-site rules** box.
-2. Press **Add rules for a site** (or **Edit** on the row of a site that already has some).
+1. Open **Blocking** under the **Server** group and find the **Per-site rules** box.
+2. Press **Add rules for a site**, or **Edit** on the row of a site that already has rules.
 3. Choose the **Site**.
 4. Fill in what you need:
-   - **Addresses and networks**: one per line, `203.0.113.4` or `203.0.113.0/24`;
-   - **User agents**: one per line. A visitor whose User-Agent contains one of them, in any case, is
-     refused. The **AI crawlers** and **SEO crawlers** buttons add ready-made lists;
-   - **Countries**: pick from the list;
-   - **Serve only these countries**: refuses every other country, and addresses with no country too.
+   - **Addresses and networks**: one per line, such as `203.0.113.4` or `203.0.113.0/24`.
+   - **User agents**: one per line. Any visitor whose User-Agent contains one of these strings,
+     case-insensitively, is refused. The **AI crawlers** and **SEO crawlers** buttons add ready-made
+     lists.
+   - **Countries**: choose from the list.
+   - **Serve only these countries**: refuses every other country, including addresses with no known
+     country.
 5. Press **Save**.
 
-The limits: 500 networks per site, none wider than /8 (IPv4) or /16 (IPv6); 50 user agents of 2–100
-printable characters, without `"`, `\`, `$`, `{` and `}`; 50 countries. The panel refuses rules that
-hold your address, loopback or the server.
+Limits: 500 networks per site, none wider than /8 (IPv4) or /16 (IPv6). 50 user agents of 2 to 100
+printable characters each, without `"`, `\`, `$`, `{` or `}`. 50 countries. The panel rejects rules
+that include your own address, loopback or the server.
 
-To remove everything press **Remove all rules**.
+To clear everything, press **Remove all rules**.
 
-## What is never refused {#never-refused}
+## What's never refused {#never-refused}
 
-- The server's own addresses and loopback: uptime checks, Performance Guard and the cache warmer still
-  get through.
-- Port 80: it stays open for certificate validation.
+- The server's own addresses and loopback, so uptime checks, Performance Guard and the cache warmer
+  still get through.
+- Port 80, which stays open for certificate validation.
 
 :::note
 
-Anyone can send any User-Agent: the user agent rule turns away the crawlers that identify themselves,
-not an attacker.
+Anyone can send any User-Agent. The user agent rule stops crawlers that identify themselves, not a
+determined attacker.
 
 :::
 
 ## Country data {#country-data}
 
-A country comes from DB-IP's **IP to Country Lite** database (CC BY 4.0 licence, with the attribution the
-panel shows in the country list). The server downloads it by itself, without an account or key, and
-refreshes it after 35 days; if the refresh fails it keeps the old copy. With no copy and no network,
-saving rules about countries fails and changes nothing.
+Countries are looked up in DB-IP's **IP to Country Lite** database (licensed CC BY 4.0, with the
+attribution shown in the panel's country list). The server downloads it automatically, with no
+account or key, and refreshes it after 35 days. If a refresh fails, it keeps the old copy. If there's
+no copy and no network access, saving country rules fails and nothing changes.
 
-## With cgctl or the API {#with-cgctl-or-the-api}
+## Use cgctl or the API {#with-cgctl-or-the-api}
 
 ```bash
 cgctl sites block <site-id> '{"addresses": ["203.0.113.0/24"], "user_agents": ["badbot"], "countries": ["NL"], "allow_countries_only": false}'
 ```
 
-`'{}'` removes every rule. The API is `PUT /api/sites/<id>/blocking` with the same object.
+Passing `'{}'` removes every rule. Through the API, send the same object with
+`PUT /api/sites/<id>/blocking`.
 
 ## Next step {#next}
 
-To keep out whoever guesses passwords, see [block addresses that keep failing to sign in](/docs/access/block-addresses).
+To stop password guessing, see [Block addresses that keep failing to sign in](/docs/access/block-addresses).

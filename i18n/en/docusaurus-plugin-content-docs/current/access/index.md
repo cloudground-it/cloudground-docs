@@ -1,6 +1,6 @@
 ---
 title: "How-to · Access and security"
-description: "Reach sites over SFTP and SSH, and manage users and roles, two-step verification, API tokens and the firewall."
+description: "Connect to sites over SFTP and SSH, manage users, roles, two-step verification and API tokens, and lock down the server and WordPress."
 type: index
 last_verified: 2026-10-10
 hide_table_of_contents: true

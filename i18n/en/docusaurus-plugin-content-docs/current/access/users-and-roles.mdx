@@ -3,70 +3,69 @@ title: Users and roles
 description: Add the people who use the panel, choose their role and assign sites to operators.
 type: how-to
 prerequisites:
-  - An administrator account, signed in to the panel with a session
+  - An administrator account, signed in to the panel in a browser session
 version: a7d92ba
 last_verified: 2026-10-10
 sidebar_position: 3
 ---
 
-Every account has one of three roles:
+Each account has one of three roles:
 
-| Role | In short |
+| Role | Summary |
 | --- | --- |
 | **Administrator** | Full access to the server. |
-| **Operator** | Assigned sites only. |
-| **Read-only** | Sees everything, changes nothing. |
+| **Operator** | Access to assigned sites only. |
+| **Read-only** | Can see everything but change nothing. |
 
-The full table of what each role can do is in [roles and permissions](/docs/reference/roles-and-permissions).
+For the full breakdown of what each role can do, see [roles and permissions](/docs/reference/roles-and-permissions).
 
 ## Add a user {#add-a-user}
 
 1. Open **Users** and press **Add user**.
-2. Fill in **First name** and **Last name** (optional), **Email** and a **Password** of at least 12
+2. Fill in **First name** and **Last name** (optional), **Email** and a **Password** with at least 12
    characters.
-3. Choose the **Role**.
-4. For an **Operator**, choose at least one site in **Assigned sites**.
+3. Choose a **Role**.
+4. For an **Operator**, choose at least one site under **Assigned sites**.
 5. Press **Add user**.
 
-The email is the name the person signs in with, and it is unique. Give the person the password over
-a safe channel: they can change it from **Security**.
+The email address is what the person signs in with, and it must be unique. Send them the password
+through a secure channel. They can change it later from **Security**.
 
-## Change the role or the sites {#change-role-or-sites}
+## Change a user's role or sites {#change-role-or-sites}
 
-1. In **Users**, open the row's **Actions** menu and choose **Edit user**.
-2. Change **Role** or **Assigned sites**.
+1. In **Users**, open the **Actions** menu on the user's row and choose **Edit user**.
+2. Change the **Role** or **Assigned sites**.
 3. Press **Save**.
 
-Role, sites and name change together: when the panel refuses the change, nothing changes. Taking the
-administrator role away from someone revokes their API tokens.
+Role, sites and name are saved together. If the panel rejects the change, nothing is saved. Removing
+someone's administrator role also revokes their API tokens.
 
 ## Disable an account {#disable-an-account}
 
-In **Edit user** switch on **Account disabled** and press **Save**. The person can no longer sign
-in, their sessions close and their API tokens are revoked. Switch it off to enable the account
-again.
+In **Edit user**, turn on **Account disabled** and press **Save**. The person can't sign in anymore,
+their sessions end and their API tokens are revoked. Turn the switch off to re-enable the account.
 
-## Reset someone else's password {#reset-a-password}
+## Reset another user's password {#reset-a-password}
 
-From the **Actions** menu choose **Reset password**, type the new password and press **Reset
-password**. That account's sessions and API tokens close. You change your own password from
-**Security**, not here.
+From the **Actions** menu, choose **Reset password**, enter the new password and press
+**Reset password**. That account's sessions and API tokens are closed. To change your own password,
+use **Security** instead.
 
 ## Delete a user {#delete-a-user}
 
-From the **Actions** menu choose **Delete** and confirm. The account's sessions, tokens, site
-assignments and two-step verification go with it.
+From the **Actions** menu, choose **Delete** and confirm. The account's sessions, tokens, site
+assignments and two-step verification are deleted with it.
 
-## What the panel does not allow {#limits}
+## Restrictions {#limits}
 
-- You cannot change your own role, or disable or delete your own account.
-- The panel always keeps at least one enabled administrator: it refuses to demote, disable or delete
-  the last one.
-- There is no operator without sites: the panel asks for at least one.
-- Users and tokens are managed only from a session in the panel, never with an API token.
+- You can't change your own role, or disable or delete your own account.
+- The panel always keeps at least one enabled administrator. It won't demote, disable or delete the
+  last one.
+- An operator must have at least one site. The panel won't save an operator without one.
+- Users and tokens can only be managed from a browser session in the panel, never with an API token.
 
-Every change lands in the **Audit log**.
+Every change is recorded in the **Audit log**.
 
 ## Next step {#next}
 
-Protect the accounts with [two-step verification](./two-step-verification.mdx).
+Protect accounts with [two-step verification](./two-step-verification.mdx).

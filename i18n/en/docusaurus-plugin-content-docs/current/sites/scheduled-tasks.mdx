@@ -1,67 +1,67 @@
 ---
 title: Scheduled tasks
-description: Add a command that runs on a schedule to a site, run it straight away and read its output.
+description: Add a command that runs on a schedule, run it on demand and read its output.
 type: how-to
 prerequisites:
-  - An administrator account, or an operator assigned to the site
+  - An administrator account, or an operator account assigned to the site
 version: v0.2.0
 last_verified: unverified
 sidebar_position: 5
 ---
 
-A scheduled task is a command of the site that runs on a cron schedule. It runs as the site's user, in
-its folder, with the same protections as its PHP.
+A scheduled task is a command that runs for a site on a cron schedule. It runs as the site's user,
+inside the site's folder, with the same sandboxing as the site's PHP.
 
 ## Add a task {#add-a-task}
 
-1. Open the site, then **More** and **Cron**.
-2. Under **New scheduled task**, type the **Schedule (cron)** or pick one from **Presets**: **Every 5
-   minutes**, **Every 15 minutes**, **Hourly**, **Daily at 3am**, **Sundays at 3am**.
-3. In **Command**, type the command, for example `php current/artisan schedule:run`.
-4. In **Description**, say what it is for, if you like.
+1. Open the site, then choose **More** and **Cron**.
+2. Under **New scheduled task**, enter a **Schedule (cron)** or choose one from **Presets**:
+   **Every 5 minutes**, **Every 15 minutes**, **Hourly**, **Daily at 3am**, **Sundays at 3am**.
+3. In **Command**, enter the command, such as `php current/artisan schedule:run`.
+4. Optionally, use **Description** to note what the task does.
 5. Choose **Add**.
 
-The task's `PATH` is `/usr/local/bin:/usr/bin:/bin`, so `php` is `/usr/bin/php`, the server's default
-CLI, not necessarily the site's PHP version. If the site runs another version, write it out, for
-example `php8.4 current/artisan schedule:run`.
+The task runs with `PATH` set to `/usr/local/bin:/usr/bin:/bin`. That means `php` resolves to
+`/usr/bin/php`, the server's default CLI, which isn't necessarily the site's PHP version. If the site
+uses a different version, call it explicitly, for example `php8.4 current/artisan schedule:run`.
 
 The command starts in the site's folder (`/srv/sites/<domain>`), which is also its `HOME`. Its output,
-errors included, goes to `logs/cron-<id>.log` in the site's folder, which keeps the last 500 lines. A
-scheduled run that lasts more than 6 hours is stopped together with everything it started.
+including errors, goes to `logs/cron-<id>.log` in the site's folder, which keeps the last 500 lines.
+If a scheduled run lasts longer than 6 hours, it's stopped along with every process it started.
 
-On WordPress and WooCommerce sites, WordPress's own cron already runs from the system every 5
-minutes: you do not need to add it.
+WordPress and WooCommerce sites already have WordPress's own cron running from the system every 5
+minutes, so you don't need to add it.
 
-## The schedule {#the-schedule}
+## Schedule syntax {#the-schedule}
 
-Five fields separated by spaces: minute (0–59), hour (0–23), day of month (1–31), month (1–12), day
-of week (0–7). Each field is `*`, a number `N`, a range `N-M`, or a comma-separated list; `*` and a
-range take a step, as in `*/15` or `0-30/10`.
+A schedule has five space-separated fields: minute (0–59), hour (0–23), day of month (1–31), month
+(1–12) and day of week (0–7). Each field can be `*`, a number `N`, a range `N-M` or a comma-separated
+list. `*` and ranges accept a step, as in `*/15` or `0-30/10`.
 
-The panel refuses names (`mon`, `jan`), shortcuts such as `@daily` and the `N/S` form. It also refuses
-a command that, written into the cron line, exceeds 998 bytes, and says how many bytes to cut.
+The panel rejects names (`mon`, `jan`), shortcuts such as `@daily` and the `N/S` form. It also rejects
+a command that makes the cron line longer than 998 bytes, and tells you how many bytes to remove.
 
-## Run now {#run-now}
+## Run a task now {#run-now}
 
-Choose **Run now** next to the task. The command runs once, for at most 300 seconds, and a window
-shows its status and output (the last 64 KiB). If the task is already running, the panel refuses to
-start another run.
+Choose **Run now** next to the task. The command runs once, for up to 300 seconds, and a window shows
+its status and output (the last 64 KiB). If the task is already running, the panel won't start
+another run.
 
-## Pause, edit, remove {#pause-edit-remove}
+## Pause, edit or remove a task {#pause-edit-remove}
 
-- The **Run on schedule** switch pauses it: the task stays in the list but no longer runs.
-- **Edit task** (the pencil) opens it in the form again; choose **Save**.
-- **Remove** (the bin) deletes it, after you confirm.
+- Turn off the **Run on schedule** switch to pause the task. It stays in the list but stops running.
+- **Edit task** (the pencil icon) loads the task back into the form. Choose **Save** when you're done.
+- **Remove** (the bin icon) deletes the task after you confirm.
 
-With cgctl you can run a task by its number: `cgctl cron run <id>`.
+With cgctl, you can run a task by its ID: `cgctl cron run <id>`.
 
-## Who sees the command {#who-sees-the-command}
+## Who can see the command {#who-sees-the-command}
 
-*Since v0.2.0.* A command line can hold a token or a password. Administrators and operators see the
-command whole. A read-only account sees the tasks, their schedule and their last run, but the command
-only in a shortened form, the same as the **Audit log**: its first word, its number of words and a
-short fingerprint, for example `php … (3 words, sha256:1a2b3c4d)`.
+*Since v0.2.0.* A command line can contain a token or a password. Administrators and operators see the
+full command. Read-only accounts see the tasks, their schedules and their last runs, but only a
+shortened form of the command, the same one the **Audit log** uses: the first word, the number of
+words and a short fingerprint, for example `php … (3 words, sha256:1a2b3c4d)`.
 
 ## Next step {#next}
 
-[Delete a site when you no longer need it](./delete-a-site.mdx).
+[Delete a site you no longer need](./delete-a-site.mdx).

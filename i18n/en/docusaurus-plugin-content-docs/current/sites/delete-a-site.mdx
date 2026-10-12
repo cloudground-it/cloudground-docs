@@ -1,6 +1,6 @@
 ---
 title: Delete a site
-description: Delete a site with everything the panel made for it, its staging copy included.
+description: Delete a site, including its staging copy and everything else the panel created for it.
 type: how-to
 prerequisites:
   - An administrator account
@@ -9,21 +9,22 @@ last_verified: 2026-10-10
 sidebar_position: 8
 ---
 
-:::danger[This cannot be undone]
+:::danger[You can't undo this]
 
-Deletion removes the site's files, its database and its staging copy. If you need them, take a backup
-first and check that its restore test passed.
+Deleting a site removes its files, its database and its staging copy. If you might need them, take a
+backup first and make sure its restore test passed.
 
 :::
 
-## Delete from the panel {#from-the-panel}
+## Delete a site in the panel {#from-the-panel}
 
 1. Open the site.
 2. Open the **More** menu (the three dots next to **Visit**) and choose **Delete**.
-3. Type the site's domain to confirm and choose **Delete**.
+3. Type the site's domain to confirm, then choose **Delete**.
 
-The site's status becomes **deleting** and the **Site deletion** task starts. When it ends, the site
-leaves the list. A second deletion request for the same site joins the task already running.
+The site's status changes to **deleting** and a **Site deletion** task starts. When the task finishes,
+the site disappears from the list. If you request deletion again while it's running, the new request
+attaches to the task in progress.
 
 With cgctl:
 
@@ -31,29 +32,29 @@ With cgctl:
 cgctl --wait sites delete <id>
 ```
 
-## What goes {#what-goes}
+## What gets removed {#what-goes}
 
-In the order the server removes it:
+The server removes these, in this order:
 
-1. the vhost, the page-cache zone and the staging password: the site stops answering;
-2. every process of the site: its PHP, running scheduled tasks, wp-cli commands;
-3. the site's PHP service and its configuration;
-4. the scheduled tasks;
-5. the database and its user;
-6. the Let's Encrypt certificate and the custom certificate;
-7. the site's SSH shell, then its system user and its group;
-8. the page cache, the logs and the site's folder.
+1. The vhost, the page cache zone and the staging password. The site stops responding.
+2. Every process that belongs to the site: its PHP, running scheduled tasks and wp-cli commands.
+3. The site's PHP service and its configuration.
+4. The scheduled tasks.
+5. The database and its user.
+6. The Let's Encrypt certificate and any custom certificate.
+7. The site's SSH shell, then its system user and group.
+8. The page cache, the logs and the site's folder.
 
-The server runs every step even when one fails, and reports all the errors together at the end.
-Running the deletion again is safe: each step removes only what is still there.
+The server runs every step even if one fails, then reports all errors together at the end. Running
+the deletion again is safe, because each step only removes what's still there.
 
-The site's releases, backups, scheduled tasks and operator assignments also leave the panel.
+The panel also drops the site's releases, backups, scheduled tasks and operator assignments.
 
-:::note[The snapshots stay in the repository]
+:::note[Snapshots stay in the repository]
 
-Deletion does not touch the restic repository: the site's snapshots stay there, but the panel no
-longer shows them and cannot restore them. To free the space, remove them yourself with restic, on the
-server as root:
+Deleting a site doesn't touch the restic repository. The site's snapshots remain there, but the panel
+no longer lists them and can't restore them. To free the space, remove them yourself with restic. On
+the server, as root:
 
 ```bash prompt
 export RESTIC_REPOSITORY=<repository> RESTIC_PASSWORD_FILE=<password-file>
@@ -61,21 +62,21 @@ restic snapshots --tag site:<domain>
 restic forget --prune <id> <id>
 ```
 
-`<repository>` is the **Repository** in **Settings**, `<domain>` the deleted site's domain, `<id>` the
-IDs the first command lists. For an S3 repository, also export `AWS_ACCESS_KEY_ID` and
-`AWS_SECRET_ACCESS_KEY`.
+`<repository>` is the **Repository** value in **Settings**, `<domain>` is the deleted site's domain and
+each `<id>` is a snapshot ID from the first command's output. For an S3 repository, also export
+`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
 
 :::
 
 ## If deletion fails {#if-it-fails}
 
-The site stays in the list as **error** and the task names the step that did not work. Fix the cause
-and choose **Delete** again.
+The site stays in the list with the status **error**, and the task names the step that failed. Fix the
+cause and choose **Delete** again.
 
 Deleting a production site deletes its staging copy first. If you cancel the task between the two,
-production stays and gets its previous status back.
+production stays and returns to its previous status.
 
 ## Next step {#next}
 
-[The lifecycle of a site](/docs/explanation/site-lifecycle) explains what happens between creation and
-deletion.
+To see what happens to a site between creation and deletion, read
+[the lifecycle of a site](/docs/explanation/site-lifecycle).

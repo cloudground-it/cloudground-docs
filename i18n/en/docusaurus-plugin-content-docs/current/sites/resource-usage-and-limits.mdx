@@ -1,82 +1,86 @@
 ---
-title: A site's resources and limits
-description: See how much CPU, memory, disk and IO a site uses, limit how much it can take from the others, and get an alert when it stays over a threshold.
+title: Site resources and limits
+description: See how much CPU, memory, disk and IO a site uses, cap how much it can take from other sites, and get an alert when it stays above a threshold.
 type: how-to
 prerequisites:
   - A site
-  - An administrator account for the limits; an administrator, or an operator assigned to the site, for the alerts
+  - An administrator account to set limits; an administrator account, or an operator account assigned to the site, to set alerts
 version: v0.2.0
 last_verified: unverified
 sidebar_position: 6
 ---
 
-Every process of a site (its PHP, scheduled tasks, wp-cli and the shell) runs in the site's systemd
-slice, `cg-site-<id>.slice`. The **Resources** tab shows what they use, and lets you limit how much
-they can take from the other sites on the same server.
+Every process that belongs to a site (its PHP, scheduled tasks, wp-cli and the shell) runs in the
+site's systemd slice, `cg-site-<id>.slice`. The **Resources** tab shows what those processes use and
+lets you cap how much they can take from other sites on the same server.
 
-## See what the site uses {#see-the-usage}
+## Check a site's usage {#see-the-usage}
 
-1. Open the site, then **More** and **Resources**.
-2. Read the four values at the top:
-   - **CPU**, as a share of what the site may use: its quota, or every CPU of the server;
-   - **Memory**, against its limit;
-   - **Disk**, the space taken by the site's folder and its logs, with the number of files;
-   - **Disk IO**, the bytes read and written per second.
-3. Choose **24 hours** or **30 days** for the CPU and memory chart.
+1. Open the site, then choose **More** and **Resources**.
+2. The four values at the top show:
+   - **CPU**, as a share of what the site is allowed: its quota, or all of the server's CPUs if it has
+     none.
+   - **Memory**, compared with its limit.
+   - **Disk**, the space used by the site's folder and logs, plus the number of files.
+   - **Disk IO**, bytes read and written per second.
+3. Choose **24 hours** or **30 days** to set the range of the CPU and memory chart.
 
-The panel reads the slice's counters every five minutes, and measures the disk at most once an hour.
-On a new site the first sample arrives within five minutes, the disk within the hour. The panel keeps
-a day of samples and 30 days of hourly values.
+The panel samples the slice's counters every five minutes and measures disk usage at most once an
+hour. On a new site, the first sample appears within five minutes and the first disk figure within
+the hour. The panel keeps one day of samples and 30 days of hourly values.
 
-If one of the site's processes was killed at the memory limit, **Memory** shows *N processes killed at
-the memory limit*.
+If the kernel killed one of the site's processes for hitting the memory limit, **Memory** shows
+*N processes killed at the memory limit*.
 
-Every account that can see the site sees the tab.
+Anyone whose account can see the site can see this tab.
 
-## Limit the site's resources {#set-the-limits}
+## Set resource limits {#set-the-limits}
 
-You need an administrator account: the limits decide how much one site can take from all the others.
+You need an administrator account, since limits decide how much one site can take from all the
+others.
 
-1. In the **Resources** tab, **Limits** card, enter:
-   - **Memory limit**, in MB;
-   - **CPU quota**, as a percentage: 100 % is one CPU, 200 % two;
+1. On the **Resources** tab, in the **Limits** card, enter:
+   - **Memory limit**, in MB.
+   - **CPU quota**, as a percentage. 100 % is one CPU, 200 % is two.
    - **Process limit**.
 2. Press **Apply**.
 
-0 in a field means the default:
+Entering 0 in a field uses the default:
 
 | Field | Default | Allowed values |
 | --- | --- | --- |
 | **Memory limit** | half the server's memory, at least 1024 MB | 0, or 128 to 1048576 MB |
-| **CPU quota** | no quota: the site may use every CPU | 0, or 10 to 25600 % |
+| **CPU quota** | no quota: the site can use every CPU | 0, or 10 to 25600 % |
 | **Process limit** | 512 | 0, or 32 to 65536 |
 
-The kernel enforces the limits on the site alone. Near the memory limit (nine tenths) the site is
-slowed down; at the limit, one of its processes is ended, never another site's, and the site's PHP
-keeps serving. A new limit applies at once, with nothing restarted.
+The kernel enforces these limits on this site only. When the site reaches nine tenths of its memory
+limit, it gets throttled. At the limit, the kernel ends one of the site's own processes, never one
+from another site, and the site's PHP keeps serving requests. New limits take effect immediately,
+without restarting anything.
 
-The disk has no limit: you can only get an alert (see below).
+There is no disk limit. You can only set an alert for disk usage (see below).
 
-## Get a usage alert {#usage-alerts}
+## Set usage alerts {#usage-alerts}
 
-1. In the **Resources** tab, **Usage alerts** card, leave **Alert on this site's usage** on.
+1. On the **Resources** tab, in the **Usage alerts** card, leave **Alert on this site's usage** on.
 2. Enter the thresholds: **CPU** and **Memory** as percentages, **Disk** in MB.
 3. Press **Apply**.
 
-| Threshold | Default | When the alert is raised |
+| Threshold | Default | When the alert fires |
 | --- | --- | --- |
-| **CPU** | 90 % (0 in the field) | the last three samples, a quarter of an hour, are all at or over the threshold |
-| **Memory** | 90 % of the memory limit (0 in the field) | as for CPU |
-| **Disk** | no alert (0 in the field) | the last disk measure is at or over the threshold |
+| **CPU** | 90 % (0 in the field) | the last three samples, covering a quarter of an hour, are all at or above the threshold |
+| **Memory** | 90 % of the memory limit (0 in the field) | same as CPU |
+| **Disk** | no alert (0 in the field) | the latest disk measurement is at or above the threshold |
 
-A short spike raises no alert. The alert's kind is **Resources**: it shows in the **Alerts** panel and
-goes to the alert webhook like the others (see [alerts and notifications](/docs/server/alerts-and-notifications)).
-Changing the thresholds does not touch the site's configuration.
+Short spikes don't trigger an alert. The alert type is **Resources**. It appears in the **Alerts**
+panel and goes to the alert webhook like any other alert (see
+[alerts and notifications](/docs/server/alerts-and-notifications)). Changing thresholds doesn't touch
+the site's configuration.
 
-## With the API {#with-the-api}
+## Use the API {#with-the-api}
 
-`GET /api/sites/<id>/usage?range=24h` (or `30d`) returns the samples, the limits in force and the
-latest sample. The limits and the thresholds are fields of `PATCH /api/sites/<id>`:
+`GET /api/sites/<id>/usage?range=24h` (or `30d`) returns the samples, the limits in effect and the
+latest sample. Limits and thresholds are fields of `PATCH /api/sites/<id>`:
 
 ```json
 {
@@ -87,10 +91,10 @@ latest sample. The limits and the thresholds are fields of `PATCH /api/sites/<id
 }
 ```
 
-Only an administrator sends `memory_max_mb`, `cpu_quota_pct` and `tasks_max`: from another account
-the request gets **403**. `usage_alerts` is replaced whole. Every field is in the
-[site settings reference](/docs/reference/site-settings).
+Only administrators can send `memory_max_mb`, `cpu_quota_pct` and `tasks_max`. From any other account
+the request returns **403**. `usage_alerts` is replaced as a whole. The
+[site settings reference](/docs/reference/site-settings) covers every field.
 
 ## Next step {#next}
 
-[Check that the site answers](/docs/sites/uptime-monitoring) from the outside.
+[Monitor the site's uptime](/docs/sites/uptime-monitoring) from the outside.

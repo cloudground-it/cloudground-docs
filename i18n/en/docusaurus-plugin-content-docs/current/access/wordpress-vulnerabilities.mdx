@@ -1,50 +1,51 @@
 ---
 title: Check WordPress for vulnerabilities
-description: Read, in the Security tab of a WordPress site, the known vulnerabilities of the installed WordPress, plugins and themes, and get an alert when one appears.
+description: See known vulnerabilities in a WordPress site's core, plugins and themes on its Security tab, and get an alert when a new one turns up.
 type: how-to
 prerequisites:
   - An active WordPress or WooCommerce site
-  - An administrator account, or an operator assigned to the site (read-only to look)
+  - An administrator account, or an operator account assigned to the site (read-only accounts can view)
 version: v0.3.0
 last_verified: unverified
 sidebar_position: 6.7
 ---
 
-Once a day the panel looks up the installed versions of WordPress, its plugins and its themes in a
-public vulnerability database. What affects your versions shows in the site's **Security** tab and raises
-an alert. The panel never updates anything by itself: updating stays your choice.
+Once a day, the panel looks up the installed versions of WordPress, its plugins and its themes in a
+public vulnerability database. Anything that affects your versions shows up on the site's **Security**
+tab and triggers an alert. The panel never updates anything on its own. Updating is always your call.
 
 ## Read the results {#read-the-results}
 
-1. Open the site and its **Security** tab, **Known vulnerabilities** box.
-2. At the top you see the outcome: **none known**, **N found**, **first check soon** or **off**.
-3. The table lists, for each vulnerability: the kind (**WordPress**, **Plugin** or **Theme**),
-   **Installed**, **Severity** (**Critical**, **High**, **Medium**, **Low**), the **Vulnerability** with
-   its CVE and a link to the advisory, and the **Fix**:
-   - **Update to `<version>`**: a fixed version exists;
-   - **No fix yet**: no version solves it yet;
-   - **Check the advisory**: the database does not say which version solves it.
-4. Under the table you find **Last check** and **Components checked**.
+1. Open the site, go to the **Security** tab and find the **Known vulnerabilities** box.
+2. The top shows the overall result: **none known**, **N found**, **first check soon** or **off**.
+3. The table lists each vulnerability with its component type (**WordPress**, **Plugin** or
+   **Theme**), the **Installed** version, the **Severity** (**Critical**, **High**, **Medium**,
+   **Low**), the **Vulnerability** with its CVE and a link to the advisory, and the **Fix**:
+   - **Update to `<version>`**: a fixed version is available.
+   - **No fix yet**: no version fixes it yet.
+   - **Check the advisory**: the database doesn't say which version fixes it.
+4. Below the table you'll find **Last check** and **Components checked**.
 
-To check right away press **Check now**. The check runs as a task; if it fails, the page says **The last
-check, `<when>`, did not complete** and shows the list from the check before.
+To run a check right away, press **Check now**. The check runs as a task. If it fails, the page shows
+**The last check, `<when>`, did not complete** and keeps the results from the previous check.
 
-## The alert {#the-alert}
+## Alerts {#the-alert}
 
-A site with vulnerabilities raises a **Vulnerability** alert, which also reaches the webhook like any
-other alert (see [alerts and notifications](/docs/server/alerts-and-notifications)). It is an **error**
-if one is high or critical, otherwise a **warning**. When a new vulnerability appears the alert comes
-back, even if you had dismissed it.
+A site with vulnerabilities triggers a **Vulnerability** alert, which also goes to the webhook like
+any other alert (see [alerts and notifications](/docs/server/alerts-and-notifications)). The alert is
+an **error** if any vulnerability is high or critical, and a **warning** otherwise. When a new
+vulnerability appears, the alert comes back, even if you dismissed it.
 
-## Turn the check off {#turn-it-off}
+## Turn off the check {#turn-it-off}
 
-The check is on by default. To turn it off, in **Settings** untick **Check WordPress sites for known
-vulnerabilities** and save. With cgctl: `cgctl settings set vulnerability_check 0` (and `1` to turn it back
-on). The **Security** tab then says **off**.
+The check is on by default. To turn it off, open **Settings**, clear
+**Check WordPress sites for known vulnerabilities** and save. With cgctl, run
+`cgctl settings set vulnerability_check 0` (use `1` to turn it back on). The **Security** tab then
+shows **off**.
 
-The check sends nothing but the name and version of each component out of the server: never the domain
-or anything else about the server. How it works and where the data comes from is in [security
-checks](/docs/explanation/security-scans).
+The only data the check sends off the server is the name and version of each component. It never
+sends the domain or anything else about the server. For how it works and where the data comes from,
+see [security checks](/docs/explanation/security-scans).
 
 ## Next step {#next}
 

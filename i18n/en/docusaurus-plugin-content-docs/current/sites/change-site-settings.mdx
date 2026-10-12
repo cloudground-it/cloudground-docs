@@ -1,38 +1,39 @@
 ---
 title: Change a site's settings
-description: Change aliases, profile, cache, PHP and its extensions, limits, HSTS and object cache from the site's tabs, or any field with a PATCH request to the API.
+description: Change a site's aliases, profile, cache, PHP version and extensions, limits, HSTS and object cache from its tabs, or change any field with a PATCH request to the API.
 type: how-to
 prerequisites:
-  - An administrator account, or an operator assigned to the site
+  - An administrator account, or an operator account assigned to the site
 version: v0.2.0
 last_verified: unverified
 sidebar_position: 2
 ---
 
-Every setting of a site goes through the same request, `PATCH /api/sites/<id>`: the panel's tabs use
-it, and so can you. Every field with its range is in the [site settings reference](/docs/reference/site-settings).
+All site settings go through a single API request, `PATCH /api/sites/<id>`. The panel's tabs use it,
+and you can call it yourself. The [site settings reference](/docs/reference/site-settings) lists
+every field and its allowed range.
 
-## From the site's tabs {#from-the-site-tabs}
+## Use the site's tabs {#from-the-site-tabs}
 
-Open **Sites**, pick the site, then the tab:
+Open **Sites**, select the site, then open the tab you need:
 
-| Tab | What you change | Button |
+| Tab | What you can change | Button |
 | --- | --- | --- |
-| **Overview**, card **Domains and folder** | **Aliases** (administrators only), **Public folder**; for a reverse proxy, **Upstream URL** instead of the folder (administrators only) | **Apply** |
-| **Cache** | **Performance profile**, **Page cache**, **Lifetime (TTL)** in seconds (0 = the profile's) | **Apply** |
-| **PHP** (under **More**) | **PHP version**, **Memory limit**, **Max upload size**, **Max execution time**; in the **Workers** card, **PHP workers** (0 = automatic) | **Apply** |
-| **Resources** (under **More**) | **Memory limit**, **CPU quota**, **Process limit** (administrators only); the **Usage alerts** thresholds. See [a site's resources and limits](/docs/sites/resource-usage-and-limits) | **Apply** |
-| **SSL** | the **HSTS** switch | — |
-| **WordPress** | the **Object cache** switch | — |
+| **Overview**, **Domains and folder** card | **Aliases** (administrators only), **Public folder**. For a reverse proxy, **Upstream URL** replaces the folder (administrators only) | **Apply** |
+| **Cache** | **Performance profile**, **Page cache**, **Lifetime (TTL)** in seconds (0 uses the profile's value) | **Apply** |
+| **PHP** (under **More**) | **PHP version**, **Memory limit**, **Max upload size**, **Max execution time**. In the **Workers** card, **PHP workers** (0 means automatic) | **Apply** |
+| **Resources** (under **More**) | **Memory limit**, **CPU quota**, **Process limit** (administrators only), and the **Usage alerts** thresholds. See [Site resources and limits](/docs/sites/resource-usage-and-limits) | **Apply** |
+| **SSL** | The **HSTS** switch | — |
+| **WordPress** | The **Object cache** switch | — |
 
-Each change starts the **Site settings** task. The server rewrites the site's configuration and
-reloads it; if that fails, the panel puts the previous values back and the task shows the error.
+Each change starts a **Site settings** task. The server rewrites the site's configuration and reloads
+it. If that fails, the panel restores the previous values and the task shows the error.
 
 :::warning[HSTS]
 
-With HSTS on, for a year browsers refuse any non-HTTPS connection to the domain, even if the
-certificate stops working. The panel turns it on only when the site has a certificate valid for at
-least another 14 days.
+Once HSTS is on, browsers refuse any non-HTTPS connection to the domain for a year, even if the
+certificate stops working. The panel only lets you turn it on when the site's certificate is valid for
+at least 14 more days.
 
 :::
 
@@ -40,23 +41,23 @@ least another 14 days.
 
 *Since v0.2.0.*
 
-The **PHP** tab shows, in the **PHP … extensions** card, the common extensions of the site's PHP
-version; the missing ones are marked **not installed**. **All loaded modules** lists every module the
-sites' PHP really loads.
+On the **PHP** tab, the **PHP … extensions** card lists the common extensions for the site's PHP
+version. Missing ones are marked **not installed**. **All loaded modules** lists every module the
+sites' PHP actually loads.
 
-Extensions are the server's: every site on that PHP version shares them. That is why only an
-administrator installs one.
+Extensions are installed server-wide, so every site on that PHP version shares them. For that reason,
+only administrators can install them.
 
-1. In the **PHP** tab, press **Install** next to the extension.
-2. Confirm. A task installs the package `php<version>-<extension>` on the server, then restarts the
-   PHP of every site on that version so it loads it, with a moment of pause.
+1. On the **PHP** tab, press **Install** next to the extension.
+2. Confirm. A task installs the `php<version>-<extension>` package on the server, then restarts PHP for
+   every site on that version so it picks up the extension. Those sites pause briefly.
 
-Only these extensions can be installed: `apcu`, `bcmath`, `curl`, `gd`, `gmp`, `igbinary`, `imagick`,
+You can install only these extensions: `apcu`, `bcmath`, `curl`, `gd`, `gmp`, `igbinary`, `imagick`,
 `intl`, `ldap`, `mbstring`, `memcached`, `mysql`, `pgsql`, `redis`, `soap`, `sqlite3`, `xml`, `zip`.
-With the API: `GET /api/php/<version>/extensions` lists them, `POST /api/php/<version>/extensions`
+Through the API, `GET /api/php/<version>/extensions` lists them and `POST /api/php/<version>/extensions`
 with `{"extension": "redis"}` installs one (administrators only).
 
-## With the API {#with-the-api}
+## Use the API {#with-the-api}
 
 From a script, send the same `PATCH` request with an API token. On the server, as root:
 
@@ -68,26 +69,27 @@ curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
   -d '{"php_workers": 4, "memory_limit_mb": 256}'
 ```
 
-- `<id>` is the site's number: it is in the address of its page in the panel (`/sites/<id>`) and in
-  the output of `cgctl sites list`.
-- `CLOUDGROUND_TOKEN` is an API token: see [API tokens and cgctl](/docs/access/api-tokens-and-cgctl).
-- Send only the fields you want to change. A request naming no field is refused.
+- `<id>` is the site's ID. You can find it in the URL of the site's page in the panel
+  (`/sites/<id>`) and in the output of `cgctl sites list`.
+- `CLOUDGROUND_TOKEN` holds an API token. See [API tokens and cgctl](/docs/access/api-tokens-and-cgctl).
+- Send only the fields you want to change. A request with no fields is rejected.
 
-The answer is `202` with the site after the change and the task it started. When there is something
-to know, for example that the certificate no longer covers every alias, the answer also carries
+The response is `202`, with the updated site and the task the change started. If there's something you
+should know, such as the certificate no longer covering every alias, the response also includes
 `warnings`.
 
-## If the request is refused {#if-it-is-refused}
+## Rejected requests {#if-it-is-refused}
 
-- **400** with `fields`: a value is out of range. `fields` names each wrong field with its message,
-  and nothing changed.
-- **400** on the PHP budget: workers × memory limit exceeds the server's memory. Lower one of the
-  two. An administrator can force it with `"allow_over_budget": true`, or from the **PHP** tab with
-  **Apply beyond the budget**.
-- **403**: only an administrator changes `aliases`, `proxy_upstream` and the resource limits
+- **400** with `fields`: a value is out of range. `fields` lists each invalid field with a message.
+  Nothing was changed.
+- **400** about the PHP budget: workers × memory limit is more than the server's memory. Lower one of
+  the two. An administrator can override this with `"allow_over_budget": true`, or with
+  **Apply beyond the budget** on the **PHP** tab.
+- **403**: only administrators can change `aliases`, `proxy_upstream` and the resource limits
   (`memory_max_mb`, `cpu_quota_pct`, `tasks_max`).
-- **409** on `hsts`: the site has no certificate, or it expires within 14 days. Issue it first.
+- **409** on `hsts`: the site has no certificate, or its certificate expires within 14 days. Issue a
+  certificate first.
 
 ## Next step {#next}
 
-[Add an alias and its certificate](./domains-and-certificates.mdx).
+[Add an alias and a certificate for it](./domains-and-certificates.mdx).

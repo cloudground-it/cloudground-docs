@@ -1,132 +1,135 @@
 ---
 title: Create a site
-description: Create a WordPress, WooCommerce, PHP, Laravel, static or reverse proxy site, with its database, from the panel or with cgctl, and keep the summary it gives you once.
+description: Create a WordPress, WooCommerce, PHP, Laravel, static or reverse proxy site and its database, from the panel or with cgctl, and save the one-time summary.
 type: how-to
 prerequisites:
   - An administrator account
-  - A domain whose DNS A or AAAA record points at the server, if you want the certificate straight away
+  - A domain with a DNS A or AAAA record pointing at the server, if you want a certificate right away
 version: v0.2.0
 last_verified: unverified
 sidebar_position: 1
 ---
 
-A new site comes with its own system user, folder, vhost and, except for static and reverse proxy
-sites, its own PHP. WordPress, WooCommerce and Laravel sites also get their database. Only an
-administrator can create a site.
+Every new site gets its own system user, folder and vhost. All types except static and reverse proxy
+also get their own PHP. WordPress, WooCommerce and Laravel sites get a database as well. Only
+administrators can create sites.
 
-## From the panel {#from-the-panel}
+## Create a site in the panel {#from-the-panel}
 
 1. Open **Sites** and choose **New site**.
-2. In **Domain**, type the site's name, for example `example.com`. The panel lowercases it.
-3. In **Type**, pick the kind of site. The differences are in the [site types reference](/docs/reference/site-types).
-4. In **PHP**, keep **Default version** or pick one of the versions installed on the server. Static
-   and reverse proxy sites have no such field.
-5. In **Performance profile**, keep **Recommended** or pick **Balanced**, **Commerce** or
+2. In **Domain**, enter the site's domain, such as `example.com`. The panel converts it to lowercase.
+3. In **Type**, choose the kind of site. The [site types reference](/docs/reference/site-types)
+   explains how they differ.
+4. In **PHP**, keep **Default version** or choose another version installed on the server. Static and
+   reverse proxy sites don't have this field.
+5. In **Performance profile**, keep **Recommended** or choose **Balanced**, **Commerce** or
    **Maximum**.
-6. Fill in the fields of the type you picked:
+6. Fill in the fields for the type you chose:
    - **WordPress** and **WooCommerce**, under **WordPress administrator**: **Site title** (optional;
-     empty means the domain), **Admin email**, **Admin username** and **Admin password**, at least 12
-     characters (**Generate** makes one). They are your WordPress sign-in.
-   - **Reverse proxy**: **Upstream URL**, for example `http://127.0.0.1:3000`. It must be an `http`
-     or `https` URL with no credentials, query or fragment.
-7. Fill in the **Database** part (below).
-8. Check the line at the bottom, which says what the site will get, and choose **Create site**.
+     defaults to the domain), **Admin email**, **Admin username** and **Admin password**, which needs
+     at least 12 characters (press **Generate** to create one). You use these to sign in to WordPress.
+   - **Reverse proxy**: **Upstream URL**, such as `http://127.0.0.1:3000`. It must be an `http` or
+     `https` URL without credentials, a query string or a fragment.
+7. Fill in the **Database** section (see below).
+8. Read the line at the bottom, which lists what the site will get, then choose **Create site**.
 
-## The database {#database}
+## Set up the database {#database}
 
-The **Database** part depends on the type:
+What the **Database** section offers depends on the site type:
 
-- **WordPress**, **WooCommerce** and **Laravel** always have a database: their configuration uses it.
-- **PHP** and **Static**: turn on **Create a database too** to get a MariaDB database and a user with
-  all privileges on it. Off, the site starts with none; you can add one later from the
-  [Database tab](/docs/data/manage-databases).
+- **WordPress**, **WooCommerce** and **Laravel** always get a database, because their configuration
+  depends on it.
+- **PHP** and **Static**: turn on **Create a database too** to get a MariaDB database plus a user with
+  full privileges on it. If you leave it off, the site starts without one. You can add one later from
+  the [Database tab](/docs/data/manage-databases).
 - **Reverse proxy**: no database.
 
-When the site gets one, fill in:
+If the site gets a database, fill in:
 
-1. **Database name** and **Database user**. The panel proposes a name from the domain
-   (`blog.example.com` gives `blog_example`) and uses it for both, until you change them.
-2. **Database password**. The panel fills it with a generated password; keep it, press **Generate**
-   for another, or type your own. **Show** displays it.
+1. **Database name** and **Database user**. The panel suggests a name based on the domain
+   (`blog.example.com` becomes `blog_example`) and uses it for both until you change either one.
+2. **Database password**. The panel pre-fills a generated password. Keep it, press **Generate** for a
+   new one, or type your own. Press **Show** to reveal it.
 
-The names and the password follow the [database rules](/docs/reference/database-names-and-passwords): for
-example, a name already used on this server, or a password with `'`, `"` or `\`, is refused under its
-field.
+Names and passwords must follow the [database rules](/docs/reference/database-names-and-passwords).
+For example, the panel rejects a name that is already taken on this server, or a password that
+contains `'`, `"` or `\`, and shows the error under the field.
 
-## The summary {#summary}
+## Save the summary {#summary}
 
-After **Create site**, the dialog becomes the site's summary. At the top, the creation's steps appear
-as they run: *done*, *in progress* or *failed*. Below, everything you need to use the site:
+After you press **Create site**, the dialog turns into a summary of the site. The top lists each
+creation step as it runs, marked *done*, *in progress* or *failed*. Below that is everything you need
+to start using the site:
 
-| Part | Rows |
+| Section | Rows |
 | --- | --- |
 | **Site** | **Site URL**, **In the panel** |
 | **WordPress** | **Admin URL**, **Admin user** |
 | **Database** | **Host**, **Port**, **Socket**, **Database name**, **Database user**, **Database password** |
-| **SFTP** | off, with the site's system user to turn it on |
+| **SFTP** | off, with the site's system user you need to turn it on |
 
-:::warning[The database password is shown only here]
+:::warning[You only see the database password here]
 
-The summary is the only place the panel ever shows the database password, chosen or generated. Before
-closing it, press **Download as .txt** or **Copy**. If you lose it, set a new one from the
-[Database tab](/docs/data/manage-databases#reset-password).
+The summary is the only place the panel ever shows the database password, whether you chose it or
+the panel generated it. Before you close the dialog, press **Download as .txt** or **Copy**. If you
+lose the password, set a new one from the [Database tab](/docs/data/manage-databases#reset-password).
 
 :::
 
-- **Download as .txt** saves the whole summary as `<domain>-cloudground.txt`. The file holds
-  passwords: keep it somewhere safe and delete it once you have stored them elsewhere.
-- **Copy** copies the same text to the clipboard.
-- **Close** without either asks *Close without saving?* first; leaving or reloading the page asks
-  too.
-- **Open the site** goes to the site's page.
+- **Download as .txt** saves the full summary as `<domain>-cloudground.txt`. The file contains
+  passwords, so keep it somewhere safe and delete it once you've stored them elsewhere.
+- **Copy** puts the same text on your clipboard.
+- **Close** asks *Close without saving?* if you haven't used either option. Leaving or reloading the
+  page asks too.
+- **Open the site** takes you to the site's page.
 
-The site appears in the list as **provisioning**. When the **Site creation** task ends, the status
-becomes **active**.
+The site appears in the list as **provisioning**. When the **Site creation** task finishes, the
+status changes to **active**.
 
-If the panel's **Settings** have a **Let's Encrypt email**, creation also requests the certificate.
-If DNS does not point at the server yet, the site is created anyway: the task says so in its
-messages (`Certificate pending (DNS may not point here yet)`), and the site answers with the
-server's self-signed fallback certificate (`CN=fallback.invalid`), which browsers refuse, until you
-issue one from the **SSL** tab.
+If **Let's Encrypt email** is set in the panel's **Settings**, creating the site also requests a
+certificate. If DNS doesn't point at the server yet, the site is still created. The task notes this
+in its messages (`Certificate pending (DNS may not point here yet)`), and until you issue a
+certificate from the **SSL** tab, the site serves the server's self-signed fallback certificate
+(`CN=fallback.invalid`), which browsers reject.
 
-## SFTP starts off {#sftp}
+## SFTP is off by default {#sftp}
 
-A new site's SFTP access is off: nobody can sign in over SFTP until you turn it on, with a password of
-its own, from the site's **SFTP / SSH** tab. See [SFTP and SSH keys](/docs/access/sftp-and-ssh-keys).
+SFTP access starts out disabled on a new site. Nobody can connect over SFTP until you enable it, with
+its own password, from the site's **SFTP / SSH** tab. See [SFTP and SSH keys](/docs/access/sftp-and-ssh-keys).
 
-## With cgctl {#with-cgctl}
+## Create a site with cgctl {#with-cgctl}
 
 ```bash
 cgctl --wait sites create example.com wordpress \
   '{"admin_email":"you@example.com","admin_user":"admin","admin_password":"<password>","title":"My site"}'
 ```
 
-- `<password>` is the WordPress administrator's password, at least 12 characters.
-- The third argument is JSON with the optional fields: `profile`, `php_version`, `cache_enabled`,
-  `object_cache`, `aliases`, and `proxy_upstream` for a reverse proxy.
-- `--wait` waits for the task to end and exits 0 only if it succeeded.
+- `<password>` is the WordPress administrator password, at least 12 characters long.
+- The third argument is a JSON object with the optional fields: `profile`, `php_version`,
+  `cache_enabled`, `object_cache`, `aliases`, and `proxy_upstream` for reverse proxy sites.
+- `--wait` blocks until the task finishes and exits with 0 only if it succeeded.
 
-The database options:
+Database options:
 
 | Option | Effect |
 | --- | --- |
-| `--with-database` | A database for a `php` or `static` site too. |
-| `--db-name <name>` | The database's name. Without it, `site_<id>`. |
-| `--db-user <name>` | The user's name. Without it, `site_<id>`. |
-| `--db-password-stdin` | Reads the password from one line of standard input. |
+| `--with-database` | Also creates a database for a `php` or `static` site. |
+| `--db-name <name>` | Database name. Defaults to `site_<id>`. |
+| `--db-user <name>` | Database user name. Defaults to `site_<id>`. |
+| `--db-password-stdin` | Reads the password from a single line on standard input. |
 | `--db-password-file <file>` | Reads the password from a file. |
-| `--db-password <password>` | The password on the command line: cgctl warns that `ps` and the shell history show it. Prefer the two above. |
-| `--json` | Prints the API's JSON answer instead of the summary. |
+| `--db-password <password>` | Takes the password on the command line. cgctl warns you that it shows up in `ps` and your shell history. Use one of the two options above instead. |
+| `--json` | Prints the raw JSON response from the API instead of the summary. |
 
-Without a password the panel generates one. For example, a Laravel site with the password in a file
-readable by root only:
+If you don't give a password, the panel generates one. For example, to create a Laravel site with
+the password in a file only root can read:
 
 ```bash prompt
 cgctl --wait sites create shop.example.com laravel \
   --db-name shop --db-user shop_app --db-password-file /root/shop-db.pass
 ```
 
-cgctl prints the same summary as the panel, once:
+cgctl prints the same summary as the panel, and only once:
 
 ```text
 shop.example.com (laravel, site 7)
@@ -150,25 +153,25 @@ SFTP
 The database password is shown only now: keep it safe. A new one can be set from the site's Database tab.
 ```
 
-On the server's local socket the panel link is the path only; over `https://` it is a full address.
-For a reverse proxy:
+When you connect through the server's local socket, the panel link is just a path. Over `https://`
+it's a full URL. For a reverse proxy site:
 
 ```bash
 cgctl --wait sites create app.example.com proxy '{"proxy_upstream":"http://127.0.0.1:3000"}'
 ```
 
-## If creation fails {#if-it-fails}
+## Troubleshooting {#if-it-fails}
 
-- **The domain is already in use** by another site, as its domain or an alias: the request is
-  refused before anything is created.
-- **A database or user name is already used** on this server, or breaks the rules: the request is
-  refused, naming the field, before anything is created.
-- **The PHP version is not installed**: pick one of those listed under **PHP**.
-- **A step of the creation fails**: the server undoes the steps already done and the site leaves
-  the list. The task's message names the step that failed.
-- **The panel loses contact with the server during creation**: the site stays in the list as
-  **error**. Delete it and create it again.
+- **Domain already in use**: another site already uses it as its domain or as an alias. The request
+  is rejected before anything is created.
+- **Database or user name already taken** on this server, or invalid: the request is rejected before
+  anything is created, and the error names the field.
+- **PHP version not installed**: choose one of the versions listed under **PHP**.
+- **A creation step fails**: the server rolls back the steps it already completed and the site
+  disappears from the list. The task message names the step that failed.
+- **The panel loses contact with the server mid-creation**: the site stays in the list with the
+  status **error**. Delete it and create it again.
 
 ## Next step {#next}
 
-[Give the site a certificate and its aliases](./domains-and-certificates.mdx).
+[Add a certificate and aliases to the site](./domains-and-certificates.mdx).

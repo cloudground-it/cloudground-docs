@@ -1,10 +1,10 @@
 ---
 title: Your first site
-description: Create a WordPress site, check that the page cache serves it, and take its first backup, verified by a restore test.
+description: Create a WordPress site, confirm the page cache is serving it, and take a first backup that a test restore verifies.
 type: tutorial
 prerequisites:
-  - CloudGround installed and your administrator account
-  - A domain whose DNS A record points at the server's address
+  - CloudGround installed, and your administrator account
+  - A domain with a DNS A record pointing at the server's IP address
 version: v0.2.0
 last_verified: unverified
 sidebar_position: 2
@@ -14,91 +14,91 @@ meta:
   level: Basic
 ---
 
-In this tutorial you put a WordPress site online on `<domain>`, watch the page cache at work and
-take the first backup. `<domain>` is the domain you pointed at the server, for example
+In this tutorial you put a WordPress site online at `<domain>`, see the page cache in action and take
+your first backup. Throughout, `<domain>` stands for the domain you pointed at the server, such as
 `blog.example.com`.
 
 ## Set the certificate email {#set-the-certificate-email}
 
-With an email set, the panel requests the site's certificate as soon as it creates the site.
+Once an email is set, the panel requests a certificate for each new site as soon as it creates it.
 
 1. Open **Settings**.
-2. In the **Certificates** card, type an address in **Let's Encrypt email**.
+2. In the **Certificates** card, enter an address in **Let's Encrypt email**.
 3. Press **Save**.
 
 ## Create the site {#create-the-site}
 
 1. Open **Sites** and press **New site**. The **New site** dialog opens.
-2. In **Domain** type `<domain>`.
-3. In **Type** keep **WordPress**.
-4. In **Performance profile** keep **Recommended (Balanced)**.
-5. Fill in **Site title** and **Admin email**, and leave **Admin username** at `admin`.
-6. In **Admin password** choose a password of at least 12 characters. You will sign in to WordPress
-   with it.
-7. In the **Database** part, keep the name, the user and the password the panel proposes.
+2. In **Domain**, enter `<domain>`.
+3. Leave **Type** set to **WordPress**.
+4. Leave **Performance profile** set to **Recommended (Balanced)**.
+5. Fill in **Site title** and **Admin email**. Leave **Admin username** as `admin`.
+6. In **Admin password**, choose a password with at least 12 characters. This is the password you
+   use to sign in to WordPress.
+7. Under **Database**, keep the name, user and password the panel suggests.
 8. Press **Create site**.
 
-The dialog becomes the site's summary. At the top, the creation's steps run by: the panel creates the
-system user and the database, installs WordPress, writes the nginx and PHP configuration and requests
-the certificate. Below are the site's and the panel's addresses, the WordPress user and the database's
-credentials.
+The dialog turns into a summary of the site. The top shows each creation step as it runs: the panel
+creates the system user and the database, installs WordPress, writes the nginx and PHP configuration
+and requests the certificate. Below that you find the site and panel URLs, the WordPress user and the
+database credentials.
 
-9. Press **Download as .txt** and keep the file somewhere safe: the database password is shown only
-   here.
+9. Press **Download as .txt** and store the file somewhere safe. This is the only place the database
+   password is shown.
 10. Press **Close**.
 
-The site appears in the list with the status **provisioning**. When it is done the status becomes
-**active**.
+The site shows up in the list with the status **provisioning**. Once setup finishes, the status
+changes to **active**.
 
 ## Open the site {#open-the-site}
 
-In the site list, press the site's name: its page opens. Press **Visit ↗**. The browser shows the
-WordPress home page, over HTTPS.
+In the site list, click the site's name to open its page. Press **Visit ↗**. Your browser loads the
+WordPress home page over HTTPS.
 
-To reach the dashboard, go back to the site's page and press **Log in to WordPress**: the panel
-takes you to wp-admin without asking for the password.
+To get to the WordPress dashboard, go back to the site's page and press **Log in to WordPress**. The
+panel signs you in to wp-admin without asking for a password.
 
-## Watch the cache at work {#watch-the-cache}
+## See the cache in action {#watch-the-cache}
 
-From your computer, request the home page twice and look at the `X-CloudGround-Cache` header:
+From your own computer, request the home page twice and check the `X-CloudGround-Cache` header:
 
 ```bash
 curl -sI https://<domain>/ | grep -i x-cloudground-cache
 curl -sI https://<domain>/ | grep -i x-cloudground-cache
 ```
 
-The first answer says `MISS`: PHP generated the page and it went into the cache. The second says
-`HIT`: nginx served it from disk, without reaching PHP.
+The first response says `MISS`: PHP built the page and it was stored in the cache. The second says
+`HIT`: nginx served the page straight from disk and PHP never ran.
 
-## Connect the backup repository {#connect-the-repository}
+## Connect a backup repository {#connect-the-repository}
 
-Backups go to a restic repository. For this tutorial you use a folder on the server itself.
+Backups are stored in a restic repository. For this tutorial, you use a folder on the same server.
 
-1. Open **Settings**, card **Off-site backups (restic)**.
-2. In **Backup destination** pick **This server (a local folder)**.
-3. In **Folder** type `/var/backups/cloudground`.
-4. Next to **Repository password** press **Generate**, then **Download**, and keep the file somewhere
-   else: losing the password means losing the backups.
-5. Press **Save**, then **Test connection**. The panel answers **Repository reachable: 0 snapshots**.
+1. Open **Settings** and find the **Off-site backups (restic)** card.
+2. In **Backup destination**, choose **This server (a local folder)**.
+3. In **Folder**, enter `/var/backups/cloudground`.
+4. Next to **Repository password**, press **Generate**, then **Download**. Keep the file somewhere
+   other than this server. If you lose the password, you lose the backups.
+5. Press **Save**, then **Test connection**. The panel replies **Repository reachable: 0 snapshots**.
 
 :::warning[For learning only]
 
-A repository on the same server does not survive losing the server. For real sites,
+A repository on the same server is lost along with the server. For real sites,
 [connect an off-site repository](/docs/data/connect-a-backup-repository).
 
 :::
 
-## Take the first backup {#take-the-first-backup}
+## Take your first backup {#take-the-first-backup}
 
 1. Open the site's page and go to the **Backups** tab.
 2. Press **Back up now**.
 
-The backup appears in the list with **Restore test** at **pending**. Right after the backup, the
-panel restores it to one side and checks that the files and the database really come back. When the
-restore test finishes, the status becomes **passed** and **Estimated restore time** shows how long
-restoring it would take.
+The backup appears in the list with **Restore test** set to **pending**. As soon as the backup
+completes, the panel restores it to a separate location and checks that the files and the database
+actually come back. When the restore test is done, its status changes to **passed** and
+**Estimated restore time** shows how long a real restore would take.
 
 ## Next step {#next}
 
-You have a cached site with a verified backup. To understand what happens on every request, read
-[the path of a request](/docs/explanation/request-path).
+Your site is now cached and has a verified backup. To learn what happens each time a request comes
+in, read [The path of a request](/docs/explanation/request-path).

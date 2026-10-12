@@ -1,6 +1,6 @@
 ---
 title: "Tutorials"
-description: "Learn CloudGround from the start: install the panel and put your first site online."
+description: "Start here: install the panel, then put your first site online."
 type: index
 last_verified: 2026-10-10
 hide_table_of_contents: true
