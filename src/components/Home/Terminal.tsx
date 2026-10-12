@@ -9,34 +9,14 @@ import styles from './Terminal.module.css';
  * abbreviated picture of what the installer prints. The button copies the
  * <code>'s own text, so it can never copy something other than what the
  * reader sees. Without JavaScript the button is not drawn, the output is
- * shown at once and the command can be selected like any text.
+ * shown at once and the command can be selected like any text. The lines
+ * print one by one through the home's motion (useHomeMotion.ts).
  */
 export default function Terminal(): ReactNode {
   const isBrowser = useIsBrowser();
   const code = useRef<HTMLElement>(null);
-  const body = useRef<HTMLDivElement>(null);
   const timer = useRef<number | undefined>(undefined);
   const [copied, setCopied] = useState(false);
-  const [play, setPlay] = useState(false);
-
-  // The output plays once, the first time the terminal is half in view.
-  useEffect(() => {
-    const el = body.current;
-    if (!el || !('IntersectionObserver' in window)) {
-      return undefined;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setPlay(true);
-          io.disconnect();
-        }
-      },
-      {threshold: 0.5},
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   const copy = async () => {
@@ -89,7 +69,7 @@ export default function Terminal(): ReactNode {
           {copied ? translate({id: 'home.terminal.copiedStatus', message: 'Comando copiato'}) : ''}
         </span>
       </div>
-      <div ref={body} className={`${styles.body}${play ? ` ${styles.play}` : ''}`}>
+      <div className={styles.body}>
         <p className={styles.cmd}>
           <span className={styles.prompt} aria-hidden="true">
             ${' '}
@@ -97,7 +77,7 @@ export default function Terminal(): ReactNode {
           <code ref={code}>{INSTALL_COMMAND}</code>
         </p>
         {output.map((line, i) => (
-          <p key={i} className={styles.ok} style={{animationDelay: `${0.3 + i * 0.7}s`}}>
+          <p key={i} className={styles.ok}>
             {line.startsWith('[ok]') ? (
               <>
                 <b>[ok]</b>
@@ -108,7 +88,7 @@ export default function Terminal(): ReactNode {
             )}
           </p>
         ))}
-        <p className={styles.last} style={{animationDelay: `${0.3 + output.length * 0.7}s`}}>
+        <p className={styles.last}>
           {last}
         </p>
       </div>

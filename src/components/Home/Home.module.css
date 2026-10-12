@@ -123,6 +123,10 @@
   line-height: 0.92;
   letter-spacing: -0.035em;
 }
+/* The hero's accent word is underlined, below the descenders. */
+.h1 .acc {
+  background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 100% 0.06em;
+}
 .lede {
   max-width: 34em;
   font-size: clamp(1.125rem, 1.5vw, 1.3125rem);

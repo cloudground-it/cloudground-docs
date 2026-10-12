@@ -1,10 +1,11 @@
-import React, {type ReactNode} from 'react';
+import React, {useRef, type ReactNode} from 'react';
 import Link from '@docusaurus/Link';
 import Translate, {translate} from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import CacheScope from './CacheScope';
 import Terminal from './Terminal';
 import useAnchor from './useAnchor';
+import useHomeMotion from './useHomeMotion';
 import Icon from '@site/src/components/Icon';
 import {BENCH_METHOD_URL, BENCH_URL, REPO} from '@site/src/data/site';
 import styles from './Home.module.css';
@@ -15,25 +16,30 @@ import styles from './Home.module.css';
  * the install terminal and the closing call, in the "Rapporto di prova"
  * tokens (design/DESIGN.md). Every section is plain markup rendered at build
  * time: the cache switch and the copy button are the only parts that need
- * JavaScript, and without it they are simply not drawn.
+ * JavaScript, and without it they are simply not drawn. Motion
+ * (useHomeMotion.ts) only animates what is already there.
  */
 
 function Accent({children}: {children: ReactNode}): ReactNode {
   return <span className={styles.acc}>{children}</span>;
 }
 
-function Label({children}: {children: ReactNode}): ReactNode {
-  return <span className={styles.label}>{children}</span>;
+function Label({children, intro}: {children: ReactNode; intro?: boolean}): ReactNode {
+  return (
+    <span className={styles.label} data-intro={intro || undefined}>
+      {children}
+    </span>
+  );
 }
 
 function Hero(): ReactNode {
   return (
     <header className={`${styles.frame} ${styles.hero}`}>
       <div className={styles.heroText}>
-        <Label>
+        <Label intro>
           <Translate id="home.hero.kicker">Pannello di hosting sui tuoi server</Translate>
         </Label>
-        <h1 className={styles.h1}>
+        <h1 className={styles.h1} data-intro>
           <Translate id="home.hero.title1">Hosting</Translate>
           <br />
           <Translate
@@ -48,13 +54,13 @@ function Hero(): ReactNode {
             {'che si {accent}'}
           </Translate>
         </h1>
-        <p className={styles.lede}>
+        <p className={styles.lede} data-intro>
           <Translate id="home.hero.lede">
             Un comando installa il pannello sul tuo server Ubuntu. Ogni sito nasce con la sua cache, il suo PHP, il suo
             certificato e backup che vengono ripristinati per prova dopo ogni copia.
           </Translate>
         </p>
-        <div className={styles.actions}>
+        <div className={styles.actions} data-intro>
           <a href="#installa" className={`${styles.btn} ${styles.btnPrimary}`}>
             <Translate id="home.hero.install">Installa in un comando</Translate>
             <Icon name="arrow-right" size={18} />
@@ -63,7 +69,7 @@ function Hero(): ReactNode {
             <Translate id="home.hero.docs">Leggi la guida</Translate>
           </Link>
         </div>
-        <ul className={styles.facts}>
+        <ul className={styles.facts} data-intro>
           <li>
             <Translate id="home.hero.fact1">Gratis</Translate>
           </li>
@@ -410,7 +416,7 @@ function Measures(): ReactNode {
                   </small>
                 </th>
                 <td className={styles.fig}>
-                  {number(m.rps)}
+                  <span data-count={m.rps}>{number(m.rps)}</span>
                   <small>{unit}</small>
                 </td>
                 <td className={styles.out}>
@@ -537,8 +543,10 @@ function Closing(): ReactNode {
 }
 
 export default function Home(): ReactNode {
+  const root = useRef<HTMLElement>(null);
+  useHomeMotion(root);
   return (
-    <main id="top" className={styles.home}>
+    <main id="top" ref={root} className={styles.home}>
       <Hero />
       <Ribbon />
       <Features />

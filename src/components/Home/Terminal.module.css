@@ -73,26 +73,10 @@
 .last {
   color: var(--cg-code-accent);
 }
-.play .ok,
-.play .last {
-  animation: line 0.3s ease both;
-}
-@keyframes line {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-}
 
 @media (max-width: 480px) {
   .body {
     padding: 18px 16px 20px;
     font-size: 0.8125rem;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .play .ok,
-  .play .last {
-    animation: none;
   }
 }

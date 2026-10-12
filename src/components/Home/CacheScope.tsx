@@ -79,7 +79,7 @@ export default function CacheScope(): ReactNode {
             d="M0 46H600M0 92H600M0 138H600M0 184H600M100 0V230M200 0V230M300 0V230M400 0V230M500 0V230"
           />
           <g className={styles.track}>
-            <path className={styles.wave} d={on ? WAVE_ON : WAVE_OFF} />
+            <path className={styles.wave} d={on ? WAVE_ON : WAVE_OFF} data-intro />
           </g>
         </svg>
         <span className={`${styles.tag} ${styles.axis}`} aria-hidden="true">
@@ -97,9 +97,9 @@ export default function CacheScope(): ReactNode {
         {readings.map((r) => (
           <div key={r.key}>
             <dt className={styles.label}>{r.label}</dt>
-            <dd>{r.value}</dd>
+            <dd data-intro>{r.value}</dd>
             <span className={styles.bar} aria-hidden="true">
-              <i style={{width: `${r.load}%`}} />
+              <i style={{width: `${r.load}%`}} data-intro />
             </span>
           </div>
         ))}

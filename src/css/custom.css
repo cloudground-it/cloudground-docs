@@ -1964,6 +1964,24 @@ a.cg-card:hover .cg-card__title {
 
 /* ---------- Misc ---------- */
 
+/* Home motion (src/components/Home/useHomeMotion.ts). Words and characters
+   are split into inline blocks, never lines and never masked, so text wraps as
+   usual and nothing is cut. The hero stays transparent from the first paint
+   until the script takes over, and for three seconds at most. */
+.cg-split-w,
+.cg-split-c {
+  display: inline-block;
+}
+html[data-cg-motion='on'] [data-intro] {
+  opacity: 0;
+  animation: cg-intro-failsafe 0s 3s forwards;
+}
+@keyframes cg-intro-failsafe {
+  to {
+    opacity: 1;
+  }
+}
+
 /* Read aloud, not drawn. */
 .sr-only {
   position: absolute;
