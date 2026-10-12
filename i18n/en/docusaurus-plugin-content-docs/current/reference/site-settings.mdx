@@ -1,6 +1,6 @@
 ---
 title: Site settings
-description: Every field PATCH /api/sites/<id> takes, with its allowed values, default, effect and who may change it.
+description: Every field accepted by PATCH /api/sites/<id>, with allowed values, defaults, effects and who can change it.
 type: reference
 prerequisites: []
 version: v0.2.0
@@ -8,36 +8,36 @@ last_verified: unverified
 sidebar_position: 2
 ---
 
-`PATCH /api/sites/<id>` changes one or more settings of a site. Every field is optional, only the
-fields present change, and `null` counts as absent. The body is JSON (`Content-Type:
-application/json`).
+`PATCH /api/sites/<id>` changes one or more of a site's settings. Every field is optional. Only the
+fields you send are changed, and `null` is treated as not sent. The request body is JSON
+(`Content-Type: application/json`).
 
 ## Fields {#fields}
 
-**Who** is the role that may send the field: *manage* means an administrator, or an operator assigned
-to the site.
+**Who** is the role allowed to send the field. *manage* means an administrator, or an operator
+assigned to the site.
 
 | Field | Type | Sites | Allowed values | Default | Effect | Who |
 | --- | --- | --- | --- | --- | --- | --- |
-| `aliases` | list of strings | production (not staging) | plain host names, not the domain, no duplicates, at most 50, none another site's; `[]` removes them | none | the names the site answers for besides its domain; a Let's Encrypt certificate is reissued for new names | administrator |
-| `profile` | string | all | `balanced`, `commerce`, `maximum` | `commerce` for WooCommerce, else `balanced` | page-cache lifetime, bypass rules, PHP process manager | manage |
+| `aliases` | list of strings | production (not staging) | plain hostnames other than the domain, no duplicates, at most 50, none used by another site; `[]` removes them all | none | extra hostnames the site responds to besides its domain; the Let's Encrypt certificate is reissued to cover new names | administrator |
+| `profile` | string | all | `balanced`, `commerce`, `maximum` | `commerce` for WooCommerce, otherwise `balanced` | page cache lifetime, bypass rules, PHP process manager | manage |
 | `cache_enabled` | boolean | all | `true`, `false` | on, except static and reverse proxy | turns the page cache on or off | manage |
-| `cache_ttl_sec` | integer | all | 0 to 31536000 | 0 | how long a page stays cached; 0 is the profile's lifetime | manage |
-| `php_workers` | integer | all | 0 to 64 | 0 | the maximum number of PHP workers; 0 sizes them automatically | manage |
-| `hsts` | boolean | all | `true` only with a certificate valid for at least another 14 days | off | adds `Strict-Transport-Security: max-age=31536000` | manage |
-| `php_version` | string | with PHP | an installed version; the site's current version passes even when no longer installed | chosen at creation | the site's PHP-FPM version | manage |
-| `memory_limit_mb` | integer | with PHP | 64 to 4096 | 256, 512 for WooCommerce | PHP's `memory_limit` | manage |
+| `cache_ttl_sec` | integer | all | 0 to 31536000 | 0 | how long a page stays cached; 0 uses the profile's lifetime | manage |
+| `php_workers` | integer | all | 0 to 64 | 0 | maximum number of PHP workers; 0 sizes them automatically | manage |
+| `hsts` | boolean | all | `true` only with a certificate valid for at least 14 more days | off | adds `Strict-Transport-Security: max-age=31536000` | manage |
+| `php_version` | string | with PHP | an installed version; the site's current version is accepted even if no longer installed | set at creation | the site's PHP-FPM version | manage |
+| `memory_limit_mb` | integer | with PHP | 64 to 4096 | 256, or 512 for WooCommerce | PHP `memory_limit` | manage |
 | `upload_max_mb` | integer | with PHP | 1 to 2048 | 64 | `upload_max_filesize` and `post_max_size` | manage |
-| `max_execution_seconds` | integer | with PHP | 10 to 600 | 120 | `max_execution_time`; a request's real limit is this plus 10 s, at least 120 s | manage |
-| `public_root` | string | all but reverse proxy | empty, or a relative path of segments made of letters, digits, `-` and `_`, with no symbolic link or file along the path | `public` for Laravel, else empty | the folder served, inside the live release (`current/<public_root>`) | manage |
-| `proxy_upstream` | string | reverse proxy | an `http` or `https` URL with no credentials, query or fragment; stored normalised | chosen at creation | where requests go | administrator |
-| `object_cache` | boolean | WordPress, WooCommerce | `true`, `false` | off | installs and turns on the APCu object cache, or turns it off | manage |
-| `memory_max_mb` | integer | all | 0, or 128 to 1048576 | 0: half the server's memory, at least 1024 MB | the memory limit of the site's slice (`MemoryMax`); the site is slowed down at nine tenths | administrator |
-| `cpu_quota_pct` | integer | all | 0, or 10 to 25600; 100 is one CPU | 0: no quota | the CPU quota of the site's slice (`CPUQuota`) | administrator |
-| `tasks_max` | integer | all | 0, or 32 to 65536 | 0: 512 | the maximum number of processes in the site's slice (`TasksMax`) | administrator |
-| `usage_alerts` | object | all | `{off, cpu_pct, memory_pct, disk_mb}`, replaced whole; the percentages 0 to 100, `disk_mb` from 0 | alerts on, CPU and memory at 90 % (0), no disk alert (0) | the thresholds of the [usage alerts](/docs/sites/resource-usage-and-limits#usage-alerts); does not touch the site's configuration | manage |
+| `max_execution_seconds` | integer | with PHP | 10 to 600 | 120 | `max_execution_time`; the actual per-request limit is this value plus 10 s, with a minimum of 120 s | manage |
+| `public_root` | string | all except reverse proxy | empty, or a relative path whose segments contain only letters, digits, `-` and `_`, with no symlink or file along the path | `public` for Laravel, otherwise empty | the directory served, inside the live release (`current/<public_root>`) | manage |
+| `proxy_upstream` | string | reverse proxy | an `http` or `https` URL with no credentials, query string or fragment; stored in normalised form | set at creation | where requests are forwarded | administrator |
+| `object_cache` | boolean | WordPress, WooCommerce | `true`, `false` | off | installs and enables the APCu object cache, or turns it off | manage |
+| `memory_max_mb` | integer | all | 0, or 128 to 1048576 | 0: half the server's memory, at least 1024 MB | memory limit for the site's slice (`MemoryMax`); the site is throttled at 90% of it | administrator |
+| `cpu_quota_pct` | integer | all | 0, or 10 to 25600; 100 equals one CPU | 0: no quota | CPU quota for the site's slice (`CPUQuota`) | administrator |
+| `tasks_max` | integer | all | 0, or 32 to 65536 | 0: 512 | maximum number of processes in the site's slice (`TasksMax`) | administrator |
+| `usage_alerts` | object | all | `{off, cpu_pct, memory_pct, disk_mb}`, replaced as a whole; percentages from 0 to 100, `disk_mb` from 0 | alerts on, CPU and memory at 90 % (0), no disk alert (0) | thresholds for [usage alerts](/docs/sites/resource-usage-and-limits#usage-alerts); does not change the site's configuration | manage |
 
-Any other field in the body makes the request malformed.
+Any other field in the body makes the request invalid.
 
 ## Profiles {#profiles}
 
@@ -47,34 +47,36 @@ Any other field in the body makes the request malformed.
 | `commerce` (Commerce) | 300 s | 3600 s | `dynamic` |
 | `maximum` (Maximum) | 86400 s | 3 days | `dynamic` |
 
-A `cache_ttl_sec` other than 0 replaces the profile's lifetime.
+A non-zero `cache_ttl_sec` overrides the profile's lifetime.
 
 ## PHP workers {#php-workers}
 
-With `php_workers` at 0, the workers' maximum is the site's memory divided by 80 MB, at most three
-per CPU. With a value, it is that value. Either way the result stays between 2 and 64.
+When `php_workers` is 0, the worker limit is the site's memory divided by 80 MB, capped at three
+per CPU. When you set a value, that value is used. Either way, the result is clamped between 2
+and 64.
 
-The site's memory is a quarter of the server's memory shared among the sites, at least 160 MB.
+A site's memory is a quarter of the server's memory divided among all sites, with a minimum of
+160 MB.
 
-The budget check runs when the request carries `php_workers` or `memory_limit_mb` and the site's
-number of workers, after the change, is above 0: workers × memory limit (256 MB, or 512 for
-WooCommerce, when the limit is not set) may not exceed the server's memory. `"allow_over_budget":
-true` skips the check; only an administrator may send it.
+The memory budget check runs when the request includes `php_workers` or `memory_limit_mb` and the
+site's worker count after the change is above 0. Workers × memory limit (256 MB, or 512 MB for
+WooCommerce, if no limit is set) must not exceed the server's memory. Sending
+`"allow_over_budget": true` skips the check. Only an administrator can send it.
 
-## Answers {#answers}
+## Responses {#answers}
 
 | Code | When |
 | --- | --- |
-| `202` | `{"site": …, "task": …}`, plus `"warnings"` when there is something to know |
-| `400` | malformed body or unknown field; no field; a value against its rule, an alias another site holds included (`{"error": …, "fields": {<field>: <message>}}`); PHP budget exceeded |
-| `403` | `aliases`, `proxy_upstream`, `memory_max_mb`, `cpu_quota_pct` or `tasks_max` (with `fields`), or `allow_over_budget`, from anyone but an administrator |
-| `404` | the site does not exist or is out of an operator's reach |
-| `409` | `hsts: true` without a certificate valid for at least another 14 days |
-| `503` | the panel is restarting: try again in a moment |
+| `202` | `{"site": …, "task": …}`, plus `"warnings"` when there is something you should know |
+| `400` | malformed body or unknown field; no fields; a value that breaks its rule, including an alias another site already uses (`{"error": …, "fields": {<field>: <message>}}`); PHP memory budget exceeded |
+| `403` | `aliases`, `proxy_upstream`, `memory_max_mb`, `cpu_quota_pct` or `tasks_max` (with `fields`), or `allow_over_budget`, sent by anyone other than an administrator |
+| `404` | the site does not exist, or is outside an operator's scope |
+| `409` | `hsts: true` without a certificate valid for at least 14 more days |
+| `503` | the panel is restarting; try again shortly |
 
-The change is saved at once and applied by the **Site settings** task. If the task fails, the panel
-puts back the previous values of the fields no later request changed.
+The change is saved immediately and applied by the **Site settings** task. If the task fails, the
+panel restores the previous values of any fields that no later request has changed.
 
 ## Next step {#next}
 
-[Change a site's settings](/docs/sites/change-site-settings), step by step.
+For step-by-step instructions, see [Change a site's settings](/docs/sites/change-site-settings).

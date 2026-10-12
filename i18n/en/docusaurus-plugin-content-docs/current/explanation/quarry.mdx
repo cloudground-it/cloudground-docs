@@ -1,6 +1,6 @@
 ---
 title: How Quarry works
-description: Why Quarry is a service of its own with two ways in, why MariaDB and not the panel decides what a session may do, and what Simulate refuses to keep its promise.
+description: Why Quarry is a separate service with two ways to sign in, why MariaDB rather than the panel decides what a session can do, and what Simulate refuses in order to keep its promise.
 type: explanation
 prerequisites: []
 version: v0.2.0
@@ -8,104 +8,114 @@ last_verified: unverified
 sidebar_position: 9
 ---
 
-Quarry is CloudGround's database manager. It is built into the panel and served on its address at
-`/quarry`, but it is a service of its own: a Quarry session is not a panel session. A panel session
-or an API token reaches none of Quarry's routes, and a Quarry session reaches none of the panel's.
-The steps are in [Use Quarry](/docs/data/use-quarry).
+Quarry is CloudGround's database manager. It ships with the panel and is served on the panel's
+address at `/quarry`, but it is a separate service with separate sessions. A panel session or an
+API token cannot reach any Quarry route, and a Quarry session cannot reach any panel route. For
+step-by-step instructions, see [Use Quarry](/docs/data/use-quarry).
 
-## Two ways in {#two-ways-in}
+## Two ways to sign in {#two-ways-in}
 
 ```mermaid
 flowchart LR
-  tab["Database tab<br/>Open in Quarry"] -->|"one-time link, 60 s,<br/>bound to the panel session"| panel["Quarry session<br/>from the panel"]
+  tab["Database tab<br/>Open in Quarry"] -->|"one-time link, 60 s,<br/>tied to the panel session"| panel["Quarry session<br/>from the panel"]
   form["/quarry<br/>sign-in form"] -->|"database user's<br/>name and password"| login["Quarry session<br/>as the database user"]
-  panel -->|"a throwaway account,<br/>granted on one database"| mariadb["MariaDB"]
+  panel -->|"throwaway account,<br/>granted on one database"| mariadb["MariaDB"]
   login -->|"the user itself,<br/>over the local socket"| mariadb
 ```
 
 **From the panel.** **Open in Quarry** asks the panel for a link that works once, for 60 seconds,
-and only together with the panel session that asked for it. The link carries its token after a `#`,
-which a browser never sends to a server nor puts in a `Referer`. Such a session lives as long as
-the panel session behind it, and checks at every request that your account still reaches the site.
-Its statements run as a throwaway database account granted on that one database only, and only to
-read for a read-only panel account, which sees the tables and their structure and nothing else.
-An API token cannot open Quarry: only a panel session signed in from a browser can.
+and only alongside the panel session that requested it. The token sits after a `#` in the link,
+and browsers never send that part to a server or include it in a `Referer`. The Quarry session
+lasts as long as the panel session behind it, and on every request it checks that your account
+still has access to the site. Its statements run as a throwaway database account with privileges
+on that one database only. For a read-only panel account, that throwaway account can only read: it
+sees the tables and their structure, and nothing else. API tokens cannot open Quarry. Only a panel
+session signed in from a browser can.
 
-**With a database user.** Someone who has no panel account, a developer or an agency, signs in with
-the name and password of a database user the panel made. The agent connects to MariaDB as that user,
-over the server's local socket, and checks that the server took it as exactly that user. It never
-signs in as `root`, which on this server needs no password over the socket, nor as the server's own
-accounts. The password stays in the agent's memory, encrypted, for the session's life: it is never
-written to disk, to the panel's database or to a log.
+**As a database user.** People without a panel account, such as a developer or an agency, can sign
+in with the name and password of a database user the panel created. The agent connects to MariaDB
+as that user over the server's local socket, and checks that the server authenticated it as
+exactly that user. It never signs in as `root` (which needs no password over the socket on this
+server) or as any of the server's own accounts. The password stays encrypted in the agent's memory
+for the life of the session. It is never written to disk, to the panel database or to a log.
 
-## MariaDB decides {#mariadb-decides}
+## MariaDB enforces the limits {#mariadb-decides}
 
-Quarry does not read your SQL to guess what it may do. Every statement runs as an account that
-MariaDB itself limits: the throwaway account has privileges on one database, a read-only one only
-`SELECT, SHOW VIEW`; a signed-in user has exactly the privileges you gave it in the **Database** tab.
-A write the account may not make fails with the server's own error. That is why the same Quarry can
-be handed to someone you trust with one table and to an administrator: the boundary is the
-privileges, which the database server enforces, not the interface.
+Quarry does not parse your SQL to guess what it is allowed to do. Every statement runs as an
+account that MariaDB itself restricts. The throwaway account has privileges on one database, and a
+read-only one gets only `SELECT, SHOW VIEW`. A database user who signs in has exactly the
+privileges you granted it in the **Database** tab. If the account is not allowed to make a write,
+the write fails with the server's own error. This is why you can give the same Quarry to someone
+you trust with a single table and to an administrator: the boundary is the set of privileges, and
+the database server enforces it, not the UI.
 
-Each request opens its own connection and closes it at the end. Nothing lasts from one request to
-the next: not a transaction, not a `LOCK TABLES`, not a session variable.
+Each request opens its own connection and closes it when done. Nothing carries over between
+requests: no transaction, no `LOCK TABLES`, no session variable.
 
 ## Sessions {#sessions}
 
-Quarry's sessions live in the panel's memory only. A session ends after 30 minutes unused and 12
-hours after it began, on sign-out, and as soon as what it stands on goes: the site, the panel session
-that opened it, or the database user's password. A restart of the panel ends them all. Short lives
-keep an unattended tab from staying a way into a database.
+Quarry sessions exist only in the panel's memory. A session ends after 30 minutes of inactivity or
+12 hours after it started, when you sign out, or as soon as anything it depends on goes away: the
+site, the panel session that opened it, or the database user's password. Restarting the panel ends
+all sessions. Short lifetimes stop a forgotten browser tab from becoming a standing way into a
+database.
 
 ## Simulate {#simulate}
 
-Simulate runs a write in a transaction and always rolls it back, to show how many rows it would
-change. The promise is *nothing stays*. Most of what it refuses is there to keep that promise:
+Simulate runs a write inside a transaction and always rolls it back, to show you how many rows it
+would change. Its promise is that *nothing is left behind*, and most of what it refuses is there to
+keep that promise:
 
-- **Statements that commit by themselves.** In MariaDB, `CREATE`, `ALTER`, `DROP`, `TRUNCATE`,
-  `RENAME`, `LOCK` and the like end the open transaction: there would be nothing left to roll back.
-- **Tables that are not InnoDB.** MyISAM, Aria and MEMORY tables do not take part in transactions: a
-  change to them stays, rollback or not.
-- **Triggers, views, stored and loadable functions.** A trigger runs as its definer and can write
-  anywhere; a view or a function can reach tables the statement does not name. Quarry cannot follow
-  them, so it refuses them, and lists the built-in functions it accepts instead of the ones it
-  refuses: a trick nobody thought of is refused by default.
-- **Functions that wait, lock or count.** `SLEEP`, `BENCHMARK` and the lock functions would hold the
-  connection; a sequence function or `LAST_INSERT_ID` moves a counter that no rollback moves back.
-- **Locking reads.** `FOR UPDATE` and its kind lock rows the statement does not change, rows the live
-  site may be waiting for.
-- **Another way of reading strings.** With `ANSI_QUOTES` or `NO_BACKSLASH_ESCAPES` in the session's
-  `sql_mode`, the server reads quotes and backslashes differently from the checks: a name could pass
-  for a string. Quarry checks every statement under each reading, and refuses such a session.
+- **Statements that commit implicitly.** In MariaDB, `CREATE`, `ALTER`, `DROP`, `TRUNCATE`,
+  `RENAME`, `LOCK` and similar statements end the open transaction, leaving nothing to roll back.
+- **Non-InnoDB tables.** MyISAM, Aria and MEMORY tables do not support transactions, so changes to
+  them stick whether or not you roll back.
+- **Triggers, views, stored functions and loadable functions.** A trigger runs with its definer's
+  privileges and can write anywhere. A view or function can reach tables the statement never names.
+  Quarry cannot follow them, so it refuses them. It keeps an allowlist of built-in functions rather
+  than a blocklist, so any trick nobody thought of is refused by default.
+- **Functions that wait, lock or count.** `SLEEP`, `BENCHMARK` and the locking functions would tie
+  up the connection. Sequence functions and `LAST_INSERT_ID` advance a counter that no rollback can
+  reset.
+- **Locking reads.** `FOR UPDATE` and similar clauses lock rows the statement does not change, and
+  the live site may be waiting for those rows.
+- **Alternative string parsing.** With `ANSI_QUOTES` or `NO_BACKSLASH_ESCAPES` in the session's
+  `sql_mode`, the server interprets quotes and backslashes differently from Quarry's checks, so an
+  identifier could pass as a string. Quarry checks every statement under each interpretation, and
+  refuses sessions with those modes.
 
-The site keeps serving while a simulation runs, on the same tables. So a simulation waits at most 5
-seconds for a row the site has locked (the server's default is 50), and the whole run has 60 seconds:
-while it waits it holds the rows it has already locked, and the site would wait on them.
+The site keeps serving traffic from the same tables while a simulation runs. So a simulation waits
+at most 5 seconds for a row the site has locked (the server default is 50), and the whole run is
+capped at 60 seconds. While it waits, it holds the rows it has already locked, and the site would
+be stuck waiting on them.
 
-What a rolled-back write leaves anyway: an `AUTO_INCREMENT` counter, and a sequence a column takes its
-default from, may have moved on. The rows do not change.
+A rolled-back write can still leave one trace: an `AUTO_INCREMENT` counter, or a sequence that a
+column takes its default from, may have advanced. The rows themselves are unchanged.
 
-## Import without a rollback point {#import}
+## Imports without a rollback point {#import}
 
-Opened from the panel, a `.sql` import first saves the database and puts it back if the import fails.
-Making that copy and putting it back takes privileges a database user may not have, so a signed-in
-user's import has no rollback point: it runs as the user, statement by statement, and a failure stops
-where the server refused, with what ran before kept. The message says so.
+When you open Quarry from the panel, a `.sql` import first backs up the database and restores it
+if the import fails. Taking and restoring that copy needs privileges a database user may not have.
+So when a database user signs in directly, imports have no rollback point. They run as that user,
+one statement at a time. If a statement fails, the import stops there, and everything that ran
+before it stays. The message tells you this.
 
 ## Files {#files}
 
-Exports and uploads live in the site's folder, `shared/exports/` and `shared/imports/`, which every
-session of the site shares. A signed-in database user sees, downloads and imports only the files it
-made in its own session: another user's export may hold tables this one may not read, and another
-user's upload, imported with this user's privileges, could change what it was never meant to.
+Exports and uploads are stored in the site directory, under `shared/exports/` and
+`shared/imports/`, which every session for the site shares. A database user who signs in directly
+can see, download and import only the files created in their own session. Another user's export
+might contain tables this user cannot read, and another user's upload, imported with this user's
+privileges, could change data it was never meant to touch.
 
-## Audit {#audit}
+## Audit log {#audit}
 
-Every write lands in the **Audit log**, with the table and the primary key, never the rows' contents;
-a statement is recorded as its first word, its number of words and a fingerprint, because statements can carry
-secrets. A simulation is recorded like a write. Sign-ins and refused sign-ins are recorded too.
+Every write is recorded in the **Audit log** with the table and primary key, never the row
+contents. Statements can contain secrets, so a statement is logged as its first word, its word
+count and a fingerprint. Simulations are logged the same way as writes. Sign-ins and rejected
+sign-ins are logged too.
 
 ## Next step {#next}
 
-How repeated wrong passwords are slowed down without locking anyone out:
-[sign-in protection](/docs/explanation/sign-in-protection).
+To see how repeated wrong passwords are slowed down without locking anyone out, read [Sign-in
+protection](/docs/explanation/sign-in-protection).

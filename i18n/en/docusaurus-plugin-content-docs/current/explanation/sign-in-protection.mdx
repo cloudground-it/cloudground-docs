@@ -1,6 +1,6 @@
 ---
 title: Sign-in protection
-description: How the panel and Quarry slow down someone guessing passwords, why a wrong password never locks the real user out, and what that costs.
+description: How the panel and Quarry slow down password guessing, why wrong passwords never lock out the real user, and what that design trades away.
 type: explanation
 prerequisites: []
 version: v0.3.0
@@ -9,109 +9,116 @@ sidebar_position: 10
 ---
 
 Anyone who can reach the panel's address can try to sign in. CloudGround does not lock an account
-after a number of wrong passwords: a lock would let anyone who knows your e-mail address keep you out
-of your own panel, just by typing wrong passwords. It slows the guesses down instead, and it slows
-down **the network they come from**, not the account.
+after a set number of wrong passwords. A lockout would let anyone who knows your email address
+keep you out of your own panel just by typing bad passwords. Instead, CloudGround slows guessing
+down, and it slows down **the network the guesses come from**, not the account.
 
-## In plain words {#plain-words}
+## The short version {#plain-words}
 
-- A few wrong passwords cost nothing. From the fifth wrong attempt in 15 minutes, the network that
-  keeps failing has to wait between one attempt and the next: 1 second, then 2, 4, 8, 16, doubling.
-- Sending attempts in parallel does not help: each one waits its turn after the one before it from
-  the same network. An attempt that would have to wait more than a minute is refused at once, so a
-  failing network gets about one guess a minute at an account.
-- The real user, signing in from somewhere else, waits at most 2 seconds, and is never refused because
-  of someone else's attempts.
-- The account is never locked, and the right password always gets in. *Since v0.3.0.* An address that keeps failing can be blocked by the server for a while, on every port: see [address blocking](/docs/explanation/blocking).
-- The answer is the same whether the e-mail exists or not: *invalid credentials*, after the same
-  wait. The delays do not tell an attacker which accounts exist.
+- A few wrong passwords cost nothing. From the fifth failed attempt within 15 minutes, the network
+  that keeps failing has to wait between attempts: 1 second, then 2, 4, 8, 16, doubling each time.
+- Sending attempts in parallel does not help. Each one waits its turn behind the previous attempt
+  from the same network. An attempt that would have to wait more than a minute is rejected
+  immediately, so a failing network gets roughly one guess per minute against an account.
+- The real user, signing in from somewhere else, waits at most 2 seconds and is never rejected
+  because of someone else's attempts.
+- The account is never locked, and the correct password always works. *Since v0.3.0.* The server
+  can block an address that keeps failing for a while, on every port: see [Address
+  blocking](/docs/explanation/blocking).
+- The response is the same whether or not the email exists: *invalid credentials*, after the same
+  delay. Timing does not reveal which accounts exist.
 
-A *network* is one IPv4 address, or one IPv6 /64: a single host or customer usually gets a whole /64,
-and counting each IPv6 address on its own would hand an attacker billions of fresh starts. An IPv6
-address also counts towards its /48, so moving between the /64s of one allocation does not help.
+A *network* is either one IPv4 address or one IPv6 /64. A single host or customer usually gets a
+whole /64, so counting each IPv6 address separately would give an attacker billions of fresh
+starts. Each IPv6 address also counts toward its /48, so hopping between /64s in the same
+allocation does not help either.
 
 ## The panel {#panel}
 
-Every sign-in attempt goes through three filters, in this order.
+Every sign-in attempt passes through three filters, in this order.
 
-**1. How fast one network may try.** Per network, at most 30 password checks a minute, whatever
-e-mail they name; at most 120 a minute for a whole IPv6 /48; at most 8 sign-ins a minute for one
-network and one e-mail. Beyond: *too many attempts — wait a minute and try again*. Changing your
-password and the two-step settings count towards the same limits.
+**1. Rate limits per network.** Each network gets at most 30 password checks per minute, whatever
+email they target; a whole IPv6 /48 gets at most 120 per minute; and one network gets at most 8
+sign-in attempts per minute for any one email. Past those limits the response is *too many
+attempts — wait a minute and try again*. Password changes and two-step verification settings
+count toward the same limits.
 
-**2. The wait.** Wrong passwords and wrong two-step codes for an e-mail are counted over 15 minutes
-twice: those from the attempt's own network (and /48), and those from anywhere.
+**2. The delay.** For each email, wrong passwords and wrong two-step codes from the last 15 minutes
+are counted twice: once for the attempt's own network (and its /48), and once across all networks.
 
-- *The network's wait.* From the fifth failure, an attempt waits 1 s, then 2 s, 4 s and so on,
-  counted from the moment the previous attempt from the same network starts its check. Five failures
-  on record and four attempts sent at once: they start after 1, 3, 7 and 15 seconds. An attempt whose
-  wait would pass **60 seconds** is refused at once with *too many attempts for this account at once —
-  wait a moment and try again*: it counts as no failure and holds nothing.
-- *The wait from anywhere.* The failures from every network together add at most **2 seconds**, and
-  never refuse an attempt.
+- *Per-network delay.* From the fifth failure, an attempt waits 1 s, then 2 s, 4 s and so on,
+  measured from when the previous attempt from the same network started its check. With five
+  failures on record and four attempts sent at once, they start after 1, 3, 7 and 15 seconds. If
+  an attempt's wait would exceed **60 seconds**, it is rejected immediately with *too many attempts
+  for this account at once — wait a moment and try again*. That rejection does not count as a
+  failure and holds no resources.
+- *Global delay.* Failures from all networks combined add at most **2 seconds**, and never cause a
+  rejection.
 
-An attempt waits the longer of the two. The wait holds nothing but the request itself.
+An attempt waits for whichever delay is longer. While waiting, it holds nothing except the request
+itself.
 
-*Since v0.2.0.* Even the longest wait, up to 60 seconds, runs to its end: the attempt then gets its
-normal answer, signed in or *invalid credentials*. If the client goes away first (a closed page, a
-client with a shorter timeout of its own), the attempt ends as too many attempts (**429**, *too many
-attempts — wait a minute and try again*): the password is not checked, and the attempt says nothing
-about it.
+*Since v0.2.0.* Even the longest wait, up to 60 seconds, runs to completion, and the attempt then
+gets its normal response: signed in or *invalid credentials*. If the client disconnects first (the
+page is closed, or the client has a shorter timeout of its own), the attempt ends as a rate-limit
+response (**429**, *too many attempts — wait a minute and try again*). The password is never
+checked, so the response reveals nothing about it.
 
-**3. One check at a time.** After the wait, the attempts for one e-mail are checked one at a time, in
-the order they arrive. One network may have at most 4 attempts queued for an e-mail; one more from
-that network gets the same *too many attempts for this account at once*. An attempt from another
-network is never refused, for the queue or for the wait.
+**3. One check at a time.** After the delay, attempts for the same email are checked one at a
+time, in arrival order. A single network can have at most 4 attempts queued for one email. One more
+from that network gets the same *too many attempts for this account at once*. Attempts from other
+networks are never rejected because of the queue or the delay.
 
-A successful sign-in clears the failures from anywhere and those of its own network. The failures of
-another network stay: the attacker's network keeps its delay while you sign in from elsewhere.
+A successful sign-in clears the global failure count and the count for its own network. Other
+networks keep their counts, so the attacker's network stays slowed down while you sign in from
+somewhere else.
 
 ### Two-step codes {#two-step-codes}
 
-A code is asked only after the right password, and has a cap of its own: **10 wrong codes for an
-account within an hour**, at sign-in, while enrolling or while turning two-step verification off,
-from anywhere. At the cap no code is checked for that account until an hour has passed since the
-earliest of the ten: *too many wrong two-factor codes for this account — try again in an hour*. A
-right code does not clear the count. The tenth wrong code is recorded in the **Audit log** as
-`login.2fa_brute`.
+You are asked for a code only after entering the correct password, and codes have their own cap:
+**10 wrong codes per account per hour**, counted from anywhere, whether at sign-in, during
+enrollment or while turning two-step verification off. Once the cap is reached, no code is checked
+for that account until an hour has passed since the first of the ten: *too many wrong two-factor
+codes for this account — try again in an hour*. A correct code does not reset the count. The tenth
+wrong code is recorded in the **Audit log** as `login.2fa_brute`.
 
-Reaching the cap takes the password first, so it means someone has your password. If it is you
-(a phone with the wrong clock, a lost phone), wait the hour, or on the server, as root, reset the
-password and turn two-step verification off with `panel-api recover-admin --email <email>
---disable-2fa`: see [recover administrator access](/docs/access/recover-admin-access). Then enrol again.
-If it is not you, change the password at once.
+Hitting this cap requires the password first, so it means someone has your password. If it is you
+(a phone with the wrong time, or a lost phone), wait out the hour. Alternatively, as root on the
+server, reset the password and turn off two-step verification with `panel-api recover-admin --email
+<email> --disable-2fa` (see [Recover administrator access](/docs/access/recover-admin-access)),
+then enroll again. If it is not you, change your password right away.
 
 ## Quarry {#quarry}
 
-Signing in to Quarry with a database user follows the same rules, with its own numbers:
+Signing in to Quarry as a database user follows the same rules, with different numbers:
 
-- per network, at most 20 attempts a minute, 80 for a whole IPv6 /48, and 6 for one network and one
-  database user;
-- from the fifth refusal for a user in 15 minutes, a network's attempts are spaced 1 s, 2 s, 4 s …
-  apart, and one that would wait over 60 seconds is refused at once with *too many attempts for this
-  database user at once — wait a moment and try again*; the refusals from anywhere add at most 2
-  seconds and never refuse;
+- per network, at most 20 attempts per minute, 80 for a whole IPv6 /48, and 6 for one network
+  against one database user;
+- from the fifth rejection for a user within 15 minutes, a network's attempts are spaced 1 s, 2 s,
+  4 s … apart, and one that would wait more than 60 seconds is rejected immediately with *too many
+  attempts for this database user at once — wait a moment and try again*; rejections from all
+  networks combined add at most 2 seconds and never cause a rejection;
 - the user's password is then checked one attempt at a time, with at most 4 queued per network;
-- every refusal, whatever the reason, is the same *Wrong database user or password.*, and takes at
-  least 300 milliseconds, so that the time does not tell a user that exists from one that does not.
+- every rejection, whatever the cause, returns the same *Wrong database user or password.* and
+  takes at least 300 milliseconds, so response time does not reveal whether a user exists.
 
-It matters more here than in the panel: a database user's name, such as `site_<id>`, is easy to
-guess, and the site itself signs in to MariaDB as that user. A lock would let a stranger take the site
-offline. So the delay applies only to sign-ins to Quarry, and MariaDB's own limit on wrong passwords,
-which would lock the user, is left off: the site never notices.
+This matters even more than in the panel. Database user names such as `site_<id>` are easy to
+guess, and the site itself connects to MariaDB as that user. A lockout would let a stranger take
+the site offline. So the delay applies only to Quarry sign-ins, and MariaDB's own limit on wrong
+passwords, which would lock the user, stays off. The site never notices.
 
-## What it costs {#trade-offs}
+## Trade-offs {#trade-offs}
 
-- Guesses spread over many networks are each slowed by their own network's failures only: their total
-  rate is about one a minute per network (and per /48) at an account, held down further by how many
-  password checks the server runs at once. A long, unique password stays the real defence, with
-  two-step verification for the panel.
-- Behind one address or one IPv6 /48, an office's shared connection for example, an attacker and
-  the real user share the same network's delay.
-- A refused sign-in is recorded in the **Audit log** with its address: that is where to look when
+- Guesses spread across many networks are each slowed only by their own network's failures. Their
+  combined rate is about one per minute per network (and per /48) against one account, further
+  limited by how many password checks the server runs concurrently. A long, unique password is
+  still the real defence, together with two-step verification for the panel.
+- Behind a single address or a single IPv6 /48, such as a shared office connection, an attacker
+  and the real user share the same network delay.
+- Every rejected sign-in is recorded in the **Audit log** with its address. Check there when
   someone keeps trying.
 
 ## Next step {#next}
 
-Add the second factor to your panel account:
-[two-step verification](/docs/access/two-step-verification).
+Add a second factor to your panel account with [two-step
+verification](/docs/access/two-step-verification).

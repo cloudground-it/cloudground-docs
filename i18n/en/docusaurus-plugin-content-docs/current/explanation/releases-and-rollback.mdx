@@ -1,6 +1,6 @@
 ---
 title: Releases and rollback
-description: How a site's code lives in releases that never change, why a rollback is immediate, and the states a release goes through.
+description: How a site's code lives in immutable releases, why rolling back is instant, and the states a release moves through.
 type: explanation
 prerequisites: []
 version: a7d92ba
@@ -8,38 +8,39 @@ last_verified: 2026-10-10
 sidebar_position: 8
 ---
 
-A site's code is never changed in place. Every deploy creates a new **release**, a folder that
-never changes afterwards, and the site always serves the one a single link names.
+CloudGround never edits a site's code in place. Every deploy creates a new **release**, a
+directory that is never modified afterwards. The site always serves whichever release a single
+symlink points to.
 
-## A site's folder {#layout}
+## Site directory layout {#layout}
 
 ```text
 /srv/sites/<domain>/
 ├── current -> releases/<id>     the live release
 ├── releases/
-│   ├── initial/                 the first, made with the site
+│   ├── initial/                 the first release, created with the site
 │   └── <id>/                    one per deploy
-└── shared/                      configuration and uploaded files
+└── shared/                      config and uploaded files
 ```
 
-nginx and PHP serve the site through `current`. Activating a release means replacing that link
-with a new one, in a single operation: every request sees the old release or the new one, never a
-mix. Then PHP reloads, so the code cache serves the new code.
+nginx and PHP serve the site through `current`. Activating a release swaps that symlink for a new
+one in a single atomic operation, so every request sees either the old release or the new one,
+never a mix. PHP then reloads so the opcode cache serves the new code.
 
-Every release links `wp-config.php` and the uploaded files to the ones in `shared/`. That is why a
-rollback changes the code but not the configuration, the database or the uploaded files.
+Every release symlinks `wp-config.php` and the uploaded files to the copies in `shared/`. That is
+why a rollback changes the code but leaves the configuration, the database and the uploads alone.
 
-`releases/` belongs to root, not to the site user: if it were theirs, they could swap a release
-for a link and make nginx serve any folder on the server.
+`releases/` is owned by root, not by the site user. If the site user owned it, they could replace
+a release with a symlink and make nginx serve any directory on the server.
 
-Every release has a ULID: 26 characters that start with the creation time, so releases sort by
-age. After every activation the live release stays, with every newer one and the 5 newest of the
-older ones.
+Each release is identified by a ULID: 26 characters that begin with the creation timestamp, so
+releases sort by age. After each activation, CloudGround keeps the live release, every newer
+release and the 5 most recent older ones.
 
-## A release's states {#states}
+## Release states {#states}
 
-Every deploy is recorded in the panel and goes through these states. The panel refuses any move
-that is not in the diagram.
+The panel records every deploy and moves it through the states below. It rejects any transition
+not shown in the diagram.
 
 ```mermaid
 stateDiagram-v2
@@ -59,10 +60,10 @@ stateDiagram-v2
   [*] --> pending: request accepted
   pending --> building: deploy
   pending --> guarding: Safe Push
-  pending --> canceled: canceled before it started
+  pending --> canceled: canceled before start
   pending --> failed
   guarding --> blocked: negative verdict
-  guarding --> building: verdict pass
+  guarding --> building: verdict passed
   guarding --> canceled
   guarding --> failed
   building --> created: deploy
@@ -71,9 +72,9 @@ stateDiagram-v2
   created --> promoting: Activate
   promoting --> promoted: activation
   promoting --> verifying: Safe Push
-  promoting --> created: activation refused
+  promoting --> created: activation rejected
   verifying --> promoted: check passed
-  verifying --> rolled_back: regressed, automatic rollback
+  verifying --> rolled_back: regression, automatic rollback
   promoted --> superseded: another release goes live
   promoted --> rolled_back: rollback
   promoted --> promoting: activated again
@@ -84,34 +85,36 @@ stateDiagram-v2
   canceled --> [*]
 ```
 
-A refused activation goes back to the state it came from: *created*, *superseded*, *rolled back*
-or *live*. A site has at most one *live* release: when another goes live, the previous one becomes
-*superseded* in the same write.
+If an activation is rejected, the release returns to the state it started from: *created*,
+*superseded*, *rolled back* or *live*. A site has at most one *live* release. When another release
+goes live, the previous one becomes *superseded* in the same database write.
 
 ## Where a rollback goes {#rollback-target}
 
-Before every activation the panel asks the agent which release is live at that moment, and notes
-it as the return point. A rollback without a target goes there; if that point is not known, it
-goes to the newest *superseded* release. The panel never lets the agent pick "the release older
-than the current one", because that could be a release built and never activated, so never tried.
+Before each activation, the panel asks the agent which release is live at that moment and records
+it as the return point. A rollback with no explicit target goes back to that point. If the return
+point is unknown, it goes to the most recent *superseded* release. The panel never lets the agent
+pick "the release before the current one", because that could be a release that was built but
+never activated, and therefore never tested.
 
-A release can go back online only if it has been live. A release that Safe Push rolled back
-because it made the site worse is marked as regressed and never becomes a target.
+Only a release that has been live before can go live again. A release that Safe Push rolled back
+because it made the site worse is marked as regressed and is never used as a rollback target.
 
-## The records follow the server {#records-follow-the-server}
+## The server is the source of truth {#records-follow-the-server}
 
-What the site serves is what `current` names, not what the panel's database says. After a refused
-activation or rollback, and after a restart that interrupted a deploy, the panel reads `current`
-again and aligns its records:
+The site serves whatever `current` points to, regardless of what the panel's database says. After
+a rejected activation or rollback, or after a restart that interrupted a deploy, the panel
+re-reads `current` and brings its records into line:
 
-- an activation interrupted before the switch goes back to *created*; one that already switched
-  `current` becomes *live*, and if it came from Safe Push it is verified now;
-- a release built by a *failed* deploy is removed from the server;
-- if the site serves a release other than the recorded one, the release carries the note *The site
-  serves this release; the records said another was live* and an alert appears.
+- an activation interrupted before the switch goes back to *created*; one that had already
+  switched `current` becomes *live*, and if it came from Safe Push it is verified now;
+- a release built by a *failed* deploy is deleted from the server;
+- if the site serves a different release from the one on record, that release gets the note *The
+  site serves this release; the records said another was live*, and an alert appears.
 
-A post-Safe Push verification canceled by hand leaves the release *live* with the note
-*unverified* and an alert: the panel never declares it good without the check.
+If you cancel the post-Safe Push verification by hand, the release stays *live* with the note
+*unverified* and an alert is raised. The panel never marks a release as good without running the
+check.
 
 ## Next step {#next}
 

@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Site types, settings, roles, cache, paths and ports: the exact values."
+description: "Exact values for site types, settings, roles, cache, paths and ports."
 type: index
 last_verified: 2026-10-10
 hide_table_of_contents: true

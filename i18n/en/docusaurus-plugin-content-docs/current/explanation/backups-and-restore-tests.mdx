@@ -1,6 +1,6 @@
 ---
 title: Backups and restore tests
-description: What a backup is made of, why it counts only after a restore test, and how a restore avoids leaving the site half done.
+description: What goes into a backup, why a backup only counts once a restore test passes, and how a restore avoids leaving a site half-restored.
 type: explanation
 prerequisites: []
 version: v0.2.0
@@ -8,26 +8,25 @@ last_verified: unverified
 sidebar_position: 7
 ---
 
-A backup that has never been restored is a hope. That is why in CloudGround every backup is
-restored as a test before it counts, and the test does everything a real restore would do, except
-touch the site.
+You do not know a backup works until you have restored it. So CloudGround test-restores every
+backup before trusting it. The test does everything a real restore does, except touch the site.
 
-## What a backup is made of {#anatomy}
+## What a backup contains {#anatomy}
 
-Every site's backups go into one restic repository, off the server, encrypted with the repository
-password. A backup is two snapshots:
+Backups for all sites go to a single restic repository off the server, encrypted with the
+repository password. Each backup is made of two snapshots:
 
-1. **the database**: `mariadb-dump` writes into a pipe that restic reads directly. The dump never
-   touches the disk, and in particular not the site folder, which belongs to the site user: there
-   it could be swapped between the dump and the backup;
-2. **the files**: the whole site folder except `tmp/`. The files snapshot carries a tag with the
-   database snapshot's ID, and the panel records the files snapshot.
+1. **Database.** `mariadb-dump` writes to a pipe that restic reads directly. The dump never lands
+   on disk. In particular, it never lands in the site directory, which the site user owns and
+   where the file could be swapped out between the dump and the backup.
+2. **Files.** The whole site directory except `tmp/`. The files snapshot is tagged with the ID of
+   the database snapshot, and the panel records the files snapshot.
 
-If the dump fails, or even one file cannot be read, the backup fails and restic forgets the partial
-snapshots: no half backups that nothing uses stay in the repository.
+If the dump fails, or a single file cannot be read, the whole backup fails and restic forgets the
+partial snapshots. The repository never fills up with half-finished backups.
 
-Only one restic process works on a repository at a time, and an interrupted backup removes its
-lock from the repository before exiting, so the next backup runs.
+Only one restic process works on a repository at a time. If a backup is interrupted, it releases
+its repository lock before exiting so the next backup can run.
 
 ## The restore test {#restore-test}
 
@@ -35,66 +34,69 @@ lock from the repository before exiting, so the next backup runs.
 flowchart TD
   subgraph backup["Backup"]
     D["Database dump"] -->|"through a pipe, never on disk"| DS["Database snapshot"]
-    F["Site folder, without tmp/"] --> FS["Files snapshot, tagged with the database's"]
+    F["Site directory, minus tmp/"] --> FS["Files snapshot, tagged with the database snapshot ID"]
     DS --> FS
   end
   FS -->|"recorded as pending"| T
-  subgraph test["Restore test, in a separate folder"]
-    T["Restore the files"] --> C1{"Site folder, current on a release, at least one file?"}
-    C1 -->|"yes"| C2{"Is the dump SQL, and does it create a table in a temporary database?"}
-    C2 -->|"yes"| C3{"restic check on 10% of the data?"}
+  subgraph test["Restore test, in a separate directory"]
+    T["Restore the files"] --> C1{"Site directory present, current points to a release, at least one file?"}
+    C1 -->|"yes"| C2{"Dump is SQL and creates at least one table in a temporary database?"}
+    C2 -->|"yes"| C3{"restic check on 10% of the data passes?"}
   end
   C1 -->|"no"| KO["failed"]
   C2 -->|"no"| KO
   C3 -->|"no"| KO
-  C3 -->|"yes"| OK["passed, with the restore time"]
+  C3 -->|"yes"| OK["passed, with restore time"]
 ```
 
-The test restores the snapshot into a folder on the server reserved for the agent and checks the
-same requirements as a real restore: the site folder, the `current` link pointing at a release
-that exists in the snapshot, at least one file. Then it reads the start of the dump, imports it
-into a temporary database with the same sandboxed client a restore uses, counts the tables (for
-WordPress the options table must be there) and drops the temporary database. Finally `restic
-check` reads 10% of the repository's data again. The time up to the import is the estimate of how
-long a restore would take.
+The test restores the snapshot into an agent-only directory on the server and checks the same
+things a real restore needs: the site directory exists, the `current` link points to a release
+that is in the snapshot, and there is at least one file. Next it reads the start of the dump,
+imports it into a temporary database using the same sandboxed client a restore uses, and counts
+the tables (for WordPress, the options table must be present). Then it drops the temporary
+database. Finally, `restic check` re-reads 10% of the repository data. The time taken up to the
+end of the import is the estimate of how long a real restore would take.
 
-The rules that follow:
+This leads to a few rules:
 
-- a backup starts *pending* and only the test moves it to *passed* or *failed*;
-- the test runs in the same job as the backup and runs to its end even if the job is interrupted;
-  at every start the panel tests again every backup left *pending*;
-- retention never removes the newest *passed* backup, nor a *pending* one;
-- the panel does not delete those two backups even when asked to.
+- every backup starts as *pending*, and only the test can mark it *passed* or *failed*;
+- the test runs in the same job as the backup and finishes even if the job is interrupted; each
+  time the panel starts, it re-tests any backup still *pending*;
+- retention never removes the most recent *passed* backup, or any *pending* one;
+- the panel refuses to delete those backups even if you ask it to.
 
-## The real restore {#restore}
+## A real restore {#restore}
 
-A restore starts with a **safety snapshot** of the site as it is now, checked with the same test.
-If the test fails, the restore stops: the site was not touched.
+A restore starts by taking a **safety snapshot** of the site as it is now, and checks it with the
+same restore test. If that test fails, the restore stops and the site is left untouched.
 
-Then:
+After that:
 
-- the restored files are prepared next to the site folder, on the same disk, and swapped with the
-  current one in a single kernel operation: there is no moment without a site;
-- with the database (modes *Everything* or *Database only*), each chosen database is saved, emptied and recreated from the dump, so tables born after the snapshot
-  do not stay; the site's other databases are not touched;
-- the site's PHP restarts (emptying the code and object caches), nginx reloads;
-- if the site does not come back, files and database go back to what they were.
+- the restored files are staged next to the site directory, on the same disk, and swapped in with
+  a single kernel operation, so the site is never missing;
+- if the restore includes the database (mode *Everything (files and database)* or *Database
+  only*), each selected database is saved, emptied and rebuilt from the dump, so tables created
+  after the snapshot do not survive; the site's other databases are left alone;
+- the site's PHP restarts (clearing the opcode and object caches) and nginx reloads;
+- if the site does not come back up, files and databases are put back the way they were.
 
-At the end the page cache is emptied, not removed: its folder stays, because without that folder
+Finally the page cache is emptied but not removed. Its directory has to stay, because without it
 the site would stop caching.
 
 ## Before a migration {#before-a-migration}
 
-*Since v0.2.0.* A migration import also replaces the site's uploaded files and tables, and a stale or
-wrong archive imports without an error. So it starts like a restore: with a `pre-migration` safety
-snapshot, checked with the restore test. If the test fails, the import stops before the site changes.
+*Since v0.2.0.* A migration import also replaces the site's uploads and database tables, and an
+old or wrong archive imports without any error. So an import starts the same way as a restore:
+with a `pre-migration` safety snapshot, checked by the restore test. If the test fails, the import
+stops before the site changes.
 
-The task's log names the snapshot (`safety snapshot <id> retained`). If the import fails, the
-snapshot stays: restoring it puts the site back as it was before the migration.
+The task log names the snapshot (`safety snapshot <id> retained`). If the import fails, the
+snapshot is kept, and restoring it puts the site back to how it was before the migration.
 
-With no backup repository configured the import still runs, because a freshly installed server must
-be able to migrate its first site. In that case the task says so before it touches anything: *No
-backup repository is configured: no safety snapshot is taken, and this import cannot be undone*.
+If no backup repository is configured, the import still runs, because a freshly installed server
+has to be able to migrate its first site. In that case the task warns you before touching
+anything: *No backup repository is configured: no safety snapshot is taken, and this import cannot
+be undone*.
 
 ## Next step {#next}
 
