@@ -1,0 +1,1353 @@
+<!doctype html>
+<html lang="it" data-font="plex">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CloudGround tavola v2</title>
+<meta name="description" content="Tavola di progetto CloudGround, direzione Rapporto di prova: tipografia e colori, sito pubblico, documentazione e pannello, chiaro e scuro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;600&family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* ============ Fonts: three pairings, switched by html[data-font] ============ */
+:root {
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+:root[data-font="atkinson"] {
+  --font-sans: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+  --font-mono: 'Atkinson Hyperlegible Mono', ui-monospace, monospace;
+}
+:root[data-font="public"] {
+  --font-sans: 'Public Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ============ Colour tokens ============ */
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --board: #e3e0d6;      /* artboard only, behind the frames */
+  --paper: #fbfaf6;      /* page ground */
+  --paper-2: #f3f1ea;    /* second layer: sidebars, table heads, strips */
+  --paper-3: #e9e6dc;    /* hover, pressed, code inline */
+  --rule: #d6d3c8;       /* 1px rules, decorative */
+  --rule-strong: #86837a;/* input borders, frame of controls (3:1) */
+  --ink: #15161a;        /* headings, strong text */
+  --text: #2e3036;       /* body */
+  --muted: #5b5d64;      /* secondary text, method notes */
+  --blue: #2343c2;       /* links, protocol headings, focus, selection */
+  --blue-tint: #e7ebfa;  /* selected row, info banner */
+  --orange: #c8471a;     /* primary action fill, stamp frame */
+  --on-orange: #ffffff;
+  --stamp: #b13b0c;      /* orange text on paper */
+  --ok: #1c7038;   --ok-tint: #e5f2e8;
+  --warn: #835400; --warn-tint: #f8efd9;
+  --err: #b3261e;  --err-tint: #fbe9e6;
+  --code-bg: #15161a;    /* command box */
+  --code-fg: #f2f0ea;
+  --code-muted: #a6a59e;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --board: #0b0c0e;
+    --paper: #131418; --paper-2: #1a1c21; --paper-3: #24262d;
+    --rule: #31343c; --rule-strong: #72757e;
+    --ink: #f2f0ea; --text: #d8d6cf; --muted: #a6a59e;
+    --blue: #93a8ff; --blue-tint: #1e2544;
+    --orange: #f07a3e; --on-orange: #131418; --stamp: #ff9360;
+    --ok: #63cf8a; --ok-tint: #16301f;
+    --warn: #f0b54a; --warn-tint: #33280f;
+    --err: #ff8073; --err-tint: #3a1d1b;
+    --code-bg: #0b0c0e; --code-fg: #f2f0ea; --code-muted: #a6a59e;
+  }
+}
+:root[data-theme="dark"], [data-theme="dark"] {
+  color-scheme: dark;
+  --board: #0b0c0e;
+  --paper: #131418; --paper-2: #1a1c21; --paper-3: #24262d;
+  --rule: #31343c; --rule-strong: #72757e;
+  --ink: #f2f0ea; --text: #d8d6cf; --muted: #a6a59e;
+  --blue: #93a8ff; --blue-tint: #1e2544;
+  --orange: #f07a3e; --on-orange: #131418; --stamp: #ff9360;
+  --ok: #63cf8a; --ok-tint: #16301f;
+  --warn: #f0b54a; --warn-tint: #33280f;
+  --err: #ff8073; --err-tint: #3a1d1b;
+  --code-bg: #0b0c0e; --code-fg: #f2f0ea; --code-muted: #a6a59e;
+}
+
+/* ============ Base ============ */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--board); color: var(--text);
+  font-family: var(--font-sans); font-size: 1rem; line-height: 1.6;
+  font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;
+  caret-color: var(--blue);
+  scrollbar-color: var(--rule-strong) var(--paper-2);
+}
+h1, h2, h3, h4 { color: var(--ink); line-height: 1.2; margin: 0; font-weight: 600; text-wrap: balance; letter-spacing: -0.01em; }
+p { margin: 0; text-wrap: pretty; }
+ul, ol { margin: 0; padding: 0; }
+a { color: var(--blue); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+a:hover { text-decoration-thickness: 2px; }
+code, kbd, pre, .mono { font-family: var(--font-mono); font-variant-ligatures: none; }
+::selection { background: var(--blue); color: var(--paper); }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+button { font: inherit; color: inherit; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ic { width: 1.25em; height: 1.25em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: square; stroke-linejoin: miter; vertical-align: -0.25em; }
+.brand { width: 28px; height: 28px; fill: currentColor; flex: none; }
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ============ Shared controls ============ */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px;
+  border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink);
+  font-weight: 500; font-size: 0.9375rem; line-height: 1; text-decoration: none; cursor: pointer;
+  border-radius: 3px; transition: background-color 150ms ease-out, border-color 150ms ease-out;
+}
+.btn:hover { background: var(--paper-3); text-decoration: none; }
+.btn:active { background: var(--rule); }
+.btn[disabled] { opacity: 1; color: var(--muted); border-style: dashed; cursor: not-allowed; background: var(--paper); }
+.btn-primary { background: var(--orange); border-color: var(--orange); color: var(--on-orange); font-weight: 600; }
+.btn-primary:hover { background: var(--stamp); border-color: var(--stamp); }
+:root[data-theme="dark"] .btn-primary:hover { background: #ff8d55; border-color: #ff8d55; }
+.btn-ghost { border-color: transparent; background: transparent; }
+.btn-sm { min-height: 32px; padding: 0 12px; font-size: 0.875rem; }
+.link-arrow { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
+.field { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border: 1px solid var(--rule-strong); background: var(--paper); color: var(--muted); border-radius: 3px; font-size: 0.9375rem; }
+.field input { border: 0; background: transparent; font: inherit; color: var(--ink); outline: none; width: 100%; min-width: 0; }
+.field input::placeholder { color: var(--muted); opacity: 1; }
+.field:focus-within { outline: 2px solid var(--blue); outline-offset: 1px; }
+kbd { font-size: 0.75rem; border: 1px solid var(--rule-strong); padding: 1px 5px; border-radius: 3px; color: var(--muted); }
+.badge { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8125rem; font-weight: 500; line-height: 1.3; color: var(--muted); white-space: nowrap; }
+.badge::before { content: ""; width: 8px; height: 8px; background: currentColor; flex: none; }
+.badge.ok { color: var(--ok); } .badge.warn { color: var(--warn); } .badge.err { color: var(--err); }
+.badge.off::before { background: transparent; border: 1.5px solid currentColor; }
+
+/* ============ Artboard chrome ============ */
+.ab-bar {
+  position: sticky; top: 0; z-index: 20; background: var(--paper-2); border-bottom: 1px solid var(--rule-strong);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 10px 24px;
+}
+.ab-title { display: flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 600; margin-right: auto; }
+.ab-title small { font-weight: 400; color: var(--muted); font-size: 0.875rem; }
+.ab-group { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--muted); }
+.seg { display: inline-flex; border: 1px solid var(--rule-strong); border-radius: 3px; background: var(--paper); }
+.seg button { border: 0; background: transparent; padding: 6px 12px; min-height: 34px; cursor: pointer; color: var(--text); font-size: 0.875rem; }
+.seg button + button { border-left: 1px solid var(--rule); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); font-weight: 600; }
+.seg button:hover:not([aria-pressed="true"]) { background: var(--paper-3); }
+.ab-jump { display: flex; gap: 16px; font-size: 0.875rem; }
+.ab-main { padding: 32px 24px 96px; display: grid; gap: 56px; }
+.frame-wrap { max-width: 1440px; width: 100%; margin: 0 auto; }
+.frame-cap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; align-items: baseline; margin: 0 0 10px; }
+.frame-cap h2 { font-size: 1.125rem; }
+.frame-cap p { font-size: 0.875rem; color: var(--muted); }
+.frame { background: var(--paper); border: 1px solid var(--rule-strong); overflow: hidden; }
+
+/* ============ Specimen ============ */
+.spec { padding: 40px; display: grid; gap: 48px; }
+.spec-intro { max-width: 68ch; display: grid; gap: 8px; }
+.spec-intro h1 { font-size: 2rem; }
+.pairs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--rule-strong); }
+.pair { text-align: left; background: var(--paper); border: 0; padding: 20px 24px 24px; cursor: pointer; display: grid; gap: 10px; align-content: start; color: var(--text); }
+.pair + .pair { border-left: 1px solid var(--rule-strong); }
+.pair:hover { background: var(--paper-2); }
+.pair[aria-pressed="true"] { background: var(--blue-tint); box-shadow: inset 0 0 0 2px var(--blue); }
+.pair-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.pair-name { font-weight: 600; color: var(--ink); font-size: 1rem; }
+.pair-state { font-size: 0.8125rem; color: var(--blue); font-weight: 600; visibility: hidden; }
+.pair[aria-pressed="true"] .pair-state { visibility: visible; }
+.pair-aa { font-size: 2.5rem; line-height: 1; color: var(--ink); font-weight: 600; }
+.pair-txt { font-size: 1rem; }
+.pair-code { font-size: 0.875rem; color: var(--ink); }
+.pair-why { font-size: 0.875rem; color: var(--muted); }
+.scale { display: grid; border-top: 1px solid var(--rule); }
+.scale-row { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 24px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.scale-row > span:first-child { font-size: 0.8125rem; color: var(--muted); }
+.legib { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.legib div { border: 1px solid var(--rule); padding: 16px 20px; }
+.legib p:first-child { font-size: 0.8125rem; color: var(--muted); margin-bottom: 6px; }
+.legib .sample { font-size: 1.75rem; color: var(--ink); letter-spacing: 0.02em; overflow-wrap: anywhere; }
+.pal { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.pal-col { border: 1px solid var(--rule-strong); padding: 20px; background: var(--paper); color: var(--text); }
+.pal-col .pal-h { font-size: 1rem; margin-bottom: 12px; }
+.sw-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 12px; }
+.sw { display: grid; gap: 4px; font-size: 0.8125rem; }
+.sw i { display: block; height: 44px; border: 1px solid var(--rule); }
+.sw b { font-weight: 600; color: var(--ink); }
+.sw span { color: var(--muted); }
+.ctable { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.ctable caption { text-align: left; font-weight: 600; color: var(--ink); font-size: 1rem; padding-bottom: 8px; }
+.ctable th, .ctable td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+.ctable thead th { background: var(--paper-2); font-weight: 600; color: var(--ink); border-bottom: 1px solid var(--rule-strong); }
+.ctable td.r, .ctable th.r { text-align: right; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 2px 8px; border: 1px solid var(--rule); font-weight: 500; white-space: nowrap; }
+.chip i { width: 14px; height: 14px; border: 1px solid var(--rule-strong); display: inline-block; }
+.pass { color: var(--ok); font-weight: 600; } .fail { color: var(--err); font-weight: 600; }
+.ctable-wrap { overflow-x: auto; }
+
+/* ============ Public site ============ */
+.site { color: var(--text); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+.s-nav { border-bottom: 1px solid var(--rule); }
+.s-nav .wrap { display: flex; align-items: center; gap: 32px; min-height: 64px; }
+.logo { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 600; font-size: 1.125rem; letter-spacing: -0.01em; }
+.logo svg { width: 32px; height: 32px; flex: none; }
+.logo-cloud { fill: var(--ink); } .logo-b { fill: var(--blue); } .logo-o { fill: var(--orange); }
+.s-links { display: flex; gap: 24px; margin-left: auto; align-items: center; font-size: 0.9375rem; }
+.s-links a { color: var(--text); text-decoration: none; }
+.s-links a:hover { color: var(--blue); text-decoration: underline; }
+.s-menu { display: none; margin-left: auto; }
+.protocol { border-bottom: 1px solid var(--rule-strong); background: var(--paper-2); }
+.protocol dl { display: grid; grid-template-columns: 2.2fr 1fr 1fr 1.2fr; margin: 0; }
+.protocol div { padding: 10px 16px; border-left: 1px solid var(--rule); }
+.protocol div:first-child { border-left: 0; padding-left: 0; }
+.protocol dt { font-size: 0.75rem; color: var(--muted); }
+.protocol dd { margin: 0; font-size: 0.9375rem; color: var(--ink); font-weight: 500; }
+.hero { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 56px; padding: 56px 0 72px; align-items: start; }
+.hero h1 { font-size: 2.75rem; line-height: 1.12; letter-spacing: -0.02em; max-width: 16ch; }
+.lede { font-size: 1.1875rem; line-height: 1.55; margin-top: 20px; max-width: 46ch; }
+.install { margin-top: 32px; }
+.install-label { font-size: 0.875rem; color: var(--muted); margin-bottom: 8px; }
+.cmd { display: flex; align-items: stretch; background: var(--code-bg); color: var(--code-fg); border: 1px solid var(--code-bg); }
+.cmd code { flex: 1; min-width: 0; padding: 14px 16px; font-size: 0.875rem; overflow-x: auto; white-space: nowrap; scrollbar-width: thin; }
+.cmd code .pr { color: var(--code-muted); user-select: none; }
+.cmd .copy { border: 0; background: var(--orange); color: var(--on-orange); font-weight: 600; padding: 0 18px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; min-width: 112px; justify-content: center; }
+.cmd .copy:hover { background: var(--stamp); }
+:root[data-theme="dark"] .cmd .copy:hover { background: #ff8d55; }
+.cmd .copy:focus-visible { outline-offset: -4px; outline-color: var(--on-orange); }
+.req { font-size: 0.9375rem; color: var(--muted); margin-top: 12px; }
+.hero-links { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 20px; }
+
+.result { border: 1px solid var(--rule-strong); background: var(--paper); }
+.result-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 20px; border-bottom: 1px solid var(--rule); background: var(--paper-2); flex-wrap: wrap; }
+.result-head h2 { font-size: 1rem; }
+.result-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; padding: 24px 20px 20px; align-items: start; }
+.fig-line { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.fig { font-family: var(--font-mono); font-size: 4rem; line-height: 1; font-weight: 500; color: var(--ink); display: inline-block; width: 5.2ch; text-align: right; letter-spacing: -0.02em; }
+.fig-unit { font-size: 1rem; color: var(--muted); }
+.r-rows { margin: 20px 0 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); border-top: 1px solid var(--rule); }
+.r-rows dt, .r-rows dd { margin: 0; padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 0.9375rem; }
+.r-rows dt { color: var(--muted); padding-right: 24px; }
+.r-rows dd { color: var(--ink); }
+.r-rows dd .num { display: inline-block; min-width: 4ch; }
+.stamp {
+  display: inline-grid; gap: 2px; justify-items: center; text-align: center;
+  border: 2px solid var(--orange); outline: 1px solid var(--orange); outline-offset: -6px;
+  color: var(--stamp); padding: 12px 16px; min-width: 150px;
+}
+.stamp b { font-size: 1.125rem; letter-spacing: 0.08em; font-weight: 700; text-transform: uppercase; }
+.stamp span { font-size: 0.8125rem; font-weight: 500; }
+.stamp.ref { border-color: var(--rule-strong); outline-color: var(--rule-strong); color: var(--muted); }
+.method { font-size: 0.875rem; color: var(--muted); padding: 12px 20px 16px; border-top: 1px solid var(--rule); }
+.method p + p { margin-top: 4px; }
+
+.sec { padding: 72px 0; border-top: 1px solid var(--rule-strong); }
+.sec-head { display: grid; grid-template-columns: 5fr 7fr; gap: 64px; margin-bottom: 32px; align-items: end; }
+.sec-head h2 { font-size: 1.875rem; letter-spacing: -0.015em; }
+.sec-head p { font-size: 1.0625rem; max-width: 60ch; }
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl caption { text-align: left; }
+.tbl th, .tbl td { padding: 12px 16px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: baseline; }
+.tbl thead th { font-size: 0.875rem; font-weight: 600; color: var(--ink); border-bottom: 1px solid var(--rule-strong); background: var(--paper-2); }
+.tbl td:first-child, .tbl th:first-child { padding-left: 0; }
+.tbl thead th:first-child { padding-left: 12px; }
+.tbl tbody td:first-child { padding-left: 12px; }
+.tbl .r { text-align: right; }
+.tbl .num { font-size: 1.0625rem; color: var(--ink); }
+.tbl td small { display: block; color: var(--muted); font-size: 0.875rem; }
+.tbl tbody tr:hover { background: var(--paper-2); }
+.tbl-note { font-size: 0.875rem; color: var(--muted); margin-top: 12px; max-width: 80ch; }
+
+.tests { border-top: 1px solid var(--rule-strong); }
+.test { display: grid; grid-template-columns: 3fr 5fr 4fr; gap: 32px; padding: 24px 0; border-bottom: 1px solid var(--rule); }
+.test h3 { font-size: 1.1875rem; }
+.test h3 + p { color: var(--muted); font-size: 0.9375rem; margin-top: 4px; }
+.test-k { font-size: 0.8125rem; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.test-v { font-size: 0.9375rem; }
+.outcome { display: flex; gap: 10px; align-items: flex-start; color: var(--ink); font-size: 0.9375rem; }
+.outcome .ic { color: var(--ok); margin-top: 2px; }
+
+.annot { display: grid; grid-template-columns: minmax(0, 1fr) 64px minmax(0, 300px); margin-top: 40px; }
+.annot-box { grid-column: 1; grid-row: 1 / span 6; border: 1px solid var(--rule-strong); background: var(--paper); }
+.annot-cap { grid-column: 1; grid-row: 1; padding: 12px 16px; display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--rule); font-size: 0.875rem; color: var(--muted); }
+.annot-cap b { color: var(--ink); font-weight: 600; }
+.m-row { grid-column: 1; display: grid; grid-template-columns: 1.5fr 0.7fr 1fr 1.4fr 1.2fr; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--rule); font-size: 0.875rem; align-items: center; }
+.m-row.h { font-weight: 600; color: var(--ink); background: var(--paper-2); }
+.m-row .num { font-size: 0.875rem; }
+.m-row.bad { background: var(--err-tint); color: var(--err); }
+.m-row.bad .num { color: var(--err); }
+.m-foot { grid-column: 1; padding: 12px 16px; font-size: 0.875rem; color: var(--err); font-weight: 500; display: flex; gap: 8px; align-items: flex-start; }
+.mk { display: inline-grid; place-items: center; width: 18px; height: 18px; font-size: 0.6875rem; font-weight: 700; background: var(--blue); color: var(--paper); margin-left: 6px; vertical-align: 1px; }
+.note { grid-column: 3; position: relative; align-self: center; font-size: 0.875rem; color: var(--text); padding: 4px 0; }
+.note::before { content: ""; position: absolute; right: calc(100% + 0px); top: 50%; width: 64px; border-top: 1px solid var(--blue); }
+.note::after { content: ""; position: absolute; right: calc(100% + 60px); top: calc(50% - 3px); width: 7px; height: 7px; background: var(--blue); }
+.note b { color: var(--ink); }
+.note .mk { margin: 0 6px 0 0; }
+
+.limits { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--rule-strong); }
+.limits div { padding: 20px 24px 20px 0; border-bottom: 1px solid var(--rule); }
+.limits div:nth-child(even) { padding-left: 24px; border-left: 1px solid var(--rule); }
+.limits h3 { font-size: 1rem; margin-bottom: 4px; }
+.limits p { font-size: 0.9375rem; color: var(--text); max-width: 56ch; }
+
+.steps { list-style: none; border-top: 1px solid var(--rule-strong); counter-reset: st; }
+.steps > li { display: grid; grid-template-columns: 64px 3fr 6fr; gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--rule); counter-increment: st; align-items: start; }
+.steps > li::before { content: counter(st); font-family: var(--font-mono); font-size: 1.5rem; line-height: 1.2; color: var(--blue); font-weight: 500; }
+.steps h3 { font-size: 1.1875rem; }
+.steps p { font-size: 0.9375rem; }
+.steps p + p, .steps .cmd + p { margin-top: 10px; }
+
+.s-foot { border-top: 1px solid var(--rule-strong); background: var(--paper-2); padding: 32px 0; font-size: 0.9375rem; }
+.s-foot .wrap { display: flex; flex-wrap: wrap; gap: 16px 40px; align-items: center; justify-content: space-between; }
+.s-foot ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.s-foot p { color: var(--muted); }
+
+/* ============ Docs ============ */
+.d-nav { border-bottom: 1px solid var(--rule); }
+.d-nav .in { display: flex; align-items: center; gap: 24px; min-height: 60px; padding: 0 24px; }
+.d-nav .field { margin-left: auto; width: 260px; min-height: 36px; }
+.d-nav .s-links { margin-left: 0; }
+.d-body { display: grid; grid-template-columns: 260px minmax(0, 1fr) 220px; }
+.d-side { border-right: 1px solid var(--rule); background: var(--paper-2); padding: 24px 16px 40px 24px; font-size: 0.9375rem; }
+.d-side h3 { font-size: 0.8125rem; color: var(--muted); font-weight: 600; margin: 20px 0 6px; }
+.d-side h3:first-child { margin-top: 0; }
+.d-side ul { list-style: none; display: grid; gap: 1px; }
+.d-side a { display: block; padding: 5px 10px; color: var(--text); text-decoration: none; border-radius: 3px; }
+.d-side a:hover { background: var(--paper-3); }
+.d-side a[aria-current="page"] { background: var(--ink); color: var(--paper); font-weight: 500; }
+.d-main { padding: 32px 56px 64px; min-width: 0; }
+.d-art { max-width: 70ch; }
+.crumbs { font-size: 0.875rem; color: var(--muted); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.crumbs a { color: var(--muted); }
+.d-art h1 { font-size: 2.25rem; margin-top: 16px; letter-spacing: -0.02em; }
+.d-desc { font-size: 1.1875rem; margin-top: 12px; color: var(--text); }
+.d-meta { display: grid; grid-template-columns: repeat(4, auto); justify-content: start; margin: 24px 0 8px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule); }
+.d-meta div { padding: 8px 20px 8px 0; margin-right: 20px; border-right: 1px solid var(--rule); }
+.d-meta div:last-child { border-right: 0; }
+.d-meta dt { font-size: 0.75rem; color: var(--muted); }
+.d-meta dd { margin: 0; font-size: 0.875rem; color: var(--ink); font-weight: 500; }
+.d-meta dd.unv { color: var(--warn); }
+.prose { font-size: 1.0625rem; line-height: 1.7; color: var(--text); }
+.prose > * + * { margin-top: 1em; }
+.prose h2 { font-size: 1.5rem; margin-top: 2.2em; padding-top: 0; }
+.prose h3 { font-size: 1.125rem; margin-top: 1.8em; }
+.prose ul, .prose ol { padding-left: 1.4em; }
+.prose li + li { margin-top: 0.35em; }
+.prose code { font-size: 0.88em; background: var(--paper-3); padding: 0.1em 0.35em; color: var(--ink); }
+.prose strong { color: var(--ink); font-weight: 600; }
+.pre { position: relative; background: var(--code-bg); color: var(--code-fg); font-size: 0.9375rem; line-height: 1.6; }
+.pre pre { margin: 0; padding: 16px 20px; overflow-x: auto; }
+.pre .pr { color: var(--code-muted); user-select: none; }
+.pre .ok { color: #63cf8a; }
+.pre-bar { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px 6px 20px; border-bottom: 1px solid #2c2e35; font-size: 0.8125rem; color: var(--code-muted); font-family: var(--font-sans); }
+.pre-bar button { border: 1px solid #4a4d55; background: transparent; color: var(--code-fg); padding: 3px 10px; font-size: 0.8125rem; display: inline-flex; gap: 6px; align-items: center; cursor: pointer; border-radius: 3px; min-height: 28px; }
+.pre-bar button:hover { background: #24262d; }
+.adm { border: 1px solid var(--rule-strong); padding: 14px 18px; font-size: 1rem; }
+.adm-t { display: flex; gap: 8px; align-items: center; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.adm.warn { background: var(--warn-tint); border-color: var(--warn); }
+.adm.warn .adm-t .ic { color: var(--warn); }
+.adm.info { background: var(--blue-tint); border-color: var(--blue); }
+.adm.info .adm-t .ic { color: var(--blue); }
+.prereq { list-style: none; padding: 0 !important; border-top: 1px solid var(--rule); }
+.prereq li { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--rule); margin: 0 !important; }
+.prereq .ic { color: var(--blue); margin-top: 3px; }
+.d-next { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 56px; }
+.d-next a { border: 1px solid var(--rule-strong); padding: 14px 18px; text-decoration: none; display: grid; gap: 2px; }
+.d-next a:hover { border-color: var(--blue); background: var(--paper-2); }
+.d-next small { color: var(--muted); font-size: 0.8125rem; }
+.d-next span { font-weight: 600; }
+.d-next a:last-child { text-align: right; }
+.d-toc { padding: 32px 24px; font-size: 0.875rem; border-left: 1px solid var(--rule); }
+.d-toc h3 { font-size: 0.8125rem; color: var(--muted); margin-bottom: 8px; }
+.d-toc ul { list-style: none; display: grid; gap: 6px; }
+.d-toc a { color: var(--text); text-decoration: none; }
+.d-toc a:hover { color: var(--blue); text-decoration: underline; }
+.d-toc a[aria-current="true"] { color: var(--blue); font-weight: 600; }
+.d-foot { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 0.875rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 24px; }
+
+/* ============ Panel ============ */
+.app { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: 760px; font-size: 0.9375rem; }
+.p-side { background: var(--paper-2); border-right: 1px solid var(--rule); padding: 16px 12px; display: flex; flex-direction: column; gap: 16px; }
+.p-side .logo { font-size: 1rem; padding: 4px 8px; }
+.p-side .logo svg { width: 28px; height: 28px; }
+.srv { border: 1px solid var(--rule); background: var(--paper); padding: 8px 10px; display: grid; gap: 0; font-size: 0.8125rem; }
+.srv b { color: var(--ink); font-size: 0.875rem; }
+.srv span { color: var(--muted); }
+.p-nav { list-style: none; display: grid; gap: 1px; }
+.p-nav a { display: flex; align-items: center; gap: 10px; padding: 7px 10px; color: var(--text); text-decoration: none; border-radius: 3px; }
+.p-nav a:hover { background: var(--paper-3); }
+.p-nav a[aria-current="page"] { background: var(--ink); color: var(--paper); font-weight: 500; }
+.p-nav .ic { width: 18px; height: 18px; }
+.p-nav-sep { height: 1px; background: var(--rule); margin: 8px 0; }
+.p-user { margin-top: auto; border-top: 1px solid var(--rule); padding: 12px 8px 0; font-size: 0.8125rem; color: var(--muted); display: grid; }
+.p-user b { color: var(--ink); font-size: 0.875rem; font-weight: 500; }
+.p-main { min-width: 0; display: flex; flex-direction: column; }
+.p-top { display: flex; align-items: center; gap: 12px; padding: 10px 32px; border-bottom: 1px solid var(--rule); min-height: 56px; }
+.p-top .field { width: 320px; min-height: 36px; }
+.p-top .tools { margin-left: auto; display: flex; gap: 4px; align-items: center; }
+.icon-btn { width: 36px; height: 36px; display: inline-grid; place-items: center; border: 1px solid transparent; background: transparent; color: var(--text); cursor: pointer; border-radius: 3px; position: relative; }
+.icon-btn:hover { background: var(--paper-3); }
+.icon-btn .dot { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; background: var(--orange); }
+.p-burger { display: none; }
+.p-mlogo { display: none; }
+.p-page { padding: 28px 32px 48px; display: grid; gap: 28px; align-content: start; }
+.p-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 24px; justify-content: space-between; }
+.p-head h1 { font-size: 1.625rem; letter-spacing: -0.015em; }
+.p-head p { color: var(--muted); font-size: 0.9375rem; margin-top: 4px; }
+.p-head .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.banner { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; border: 1px solid var(--blue); background: var(--blue-tint); color: var(--ink); }
+.banner .ic { color: var(--blue); margin-top: 2px; }
+.banner .b-txt { flex: 1; min-width: 0; }
+.banner .b-txt p { color: var(--text); font-size: 0.875rem; }
+.banner .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.banner.warn { border-color: var(--warn); background: var(--warn-tint); }
+.banner.warn .ic { color: var(--warn); }
+.panel { border: 1px solid var(--rule); background: var(--paper); }
+.panel-h { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+.panel-h h2 { font-size: 1rem; }
+.panel-h p { font-size: 0.8125rem; color: var(--muted); }
+.panel-b { padding: 16px; }
+.dash { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px; align-items: start; }
+.cap-t { width: 100%; border-collapse: collapse; }
+.cap-t th, .cap-t td { padding: 12px 16px; border-bottom: 1px solid var(--rule); text-align: left; }
+.cap-t tr:last-child td { border-bottom: 0; }
+.cap-t thead th { font-size: 0.8125rem; font-weight: 600; color: var(--muted); background: var(--paper-2); }
+.cap-t .r { text-align: right; }
+.cap-t td small { display: block; font-size: 0.8125rem; color: var(--muted); }
+.meter { height: 6px; background: var(--paper-3); margin-top: 6px; position: relative; min-width: 80px; }
+.meter i { position: absolute; inset: 0 auto 0 0; background: var(--blue); }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--rule); }
+.facts div { padding: 14px 16px; border-left: 1px solid var(--rule); }
+.facts div:first-child { border-left: 0; }
+.facts dt { font-size: 0.8125rem; color: var(--muted); }
+.facts dd { margin: 2px 0 0; color: var(--ink); font-size: 1.25rem; font-weight: 600; }
+.facts dd small { font-size: 0.8125rem; font-weight: 400; color: var(--muted); display: block; }
+.feed { list-style: none; }
+.feed li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--rule); align-items: start; font-size: 0.875rem; }
+.feed li:last-child { border-bottom: 0; }
+.feed .ic { width: 18px; height: 18px; color: var(--muted); margin-top: 2px; }
+.feed time { color: var(--muted); font-size: 0.8125rem; white-space: nowrap; }
+.feed b { color: var(--ink); font-weight: 500; }
+
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.toolbar .field { width: 280px; }
+.sel { appearance: none; border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink); font: inherit; font-size: 0.9375rem; min-height: 40px; padding: 0 32px 0 12px; border-radius: 3px; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: right 16px top 18px, right 11px top 18px; background-size: 5px 5px; background-repeat: no-repeat; }
+.sites { width: 100%; border-collapse: collapse; }
+.sites th, .sites td { padding: 12px 16px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+.sites thead th { font-size: 0.8125rem; font-weight: 600; color: var(--muted); background: var(--paper-2); white-space: nowrap; }
+.sites tbody tr:hover { background: var(--paper-2); }
+.sites .dom { display: flex; gap: 10px; align-items: flex-start; }
+.sites .dom a { color: var(--ink); font-weight: 600; text-decoration: none; }
+.sites .dom a:hover { color: var(--blue); text-decoration: underline; }
+.sites .dom small, .sites td small { display: block; font-size: 0.8125rem; color: var(--muted); }
+.sites .typ { display: inline-flex; gap: 8px; align-items: center; white-space: nowrap; }
+.sites .typ .brand, .sites .typ .ic { width: 18px; height: 18px; color: var(--muted); }
+.sites tr.stg td:first-child { padding-left: 44px; }
+.sites tr.stg .dom a { font-weight: 500; }
+.stg-tag { font-size: 0.75rem; border: 1px solid var(--rule-strong); padding: 0 5px; color: var(--muted); margin-left: 6px; font-weight: 500; vertical-align: 1px; }
+.sites tr.bad { background: var(--err-tint); }
+.sites tr.bad:hover { background: var(--err-tint); }
+.sites tr.bad .err-msg { color: var(--err); font-size: 0.8125rem; margin-top: 4px; display: block; }
+.dim { color: var(--muted); }
+.t-foot { padding: 10px 16px; font-size: 0.8125rem; color: var(--muted); }
+
+.s-head { display: grid; gap: 12px; }
+.back { font-size: 0.875rem; display: inline-flex; gap: 4px; align-items: center; color: var(--muted); }
+.back .ic { transform: rotate(180deg); width: 16px; height: 16px; }
+.s-title { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; justify-content: space-between; }
+.s-title h1 { font-size: 1.625rem; }
+.s-sub { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; font-size: 0.875rem; color: var(--muted); margin-top: 4px; }
+.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--rule); overflow-x: auto; scrollbar-width: thin; }
+.tabs a { padding: 10px 14px; color: var(--text); text-decoration: none; white-space: nowrap; border-bottom: 2px solid transparent; margin-bottom: -1px; font-size: 0.9375rem; }
+.tabs a:hover { color: var(--ink); background: var(--paper-2); }
+.tabs a[aria-current="page"] { color: var(--ink); font-weight: 600; border-bottom-color: var(--ink); }
+.detail { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px; align-items: start; }
+.col { display: grid; gap: 24px; }
+.kv { display: grid; grid-template-columns: 11rem minmax(0, 1fr); margin: 0; }
+.kv dt, .kv dd { margin: 0; padding: 9px 16px; border-bottom: 1px solid var(--rule); font-size: 0.9375rem; }
+.kv dt { color: var(--muted); padding-right: 8px; }
+.kv dd { color: var(--ink); padding-left: 0; }
+.kv dd small { display: block; color: var(--muted); font-size: 0.8125rem; }
+.kv > :nth-last-child(-n+2) { border-bottom: 0; }
+.guard-t { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.guard-t th, .guard-t td { padding: 9px 16px; border-bottom: 1px solid var(--rule); text-align: left; }
+.guard-t thead th { font-weight: 600; color: var(--muted); font-size: 0.8125rem; background: var(--paper-2); white-space: nowrap; }
+.guard-t .r { text-align: right; white-space: nowrap; }
+.verdict-ok { display: flex; gap: 8px; align-items: center; padding: 12px 16px; color: var(--ok); font-weight: 500; }
+.panel-f { padding: 12px 16px; border-top: 1px solid var(--rule); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.empty { padding: 56px 32px 64px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+.empty-main .ic-big { width: 48px; height: 48px; color: var(--blue); fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: square; margin-bottom: 20px; }
+.empty-main h2 { font-size: 1.5rem; }
+.empty-main p { margin-top: 8px; font-size: 1rem; max-width: 44ch; }
+.empty-main .acts { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; margin-top: 24px; }
+.will { border: 1px solid var(--rule); }
+.will h3, .will .will-h { font-size: 0.9375rem; padding: 12px 16px; border-bottom: 1px solid var(--rule); background: var(--paper-2); }
+.will ul { list-style: none; }
+.will li { display: flex; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--rule); font-size: 0.9375rem; align-items: flex-start; }
+.will li:last-child { border-bottom: 0; }
+.will .ic { color: var(--ok); width: 18px; height: 18px; margin-top: 2px; }
+
+.wsteps { list-style: none; display: flex; gap: 0; border: 1px solid var(--rule); counter-reset: ws; }
+.wsteps li { flex: 1; padding: 10px 16px; font-size: 0.875rem; color: var(--muted); counter-increment: ws; display: flex; gap: 10px; align-items: center; }
+.wsteps li + li { border-left: 1px solid var(--rule); }
+.wsteps li::before { content: counter(ws); display: inline-grid; place-items: center; width: 22px; height: 22px; border: 1px solid var(--rule-strong); font-size: 0.75rem; font-weight: 600; font-family: var(--font-mono); flex: none; }
+.wsteps li[aria-current="step"] { color: var(--ink); font-weight: 600; background: var(--paper-2); box-shadow: inset 0 -2px 0 var(--ink); }
+.wsteps li[aria-current="step"]::before { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.wiz { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 32px; align-items: start; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+legend { font-weight: 600; color: var(--ink); font-size: 1.0625rem; padding: 0; margin-bottom: 4px; }
+.leg-hint { font-size: 0.875rem; color: var(--muted); margin-bottom: 14px; }
+.types { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--rule-strong); border-left: 1px solid var(--rule-strong); }
+.type { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr) 20px; gap: 14px; align-items: center; padding: 16px; border-right: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); cursor: pointer; background: var(--paper); color: var(--ink); }
+.type:hover { background: var(--paper-2); }
+.type input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.type .ic, .type .brand { width: 28px; height: 28px; }
+.type b { display: block; font-weight: 600; }
+.type small { display: block; color: var(--muted); font-size: 0.8125rem; }
+.type .tick { width: 20px; height: 20px; border: 1px solid var(--rule-strong); border-radius: 50%; display: grid; place-items: center; }
+.type:has(input:checked) { background: var(--blue-tint); box-shadow: inset 0 0 0 2px var(--blue); }
+.type:has(input:checked) .brand, .type:has(input:checked) > .ic { color: var(--blue); }
+.type:has(input:checked) .tick { border-color: var(--blue); background: var(--blue); }
+.type:has(input:checked) .tick::after { content: ""; width: 8px; height: 8px; background: var(--paper); border-radius: 50%; }
+.type:has(input:focus-visible) { outline: 2px solid var(--blue); outline-offset: 2px; z-index: 1; }
+.profiles { display: grid; border: 1px solid var(--rule-strong); margin-top: 0; }
+.prof { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--rule); cursor: pointer; align-items: start; }
+.prof:last-child { border-bottom: 0; }
+.prof:hover { background: var(--paper-2); }
+.prof input { accent-color: var(--blue); width: 18px; height: 18px; margin: 3px 0 0; }
+.prof b { color: var(--ink); font-weight: 600; }
+.prof small { display: block; color: var(--muted); font-size: 0.875rem; }
+.prof:has(input:checked) { background: var(--blue-tint); }
+.wiz-foot { display: flex; justify-content: space-between; gap: 12px; padding-top: 20px; border-top: 1px solid var(--rule); flex-wrap: wrap; }
+.wiz-foot .r { display: flex; gap: 8px; }
+
+/* ============ fixes v2.1 ============ */
+.ab-main > *, .hero > *, .sec-head > *, .dash > *, .detail > *, .wiz > * { min-width: 0; }
+.scale-row > span { min-width: 0; overflow-wrap: anywhere; }
+.s-nav .s-menu, .d-nav .s-menu { display: none; }
+.prose .pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+.sites td.c-prof, .sites td.c-cache, .sites td.c-php { white-space: nowrap; }
+.sites .typ .brand.wide { width: 32px; height: 19px; }
+.type { grid-template-columns: 44px minmax(0, 1fr) 20px; }
+.type .brand { justify-self: center; }
+.type .brand.wide { width: 44px; height: 27px; }
+.type > .ic { justify-self: center; }
+
+/* ============ Responsive ============ */
+@media (max-width: 1180px) {
+  .d-body { grid-template-columns: 240px minmax(0, 1fr); }
+  .d-toc { display: none; }
+  .annot { grid-template-columns: minmax(0, 1fr) 48px minmax(0, 240px); }
+  .note::before { width: 48px; } .note::after { right: calc(100% + 44px); }
+}
+@media (max-width: 1040px) {
+  .hero, .sec-head { grid-template-columns: 1fr; gap: 32px; }
+  .test { grid-template-columns: 1fr 1fr; }
+  .test > :first-child { grid-column: 1 / -1; }
+  .dash, .detail, .wiz, .empty { grid-template-columns: 1fr; }
+  .app { grid-template-columns: 200px minmax(0, 1fr); }
+  .pairs { grid-template-columns: 1fr; }
+  .pair + .pair { border-left: 0; border-top: 1px solid var(--rule-strong); }
+  .pal { grid-template-columns: 1fr; }
+}
+@media (max-width: 860px) {
+  .ab-bar { padding: 10px 16px; gap: 10px 16px; }
+  .ab-jump { display: none; }
+  .ab-main { padding: 20px 16px 64px; gap: 40px; }
+  .spec { padding: 24px 16px; gap: 36px; }
+  .spec-intro h1 { font-size: 1.625rem; }
+  .scale-row { grid-template-columns: 1fr; gap: 4px; }
+  .legib { grid-template-columns: 1fr; }
+  .wrap { padding: 0 16px; }
+  .s-links { display: none; }
+  .s-nav .s-menu, .d-nav .s-menu { display: inline-grid; }
+  .protocol dl { grid-template-columns: 1fr 1fr; }
+  .protocol div { padding: 8px 12px; }
+  .protocol div:first-child { grid-column: 1 / -1; padding-left: 0; border-bottom: 1px solid var(--rule); }
+  .protocol div:nth-child(2) { border-left: 0; padding-left: 0; }
+  .protocol div:nth-child(4) { grid-column: 1 / -1; border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); }
+  .hero { padding: 32px 0 48px; }
+  .hero h1 { font-size: 2rem; }
+  .lede { font-size: 1.0625rem; }
+  .result-body { grid-template-columns: 1fr; padding: 20px 16px 16px; }
+  .result-head, .method { padding-left: 16px; padding-right: 16px; }
+  .fig { font-size: 3rem; }
+  .sec { padding: 48px 0; }
+  .sec-head h2 { font-size: 1.5rem; }
+  .test { grid-template-columns: 1fr; gap: 12px; }
+  .annot { display: flex; flex-direction: column; }
+  .annot > .note { order: 10; }
+  .annot > .note:nth-of-type(1) { margin-top: 12px; }
+  .annot-box { display: none; }
+  .annot > .annot-cap, .annot > .m-row, .annot > .m-foot { border-left: 1px solid var(--rule-strong); border-right: 1px solid var(--rule-strong); background-clip: padding-box; }
+  .annot > .annot-cap { border-top: 1px solid var(--rule-strong); }
+  .annot > .m-foot { border-bottom: 1px solid var(--rule-strong); }
+  .m-row { grid-template-columns: 1fr auto; }
+  .m-row > :nth-child(2), .m-row > :nth-child(3), .m-row > :nth-child(4) { display: none; }
+  .note { padding: 10px 0 14px 0; border-bottom: 0; }
+  .note::before, .note::after { display: none; }
+  .annot > .note { margin: 0; }
+  .limits { grid-template-columns: 1fr; }
+  .limits div:nth-child(even) { padding-left: 0; border-left: 0; }
+  .steps > li { grid-template-columns: 32px minmax(0, 1fr); gap: 8px 12px; }
+  .steps > li > :last-child { grid-column: 2; }
+  .tbl-wrap { overflow-x: auto; }
+  .d-nav .in { padding: 0 16px; gap: 12px; }
+  .d-nav .field, .d-nav .s-links { display: none; }
+  .d-nav .s-menu { display: inline-grid; margin-left: auto; }
+  .d-body { grid-template-columns: 1fr; }
+  .d-side { display: none; }
+  .d-main { padding: 20px 16px 48px; }
+  .d-art h1 { font-size: 1.75rem; }
+  .d-desc { font-size: 1.0625rem; }
+  .d-meta { grid-template-columns: 1fr 1fr; }
+  .d-meta div { border-right: 0; margin-right: 0; padding-right: 8px; }
+  .prose { font-size: 1rem; }
+  .d-next { grid-template-columns: 1fr; }
+  .app { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .p-side { display: none; }
+  .p-top { padding: 8px 12px 8px 8px; gap: 4px; }
+  .p-top .field { display: none; }
+  .p-burger, .p-mlogo { display: inline-flex; }
+  .p-mlogo { font-size: 1rem; }
+  .p-mlogo svg { width: 26px; height: 26px; }
+  .p-page { padding: 20px 16px 32px; gap: 20px; }
+  .p-head h1, .s-title h1 { font-size: 1.375rem; }
+  .facts { grid-template-columns: 1fr; }
+  .facts div { border-left: 0; border-top: 1px solid var(--rule); }
+  .facts div:first-child { border-top: 0; }
+  .toolbar .field { width: 100%; }
+  .toolbar .sel { flex: 1; }
+  .sites thead { display: none; }
+  .sites, .sites tbody, .sites tr, .sites td { display: block; }
+  .sites tr { border-bottom: 1px solid var(--rule); padding: 12px 16px; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; }
+  .sites td { border: 0; padding: 0; }
+  .sites td.c-dom { grid-column: 1; }
+  .sites td.c-st { grid-column: 2; grid-row: 1; text-align: right; }
+  .sites td.c-typ, .sites td.c-bk { grid-column: 1 / -1; font-size: 0.875rem; }
+  .sites td.c-prof, .sites td.c-php, .sites td.c-cache { display: none; }
+  .sites tr.stg { padding-left: 40px; }
+  .sites tr.stg td:first-child { padding-left: 0; }
+  .kv { grid-template-columns: 1fr; }
+  .kv dt { padding-bottom: 0; border-bottom: 0; }
+  .kv dd { padding: 2px 16px 10px; }
+  .kv > :nth-last-child(2) { border-bottom: 0; }
+  .guard-wrap { overflow-x: auto; }
+  .empty { padding: 32px 16px 40px; gap: 32px; }
+  .wsteps li { padding: 8px 10px; font-size: 0.8125rem; }
+  .wsteps li:not([aria-current]) span { display: none; }
+  .wsteps li:not([aria-current]) { flex: 0 0 auto; }
+  .types { grid-template-columns: 1fr; }
+  .wiz-foot .r { width: 100%; }
+  .wiz-foot .r .btn { flex: 1; justify-content: center; }
+  .wiz-foot > .btn { order: 2; }
+}
+@media (max-width: 480px) {
+  .ab-title small { display: none; }
+  .ab-group > span:first-child { display: none; }
+  .cmd { flex-direction: column; }
+  .cmd code { white-space: normal; overflow-wrap: anywhere; }
+  .r-rows { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .cmd .copy { min-height: 44px; }
+  .stamp { justify-self: start; }
+  .p-head .acts .btn, .s-title .acts .btn { flex: 1; justify-content: center; }
+  .s-title .acts { width: 100%; }
+}
+</style>
+</head>
+<body>
+<!-- Icons: cloudground-icons (line, 24 grid). Brand marks: Simple Icons, CC0. -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+<symbol id="i-alert-triangle" viewBox="0 0 24 24"><path d="M12 3.5L3 20h18z"/><path d="M12 9.5v5"/><rect x="11.12" y="16.38" width="1.75" height="1.75" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4 12h15M14 6l6 6-6 6"/></symbol>
+<symbol id="i-backup" viewBox="0 0 24 24"><path d="M9.5 13H7A4 4 0 1 1 7.92 5.11A5 5 0 0 1 16.93 7.2A3 3 0 1 1 18 13H14.5"/><path d="M12 21v-9M8.5 14.5L12 11l3.5 3.5"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M4 17h16M6 17v-7a6 6 0 0 1 12 0v7M10 20.5h4"/></symbol>
+<symbol id="i-certificate" viewBox="0 0 24 24"><path d="M11 15H3V3h18v6.5M7 7h10M7 10.5h4"/><circle cx="17" cy="13.5" r="3"/><path d="M15 16v4l2-1.5 2 1.5v-4"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
+<symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7.5 12.5l3 3 6-6"/></symbol>
+<symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13"/><path d="M16 8V3H3v13h5"/></symbol>
+<symbol id="i-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></symbol>
+<symbol id="i-deploy" viewBox="0 0 24 24"><path d="M12 14V4M7.5 7.5L12 3l4.5 4.5M6 17.5h14M4 21h14"/></symbol>
+<symbol id="i-diff" viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M12 7.5v6M9 10.5h6M9 17h6"/></symbol>
+<symbol id="i-external-link" viewBox="0 0 24 24"><path d="M18 13v8H3V6h8M14 3h7v7M20 4l-8 8"/></symbol>
+<symbol id="i-file-code" viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M10 11l-2.5 2.5 2.5 2.5M14 11l2.5 2.5-2.5 2.5"/></symbol>
+<symbol id="i-firewall" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.6 3.4 7.8 8 9 4.6-1.2 8-4.4 8-9V6z"/></symbol>
+<symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9.5V7h6v4.5l-3 1.5v1.5"/><rect x="11.12" y="16.38" width="1.75" height="1.75" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-history" viewBox="0 0 24 24"><path d="M3.5 12A8.5 8.5 0 1 0 6 6L3.5 8.5M3.5 4v4.5H8"/><path d="M12 7.5V12l3 3"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 10.5V17"/><rect x="11.12" y="6.62" width="1.75" height="1.75" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11"/><path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3M12 14v3"/></symbol>
+<symbol id="i-login" viewBox="0 0 24 24"><path d="M14 3h6v18h-6M4 12h10M11.5 8.5L15 12l-3.5 3.5"/></symbol>
+<symbol id="i-logs" viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M8.5 10h.25M11.5 10h4M8.5 13.5h.25M11.5 13.5h4M8.5 17h.25M11.5 17h2"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></symbol>
+<symbol id="i-network" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="5"/><rect x="3" y="16" width="6" height="5"/><rect x="15" y="16" width="6" height="5"/><path d="M12 8v4M6 16v-4h12v4"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-purge" viewBox="0 0 24 24"><path d="M12 3v7M8 10h8v3H8zM8 13l-2 8h12l-2-8M10 17v4M14 17v4"/></symbol>
+<symbol id="i-release" viewBox="0 0 24 24"><path d="M3 3h8l10 10-8 8L3 11z"/><circle cx="7.5" cy="7.5" r="1.5"/></symbol>
+<symbol id="i-restore" viewBox="0 0 24 24"><path d="M9.5 13H7A4 4 0 1 1 7.92 5.11A5 5 0 0 1 16.93 7.2A3 3 0 1 1 18 13H14.5"/><path d="M12 11v9M8.5 17.5L12 21l3.5-3.5"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5"/></symbol>
+<symbol id="i-server" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18"/><path d="M4 9h16M4 15h16"/><path d="M7.5 6h2M7.5 12h2M7.5 18h2"/></symbol>
+<symbol id="i-services" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6"/><rect x="3" y="14" width="18" height="6"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M10.25 5.48 L10.47 2.88 L13.53 2.88 L13.75 5.48 L15.38 6.15 L17.37 4.47 L19.53 6.63 L17.85 8.62 L18.52 10.25 L21.12 10.47 L21.12 13.53 L18.52 13.75 L17.85 15.38 L19.53 17.37 L17.37 19.53 L15.38 17.85 L13.75 18.52 L13.53 21.12 L10.47 21.12 L10.25 18.52 L8.63 17.85 L6.63 19.53 L4.47 17.37 L6.15 15.38 L5.48 13.75 L2.88 13.53 L2.88 10.47 L5.48 10.25 L6.15 8.62 L4.47 6.63 L6.63 4.47 L8.62 6.15Z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.6 3.4 7.8 8 9 4.6-1.2 8-4.4 8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-4.5"/></symbol>
+<symbol id="i-sites" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.6 3.4 3.6 14.6 0 18c-3.6-3.4-3.6-14.6 0-18z"/></symbol>
+<symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16"/><path d="M7 9l3 3-3 3M12.5 15H17"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20.5c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M15.5 4.7a3.5 3.5 0 0 1 0 6.6M18.5 15c1.8.8 3 2.6 3 5.5"/></symbol>
+<symbol id="i-verified" viewBox="0 0 24 24"><path d="M12 2.75 L14.91 4.98 L18.54 5.46 L19.02 9.09 L21.25 12 L19.02 14.91 L18.54 18.54 L14.91 19.02 L12 21.25 L9.09 19.02 L5.46 18.54 L4.98 14.91 L2.75 12 L4.98 9.09 L5.46 5.46 L9.09 4.98Z"/><path d="M8.5 12l2.5 2.5 4.5-4.5"/></symbol>
+<symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></symbol>
+<symbol id="b-wordpress" viewBox="0 0 24 24"><path d="M21.469 6.825c.84 1.537 1.318 3.3 1.318 5.175 0 3.979-2.156 7.456-5.363 9.325l3.295-9.527c.615-1.54.82-2.771.82-3.864 0-.405-.026-.78-.07-1.11m-7.981.105c.647-.03 1.232-.105 1.232-.105.582-.075.514-.93-.067-.899 0 0-1.755.135-2.88.135-1.064 0-2.85-.15-2.85-.15-.585-.03-.661.855-.075.885 0 0 .54.061 1.125.09l1.68 4.605-2.37 7.08L5.354 6.9c.649-.03 1.234-.1 1.234-.1.585-.075.516-.93-.065-.896 0 0-1.746.138-2.874.138-.2 0-.438-.008-.69-.015C4.911 3.15 8.235 1.215 12 1.215c2.809 0 5.365 1.072 7.286 2.833-.046-.003-.091-.009-.141-.009-1.06 0-1.812.923-1.812 1.914 0 .89.513 1.643 1.06 2.531.411.72.89 1.643.89 2.977 0 .915-.354 1.994-.821 3.479l-1.075 3.585-3.9-11.61.001.014zM12 22.784c-1.059 0-2.081-.153-3.048-.437l3.237-9.406 3.315 9.087c.024.053.05.101.078.149-1.12.393-2.325.609-3.582.609M1.211 12c0-1.564.336-3.05.935-4.39L7.29 21.709C3.694 19.96 1.212 16.271 1.211 12M12 0C5.385 0 0 5.385 0 12s5.385 12 12 12 12-5.385 12-12S18.615 0 12 0"/></symbol>
+<symbol id="b-woocommerce" viewBox="0 4.857 24 14.3"><!-- Simple Icons "woo" 13.21.0, CC0 --><path d="M2.227 4.857A2.228 2.228 0 000 7.094v7.457c0 1.236 1.001 2.237 2.237 2.237h9.253l4.229 2.355-.962-2.355h7.006c1.236 0 2.237-1 2.237-2.237V7.094c0-1.236-1-2.237-2.237-2.237zm8.08 1.311c.194.002.372.071.535.2a.769.769 0 01.304.56.851.851 0 01-.098.47c-.382.707-.696 1.894-.951 3.542-.246 1.6-.334 2.846-.275 3.739.02.245-.02.46-.118.647a.632.632 0 01-.52.353c-.255.02-.52-.098-.775-.362-.913-.933-1.639-2.326-2.169-4.18a184.085 184.085 0 00-1.413 2.825c-.578 1.11-1.069 1.678-1.481 1.708-.265.02-.49-.206-.687-.677-.5-1.286-1.04-3.768-1.619-7.448-.03-.255.02-.48.157-.657.137-.186.344-.284.618-.304.5-.04.785.196.854.706.304 2.051.638 3.788.991 5.21L5.809 8.41c.196-.373.441-.57.736-.589.431-.03.696.245.804.824.246 1.305.56 2.414.932 3.356.255-2.492.687-4.288 1.295-5.397.148-.274.363-.412.648-.431a.866.866 0 01.084-.004zm3.734 1.063c.167 0 .343.02.53.06.687.146 1.216.52 1.57 1.137.314.53.47 1.168.47 1.933 0 1.011-.254 1.933-.765 2.777-.588.981-1.354 1.472-2.305 1.472-.167 0-.344-.02-.53-.059-.697-.147-1.217-.52-1.57-1.138-.314-.54-.471-1.187-.471-1.943 0-1.01.255-1.933.765-2.767.599-.981 1.364-1.472 2.306-1.472zm6.152 0c.167 0 .343.02.53.06.696.146 1.216.52 1.57 1.137.314.53.47 1.168.47 1.933 0 1.011-.254 1.933-.765 2.777-.588.981-1.354 1.472-2.305 1.472-.167 0-.344-.02-.53-.059-.697-.147-1.217-.52-1.57-1.138-.314-.54-.471-1.187-.471-1.943 0-1.01.255-1.933.765-2.767.599-.981 1.364-1.472 2.306-1.472zm-6.107 1.645c-.307-.002-.606.201-.889.622a3.173 3.173 0 00-.52 1.168c-.05.225-.069.47-.069.716 0 .284.06.589.177.893.147.382.343.589.579.638.245.049.51-.06.795-.315.363-.323.608-.804.745-1.452.05-.225.069-.47.069-.726a2.49 2.49 0 00-.176-.893c-.148-.382-.344-.588-.58-.637a.714.714 0 00-.131-.014zm6.152 0c-.307-.002-.606.201-.889.622a3.173 3.173 0 00-.52 1.168c-.049.225-.069.47-.069.716 0 .284.06.589.177.893.147.382.344.589.579.638.245.049.51-.06.795-.315.363-.323.608-.804.745-1.452.04-.225.07-.47.07-.726a2.49 2.49 0 00-.177-.893c-.148-.382-.344-.588-.58-.637a.714.714 0 00-.131-.014Z"/></symbol>
+<symbol id="b-php" viewBox="0 0 24 24"><path d="M7.01 10.207h-.944l-.515 2.648h.838c.556 0 .97-.105 1.242-.314.272-.21.455-.559.55-1.049.092-.47.05-.802-.124-.995-.175-.193-.523-.29-1.047-.29zM12 5.688C5.373 5.688 0 8.514 0 12s5.373 6.313 12 6.313S24 15.486 24 12c0-3.486-5.373-6.312-12-6.312zm-3.26 7.451c-.261.25-.575.438-.917.551-.336.108-.765.164-1.285.164H5.357l-.327 1.681H3.652l1.23-6.326h2.65c.797 0 1.378.209 1.744.628.366.418.476 1.002.33 1.752a2.836 2.836 0 0 1-.305.847c-.143.255-.33.49-.561.703zm4.024.715l.543-2.799c.063-.318.039-.536-.068-.651-.107-.116-.336-.174-.687-.174H11.46l-.704 3.625H9.388l1.23-6.327h1.367l-.327 1.682h1.218c.767 0 1.295.134 1.586.401s.378.7.263 1.299l-.572 2.944h-1.389zm7.597-2.265a2.782 2.782 0 0 1-.305.847c-.143.255-.33.49-.561.703a2.44 2.44 0 0 1-.917.551c-.336.108-.765.164-1.286.164h-1.18l-.327 1.682h-1.378l1.23-6.326h2.649c.797 0 1.378.209 1.744.628.366.417.477 1.001.331 1.751zM17.766 10.207h-.943l-.516 2.648h.838c.557 0 .971-.105 1.242-.314.272-.21.455-.559.551-1.049.092-.47.049-.802-.125-.995s-.524-.29-1.047-.29z"/></symbol>
+<symbol id="b-laravel" viewBox="0 0 24 24"><path d="M23.642 5.43a.364.364 0 01.014.1v5.149c0 .135-.073.26-.189.326l-4.323 2.49v4.934a.378.378 0 01-.188.326L9.93 23.949a.316.316 0 01-.066.027c-.008.002-.016.008-.024.01a.348.348 0 01-.192 0c-.011-.002-.02-.008-.03-.012-.02-.008-.042-.014-.062-.025L.533 18.755a.376.376 0 01-.189-.326V2.974c0-.033.005-.066.014-.098.003-.012.01-.02.014-.032a.369.369 0 01.023-.058c.004-.013.015-.022.023-.033l.033-.045c.012-.01.025-.018.037-.027.014-.012.027-.024.041-.034H.53L5.043.05a.375.375 0 01.375 0L9.93 2.647h.002c.015.01.027.021.04.033l.038.027c.013.014.02.03.033.045.008.011.02.021.025.033.01.02.017.038.024.058.003.011.01.021.013.032.01.031.014.064.014.098v9.652l3.76-2.164V5.527c0-.033.004-.066.013-.098.003-.01.01-.02.013-.032a.487.487 0 01.024-.059c.007-.012.018-.02.025-.033.012-.015.021-.03.033-.043.012-.012.025-.02.037-.028.014-.01.026-.023.041-.032h.001l4.513-2.598a.375.375 0 01.375 0l4.513 2.598c.016.01.027.021.042.031.012.01.025.018.036.028.013.014.022.03.034.044.008.012.019.021.024.033.011.02.018.04.024.06.006.01.012.021.015.032zm-.74 5.032V6.179l-1.578.908-2.182 1.256v4.283zm-4.51 7.75v-4.287l-2.147 1.225-6.126 3.498v4.325zM1.093 3.624v14.588l8.273 4.761v-4.325l-4.322-2.445-.002-.003H5.04c-.014-.01-.025-.021-.04-.031-.011-.01-.024-.018-.035-.027l-.001-.002c-.013-.012-.021-.025-.031-.04-.01-.011-.021-.022-.028-.036h-.002c-.008-.014-.013-.031-.02-.047-.006-.016-.014-.027-.018-.043a.49.49 0 01-.008-.057c-.002-.014-.006-.027-.006-.041V5.789l-2.18-1.257zM5.23.81L1.47 2.974l3.76 2.164 3.758-2.164zm1.956 13.505l2.182-1.256V3.624l-1.58.91-2.182 1.255v9.435zm11.581-10.95l-3.76 2.163 3.76 2.163 3.759-2.164zm-.376 4.978L16.21 7.087 14.63 6.18v4.283l2.182 1.256 1.58.908zm-8.65 9.654l5.514-3.148 2.756-1.572-3.757-2.163-4.323 2.489-3.941 2.27z"/></symbol>
+</svg>
+<svg style="display:none" aria-hidden="true"><symbol id="logo" viewBox="0 0 48 48"><path class="logo-cloud" d="M14 26A8 8 0 1 1 15.843 10.215A10 10 0 0 1 33.87 14.391A6 6 0 1 1 36 26Z"/><rect class="logo-b" x="14" y="30" width="28" height="4.6" rx="1"/><rect class="logo-o" x="6" y="38" width="28" height="4.6" rx="1"/></symbol></svg>
+
+<header class="ab-bar">
+  <div class="ab-title"><svg class="logo-svg" width="26" height="26" aria-hidden="true"><use href="#logo"/></svg> CloudGround <small>tavola di progetto v2, Rapporto di prova</small></div>
+  <div class="ab-group" role="group" aria-label="Caratteri"><span>Caratteri</span>
+    <div class="seg" id="fontSeg">
+      <button type="button" data-font="plex" aria-pressed="true">Plex (scelta)</button>
+      <button type="button" data-font="atkinson" aria-pressed="false">Atkinson</button>
+      <button type="button" data-font="public" aria-pressed="false">Public + JetBrains</button>
+    </div>
+  </div>
+  <div class="ab-group" role="group" aria-label="Tema"><span>Tema</span>
+    <div class="seg" id="themeSeg">
+      <button type="button" data-theme-set="auto" aria-pressed="true">Auto</button>
+      <button type="button" data-theme-set="light" aria-pressed="false">Chiaro</button>
+      <button type="button" data-theme-set="dark" aria-pressed="false">Scuro</button>
+    </div>
+  </div>
+  <nav class="ab-jump" aria-label="Sezioni della tavola"><a href="#f-spec">Tipografia</a><a href="#f-home">Home</a><a href="#f-docs">Docs</a><a href="#f-dash">Pannello</a><a href="#f-wiz">Nuovo sito</a></nav>
+</header>
+
+<main class="ab-main">
+
+<!-- ================= SPECIMEN ================= -->
+<section class="frame-wrap" id="f-spec" aria-labelledby="spec-t">
+  <div class="frame-cap"><h2>Tipografia e colori</h2><p>Scegli una coppia: cambia l'intera tavola.</p></div>
+  <div class="frame spec">
+    <div class="spec-intro">
+      <h1 id="spec-t">Tre coppie leggibili, una tavolozza blu e arancio</h1>
+      <p>Ogni coppia ha un sans per tutto il testo e un mono solo per comandi e cifre. I colori partono dai token del sito attuale (#2F5BFF, #E0612B), scuriti dove servono per arrivare almeno ad AA. I rapporti di contrasto qui sotto si calcolano dai token veri della pagina.</p>
+    </div>
+
+    <div class="pairs" id="pairs">
+      <button type="button" class="pair" data-font="plex" aria-pressed="true" style="font-family:'IBM Plex Sans',sans-serif">
+        <span class="pair-head"><span class="pair-name">IBM Plex Sans + IBM Plex Mono</span><span class="pair-state">In uso</span><span class="pair-state" style="visibility:visible">scelta</span></span>
+        <span class="pair-aa">Aa Il1 0O</span>
+        <span class="pair-txt">Ogni sito nasce in cache, isolato e con i backup fuori dal server.</span>
+        <span class="pair-code" style="font-family:'IBM Plex Mono',monospace">9.710 req/s · 6,82 req/s</span>
+        <span class="pair-why">Grottesco da manuale tecnico, cifre nette, un mono della stessa famiglia. Il più vicino a un rapporto di laboratorio.</span>
+      </button>
+      <button type="button" class="pair" data-font="atkinson" aria-pressed="false" style="font-family:'Atkinson Hyperlegible Next',sans-serif">
+        <span class="pair-head"><span class="pair-name">Atkinson Hyperlegible Next + Mono</span><span class="pair-state">In uso</span></span>
+        <span class="pair-aa">Aa Il1 0O</span>
+        <span class="pair-txt">Ogni sito nasce in cache, isolato e con i backup fuori dal server.</span>
+        <span class="pair-code" style="font-family:'Atkinson Hyperlegible Mono',monospace">9.710 req/s · 6,82 req/s</span>
+        <span class="pair-why">Disegnato per chi vede poco: I, l e 1 non si confondono, 0 e O nemmeno. Il più leggibile dei tre.</span>
+      </button>
+      <button type="button" class="pair" data-font="public" aria-pressed="false" style="font-family:'Public Sans',sans-serif">
+        <span class="pair-head"><span class="pair-name">Public Sans + JetBrains Mono</span><span class="pair-state">In uso</span></span>
+        <span class="pair-aa">Aa Il1 0O</span>
+        <span class="pair-txt">Ogni sito nasce in cache, isolato e con i backup fuori dal server.</span>
+        <span class="pair-code" style="font-family:'JetBrains Mono',monospace">9.710 req/s · 6,82 req/s</span>
+        <span class="pair-why">Sans neutro nato per i servizi pubblici, mono pensato per il codice. Il più sobrio, con occhio grande.</span>
+      </button>
+    </div>
+
+    <div>
+      <div class="scale">
+        <div class="scale-row"><span>Titolo home · 44/49 · 600</span><span style="font-size:2.75rem;line-height:1.12;font-weight:600;color:var(--ink);letter-spacing:-0.02em">Siti veloci, modifiche sicure</span></div>
+        <div class="scale-row"><span>Titolo pagina · 36/43 · 600</span><span style="font-size:2.25rem;line-height:1.2;font-weight:600;color:var(--ink)">Installa CloudGround</span></div>
+        <div class="scale-row"><span>Sezione · 30/36 · 600</span><span style="font-size:1.875rem;line-height:1.2;font-weight:600;color:var(--ink)">Prove di sicurezza</span></div>
+        <div class="scale-row"><span>Sottosezione · 19/23 · 600</span><span style="font-size:1.1875rem;font-weight:600;color:var(--ink)">Ripristino di prova</span></div>
+        <div class="scale-row"><span>Testo · 17/29 (docs), 16/26 (sito)</span><span style="font-size:1.0625rem;line-height:1.7;max-width:68ch">Prima controlla la macchina, poi mostra nove passi. Se trova dei problemi li elenca tutti insieme e si ferma senza toccare nulla.</span></div>
+        <div class="scale-row"><span>Pannello · 15/24</span><span style="font-size:0.9375rem">Ultimo ripristino di prova: riuscito, 3 h fa. La password del database si vede solo qui.</span></div>
+        <div class="scale-row"><span>Nota di metodo · 14/22</span><span style="font-size:0.875rem;color:var(--muted)">Release v0.1.0, VPS da 2 vCPU, Ubuntu 26.04, wrk, 3 run per scenario, media.</span></div>
+        <div class="scale-row"><span>Mono · comandi e cifre</span><span class="mono" style="font-size:0.9375rem;color:var(--ink)">curl -fsSL https://get.cloudground.it | sudo bash</span></div>
+        <div class="scale-row"><span>Cifra di risultato · mono 64</span><span class="mono" style="font-size:4rem;line-height:1;font-weight:500;color:var(--ink)">9.710</span></div>
+      </div>
+    </div>
+
+    <div class="legib">
+      <div><p>Prova di distinzione, sans</p><p class="sample">Il1| 0Oo rn m 5S 8B àèéìò</p></div>
+      <div><p>Prova di distinzione, mono</p><p class="sample mono">Il1| 0Oo {}[] 6,82 15.478</p></div>
+    </div>
+
+    <div class="pal">
+      <div class="pal-col" data-theme="light"><h2 class="pal-h">Chiaro</h2><div class="sw-list" data-swatches></div></div>
+      <div class="pal-col" data-theme="dark"><h2 class="pal-h">Scuro</h2><div class="sw-list" data-swatches></div></div>
+    </div>
+
+    <div class="ctable-wrap">
+      <table class="ctable" id="ctable">
+        <caption>Contrasto di ogni coppia di token (WCAG 2.2: testo 4,5:1, testo grande e componenti 3:1)</caption>
+        <thead><tr><th>Primo piano su fondo</th><th>Uso</th><th>Soglia</th><th class="r">Chiaro</th><th class="r">Scuro</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><span id="probe-light" data-theme="light"></span><span id="probe-dark" data-theme="dark"></span></div>
+  </div>
+</section>
+
+<!-- ================= HOME ================= -->
+<section class="frame-wrap" id="f-home" aria-label="Sito pubblico, home">
+  <div class="frame-cap"><h2>Sito pubblico · Home</h2><p>cloudground.it · Persuadere · azione: installa</p></div>
+  <div class="frame site">
+    <nav class="s-nav" aria-label="Principale"><div class="wrap">
+      <a class="logo" href="#f-home"><svg aria-hidden="true"><use href="#logo"/></svg>cloudground</a>
+      <div class="s-links"><a href="#f-docs">Documentazione</a><a href="#misure">Misure</a><a href="#prove">Prove di sicurezza</a><a href="https://github.com/cloudground-it/cloudground">GitHub</a><a href="#">English</a></div>
+      <button class="icon-btn s-menu" type="button" aria-label="Apri il menu"><svg class="ic"><use href="#i-menu"/></svg></button>
+    </div></nav>
+    <div class="protocol"><div class="wrap"><dl>
+      <div><dt>Oggetto della prova</dt><dd>Un server Ubuntu con CloudGround</dd></div>
+      <div><dt>Documento</dt><dd class="num">CG-RP</dd></div>
+      <div><dt>Revisione</dt><dd class="num">v0.3.0</dd></div>
+      <div><dt>Data</dt><dd>12 ottobre 2026</dd></div>
+    </dl></div></div>
+
+    <div class="wrap">
+      <div class="hero">
+        <div>
+          <h1>Il pannello per un server Ubuntu che misura i suoi siti</h1>
+          <p class="lede">Un comando installa CloudGround. Ogni sito nasce in cache, dimensionato sulla macchina, isolato dagli altri e con i backup fuori dal server. Le misure sono pubblicate, con il metodo.</p>
+          <div class="install">
+            <p class="install-label">Su un server nuovo, come root:</p>
+            <div class="cmd"><code><span class="pr">$ </span>curl -fsSL https://get.cloudground.it | sudo bash</code><button class="copy" type="button" data-copy="curl -fsSL https://get.cloudground.it | sudo bash"><svg class="ic"><use href="#i-copy"/></svg><span>Copia</span></button></div>
+            <p class="req">Ubuntu 24.04 o 26.04 LTS, amd64, almeno 1 GB di RAM, porte 80 e 443 libere.</p>
+          </div>
+          <div class="hero-links"><a class="link-arrow" href="#f-docs">Guida all'installazione <svg class="ic"><use href="#i-arrow-right"/></svg></a><a href="#f-docs">Verifica l'installer prima di lanciarlo</a></div>
+        </div>
+
+        <div class="result" id="misure">
+          <div class="result-head">
+            <h2>Pagina del negozio WooCommerce</h2>
+            <div class="seg" id="cacheSeg" role="group" aria-label="Condizione della prova">
+              <button type="button" data-mode="con" aria-pressed="true">Con cache</button>
+              <button type="button" data-mode="senza" aria-pressed="false">Senza cache</button>
+            </div>
+          </div>
+          <div class="result-body">
+            <div>
+              <div class="fig-line" aria-live="polite"><span class="fig" data-con="9.710" data-senza="6,82">9.710</span><span class="fig-unit">richieste al secondo, media di 3 run</span></div>
+              <dl class="r-rows">
+                <dt>Connessioni contemporanee</dt><dd><span class="num" data-con="500" data-senza="10">500</span></dd>
+                <dt>Chi risponde</dt><dd data-con="cache di pagina nginx" data-senza="PHP e database, a ogni richiesta">cache di pagina nginx</dd>
+                <dt>Errori</dt><dd><span class="num">0</span> in 3 run</dd>
+              </dl>
+            </div>
+            <div class="stamp" id="stamp"><b data-con="Superato" data-senza="Riferimento">Superato</b><span data-con="criterio: zero errori" data-senza="la stessa pagina senza cache">criterio: zero errori</span></div>
+          </div>
+          <div class="method" aria-live="polite">
+            <p data-con="Metodo: wrk, 500 connessioni per 3 run, si riporta la media. Release v0.1.0 su un VPS da 2 vCPU con Ubuntu 26.04." data-senza="Metodo: wrk, 10 connessioni per 3 run, si riporta la media. Ogni richiesta passa da PHP e dal database. Stessa macchina, stessa pagina.">Metodo: wrk, 500 connessioni per 3 run, si riporta la media. Release v0.1.0 su un VPS da 2 vCPU con Ubuntu 26.04.</p>
+            <p><a href="https://github.com/cloudground-it/cloudground/blob/main/bench/README.md">Metodo e dati grezzi nella cartella bench/ del repository</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <section class="sec" aria-labelledby="h-misure">
+        <div class="sec-head"><h2 id="h-misure">Tutte le misure della release v0.1.0</h2><p>Cinque scenari sulla stessa macchina. I numeri sono quelli del file di benchmark pubblicato: niente arrotondamenti a favore.</p></div>
+        <div class="tbl-wrap"><table class="tbl">
+          <caption class="vh">Richieste al secondo per scenario</caption>
+          <thead><tr><th>Scenario</th><th>Condizioni</th><th class="r">Richieste al secondo</th><th class="r">Errori</th></tr></thead>
+          <tbody>
+            <tr><td>Pagina in cache</td><td>500 connessioni</td><td class="r num">9.710</td><td class="r num">0</td></tr>
+            <tr><td>Pagina in cache</td><td>1 connessione</td><td class="r num">6.347</td><td class="r num">0</td></tr>
+            <tr><td>File statico</td><td>1 KB, 200 connessioni</td><td class="r num">15.478</td><td class="r num">0</td></tr>
+            <tr><td>Traffico da browser</td><td>header e link misti, 200 connessioni</td><td class="r num">9.641</td><td class="r num">0</td></tr>
+            <tr><td>Senza cache</td><td>PHP + database, 10 connessioni</td><td class="r num">6,82</td><td class="r num">0</td></tr>
+          </tbody>
+        </table></div>
+        <p class="tbl-note">VPS da 2 vCPU, Ubuntu 26.04, pagina negozio WooCommerce, wrk, 3 run per scenario, media. Le misure valgono per quella macchina: sul tuo server si rifanno con lo stesso metodo.</p>
+      </section>
+
+      <section class="sec" id="prove" aria-labelledby="h-prove">
+        <div class="sec-head"><h2 id="h-prove">Prove di sicurezza</h2><p>Ogni garanzia del pannello ha un controllo che la verifica. Per ognuna: come si prova, e cosa succede quando la prova non passa.</p></div>
+        <div class="tests">
+          <div class="test">
+            <div><h3>Performance Guard</h3><p>Prima di ogni Safe Push dallo staging</p></div>
+            <div><p class="test-k">Metodo</p><p class="test-v">Coppie di richieste alle stesse pagine di staging e produzione, tempo misurato sul server. Si calcolano la mediana della differenza e il suo intervallo al 95%.</p></div>
+            <div><p class="test-k">Esito</p><p class="outcome"><svg class="ic"><use href="#i-shield-check"/></svg><span>Un rilascio più lento della produzione non viene pubblicato. Verdetti: OK, attenzione, bloccato, non concludente.</span></p></div>
+          </div>
+          <div class="test">
+            <div><h3>Ripristino di prova</h3><p>Dopo ogni backup restic</p></div>
+            <div><p class="test-k">Metodo</p><p class="test-v">Ogni snapshot, cifrato e deduplicato fuori dal server, viene ripristinato a parte e controllato. Il tempo di ripristino è misurato, non stimato.</p></div>
+            <div><p class="test-k">Esito</p><p class="outcome"><svg class="ic"><use href="#i-restore"/></svg><span>Un backup conta solo dopo che il ripristino di prova è riuscito. L'ultimo verificato non viene mai rimosso.</span></p></div>
+          </div>
+          <div class="test">
+            <div><h3>Isolamento</h3><p>Per ogni sito, alla creazione</p></div>
+            <div><p class="test-k">Metodo</p><p class="test-v">Un utente Unix, un master PHP-FPM, una sandbox systemd e un account del database per sito. SFTP chiuso nella cartella del sito.</p></div>
+            <div><p class="test-k">Esito</p><p class="outcome"><svg class="ic"><use href="#i-lock"/></svg><span>Un sito compromesso non vede i file né il database degli altri.</span></p></div>
+          </div>
+          <div class="test">
+            <div><h3>Deriva della configurazione</h3><p>Sui file che il pannello gestisce</p></div>
+            <div><p class="test-k">Metodo</p><p class="test-v">Il pannello confronta i file gestiti con quelli che ha scritto. Se qualcuno li cambia a mano, lo segnala.</p></div>
+            <div><p class="test-k">Esito</p><p class="outcome"><svg class="ic"><use href="#i-diff"/></svg><span>Non sovrascrive nulla da solo: scegli tu se ripristinare o mantenere la modifica.</span></p></div>
+          </div>
+        </div>
+
+        <div class="annot" aria-label="Esempio di rapporto del Guard nel pannello, con note">
+          <div class="annot-box"></div>
+          <div class="annot-cap"><b>Rapporto del Guard, nel pannello</b><span>Esempio, dati illustrativi</span></div>
+          <div class="m-row h" style="grid-row:2"><span>Pagina</span><span class="r">Coppie</span><span>Mediana<span class="mk">1</span></span><span>Intervallo 95%</span><span>Verdetto<span class="mk">2</span></span></div>
+          <p class="note" style="grid-row:2"><span class="mk">1</span><b>Mediana</b> della differenza di tempo server tra staging e produzione, con il suo intervallo al 95%.</p>
+          <div class="m-row" style="grid-row:3"><span class="mono">/</span><span class="num">60</span><span class="num">−0,6 ms</span><span class="num">−1,9 … +0,7</span><span class="badge ok">OK</span></div>
+          <div class="m-row" style="grid-row:4"><span class="mono">/negozio/</span><span class="num">60</span><span class="num">+0,4 ms</span><span class="num">−0,8 … +1,5</span><span class="badge ok">OK</span></div>
+          <div class="m-row bad" style="grid-row:5"><span class="mono">/carrello/</span><span class="num">60</span><span class="num">+38 ms</span><span class="num">+31 … +45</span><span class="badge err">bloccato</span></div>
+          <p class="note" style="grid-row:5"><span class="mk">2</span><b>Il verdetto</b> per pagina. Una pagina più lenta con certezza ferma il rilascio: è l'unica riga che rompe la tabella.</p>
+          <div class="m-foot" style="grid-row:6"><svg class="ic"><use href="#i-x-circle"/></svg><span>Rilascio fermato: /carrello/ è più lenta della produzione. La produzione non è stata toccata.</span></div>
+          <p class="note" style="grid-row:6;align-self:start;padding-top:10px"><b>La produzione resta com'è</b>, e il rollback è un solo comando se serve tornare indietro dopo una pubblicazione.</p>
+        </div>
+      </section>
+
+      <section class="sec" aria-labelledby="h-limiti">
+        <div class="sec-head"><h2 id="h-limiti">Limiti di questa prova</h2><p>Un rapporto di prova dice anche cosa non copre.</p></div>
+        <div class="limits">
+          <div><h3>Pre-release</h3><p>La v0.2.0 è rilasciata, la v0.3.0 è in uscita. Le interfacce possono cambiare prima della 1.0.</p></div>
+          <div><h3>Nessun audit esterno</h3><p>Il codice ha avuto una revisione di sicurezza interna. Nessuna società esterna l'ha ancora controllato.</p></div>
+          <div><h3>Una macchina sola</h3><p>Le misure valgono per un VPS da 2 vCPU. Il metodo è pubblico: rifallo sul tuo server.</p></div>
+          <div><h3>Codice consultabile, non open source</h3><p>Licenza Elastic License 2.0. Leggi ogni riga che gira come root sul tuo server; nessun account presso di noi, nessun canone per server.</p></div>
+        </div>
+      </section>
+
+      <section class="sec" aria-labelledby="h-proc">
+        <div class="sec-head"><h2 id="h-proc">Procedura di installazione</h2><p>Tre passi, nell'ordine. L'installer controlla il server prima di toccare qualcosa.</p></div>
+        <ol class="steps">
+          <li><h3>Prepara un server nuovo</h3><div><p>Ubuntu 24.04 o 26.04 LTS appena creato, amd64, almeno 1 GB di RAM e 10 GB di disco liberi, accesso root via SSH. L'installer prende in mano nginx, PHP, MariaDB e SSH: usa un server dedicato.</p></div></li>
+          <li><h3>Lancia il comando</h3><div><div class="cmd"><code><span class="pr">$ </span>curl -fsSL https://get.cloudground.it | sudo bash</code><button class="copy" type="button" data-copy="curl -fsSL https://get.cloudground.it | sudo bash"><svg class="ic"><use href="#i-copy"/></svg><span>Copia</span></button></div><p>Se trova problemi (sistema, memoria, disco, porte occupate) li elenca tutti insieme e si ferma senza toccare nulla. Lo script verifica lo SHA-256 della release e il manifesto firmato.</p></div></li>
+          <li><h3>Apri il link di setup</h3><div><p>Alla fine stampa un indirizzo <span class="mono">https://&lt;ip&gt;:8443/setup/…</span> valido 24 ore, che funziona una volta. Crei l'amministratore, poi il primo sito.</p></div></li>
+        </ol>
+      </section>
+    </div>
+
+    <footer class="s-foot"><div class="wrap">
+      <a class="logo" href="#f-home"><svg aria-hidden="true"><use href="#logo"/></svg>cloudground</a>
+      <ul><li><a href="#f-docs">Documentazione</a></li><li><a href="https://github.com/cloudground-it/cloudground">GitHub</a></li><li><a href="https://github.com/cloudground-it/cloudground/releases">Release v0.2.0</a></li><li><a href="https://github.com/cloudground-it/cloudground/issues">Segnala un problema</a></li><li><a href="#">Privacy</a></li></ul>
+      <p>Elastic License 2.0 · Nessun account presso di noi</p>
+    </div></footer>
+  </div>
+</section>
+
+<!-- ================= DOCS ================= -->
+<section class="frame-wrap" id="f-docs" aria-label="Documentazione, installazione">
+  <div class="frame-cap"><h2>Documentazione · Installa CloudGround</h2><p>cloudground.it/docs · Leggere</p></div>
+  <div class="frame site">
+    <nav class="d-nav" aria-label="Documentazione"><div class="in">
+      <a class="logo" href="#f-home"><svg aria-hidden="true"><use href="#logo"/></svg>cloudground</a>
+      <div class="s-links"><a href="#f-docs" style="color:var(--ink);font-weight:600">Documentazione</a><a href="#">Riferimento</a><a href="#">API</a><a href="https://github.com/cloudground-it/cloudground">GitHub</a></div>
+      <label class="field"><svg class="ic"><use href="#i-search"/></svg><span class="vh">Cerca nella documentazione</span><input type="search" placeholder="Cerca nella documentazione"><kbd>/</kbd></label>
+      <button class="icon-btn s-menu" type="button" aria-label="Apri il menu"><svg class="ic"><use href="#i-menu"/></svg></button>
+    </div></nav>
+    <div class="d-body">
+      <aside class="d-side" aria-label="Indice della documentazione">
+        <h3>Tutorial</h3>
+        <ul><li><a href="#" aria-current="page">Installa CloudGround</a></li><li><a href="#">Crea il primo sito</a></li><li><a href="#">Pubblica dallo staging</a></li></ul>
+        <h3>Server</h3>
+        <ul><li><a href="#">Verifica l'installer</a></li><li><a href="#">Aggiorna CloudGround</a></li><li><a href="#">Disinstalla CloudGround</a></li></ul>
+        <h3>Siti</h3>
+        <ul><li><a href="#">Domini e certificati</a></li><li><a href="#">Impostazioni del sito</a></li><li><a href="#">Cache di pagina</a></li></ul>
+        <h3>Dati</h3>
+        <ul><li><a href="#">Backup e ripristino</a></li><li><a href="#">Torna a una release</a></li></ul>
+        <h3>Accesso</h3>
+        <ul><li><a href="#">Utenti e ruoli</a></li><li><a href="#">Firewall</a></li></ul>
+        <h3>Spiegazioni</h3>
+        <ul><li><a href="#">Come funziona l'installazione</a></li></ul>
+      </aside>
+      <div class="d-main">
+        <article class="d-art">
+          <p class="crumbs"><a href="#">Documentazione</a><svg class="ic" style="width:14px;height:14px"><use href="#i-chevron-right"/></svg><a href="#">Tutorial</a><svg class="ic" style="width:14px;height:14px"><use href="#i-chevron-right"/></svg><span>Installa CloudGround</span></p>
+          <h1>Installa CloudGround</h1>
+          <p class="d-desc">Da un server Ubuntu appena creato al pannello che risponde sulla porta 8443, con il tuo account amministratore.</p>
+          <dl class="d-meta">
+            <div><dt>Tipo</dt><dd>Tutorial</dd></div>
+            <div><dt>Livello</dt><dd>Base</dd></div>
+            <div><dt>Versione</dt><dd class="num">v0.2.0</dd></div>
+            <div><dt>Ultima verifica</dt><dd class="unv">Non ancora verificata</dd></div>
+          </dl>
+          <div class="prose">
+            <p>In questo tutorial installi CloudGround su un server nuovo e crei l'account amministratore. Alla fine apri il pannello nel browser.</p>
+            <h2 style="font-size:1.125rem;margin-top:1.6em">Ti serve</h2>
+            <ul class="prereq">
+              <li><svg class="ic"><use href="#i-server"/></svg><span>Un server Ubuntu 24.04 o 26.04 LTS appena creato, amd64, con almeno 1 GB di RAM e 10 GB di disco liberi</span></li>
+              <li><svg class="ic"><use href="#i-terminal"/></svg><span>Accesso root via SSH</span></li>
+              <li><svg class="ic"><use href="#i-network"/></svg><span>Le porte 80 e 443 libere</span></li>
+            </ul>
+            <div class="adm warn" role="note"><p class="adm-t"><svg class="ic"><use href="#i-alert-triangle"/></svg>Usa un server dedicato</p><p>L'installer prende in mano nginx, PHP, MariaDB e la configurazione di SSH. Installalo solo su un server nuovo, o su uno che puoi ricreare.</p></div>
+            <h2 id="d-run">Lancia l'installer</h2>
+            <p>Entra nel server come root:</p>
+            <div class="pre"><div class="pre-bar"><span>bash</span><button type="button" data-copy="ssh root@<ip-del-server>"><svg class="ic" style="width:14px;height:14px"><use href="#i-copy"/></svg><span>Copia</span></button></div><pre><code>ssh root@&lt;ip-del-server&gt;</code></pre></div>
+            <p><code>&lt;ip-del-server&gt;</code> è l'indirizzo pubblico del server. Poi lancia l'installer:</p>
+            <div class="pre"><div class="pre-bar"><span>bash</span><button type="button" data-copy="curl -fsSL https://get.cloudground.it | sudo bash"><svg class="ic" style="width:14px;height:14px"><use href="#i-copy"/></svg><span>Copia</span></button></div><pre><code><span class="pr">$ </span>curl -fsSL https://get.cloudground.it | sudo bash</code></pre></div>
+            <p>Lo script installa CloudGround v0.2.0. Scarica la release da GitHub, lancia il suo <code>cgctl</code> solo se ha lo SHA-256 che lo script indica, e <code>cgctl</code> non installa nulla il cui manifesto firmato non si verifica. Per controllare lo script prima di lanciarlo, vedi <a href="#">verifica l'installer</a>.</p>
+            <p>Prima controlla la macchina, poi mostra nove passi:</p>
+            <div class="pre"><div class="pre-bar"><span>Output</span></div><pre><code><span class="ok">  ✓</span>   1/9  Installing nginx, PHP, MariaDB, restic
+<span class="ok">  ✓</span>   2/9  Creating users, directories and secrets
+<span class="ok">  ✓</span>   3/9  Installing CloudGround binaries
+<span class="ok">  ✓</span>   4/9  Tuning kernel and nginx workers
+<span class="ok">  ✓</span>   5/9  Configuring nginx
+<span class="ok">  ✓</span>   6/9  Tuning MariaDB
+<span class="ok">  ✓</span>   7/9  Starting services
+<span class="ok">  ✓</span>   8/9  Opening the firewall
+<span class="ok">  ✓</span>   9/9  Log rotation and certificate renewal</code></pre></div>
+            <p>Se il controllo della macchina trova dei problemi (sistema, architettura, memoria, disco, porte occupate), li elenca tutti insieme e si ferma senza toccare nulla. Correggili e rilancia lo stesso comando.</p>
+            <h2 id="d-link">Apri il link di setup</h2>
+            <p>Alla fine l'installer stampa un indirizzo come <code>https://&lt;ip-del-server&gt;:8443/setup/&lt;token&gt;</code>. Il link vale 24 ore e funziona una volta.</p>
+            <div class="adm info" role="note"><p class="adm-t"><svg class="ic"><use href="#i-info"/></svg>Il certificato è autofirmato</p><p>Il browser avvisa che il certificato non è valido: al primo avvio è normale. Accetta l'avviso per questo indirizzo; un certificato vero arriva quando colleghi un dominio.</p></div>
+            <h2 id="d-admin">Crea l'account amministratore</h2>
+            <p>La pagina <strong>Primo accesso</strong> chiede email e password.</p>
+            <ol>
+              <li><strong>Nome</strong> e <strong>Cognome</strong> sono facoltativi.</li>
+              <li>Scrivi la tua email.</li>
+              <li>Scegli una password di almeno 12 caratteri e ripetila in <strong>Conferma password</strong>.</li>
+              <li>Premi <strong>Crea account</strong>.</li>
+            </ol>
+            <p>Il pannello crea il primo amministratore e ti fa entrare. Vedi la dashboard, ancora senza siti.</p>
+            <h2 id="d-check">Controlla che tutto giri</h2>
+            <div class="pre"><div class="pre-bar"><span>bash</span><button type="button" data-copy="systemctl is-active cloudground-agent cloudground-api"><svg class="ic" style="width:14px;height:14px"><use href="#i-copy"/></svg><span>Copia</span></button></div><pre><code><span class="pr">$ </span>systemctl is-active cloudground-agent cloudground-api</code></pre></div>
+            <p>Entrambe le righe dicono <code>active</code>.</p>
+          </div>
+          <nav class="d-next" aria-label="Pagine vicine"><a href="#"><small>Precedente</small><span>Panoramica</span></a><a href="#"><small>Prossimo passo</small><span>Crea il primo sito</span></a></nav>
+          <p class="d-foot"><span>Pagina per la v0.2.0</span><a href="#">Modifica questa pagina</a><a href="#">Segnala un errore</a></p>
+        </article>
+      </div>
+      <aside class="d-toc" aria-label="In questa pagina">
+        <h3>In questa pagina</h3>
+        <ul><li><a href="#d-run" aria-current="true">Lancia l'installer</a></li><li><a href="#d-link">Apri il link di setup</a></li><li><a href="#d-admin">Crea l'account amministratore</a></li><li><a href="#d-check">Controlla che tutto giri</a></li></ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PANEL: DASHBOARD ================= -->
+<section class="frame-wrap" id="f-dash" aria-label="Pannello, dashboard">
+  <div class="frame-cap"><h2>Pannello · Dashboard</h2><p>https://server:8443 · Operare · dati di esempio</p></div>
+  <div class="frame app">
+    <aside class="p-side" data-nav="dashboard"></aside>
+    <div class="p-main">
+      <div class="p-top" data-top></div>
+      <div class="p-page">
+        <div class="p-head"><div><h1>Dashboard</h1><p>srv-01 · Ubuntu 26.04 LTS · 2 vCPU · 3,8 GB · agent v0.2.0</p></div><div class="acts"><a class="btn" href="#f-sites"><svg class="ic"><use href="#i-sites"/></svg>Gestisci i siti</a></div></div>
+        <div class="banner"><svg class="ic"><use href="#i-release"/></svg><div class="b-txt"><b>È disponibile CloudGround v0.3.0</b><p>Stai usando la versione v0.2.0. Prima dell'aggiornamento viene fatto un backup di ogni sito.</p></div><div class="acts"><a class="btn btn-sm" href="#">Novità</a><button class="btn btn-sm btn-primary" type="button">Aggiorna ora</button></div></div>
+        <div class="banner warn"><svg class="ic"><use href="#i-alert-triangle"/></svg><div class="b-txt"><b>Configurazione modificata fuori dal pannello</b><p>Questi file gestiti sono cambiati fuori dal pannello. Non è stato sovrascritto nulla. File: vhost nginx di <span class="mono">blog.esempio.it</span>.</p></div><div class="acts"><button class="btn btn-sm" type="button">Ripristina</button><button class="btn btn-sm btn-ghost" type="button">Mantieni</button></div></div>
+        <div class="dash">
+          <div class="col">
+            <section class="panel" aria-labelledby="cap-h">
+              <div class="panel-h"><h2 id="cap-h">Capacità nelle ultime 24 ore</h2><p>Un campione ogni cinque minuti</p></div>
+              <table class="cap-t">
+                <thead><tr><th>Risorsa</th><th>In uso ora</th><th class="r">Picco 24 h</th></tr></thead>
+                <tbody>
+                  <tr><td><b style="color:var(--ink);font-weight:500">CPU</b><small>2 core · carico 0,36</small></td><td><span class="num">18%</span><div class="meter" aria-hidden="true"><i style="width:18%"></i></div></td><td class="r num">64%</td></tr>
+                  <tr><td><b style="color:var(--ink);font-weight:500">Memoria</b><small>1,7 GB liberi su 3,8 GB</small></td><td><span class="num">55%</span><div class="meter" aria-hidden="true"><i style="width:55%"></i></div></td><td class="r num">61%</td></tr>
+                  <tr><td><b style="color:var(--ink);font-weight:500">Disco</b><small>64 GB liberi su 78 GB</small></td><td><span class="num">18%</span><div class="meter" aria-hidden="true"><i style="width:18%"></i></div></td><td class="r num">18%</td></tr>
+                </tbody>
+              </table>
+            </section>
+            <section class="panel" aria-labelledby="sum-h">
+              <div class="panel-h"><h2 id="sum-h">Siti e backup</h2><a href="#f-sites" style="font-size:.875rem">Tutti i siti</a></div>
+              <dl class="facts" style="margin:0;border-bottom:0">
+                <div><dt>Siti</dt><dd><span class="num">4</span> in produzione<small>2 staging</small></dd></div>
+                <div><dt>Ultimo backup</dt><dd><span class="num">3 h</span> fa<small>tutti i siti, alle 03:00</small></dd></div>
+                <div><dt>Ripristino di prova</dt><dd style="color:var(--ok)">riuscito<small>4 su 4, misurato</small></dd></div>
+              </dl>
+            </section>
+          </div>
+          <section class="panel" aria-labelledby="feed-h">
+            <div class="panel-h"><h2 id="feed-h">Registro attività</h2><a href="#" style="font-size:.875rem">Apri il registro</a></div>
+            <ul class="feed">
+              <li><svg class="ic"><use href="#i-verified"/></svg><span>Ripristino di prova <b>riuscito</b> per negozio.esempio.it</span><time>3 h fa</time></li>
+              <li><svg class="ic"><use href="#i-backup"/></svg><span>Backup notturno di 4 siti, 1,2 GB</span><time>3 h fa</time></li>
+              <li><svg class="ic"><use href="#i-deploy"/></svg><span>Safe Push su blog.esempio.it: Guard <b>OK</b></span><time>ieri</time></li>
+              <li><svg class="ic"><use href="#i-certificate"/></svg><span>Certificato rinnovato per studio.esempio.it</span><time>2 giorni fa</time></li>
+              <li><svg class="ic"><use href="#i-user"/></svg><span>Nuovo operatore: marta@esempio.it</span><time>4 giorni fa</time></li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PANEL: SITES ================= -->
+<section class="frame-wrap" id="f-sites" aria-label="Pannello, elenco dei siti">
+  <div class="frame-cap"><h2>Pannello · Siti</h2><p>Elenco con staging sotto la produzione · un errore rompe la riga</p></div>
+  <div class="frame app">
+    <aside class="p-side" data-nav="sites"></aside>
+    <div class="p-main">
+      <div class="p-top" data-top></div>
+      <div class="p-page">
+        <div class="p-head"><div><h1>Siti</h1><p>Ogni sito è isolato, in cache e con backup verificati.</p></div><div class="acts"><a class="btn btn-primary" href="#f-wiz"><svg class="ic"><use href="#i-plus"/></svg>Nuovo sito</a></div></div>
+        <div class="toolbar"><label class="field"><svg class="ic"><use href="#i-search"/></svg><span class="vh">Cerca un dominio</span><input type="search" placeholder="Cerca un dominio"></label><label class="vh" for="tf">Tipo</label><select class="sel" id="tf"><option>Tutti i tipi</option><option>WordPress</option><option>WooCommerce</option><option>PHP</option><option>Laravel</option><option>Statico</option><option>Reverse proxy</option></select></div>
+        <div class="panel">
+          <table class="sites">
+            <thead><tr><th>Dominio</th><th>Tipo</th><th>Profilo</th><th>PHP</th><th>Cache</th><th>Backup</th><th>Stato</th></tr></thead>
+            <tbody>
+              <tr><td class="c-dom"><div class="dom"><a href="#f-detail">negozio.esempio.it</a></div></td><td class="c-typ"><span class="typ"><svg class="brand wide"><use href="#b-woocommerce"/></svg>WooCommerce</span></td><td class="c-prof">E-commerce</td><td class="c-php num">8.4</td><td class="c-cache"><span class="badge ok">attiva</span></td><td class="c-bk">3 h fa<small>prova riuscita</small></td><td class="c-st"><span class="badge ok">attivo</span></td></tr>
+              <tr class="stg"><td class="c-dom"><div class="dom"><a href="#">staging.negozio.esempio.it</a><span class="stg-tag">staging</span></div></td><td class="c-typ"><span class="typ"><svg class="brand wide"><use href="#b-woocommerce"/></svg>WooCommerce</span></td><td class="c-prof">E-commerce</td><td class="c-php num">8.4</td><td class="c-cache"><span class="badge ok">attiva</span></td><td class="c-bk dim">coperto dalla produzione</td><td class="c-st"><span class="badge ok">attivo</span></td></tr>
+              <tr><td class="c-dom"><div class="dom"><a href="#">blog.esempio.it</a></div></td><td class="c-typ"><span class="typ"><svg class="brand"><use href="#b-wordpress"/></svg>WordPress</span></td><td class="c-prof">Bilanciato</td><td class="c-php num">8.4</td><td class="c-cache"><span class="badge ok">attiva</span></td><td class="c-bk">3 h fa<small>prova riuscita</small></td><td class="c-st"><span class="badge ok">attivo</span></td></tr>
+              <tr class="stg"><td class="c-dom"><div class="dom"><a href="#">staging.blog.esempio.it</a><span class="stg-tag">staging</span></div></td><td class="c-typ"><span class="typ"><svg class="brand"><use href="#b-wordpress"/></svg>WordPress</span></td><td class="c-prof">Bilanciato</td><td class="c-php num">8.4</td><td class="c-cache"><span class="badge off">disattiva</span></td><td class="c-bk dim">coperto dalla produzione</td><td class="c-st"><span class="badge ok">attivo</span></td></tr>
+              <tr><td class="c-dom"><div class="dom"><a href="#">studio.esempio.it</a></div></td><td class="c-typ"><span class="typ"><svg class="brand"><use href="#b-laravel"/></svg>Laravel</span></td><td class="c-prof">Bilanciato</td><td class="c-php num">8.3</td><td class="c-cache"><span class="badge off">disattiva</span></td><td class="c-bk">3 h fa<small>prova riuscita</small></td><td class="c-st"><span class="badge ok">attivo</span></td></tr>
+              <tr class="bad"><td class="c-dom"><div class="dom"><a href="#">app.esempio.it</a></div><span class="err-msg">La creazione non è riuscita: il certificato non è stato emesso, il dominio non punta ancora a questo server.</span></td><td class="c-typ"><span class="typ"><svg class="ic"><use href="#i-network"/></svg>Reverse proxy</span></td><td class="c-prof dim">—</td><td class="c-php dim">—</td><td class="c-cache"><span class="badge off">disattiva</span></td><td class="c-bk dim">mai</td><td class="c-st"><span class="badge err">errore</span></td></tr>
+              <tr><td class="c-dom"><div class="dom"><a href="#">docs.esempio.it</a></div></td><td class="c-typ"><span class="typ"><svg class="ic"><use href="#i-file-code"/></svg>Statico</span></td><td class="c-prof">Massimo</td><td class="c-php dim">—</td><td class="c-cache"><span class="badge ok">attiva</span></td><td class="c-bk">3 h fa<small>prova riuscita</small></td><td class="c-st"><span class="badge ok">attivo</span></td></tr>
+            </tbody>
+          </table>
+          <p class="t-foot">7 siti · 4 in produzione, 2 staging, 1 in errore</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PANEL: SITE DETAIL ================= -->
+<section class="frame-wrap" id="f-detail" aria-label="Pannello, dettaglio del sito">
+  <div class="frame-cap"><h2>Pannello · Dettaglio del sito</h2><p>Panoramica di negozio.esempio.it</p></div>
+  <div class="frame app">
+    <aside class="p-side" data-nav="sites"></aside>
+    <div class="p-main">
+      <div class="p-top" data-top></div>
+      <div class="p-page">
+        <div class="s-head">
+          <a class="back" href="#f-sites"><svg class="ic"><use href="#i-chevron-right"/></svg>Siti</a>
+          <div class="s-title">
+            <div><h1>negozio.esempio.it</h1><p class="s-sub"><span class="typ" style="display:inline-flex;gap:6px;align-items:center"><svg class="brand" style="width:32px;height:19px"><use href="#b-woocommerce"/></svg>WooCommerce</span><span class="badge ok">attivo</span><span>produzione</span><span>1 staging</span></p></div>
+            <div class="acts" style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn" href="#"><svg class="ic"><use href="#i-external-link"/></svg>Apri sito</a><a class="btn btn-primary" href="#"><svg class="ic"><use href="#i-login"/></svg>Apri wp-admin</a></div>
+          </div>
+        </div>
+        <nav class="tabs" aria-label="Sezioni del sito"><a href="#" aria-current="page">Panoramica</a><a href="#">Cache</a><a href="#">Rilasci</a><a href="#">Backup</a><a href="#">Database</a><a href="#">File</a><a href="#">Log</a><a href="#">SFTP / SSH</a><a href="#">Sicurezza</a><a href="#">Altro</a></nav>
+        <div class="detail">
+          <div class="col">
+            <section class="panel" aria-labelledby="det-h">
+              <div class="panel-h"><h2 id="det-h">Dettagli</h2></div>
+              <dl class="kv">
+                <dt>Profilo prestazioni</dt><dd>E-commerce<small>bypass rigoroso di carrello e checkout</small></dd>
+                <dt>PHP</dt><dd class="num">8.4 · 4 worker</dd>
+                <dt>Utente di sistema</dt><dd class="mono">negozio</dd>
+                <dt>Certificato</dt><dd>Let's Encrypt<small>si rinnova da solo, scade tra 61 giorni</small></dd>
+                <dt>Database</dt><dd class="mono">negozio_wp</dd>
+              </dl>
+            </section>
+            <section class="panel" aria-labelledby="ve-h">
+              <div class="panel-h"><h2 id="ve-h">Velocity Engine</h2><span class="badge ok">cache attiva</span></div>
+              <div class="panel-b"><p>Cache di pagina con coalescing e stale-while-revalidate. Con WordPress le modifiche ai contenuti svuotano già le pagine giuste.</p></div>
+              <div class="panel-f"><button class="btn btn-sm" type="button"><svg class="ic"><use href="#i-purge"/></svg>Svuota la cache</button><a class="btn btn-sm btn-ghost" href="#">Politica di cache</a></div>
+            </section>
+          </div>
+          <div class="col">
+            <section class="panel" aria-labelledby="gu-h">
+              <div class="panel-h"><h2 id="gu-h">Ultimo rilascio · Performance Guard</h2><p>ieri alle 18:40 · tempo server</p></div>
+              <div class="guard-wrap"><table class="guard-t">
+                <thead><tr><th>Pagina</th><th class="r">Coppie</th><th class="r">Mediana</th><th class="r">Intervallo 95%</th><th>Verdetto</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">/</td><td class="r num">60</td><td class="r num">−0,6 ms</td><td class="r num">−1,9 … +0,7</td><td><span class="badge ok">OK</span></td></tr>
+                  <tr><td class="mono">/negozio/</td><td class="r num">60</td><td class="r num">+0,4 ms</td><td class="r num">−0,8 … +1,5</td><td><span class="badge ok">OK</span></td></tr>
+                  <tr><td class="mono">/prodotto/tazza/</td><td class="r num">60</td><td class="r num">+0,9 ms</td><td class="r num">−0,4 … +2,2</td><td><span class="badge ok">OK</span></td></tr>
+                </tbody>
+              </table></div>
+              <p class="verdict-ok"><svg class="ic"><use href="#i-check-circle"/></svg>Nessun peggioramento: si può pubblicare.</p>
+            </section>
+            <section class="panel" aria-labelledby="bk-h">
+              <div class="panel-h"><h2 id="bk-h">Backup</h2><p>Ogni giorno alle 03:00 · conserva 30 giorni</p></div>
+              <dl class="kv">
+                <dt>Ultimo backup</dt><dd>3 h fa<small>file + dump MariaDB coerente, 412 MB</small></dd>
+                <dt>Ultimo ripristino di prova</dt><dd style="color:var(--ok)">riuscito, 3 h fa</dd>
+                <dt>Tempo di ripristino</dt><dd><span class="num">1 min 40 s</span><small>misurato, non stimato</small></dd>
+              </dl>
+              <div class="panel-f"><button class="btn btn-sm" type="button"><svg class="ic"><use href="#i-backup"/></svg>Esegui backup ora</button><button class="btn btn-sm btn-ghost" type="button">Prova ripristino</button></div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PANEL: EMPTY ================= -->
+<section class="frame-wrap" id="f-empty" aria-label="Pannello, nessun sito">
+  <div class="frame-cap"><h2>Pannello · Stato vuoto</h2><p>Siti, subito dopo l'installazione</p></div>
+  <div class="frame app">
+    <aside class="p-side" data-nav="sites"></aside>
+    <div class="p-main">
+      <div class="p-top" data-top></div>
+      <div class="empty">
+        <div class="empty-main">
+          <svg class="ic-big" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sites"/></svg>
+          <h2>Ancora nessun sito</h2>
+          <p>Avvia un sito WordPress pronto per la produzione con un clic. Il server è già dimensionato: worker PHP, OPcache e buffer del database sono calcolati sulla macchina.</p>
+          <div class="acts"><a class="btn btn-primary" href="#f-wiz"><svg class="ic"><use href="#i-plus"/></svg>Crea il primo sito</a><a href="#f-docs">Guida: crea il primo sito</a></div>
+        </div>
+        <div class="will">
+          <h3>Ogni sito nuovo nasce con</h3>
+          <ul>
+            <li><svg class="ic"><use href="#i-check"/></svg><span>un utente di sistema isolato, con il suo PHP-FPM</span></li>
+            <li><svg class="ic"><use href="#i-check"/></svg><span>un database MariaDB e un utente solo per lui</span></li>
+            <li><svg class="ic"><use href="#i-check"/></svg><span>un certificato Let's Encrypt</span></li>
+            <li><svg class="ic"><use href="#i-check"/></svg><span>la cache di pagina, con il profilo consigliato per il tipo</span></li>
+            <li><svg class="ic"><use href="#i-check"/></svg><span>backup ogni notte con ripristino di prova</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PANEL: WIZARD ================= -->
+<section class="frame-wrap" id="f-wiz" aria-label="Pannello, nuovo sito passo 1">
+  <div class="frame-cap"><h2>Pannello · Nuovo sito, passo 1</h2><p>Tipo di servizio e profilo</p></div>
+  <div class="frame app">
+    <aside class="p-side" data-nav="sites"></aside>
+    <div class="p-main">
+      <div class="p-top" data-top></div>
+      <form class="p-page" onsubmit="return false">
+        <div class="p-head"><div><h1>Nuovo sito</h1><p>Ogni sito è isolato, in cache e con backup verificati.</p></div></div>
+        <ol class="wsteps" aria-label="Passi"><li aria-current="step"><span>Tipo</span></li><li><span>Dominio e database</span></li><li><span>Riepilogo</span></li></ol>
+        <div class="wiz">
+          <div style="display:grid;gap:28px">
+            <fieldset>
+              <legend>Che tipo di sito?</legend>
+              <p class="leg-hint">Il tipo decide la configurazione di nginx e PHP e se serve un database.</p>
+              <div class="types">
+                <label class="type"><input type="radio" name="t" value="wordpress" checked><svg class="brand" aria-hidden="true"><use href="#b-wordpress"/></svg><span><b>WordPress</b><small>blog, siti</small></span><span class="tick" aria-hidden="true"></span></label>
+                <label class="type"><input type="radio" name="t" value="woocommerce"><svg class="brand wide" aria-hidden="true"><use href="#b-woocommerce"/></svg><span><b>WooCommerce</b><small>negozio</small></span><span class="tick" aria-hidden="true"></span></label>
+                <label class="type"><input type="radio" name="t" value="php"><svg class="brand" aria-hidden="true"><use href="#b-php"/></svg><span><b>PHP</b><small>PHP semplice</small></span><span class="tick" aria-hidden="true"></span></label>
+                <label class="type"><input type="radio" name="t" value="laravel"><svg class="brand" aria-hidden="true"><use href="#b-laravel"/></svg><span><b>Laravel</b><small>framework</small></span><span class="tick" aria-hidden="true"></span></label>
+                <label class="type"><input type="radio" name="t" value="static"><svg class="ic" aria-hidden="true"><use href="#i-file-code"/></svg><span><b>Statico</b><small>HTML, build</small></span><span class="tick" aria-hidden="true"></span></label>
+                <label class="type"><input type="radio" name="t" value="proxy"><svg class="ic" aria-hidden="true"><use href="#i-network"/></svg><span><b>Reverse proxy</b><small>Node, Go…</small></span><span class="tick" aria-hidden="true"></span></label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Profilo prestazioni</legend>
+              <p class="leg-hint">Il profilo decide cosa non va mai in cache e per quanto. Si cambia anche dopo.</p>
+              <div class="profiles">
+                <label class="prof"><input type="radio" name="p" checked><span><b>Consigliato (Bilanciato)</b><small>il profilo giusto per un sito WordPress</small></span></label>
+                <label class="prof"><input type="radio" name="p"><span><b>Bilanciato</b><small>cache sicura per la maggior parte dei siti</small></span></label>
+                <label class="prof"><input type="radio" name="p"><span><b>E-commerce</b><small>bypass rigoroso di carrello e checkout</small></span></label>
+                <label class="prof"><input type="radio" name="p"><span><b>Massimo</b><small>cache aggressiva per siti editoriali</small></span></label>
+              </div>
+            </fieldset>
+          </div>
+          <aside class="will" aria-label="Cosa verrà creato">
+            <h2 class="will-h">WordPress creerà</h2>
+            <ul>
+              <li><svg class="ic"><use href="#i-check"/></svg><span>un utente di sistema isolato</span></li>
+              <li><svg class="ic"><use href="#i-check"/></svg><span>un database: un sito WordPress ha sempre un database</span></li>
+              <li><svg class="ic"><use href="#i-check"/></svg><span>certificato Let's Encrypt</span></li>
+              <li><svg class="ic"><use href="#i-check"/></svg><span>profilo Bilanciato</span></li>
+              <li><svg class="ic"><use href="#i-check"/></svg><span>backup ogni notte con ripristino di prova</span></li>
+            </ul>
+          </aside>
+        </div>
+        <div class="wiz-foot"><a class="btn btn-ghost" href="#f-sites">Annulla</a><div class="r"><button class="btn" type="button" disabled>Indietro</button><button class="btn btn-primary" type="button">Continua<svg class="ic"><use href="#i-arrow-right"/></svg></button></div></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+  function read(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+  /* ---- panel shell (sidebar + top bar), shared by every panel frame ---- */
+  var NAV = [['dashboard','Dashboard','dashboard'],['sites','Siti','sites'],['server','Server','server'],['services','Servizi','services'],['sep'],['security','Sicurezza','shield-check'],['firewall','Firewall','firewall'],['blocklist','Blocchi','x-circle'],['sep'],['audit','Registro attività','history'],['logs','Log','logs'],['users','Utenti','users'],['settings','Impostazioni','settings']];
+  var logo = '<svg aria-hidden="true"><use href="#logo"/></svg>cloudground';
+  document.querySelectorAll('.p-side').forEach(function (el) {
+    var cur = el.getAttribute('data-nav');
+    var h = '<a class="logo" href="#f-dash">' + logo + '</a><div class="srv"><b>srv-01</b><span>Ubuntu 26.04 · v0.2.0</span></div><ul class="p-nav">';
+    NAV.forEach(function (n) {
+      if (n[0] === 'sep') { h += '<li class="p-nav-sep" role="presentation"></li>'; return; }
+      h += '<li><a href="' + (n[0] === 'dashboard' ? '#f-dash' : n[0] === 'sites' ? '#f-sites' : '#') + '"' + (n[0] === cur ? ' aria-current="page"' : '') + '><svg class="ic"><use href="#i-' + n[2] + '"/></svg>' + n[1] + '</a></li>';
+    });
+    h += '</ul><div class="p-user"><b>admin@esempio.it</b><span>Amministratore</span></div>';
+    el.innerHTML = h; el.setAttribute('aria-label', 'Navigazione del pannello');
+  });
+  document.querySelectorAll('[data-top]').forEach(function (el) {
+    el.innerHTML = '<button class="icon-btn p-burger" type="button" aria-label="Apri la navigazione"><svg class="ic"><use href="#i-menu"/></svg></button>' +
+      '<a class="logo p-mlogo" href="#f-dash">' + logo + '</a>' +
+      '<label class="field"><svg class="ic"><use href="#i-search"/></svg><span class="vh">Cerca</span><input type="search" placeholder="Cerca…"><kbd>⌘K</kbd></label>' +
+      '<div class="tools"><button class="icon-btn" type="button" aria-label="Avvisi, uno nuovo"><svg class="ic"><use href="#i-bell"/></svg><span class="dot"></span></button><button class="icon-btn" type="button" aria-label="Cambia tema" data-flip><svg class="ic"><use href="#i-moon"/></svg></button><button class="icon-btn" type="button" aria-label="Aiuto"><svg class="ic"><use href="#i-help"/></svg></button></div>';
+  });
+
+  /* ---- theme ---- */
+  function setTheme(v) {
+    if (v === 'light' || v === 'dark') root.setAttribute('data-theme', v); else root.removeAttribute('data-theme');
+    document.querySelectorAll('#themeSeg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.themeSet === (v || 'auto'))); });
+    store('cg-theme', v === 'auto' ? null : v);
+  }
+  document.querySelectorAll('#themeSeg button').forEach(function (b) { b.addEventListener('click', function () { setTheme(b.dataset.themeSet); }); });
+  document.addEventListener('click', function (e) {
+    var f = e.target.closest('[data-flip]'); if (!f) return;
+    var dark = root.getAttribute('data-theme') === 'dark' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+    setTheme(dark ? 'light' : 'dark');
+  });
+  var q = new URLSearchParams(location.search);
+  setTheme(q.get('theme') || read('cg-theme') || 'auto');
+
+  /* ---- font pairing ---- */
+  function setFont(v) {
+    root.setAttribute('data-font', v);
+    document.querySelectorAll('[data-font]').forEach(function (b) { if (b !== root && b.tagName === 'BUTTON') b.setAttribute('aria-pressed', String(b.dataset.font === v)); });
+    store('cg-font', v);
+  }
+  document.querySelectorAll('button[data-font]').forEach(function (b) { b.addEventListener('click', function () { setFont(b.dataset.font); }); });
+  setFont(q.get('font') || read('cg-font') || 'plex');
+
+  /* ---- copy ---- */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-copy]'); if (!b) return;
+    var label = b.querySelector('span'), text = b.dataset.copy;
+    function done(ok) { if (!label) return; label.textContent = ok ? 'Copiato' : 'Seleziona e copia'; setTimeout(function () { label.textContent = 'Copia'; }, 2000); }
+    try { navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); }); } catch (err) { done(false); }
+  });
+
+  /* ---- results: con / senza cache, figures re-set in fixed slots ---- */
+  var res = document.getElementById('misure');
+  document.querySelectorAll('#cacheSeg button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var m = b.dataset.mode;
+      document.querySelectorAll('#cacheSeg button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      res.querySelectorAll('[data-con]').forEach(function (el) { el.textContent = el.dataset[m]; });
+      document.getElementById('stamp').classList.toggle('ref', m === 'senza');
+    });
+  });
+
+  /* ---- palette + contrast, read from the real tokens ---- */
+  var TOK = [['paper','fondo pagina'],['paper-2','secondo livello'],['paper-3','hover, codice'],['rule','filetto'],['rule-strong','bordo controlli'],['ink','titoli'],['text','testo'],['muted','note, secondario'],['blue','link, protocollo'],['blue-tint','selezione'],['orange','azione, timbro'],['stamp','testo arancio'],['ok','riuscito'],['warn','attenzione'],['err','errore'],['code-bg','comando']];
+  var PAIRS = [
+    ['ink','paper','Titoli',4.5],['ink','paper-2','Titoli su striscia',4.5],['text','paper','Testo',4.5],['text','paper-2','Testo nella barra laterale',4.5],['text','paper-3','Testo su hover',4.5],
+    ['muted','paper','Note di metodo',4.5],['muted','paper-2','Note su striscia',4.5],['muted','paper-3','Note su hover',4.5],
+    ['blue','paper','Link',4.5],['blue','paper-2','Link su striscia',4.5],['ink','blue-tint','Testo su selezione',4.5],['blue','blue-tint','Link su selezione',4.5],
+    ['on-orange','orange','Pulsante principale',4.5],['stamp','paper','Timbro di esito',4.5],
+    ['ok','paper','Stato riuscito',4.5],['ok','ok-tint','Riuscito su fondo',4.5],['warn','paper','Attenzione',4.5],['warn','warn-tint','Attenzione su fondo',4.5],['err','paper','Errore',4.5],['err','err-tint','Riga in errore',4.5],
+    ['code-fg','code-bg','Comando',4.5],['code-muted','code-bg','Prompt del comando',4.5],
+    ['rule-strong','paper','Bordo di campi e pulsanti',3],['orange','paper','Bordo del timbro, pulsante',3],['blue','paper','Anello di focus',3],['paper','ink','Voce attiva del menu',4.5]
+  ];
+  function hex(c) { c = c.trim(); if (c[0] === '#') { if (c.length === 4) c = '#' + c[1]+c[1]+c[2]+c[2]+c[3]+c[3]; return [parseInt(c.substr(1,2),16),parseInt(c.substr(3,2),16),parseInt(c.substr(5,2),16)]; } var m = c.match(/\d+/g); return m ? m.slice(0,3).map(Number) : [0,0,0]; }
+  function lum(rgb) { var a = rgb.map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126*a[0] + 0.7152*a[1] + 0.0722*a[2]; }
+  function ratio(a, b) { var x = lum(hex(a)), y = lum(hex(b)); return (Math.max(x,y) + 0.05) / (Math.min(x,y) + 0.05); }
+  var cs = { light: getComputedStyle(document.getElementById('probe-light')), dark: getComputedStyle(document.getElementById('probe-dark')) };
+  function v(t, n) { return cs[t].getPropertyValue('--' + n).trim(); }
+  document.querySelectorAll('[data-swatches]').forEach(function (el) {
+    var t = el.closest('[data-theme]').getAttribute('data-theme');
+    el.innerHTML = TOK.map(function (k) { return '<div class="sw"><i style="background:' + v(t,k[0]) + '"></i><b>--' + k[0] + '</b><span>' + v(t,k[0]).toUpperCase() + ' · ' + k[1] + '</span></div>'; }).join('');
+  });
+  function cell(t, p) { var r = ratio(v(t,p[0]), v(t,p[1])); var ok = r >= p[3]; return '<td class="r"><span class="num">' + r.toFixed(2).replace('.', ',') + ':1</span> <span class="' + (ok ? 'pass' : 'fail') + '">' + (ok ? (r >= 7 && p[3] === 4.5 ? 'AAA' : 'AA') : 'no') + '</span></td>'; }
+  document.querySelector('#ctable tbody').innerHTML = PAIRS.map(function (p) {
+    return '<tr><td><span class="chip"><i style="background:' + v('light',p[0]) + '"></i>--' + p[0] + '</span> su <span class="chip"><i style="background:' + v('light',p[1]) + '"></i>--' + p[1] + '</span></td><td>' + p[2] + '</td><td>' + String(p[3]).replace('.', ',') + ':1</td>' + cell('light', p) + cell('dark', p) + '</tr>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

@@ -59,8 +59,8 @@ last_verified: unverified               # YYYY-MM-DD of the last check on a real
 ---
 ```
 
-Optional keys used by the theme: `slug`, `sidebar_position`, `heading`, `heading_accent` (the serif
-accent word of the big title), `meta.time`, `meta.level`. The header strip shows the type, the
+Optional keys used by the theme: `slug`, `sidebar_position`, `heading`, `heading_accent` (the last
+words of the big title), `meta.time`, `meta.level`. The header strip shows the type, the
 version, the prerequisites and the verification date from the keys above.
 
 The body:

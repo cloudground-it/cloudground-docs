@@ -9,26 +9,27 @@ const DOCS_REPO = 'https://github.com/cloudground-it/cloudground-docs';
 // Sections that have their own sidebar and navbar entry, kept out of the guide.
 const OWN_SIDEBAR = ['cli', 'api'];
 
-// Code is always set on ink: one theme for light and dark.
+// Code is always set on ink (--cg-code-bg): one theme for light and dark.
+// Every colour reaches 4.5:1 on #15161A and on #0B0C0E.
 const inkPrism: PrismTheme = {
-  plain: {color: '#F2F1EC', backgroundColor: '#0F0F12'},
+  plain: {color: '#F2F0EA', backgroundColor: '#15161A'},
   styles: [
-    {types: ['comment', 'prolog', 'doctype', 'cdata'], style: {color: '#8A8A92'}},
-    {types: ['punctuation', 'operator'], style: {color: '#B7B6AE'}},
-    {types: ['string', 'char', 'attr-value', 'url'], style: {color: '#A9BBFF'}},
-    {types: ['number', 'boolean', 'constant', 'symbol'], style: {color: '#F0A27E'}},
-    {types: ['keyword', 'builtin', 'important', 'atrule'], style: {color: '#E0612B'}},
-    {types: ['function', 'class-name', 'selector', 'tag'], style: {color: '#F2F1EC'}},
-    {types: ['variable', 'property', 'attr-name', 'parameter'], style: {color: '#D6E0FF'}},
-    {types: ['deleted'], style: {color: '#E0612B'}},
-    {types: ['inserted'], style: {color: '#A9BBFF'}},
+    {types: ['comment', 'prolog', 'doctype', 'cdata'], style: {color: '#A6A59E'}},
+    {types: ['punctuation', 'operator'], style: {color: '#C9C7BF'}},
+    {types: ['string', 'char', 'attr-value', 'url'], style: {color: '#B4C3FF'}},
+    {types: ['number', 'boolean', 'constant', 'symbol'], style: {color: '#F5B08A'}},
+    {types: ['keyword', 'builtin', 'important', 'atrule'], style: {color: '#93A8FF'}},
+    {types: ['function', 'class-name', 'selector', 'tag'], style: {color: '#F2F0EA'}},
+    {types: ['variable', 'property', 'attr-name', 'parameter'], style: {color: '#D8DFFF'}},
+    {types: ['deleted'], style: {color: '#FF8073'}},
+    {types: ['inserted'], style: {color: '#63CF8A'}},
   ],
 };
 
 const config: Config = {
   title: 'CloudGround',
   tagline: 'Hosting che si misura',
-  favicon: 'img/logo.svg',
+  favicon: 'img/favicon.svg',
 
   url: 'https://cloudground.it',
   baseUrl: '/',
@@ -42,6 +43,11 @@ const config: Config = {
   markdown: {
     mermaid: true,
     hooks: {onBrokenMarkdownLinks: 'throw'},
+  },
+
+  // The date the site was built: the "Data" of the home's test report.
+  customFields: {
+    buildDate: new Date().toISOString().slice(0, 10),
   },
 
   i18n: {
@@ -58,7 +64,7 @@ const config: Config = {
       tagName: 'link',
       attributes: {
         rel: 'preload',
-        href: '/fonts/Archivo-Variable.woff2',
+        href: '/fonts/IBMPlexSans-Latin.woff2',
         as: 'font',
         type: 'font/woff2',
         crossorigin: 'anonymous',
@@ -143,12 +149,12 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // The card social networks show for every page: 1200×630, made from the
-    // mark and the wordmark (scripts/og-image.html).
+    // The card social networks show for every page: 1200×630, the lockup and
+    // the line "Hosting che si misura" (brand files, static/img/og.png).
     image: 'img/og.png',
     metadata: [
-      {name: 'theme-color', content: '#f2f1ec', media: '(prefers-color-scheme: light)'},
-      {name: 'theme-color', content: '#0f0f12', media: '(prefers-color-scheme: dark)'},
+      {name: 'theme-color', content: '#fbfaf6', media: '(prefers-color-scheme: light)'},
+      {name: 'theme-color', content: '#131418', media: '(prefers-color-scheme: dark)'},
       {name: 'referrer', content: 'strict-origin-when-cross-origin'},
     ],
     colorMode: {
@@ -160,8 +166,9 @@ const config: Config = {
       sidebar: {hideable: false, autoCollapseCategories: false},
     },
     navbar: {
-      title: 'cloudground',
-      logo: {alt: 'CloudGround', src: 'img/logo.svg'},
+      // The lockup (mark and wordmark), shown at the top of the mobile drawer.
+      // The bar itself draws the mark inline (src/theme/Navbar/Content).
+      logo: {alt: 'CloudGround', src: 'img/logo.svg', srcDark: 'img/logo-dark.svg', width: 128, height: 25},
       items: [
         {type: 'docSidebar', sidebarId: 'guide', position: 'left', label: 'Guida'},
         {type: 'docSidebar', sidebarId: 'cli', position: 'left', label: 'CLI'},
@@ -185,26 +192,26 @@ const config: Config = {
     mermaid: {
       theme: {light: 'base', dark: 'base'},
       options: {
-        fontFamily: 'Archivo, system-ui, sans-serif',
+        fontFamily: "'IBM Plex Sans', system-ui, sans-serif",
         themeVariables: {
-          fontFamily: 'Archivo, system-ui, sans-serif',
+          fontFamily: "'IBM Plex Sans', system-ui, sans-serif",
           fontSize: '14px',
-          primaryColor: '#e9e7e0',
-          primaryTextColor: '#0f0f12',
-          primaryBorderColor: '#0f0f12',
-          secondaryColor: '#f2f1ec',
-          tertiaryColor: '#f2f1ec',
-          lineColor: '#55555d',
-          textColor: '#0f0f12',
-          mainBkg: '#e9e7e0',
-          clusterBkg: '#f2f1ec',
-          clusterBorder: '#d6d4cc',
-          edgeLabelBackground: '#f2f1ec',
-          noteBkgColor: '#f2f1ec',
-          noteBorderColor: '#2f5bff',
-          actorBkg: '#e9e7e0',
-          actorBorder: '#0f0f12',
-          signalColor: '#0f0f12',
+          primaryColor: '#f3f1ea',
+          primaryTextColor: '#15161a',
+          primaryBorderColor: '#86837a',
+          secondaryColor: '#fbfaf6',
+          tertiaryColor: '#fbfaf6',
+          lineColor: '#5b5d64',
+          textColor: '#15161a',
+          mainBkg: '#f3f1ea',
+          clusterBkg: '#fbfaf6',
+          clusterBorder: '#d6d3c8',
+          edgeLabelBackground: '#fbfaf6',
+          noteBkgColor: '#fbfaf6',
+          noteBorderColor: '#2343c2',
+          actorBkg: '#f3f1ea',
+          actorBorder: '#86837a',
+          signalColor: '#15161a',
         },
       },
     },

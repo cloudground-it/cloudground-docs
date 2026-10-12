@@ -19,7 +19,7 @@ function EditLink(): ReactNode {
     return null;
   }
   return (
-    <a className="hud cg-editlink cg-ghlink" href={metadata.editUrl} target="_blank" rel="noopener noreferrer">
+    <a className="cg-editlink" href={metadata.editUrl} target="_blank" rel="noopener noreferrer">
       <Icon name="edit" />
       <Translate id="cg.editThisPage">Modifica questa pagina</Translate>
     </a>
@@ -31,7 +31,7 @@ function DesktopTOC(): ReactNode {
   return (
     <aside className="cg-toc" aria-labelledby="cg-toc-title">
       <div className="cg-toc__sticky">
-        <span id="cg-toc-title" className="hud cg-toc__title">
+        <span id="cg-toc-title" className="cg-toc__title">
           <Translate id="cg.toc.title">In questa pagina</Translate>
         </span>
         <TOCItems

@@ -3,9 +3,23 @@ import clsx from 'clsx';
 import {ThemeClassNames, processAdmonitionProps} from '@docusaurus/theme-common';
 import {translate} from '@docusaurus/Translate';
 import type {Props} from '@theme/Admonition';
+import Icon, {type IconName} from '@site/src/components/Icon';
 
-// danger / warning / caution: ink bar, orange label. note / info / tip: blue bar.
-const INK = new Set(['danger', 'warning', 'caution']);
+// A full 1px frame on a tint, an icon and the title: danger in the error
+// colour, warning / caution in amber, note / info / tip in blue.
+function tone(type: string): {kind: 'err' | 'warn' | 'info'; icon: IconName} {
+  switch (type) {
+    case 'danger':
+      return {kind: 'err', icon: 'alert-circle'};
+    case 'warning':
+    case 'caution':
+      return {kind: 'warn', icon: 'alert-triangle'};
+    case 'tip':
+      return {kind: 'info', icon: 'check-circle'};
+    default:
+      return {kind: 'info', icon: 'info'};
+  }
+}
 
 function typeLabel(type: string): string {
   switch (type) {
@@ -25,6 +39,7 @@ function typeLabel(type: string): string {
 
 export default function Admonition(unprocessedProps: Props): ReactNode {
   const {type, title, children, className, id} = processAdmonitionProps(unprocessedProps);
+  const {kind, icon} = tone(type);
   return (
     <aside
       id={id}
@@ -32,13 +47,14 @@ export default function Admonition(unprocessedProps: Props): ReactNode {
         ThemeClassNames.common.admonition,
         ThemeClassNames.common.admonitionType(type),
         'cg-adm',
-        INK.has(type) ? 'cg-adm--ink' : 'cg-adm--blue',
+        `cg-adm--${kind}`,
         className,
       )}>
-      <div className="cg-adm__bar">
-        <span className="hud cg-adm__type">{typeLabel(type)}</span>
-        {title && <span className="hud cg-adm__title">{title}</span>}
-      </div>
+      <p className="cg-adm__head">
+        <Icon name={icon} size={20} />
+        <span className="cg-adm__type">{typeLabel(type)}</span>
+        {title && <span className="cg-adm__title">{title}</span>}
+      </p>
       {children && <div className="cg-adm__body">{children}</div>}
     </aside>
   );
