@@ -51,9 +51,11 @@ export default function DocItemLayout({children}: Props): ReactNode {
   const {metadata, frontMatter, toc} = useDoc();
   const windowSize = useWindowSize();
   const canRenderTOC = !frontMatter.hide_table_of_contents && toc.length > 0;
+  // The page type (tutorial, how-to…) lets the CSS number a tutorial's steps.
+  const {type} = frontMatter as {type?: unknown};
   const desktopTOC = canRenderTOC && (windowSize === 'desktop' || windowSize === 'ssr');
   return (
-    <div className="cg-doc">
+    <div className={typeof type === 'string' ? `cg-doc cg-doc--${type}` : 'cg-doc'}>
       <div className="cg-doc__main">
         <ContentVisibility metadata={metadata} />
         <DocVersionBanner />

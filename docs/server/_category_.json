@@ -1,5 +1,6 @@
 {
   "label": "Guide · Server",
   "position": 5,
-  "collapsible": false
+  "collapsible": true,
+  "collapsed": true
 }
