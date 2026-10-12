@@ -301,7 +301,7 @@
     "description": "The ARIA label for close button of mobile sidebar"
   },
   "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
-    "message": "Back to main menu",
+    "message": "Main menu",
     "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
   },
   "theme.docs.sidebar.expandButtonTitle": {
@@ -484,8 +484,11 @@
   "home.measures.scenario": {
     "message": "Scenario"
   },
+  "home.measures.unit": {
+    "message": "req/s"
+  },
   "home.measures.rps": {
-    "message": "Requests / s"
+    "message": "Requests per second"
   },
   "home.measures.data": {
     "message": "The data"
@@ -831,5 +834,11 @@
   },
   "cg.footer.features": {
     "message": "Features"
+  },
+  "cg.colorMode.dark": {
+    "message": "Dark theme"
+  },
+  "cg.drawer.language": {
+    "message": "Language"
   }
 }
