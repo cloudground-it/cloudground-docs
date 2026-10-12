@@ -111,6 +111,9 @@ const config: Config = {
     ],
   ],
 
+  // Cross-tab colour-mode sync without the echo of issue #12.
+  clientModules: ['./src/clientModules/colorModeSync.ts'],
+
   plugins: [
     // The search results draw their icons from a module of HTML strings:
     // swap it for ours (src/components/Icon/searchHitIcons.ts).
