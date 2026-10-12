@@ -1,5 +1,6 @@
 {
   "label": "Riferimento",
   "position": 6,
-  "collapsible": false
+  "collapsible": true,
+  "collapsed": true
 }

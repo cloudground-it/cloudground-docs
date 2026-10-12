@@ -2,14 +2,13 @@ import React, {type ReactNode} from 'react';
 import Link from '@docusaurus/Link';
 import {useDoc, useSidebarBreadcrumbs} from '@docusaurus/plugin-content-docs/client';
 import {translate} from '@docusaurus/Translate';
-import Icon from '@site/src/components/Icon';
 
 /**
  * Front matter read by the page header, besides title and description
  * (the full template is in STANDARD.md §2):
  *
  *   heading: Installa            # big title; defaults to `title`
- *   heading_accent: CloudGround. # the title's last words (same face)
+ *   heading_accent: CloudGround. # the title's last words, in italic blue
  *   type: how-to                 # tutorial | how-to | reference | explanation | index
  *   prerequisites: [...]         # shown as "Serve"
  *   version: unreleased
@@ -28,7 +27,7 @@ type HeaderFrontMatter = {
   meta?: {time?: string; level?: string; requires?: string};
 };
 
-/** Documentazione › group › page, from the sidebar the page belongs to. */
+/** Documentazione / group / page, from the sidebar the page belongs to. */
 function Crumbs(): ReactNode {
   const crumbs = useSidebarBreadcrumbs() ?? [];
   const {metadata} = useDoc();
@@ -41,13 +40,13 @@ function Crumbs(): ReactNode {
         </li>
         {trail.slice(0, -1).map((item, i) => (
           <li key={i}>
-            <Icon name="chevron-right" size={14} />
+            <span className="cg-crumbs__sep" aria-hidden="true">/</span>
             {item.href ? <Link to={item.href}>{item.label}</Link> : <span>{item.label}</span>}
           </li>
         ))}
         {metadata.permalink !== '/docs' && trail.length > 0 && (
           <li aria-current="page">
-            <Icon name="chevron-right" size={14} />
+            <span className="cg-crumbs__sep" aria-hidden="true">/</span>
             <span>{trail[trail.length - 1]!.label}</span>
           </li>
         )}
@@ -65,7 +64,12 @@ export function DocHeader(): ReactNode {
       <Crumbs />
       <h1 className="cg-pagehead__title">
         {heading}
-        {fm.heading_accent ? ` ${fm.heading_accent}` : ''}
+        {fm.heading_accent && (
+          <>
+            {' '}
+            <span className="cg-pagehead__accent">{fm.heading_accent}</span>
+          </>
+        )}
       </h1>
       {metadata.description && <p className="cg-pagehead__lead">{metadata.description}</p>}
     </header>
@@ -98,7 +102,7 @@ export function DocMetaStrip(): ReactNode {
   const unverified = !lv || lv === 'unverified';
   const requires = fm.prerequisites?.length ? fm.prerequisites.join(' · ') : meta.requires;
   // The short facts on one ruled line, what the page needs on its own below.
-  const cells: [string, string | undefined, ('warn' | 'wide')?][] = [
+  const cells: [string, string | undefined, ('warn' | 'ok' | 'wide')?][] = [
     [translate({id: 'cg.meta.type', message: 'Tipo'}), typeLabel(fm.type)],
     [translate({id: 'cg.meta.time', message: 'Tempo'}), meta.time],
     [translate({id: 'cg.meta.level', message: 'Livello'}), meta.level],
@@ -106,7 +110,7 @@ export function DocMetaStrip(): ReactNode {
     [
       translate({id: 'cg.meta.verified', message: 'Ultima verifica'}),
       unverified ? translate({id: 'cg.meta.unverified', message: 'Non verificata'}) : lv,
-      unverified ? 'warn' : undefined,
+      unverified ? 'warn' : 'ok',
     ],
     [translate({id: 'cg.meta.requires', message: 'Serve'}), requires, 'wide'],
   ];
@@ -118,6 +122,8 @@ export function DocMetaStrip(): ReactNode {
           <div
             key={label}
             className={`cg-metastrip__cell${flag === 'warn' ? ' cg-metastrip__cell--unverified' : ''}${
+              flag === 'ok' ? ' cg-metastrip__cell--verified' : ''
+            }${
               flag === 'wide' ? ' cg-metastrip__cell--wide' : ''
             }`}>
             <dt>{label}</dt>

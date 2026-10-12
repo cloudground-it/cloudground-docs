@@ -1,5 +1,6 @@
 {
   "label": "Guide · Accesso e sicurezza",
   "position": 4,
-  "collapsible": false
+  "collapsible": true,
+  "collapsed": true
 }

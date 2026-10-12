@@ -1,5 +1,6 @@
 {
   "label": "Guide · Siti",
   "position": 2,
-  "collapsible": false
+  "collapsible": true,
+  "collapsed": true
 }
