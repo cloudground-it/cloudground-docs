@@ -702,6 +702,11 @@ html.cg-home {
 .navbar-sidebar__brand .navbar__brand {
   color: var(--cg-ink);
 }
+/* The lockup already carries the wordmark; hide the site title Docusaurus
+   adds next to the logo, which showed the name twice. */
+.navbar-sidebar__brand .navbar__title {
+  display: none;
+}
 .navbar-sidebar__brand .navbar__logo {
   height: 25px;
   margin-right: 0;
