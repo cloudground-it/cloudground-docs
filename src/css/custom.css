@@ -347,12 +347,9 @@ button {
   border-bottom: 1px solid var(--cg-rule);
   box-shadow: none;
 }
-/* On the home the navbar scrolls away with the page; the docs keep it fixed. */
-html.cg-home .navbar--fixed-top {
+/* The navbar scrolls away with the page, everywhere and at every width. */
+.navbar--fixed-top {
   position: relative;
-}
-html.cg-home {
-  scroll-padding-top: 0;
 }
 .cg-nav {
   width: 100%;
@@ -385,21 +382,33 @@ html.cg-home {
   color: var(--cg-ink);
   text-decoration: none;
 }
-.navbar__toggle {
-  margin: 0 -4px 0 -8px;
+/* The right end: language, GitHub, colour mode and, on small screens, the
+   menu button. The drawer's top row reuses it for colour mode and close. */
+.cg-nav__end {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+.navbar__toggle,
+.navbar-sidebar__close {
   width: 44px;
   height: 44px;
   align-items: center;
   justify-content: center;
+  margin: 0;
+  padding: 0;
   color: var(--cg-ink);
   border-radius: 3px;
 }
-.navbar__toggle:hover {
+.navbar__toggle:hover,
+.navbar-sidebar__close:hover {
   background: var(--cg-paper-3);
 }
 @media (max-width: 996px) {
   .navbar__toggle {
     display: inline-flex;
+    margin-right: -10px;
   }
 }
 
@@ -577,15 +586,36 @@ html.cg-home {
   text-underline-offset: 0.2em;
 }
 
-/* Colour mode */
-.cg-nav__mode button {
+/* Colour mode: two states. The icon is the mode the button switches to,
+   chosen from html[data-theme] so it is right before hydration. */
+.cg-mode {
+  display: inline-grid;
+  place-items: center;
   width: 36px;
   height: 36px;
   border-radius: 3px;
   color: var(--cg-text);
+  cursor: pointer;
 }
-.cg-nav__mode button:hover {
+.cg-mode:hover {
   background: var(--cg-paper-3);
+  color: var(--cg-ink);
+}
+.cg-mode .cg-icon {
+  grid-area: 1 / 1;
+}
+.cg-mode__sun,
+[data-theme='dark'] .cg-mode__moon {
+  display: none;
+}
+[data-theme='dark'] .cg-mode__sun {
+  display: block;
+}
+@media (max-width: 996px) {
+  .cg-mode {
+    width: 44px;
+    height: 44px;
+  }
 }
 
 /* Language selector */
@@ -668,9 +698,20 @@ html.cg-home {
     gap: 8px 12px;
     padding: 8px 16px;
   }
+  .cg-nav__row,
+  .cg-nav--docs .cg-nav__row {
+    padding: 8px 16px;
+    justify-content: space-between;
+  }
+  .cg-nav__name,
   .cg-nav__links,
   .cg-nav__tools {
     display: none;
+  }
+  /* The mark alone, with a 44px target. */
+  .cg-nav__brand {
+    min-width: 44px;
+    min-height: 44px;
   }
   .cg-nav__search {
     display: none;
@@ -678,6 +719,7 @@ html.cg-home {
   /* Inside the docs the search keeps a row of its own. */
   .cg-nav--docs .cg-nav__search {
     display: flex;
+    order: 10;
     flex: 1 0 100%;
     width: 100%;
     margin: 0 0 4px;
@@ -687,84 +729,202 @@ html.cg-home {
   }
 }
 
-/* Mobile drawer */
+/* Mobile drawer: a full-height panel from the right (the whole screen on a
+   phone). Docusaurus keeps the state and the two panels; we draw them. */
+:root {
+  --ifm-navbar-sidebar-width: min(100vw, 420px);
+}
 .navbar-sidebar {
+  left: auto;
+  right: 0;
+  display: flex;
+  flex-direction: column;
   background: var(--cg-paper);
   box-shadow: none;
-  border-right: 1px solid var(--cg-rule);
+  transform: translate3d(100%, 0, 0);
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+/* Opening, the panel is visible at once (so the close button can take
+   focus); closing, it stays visible while it slides out. */
+.navbar-sidebar--show .navbar-sidebar {
+  transition-property: opacity, transform;
+}
+.navbar-sidebar__backdrop {
+  background: rgba(21, 22, 26, 0.48);
+}
+@media (min-width: 421px) {
+  .navbar-sidebar {
+    border-left: 1px solid var(--cg-rule);
+  }
 }
 .navbar-sidebar__brand {
-  height: var(--cg-nav-h);
-  padding: 0 16px;
+  flex: 0 0 auto;
+  justify-content: space-between;
+  height: auto;
+  min-height: var(--cg-nav-h);
+  padding: 8px 16px;
   border-bottom: 1px solid var(--cg-rule);
   box-shadow: none;
 }
-.navbar-sidebar__brand .navbar__brand {
+.navbar-sidebar__brand .navbar-sidebar__close {
+  display: inline-flex;
+  margin-right: -10px;
+}
+.navbar-sidebar__items {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+  transition-duration: 200ms;
+}
+.navbar-sidebar__item {
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Primary: the sections as large ruled rows, the footer row at the bottom. */
+.cg-drawer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+.cg-drawer__rows {
+  margin: 0;
+  padding: 0;
+}
+.cg-drawer__rows > .menu__list-item {
+  margin: 0;
+  border-bottom: 1px solid var(--cg-rule);
+}
+.navbar-sidebar .cg-drawer__rows .menu__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 0 16px;
+  border-radius: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--cg-ink);
+  text-decoration: none;
+  background: transparent;
 }
-/* The lockup already carries the wordmark; hide the site title Docusaurus
-   adds next to the logo, which showed the name twice. */
-.navbar-sidebar__brand .navbar__title {
-  display: none;
+.navbar-sidebar .cg-drawer__rows .menu__link:hover {
+  background: var(--cg-paper-2);
 }
-.navbar-sidebar__brand .navbar__logo {
-  height: 25px;
-  margin-right: 0;
-}
-.navbar-sidebar__brand .navbar__logo img {
-  height: 25px;
-  width: auto;
-}
-.navbar-sidebar__close {
-  width: 40px;
-  height: 40px;
-  display: inline-grid;
-  place-items: center;
-  border-radius: 3px;
-  margin-left: 4px;
-}
-.navbar-sidebar__close:hover {
-  background: var(--cg-paper-3);
-}
-.navbar-sidebar__items .menu {
-  padding: 12px;
+.navbar-sidebar .cg-drawer__rows .menu__link--active {
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--cg-blue);
 }
 .navbar-sidebar .menu__link svg:not(.cg-icon--github) {
   display: none;
 }
-.navbar-sidebar .menu__link:has(> .cg-icon--github) {
-  justify-content: flex-start;
-  gap: 10px;
+.navbar-sidebar .cg-drawer__rows .cg-icon--github {
+  width: 20px;
+  height: 20px;
 }
+.cg-drawer__foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  min-height: 60px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--cg-rule);
+  background: var(--cg-paper-2);
+  font-size: 0.9375rem;
+}
+.cg-drawer__footicon {
+  flex: 0 0 auto;
+  color: var(--cg-muted);
+}
+.cg-drawer__locales {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cg-drawer__locale {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: 3px;
+  color: var(--cg-text);
+  text-decoration: none;
+}
+a.cg-drawer__locale:hover {
+  background: var(--cg-paper-3);
+  color: var(--cg-ink);
+  text-decoration: none;
+}
+.cg-drawer__locale--current {
+  color: var(--cg-ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--cg-blue);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35em;
+}
+.cg-drawer__version {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font: 400 0.875rem var(--cg-font-mono);
+  color: var(--cg-muted);
+  text-decoration: none;
+}
+.cg-drawer__version:hover {
+  color: var(--cg-ink);
+}
+
+/* Secondary (inside the docs): the back row, then the doc index drawn like
+   the desktop sidebar. */
 .navbar-sidebar__back {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--cg-text);
+  position: static;
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--cg-rule);
+  border-radius: 0;
   background: var(--cg-paper-2);
-  border-radius: 3px;
-  margin: 0 0 12px;
-  padding: 10px 12px;
+  color: var(--cg-ink);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-align: left;
+}
+.navbar-sidebar__back:hover {
+  background: var(--cg-paper-3);
 }
 .navbar-sidebar__back::before {
   content: '';
   flex: 0 0 auto;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   background: currentColor;
-  -webkit-mask: var(--cg-icon-arrow-left) center / 14px no-repeat;
-  mask: var(--cg-icon-arrow-left) center / 14px no-repeat;
+  -webkit-mask: var(--cg-icon-arrow-left) center / 16px no-repeat;
+  mask: var(--cg-icon-arrow-left) center / 16px no-repeat;
 }
-.navbar-sidebar .cg-locale.menu__link svg {
-  display: none;
+.navbar-sidebar .theme-doc-sidebar-menu {
+  margin: 0;
+  padding: 8px 0 32px;
 }
-.navbar-sidebar .menu__list-item-collapsible:has(> .cg-locale) {
-  border-top: 1px solid var(--cg-rule);
-  border-radius: 0;
-  margin-top: 8px;
-  padding-top: 8px;
+.navbar-sidebar .theme-doc-sidebar-menu .menu__link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+.navbar-sidebar .theme-doc-sidebar-menu .menu__caret {
+  min-width: 44px;
 }
 
 /* ---------- Docs frame: index | page | "In questa pagina" ---------- */
@@ -802,8 +962,8 @@ html.cg-home {
   }
   .cg-sidebar__viewport {
     position: sticky;
-    top: var(--cg-nav-h);
-    max-height: calc(100vh - var(--cg-nav-h));
+    top: 0;
+    max-height: 100vh;
     overflow-y: auto;
     scrollbar-width: thin;
   }
@@ -1063,7 +1223,7 @@ html.cg-home {
   color: var(--cg-ink);
   font-weight: 600;
   letter-spacing: -0.01em;
-  scroll-margin-top: calc(var(--cg-nav-h) + 20px);
+  scroll-margin-top: 20px;
 }
 .markdown h2 {
   font-size: 1.625rem;
@@ -1622,7 +1782,7 @@ a.cg-card:hover .cg-card__title {
 }
 .cg-toc__sticky {
   position: sticky;
-  top: calc(var(--cg-nav-h) + 32px);
+  top: 32px;
   display: flex;
   flex-direction: column;
   font-size: 0.875rem;

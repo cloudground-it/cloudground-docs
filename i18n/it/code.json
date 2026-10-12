@@ -301,7 +301,7 @@
     "description": "The ARIA label for close button of mobile sidebar"
   },
   "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
-    "message": "Indietro al menu principale",
+    "message": "Menu principale",
     "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
   },
   "theme.docs.sidebar.toggleSidebarButtonAriaLabel": {
@@ -435,5 +435,11 @@
   },
   "cg.meta.unverified": {
     "message": "Non verificata"
+  },
+  "cg.colorMode.dark": {
+    "message": "Tema scuro"
+  },
+  "cg.drawer.language": {
+    "message": "Lingua"
   }
 }

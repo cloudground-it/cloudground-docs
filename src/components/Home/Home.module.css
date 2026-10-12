@@ -390,6 +390,12 @@
   text-align: right;
   white-space: nowrap;
 }
+.tbl .fig small {
+  margin-left: 0.4em;
+  font: 400 0.875rem var(--cg-font-mono);
+  letter-spacing: 0;
+  color: var(--cg-muted);
+}
 .tbl .ref .fig {
   color: var(--cg-muted);
 }

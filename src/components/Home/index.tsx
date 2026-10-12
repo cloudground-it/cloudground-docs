@@ -352,6 +352,9 @@ function Measures(): ReactNode {
       translate({id: 'home.measures.uncached.note', message: 'PHP + database, 10 connessioni'}),
     ],
   };
+  // The unit sits next to every figure: on a phone the rows stack and the
+  // column head is hidden.
+  const unit = translate({id: 'home.measures.unit', message: 'req/s'});
   const errors = translate({id: 'home.measures.noErrors', message: '0 errori'});
   const passed = translate({id: 'home.measures.passed', message: 'Superato'});
   const reference = translate({id: 'home.measures.reference', message: 'Riferimento'});
@@ -390,7 +393,7 @@ function Measures(): ReactNode {
                 <Translate id="home.measures.scenario">Scenario</Translate>
               </th>
               <th scope="col" className={styles.r}>
-                <Translate id="home.measures.rps">Richieste / s</Translate>
+                <Translate id="home.measures.rps">Richieste al secondo</Translate>
               </th>
               <th scope="col" className={styles.r}>
                 <Translate id="home.measures.outcome">Esito</Translate>
@@ -406,7 +409,10 @@ function Measures(): ReactNode {
                     {labels[m.key][1]} · {errors}
                   </small>
                 </th>
-                <td className={styles.fig}>{number(m.rps)}</td>
+                <td className={styles.fig}>
+                  {number(m.rps)}
+                  <small>{unit}</small>
+                </td>
                 <td className={styles.out}>
                   <span className={m.reference ? `${styles.stamp} ${styles.stampRef}` : styles.stamp}>
                     {m.reference ? reference : passed}

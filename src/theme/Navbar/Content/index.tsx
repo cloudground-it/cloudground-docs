@@ -29,9 +29,10 @@ function NavbarItems({items}: {items: NavbarItemConfig[]}): ReactNode {
 }
 
 /**
- * One ruled row: the mark and the name (home), the section links, the search
- * field, then language, GitHub and the colour mode. On small screens the links
- * move into the drawer and, inside the docs, the search takes a second row.
+ * One ruled row: the mark and the name, the section links, the search field,
+ * then language, GitHub and the colour mode. On small screens the name and the
+ * links give way: the mark on the left, the colour mode and the menu button on
+ * the right, and inside the docs the search takes a second row.
  */
 export default function NavbarContent(): ReactNode {
   const mobileSidebar = useNavbarMobileSidebar();
@@ -45,7 +46,6 @@ export default function NavbarContent(): ReactNode {
   return (
     <div className={`cg-nav${inDocs ? ' cg-nav--docs' : ''}`}>
       <div className="cg-nav__row">
-        {!mobileSidebar.disabled && <NavbarMobileSidebarToggle />}
         <Link
           to="/"
           className="cg-nav__brand"
@@ -62,9 +62,12 @@ export default function NavbarContent(): ReactNode {
           <Icon name="search" className="cg-nav__searchicon" />
           <SearchBar />
         </div>
-        <div className="cg-nav__tools">
-          <NavbarItems items={right} />
-          <NavbarColorModeToggle className="cg-nav__mode" />
+        <div className="cg-nav__end">
+          <div className="cg-nav__tools">
+            <NavbarItems items={right} />
+          </div>
+          <NavbarColorModeToggle />
+          {!mobileSidebar.disabled && <NavbarMobileSidebarToggle />}
         </div>
       </div>
     </div>
