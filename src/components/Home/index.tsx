@@ -50,8 +50,16 @@ function Command(): ReactNode {
     });
   }, []);
   useEffect(() => () => window.clearTimeout(timeout.current), []);
+  const output = [
+    translate({id: 'home.terminal.line1', message: '[ok] server controllato: Ubuntu, memoria, disco, porte'}),
+    translate({id: 'home.terminal.line2', message: '[ok] firma della release verificata'}),
+    translate({id: 'home.terminal.line3', message: '[ok] nginx · PHP-FPM · MariaDB · restic installati'}),
+    translate({id: 'home.terminal.line4', message: '[ok] pannello attivo su https://<ip>:8443'}),
+    translate({id: 'home.terminal.line5', message: '→ crea l’amministratore: https://<ip>:8443/setup/…'}),
+  ];
   return (
     <div className={styles.cmd}>
+      <div className={styles.cmdRow}>
       <code>
         <span className={styles.pr} aria-hidden="true">
           ${' '}
@@ -70,6 +78,12 @@ function Command(): ReactNode {
             : translate({id: 'theme.CodeBlock.copy', message: 'Copia'})}
         </span>
       </button>
+      </div>
+      <div className={styles.out}>
+        {output.map((line, i) => (
+          <p key={i}>{line}</p>
+        ))}
+      </div>
     </div>
   );
 }

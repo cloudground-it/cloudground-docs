@@ -135,28 +135,41 @@
 /* ---------- Command box ---------- */
 
 .cmd {
-  display: flex;
-  align-items: stretch;
   background: var(--cg-code-bg);
   color: var(--cg-code-fg);
   border: 1px solid var(--cg-code-bg);
 }
+.cmdRow {
+  display: flex;
+  align-items: stretch;
+}
 .cmd code {
   flex: 1;
   min-width: 0;
-  padding: 14px 16px;
+  padding: 14px 12px 14px 16px;
   font-family: var(--cg-font-mono);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   line-height: 1.5;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: thin;
-  scrollbar-color: var(--cg-code-muted) var(--cg-code-bg);
+  white-space: normal;
+  overflow-wrap: anywhere;
   background: none;
   border: 0;
   border-radius: 0;
   color: inherit;
   vertical-align: baseline;
+  align-self: center;
+}
+.out {
+  border-top: 1px solid rgba(242, 240, 234, 0.18);
+  padding: 12px 16px 14px;
+  font-family: var(--cg-font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--cg-code-muted);
+}
+.out p {
+  margin: 0 !important;
+  overflow-wrap: anywhere;
 }
 .pr {
   color: var(--cg-code-muted);
@@ -169,13 +182,13 @@
   color: var(--cg-on-orange);
   font: inherit;
   font-weight: 600;
-  padding: 0 18px;
+  padding: 0 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   cursor: pointer;
-  min-width: 120px;
+  min-width: 104px;
   min-height: 48px;
   transition: background-color 150ms ease-out;
 }
@@ -488,6 +501,13 @@
   font-size: 0.875rem;
   align-items: center;
   position: relative;
+}
+.mHead,
+.mRow.bad {
+  /* Rows with a fill paint over the box's side rules: redraw them. */
+  box-shadow:
+    inset 1px 0 0 var(--cg-rule-strong),
+    inset -1px 0 0 var(--cg-rule-strong);
 }
 .mHead {
   font-weight: 600;
@@ -808,12 +828,8 @@
 }
 
 @media (max-width: 480px) {
-  .cmd {
+  .cmdRow {
     flex-direction: column;
-  }
-  .cmd code {
-    white-space: normal;
-    overflow-wrap: anywhere;
   }
   .copy {
     min-height: 44px;
