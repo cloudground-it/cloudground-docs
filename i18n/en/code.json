@@ -437,7 +437,7 @@
     "message": "Unverified"
   },
   "home.meta.title": {
-    "message": "CloudGround — hosting that’s measured"
+    "message": "CloudGround — the hosting panel for your Ubuntu server"
   },
   "home.meta.description": {
     "message": "One command installs the panel on your server. Every site starts with its own cache, its own PHP, its own certificate, and backups that are test-restored after every copy."
