@@ -36,8 +36,8 @@ function Footer(): ReactNode {
       <div className="cg-footer__top">
         <div className="cg-footer__brand">
           <Link to="/" className="cg-footer__logo">
-            <LogoMark size={28} />
-            <span>cloudground</span>
+            <LogoMark size={32} />
+            <span>CloudGround</span>
           </Link>
           <p className="cg-footer__tagline">
             <Translate id="cg.footer.tagline">Hosting che si misura</Translate>

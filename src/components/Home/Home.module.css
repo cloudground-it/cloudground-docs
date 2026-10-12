@@ -1,8 +1,8 @@
 /*
  * The home: a framed 1440px column (hero with the cache scope, technology
  * ribbon, ruled feature grid, ink band, measurements, install, closing) in
- * the "Rapporto di prova" tokens of src/css/custom.css. Orange only fills the
- * primary buttons, the terminal's Copy and frames the stamps.
+ * the "Rapporto di prova" tokens of src/css/custom.css. The logo's blue fills
+ * the primary buttons and the terminal's Copy; the stamps are green.
  */
 
 .home {
@@ -86,15 +86,15 @@
 }
 .btnPrimary,
 .btnPrimary:hover {
-  color: var(--cg-on-orange);
+  color: var(--cg-on-primary);
 }
 .btnPrimary {
-  background: var(--cg-orange);
-  border-color: var(--cg-orange);
+  background: var(--cg-primary);
+  border-color: var(--cg-primary);
 }
 .btnPrimary:hover {
-  background: var(--cg-orange-hover);
-  border-color: var(--cg-orange-hover);
+  background: var(--cg-primary-hover);
+  border-color: var(--cg-primary-hover);
 }
 .btnBig {
   min-height: 56px;
@@ -280,14 +280,14 @@
   color: var(--cg-blue-tint);
 }
 
-/* ---------- Ownership band: on ink in both themes ---------- */
+/* ---------- Ownership band: dark in both themes ---------- */
 
 .band {
-  background: var(--cg-code-bg);
-  color: var(--cg-code-fg);
+  background: var(--cg-band-bg);
+  color: var(--cg-band-fg);
 }
 .band .frame {
-  border-color: var(--cg-code-rule);
+  border-color: var(--cg-band-rule);
 }
 .bandHead {
   display: grid;
@@ -295,47 +295,47 @@
   padding: clamp(56px, 8vw, 120px) var(--gutter) 64px;
 }
 .band .label {
-  color: var(--cg-code-muted);
+  color: var(--cg-band-muted);
 }
 .band .h2 {
   max-width: 13em;
-  color: var(--cg-code-fg);
+  color: var(--cg-band-fg);
   font-size: clamp(2.625rem, 7vw, 6.75rem);
   line-height: 0.92;
 }
 .band .acc {
-  color: var(--cg-code-accent);
+  color: var(--cg-band-accent);
 }
 .bandGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 1px;
-  background: var(--cg-code-rule);
-  border-top: 1px solid var(--cg-code-rule);
+  background: var(--cg-band-rule);
+  border-top: 1px solid var(--cg-band-rule);
 }
 .bandCell {
   display: grid;
   align-content: start;
   gap: 14px;
   padding: 36px 32px 48px;
-  background: var(--cg-code-bg);
+  background: var(--cg-band-bg);
 }
 .band .bandCell .label {
-  color: var(--cg-code-accent);
+  color: var(--cg-band-accent);
 }
 .bandCell h3 {
-  color: var(--cg-code-fg);
+  color: var(--cg-band-fg);
   font-size: 1.75rem;
   line-height: 1.15;
   letter-spacing: -0.015em;
 }
 .bandCell p {
   max-width: 30em;
-  color: var(--cg-code-muted);
+  color: var(--cg-band-muted);
   font-size: 1.0625rem;
 }
 .band a:focus-visible {
-  outline-color: var(--cg-code-accent);
+  outline-color: var(--cg-band-accent);
 }
 
 /* ---------- Measures ---------- */
@@ -411,13 +411,13 @@
 .stamp {
   display: inline-block;
   padding: 5px 10px;
-  border: 2px solid var(--cg-orange);
-  outline: 1px solid var(--cg-orange);
+  border: 2px solid var(--cg-ok);
+  outline: 1px solid var(--cg-ok);
   outline-offset: 2px;
   font: 700 0.75rem/1 var(--cg-font-sans);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--cg-stamp);
+  color: var(--cg-ok);
 }
 .stampRef {
   color: var(--cg-muted);

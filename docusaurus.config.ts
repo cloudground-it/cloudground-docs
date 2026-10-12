@@ -9,20 +9,20 @@ const DOCS_REPO = 'https://github.com/cloudground-it/cloudground-docs';
 // Sections that have their own sidebar and navbar entry, kept out of the guide.
 const OWN_SIDEBAR = ['cli', 'api'];
 
-// Code is always set on ink (--cg-code-bg): one theme for light and dark.
-// Every colour reaches 4.5:1 on #15161A and on #0B0C0E.
+// Code is always dark (--cg-code-bg): one theme for light and dark.
+// Every colour reaches 4.5:1 on #0E1220 and on #090B10.
 const inkPrism: PrismTheme = {
-  plain: {color: '#F2F0EA', backgroundColor: '#15161A'},
+  plain: {color: '#E8ECF6', backgroundColor: '#0E1220'},
   styles: [
-    {types: ['comment', 'prolog', 'doctype', 'cdata'], style: {color: '#A6A59E'}},
-    {types: ['punctuation', 'operator'], style: {color: '#C9C7BF'}},
+    {types: ['comment', 'prolog', 'doctype', 'cdata'], style: {color: '#9AA3B8'}},
+    {types: ['punctuation', 'operator'], style: {color: '#C3CAD8'}},
     {types: ['string', 'char', 'attr-value', 'url'], style: {color: '#B4C3FF'}},
-    {types: ['number', 'boolean', 'constant', 'symbol'], style: {color: '#F5B08A'}},
-    {types: ['keyword', 'builtin', 'important', 'atrule'], style: {color: '#93A8FF'}},
-    {types: ['function', 'class-name', 'selector', 'tag'], style: {color: '#F2F0EA'}},
-    {types: ['variable', 'property', 'attr-name', 'parameter'], style: {color: '#D8DFFF'}},
-    {types: ['deleted'], style: {color: '#FF8073'}},
-    {types: ['inserted'], style: {color: '#63CF8A'}},
+    {types: ['number', 'boolean', 'constant', 'symbol'], style: {color: '#F2C063'}},
+    {types: ['keyword', 'builtin', 'important', 'atrule'], style: {color: '#8AA2FF'}},
+    {types: ['function', 'class-name', 'selector', 'tag'], style: {color: '#E8ECF6'}},
+    {types: ['variable', 'property', 'attr-name', 'parameter'], style: {color: '#D6DEFF'}},
+    {types: ['deleted'], style: {color: '#FF8A80'}},
+    {types: ['inserted'], style: {color: '#5FD39A'}},
   ],
 };
 
@@ -60,6 +60,12 @@ const config: Config = {
   },
 
   headTags: [
+    // The favicon is the pixel mark (static/img/favicon.svg, also favicon.ico);
+    // home screens get the blue tile.
+    {tagName: 'link', attributes: {rel: 'icon', href: '/favicon.ico', sizes: '48x48'}},
+    {tagName: 'link', attributes: {rel: 'apple-touch-icon', href: '/img/apple-touch-icon.png'}},
+    {tagName: 'link', attributes: {rel: 'icon', type: 'image/png', sizes: '192x192', href: '/img/icon-192.png'}},
+    {tagName: 'link', attributes: {rel: 'icon', type: 'image/png', sizes: '512x512', href: '/img/icon-512.png'}},
     // Motion is allowed: the home keeps its hero hidden until GSAP plays it
     // (src/components/Home/useHomeMotion.ts). Without JavaScript nothing hides.
     // An attribute, not a class: the head manager rewrites <html class>.
@@ -125,39 +131,24 @@ const config: Config = {
 
   plugins: [
     // trailingSlash is false, so /docs is docs.html and the folder docs/ has
-    // no index: GitHub Pages answers /docs/ with a 404. Give every page whose
-    // folder lacks an index a small page there that sends to the address
-    // without the slash, keeping the query and the anchor.
+    // no index: GitHub Pages answers /docs/ with its 404 page. That page
+    // (404.html at the root serves every locale) drops the trailing slash and
+    // tries again, keeping the query and the anchor. A page that really does
+    // not exist then shows the 404 without the slash; no redirect files sit
+    // next to the pages, so `docusaurus serve` keeps working.
     () => ({
       name: 'slash-redirects',
-      async postBuild({outDir, baseUrl, routesPaths, siteConfig}) {
+      async postBuild({outDir}) {
         const fs = await import('node:fs/promises');
-        const exists = (p: string) =>
-          fs.access(p).then(
-            () => true,
-            () => false,
-          );
-        for (const route of new Set(routesPaths)) {
-          if (route.endsWith('/') || !route.startsWith(baseUrl)) {
-            continue;
-          }
-          const rel = route.slice(baseUrl.length);
-          const index = path.join(outDir, rel, 'index.html');
-          if (!(await exists(path.join(outDir, `${rel}.html`))) || (await exists(index))) {
-            continue;
-          }
-          const url = JSON.stringify(route);
-          const href = route.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-          await fs.mkdir(path.dirname(index), {recursive: true});
-          await fs.writeFile(
-            index,
-            `<!doctype html><html><head><meta charset="utf-8"><title>CloudGround</title>` +
-              `<meta name="robots" content="noindex"><link rel="canonical" href="${siteConfig.url}${href}">` +
-              `<script>location.replace(${url}+location.search+location.hash)</script>` +
-              `<meta http-equiv="refresh" content="0; url=${href}"></head>` +
-              `<body><a href="${href}">${href}</a></body></html>`,
-          );
+        const file = path.join(outDir, '404.html');
+        const html = await fs.readFile(file, 'utf8');
+        const script =
+          "<script>(function(l){var p=l.pathname;if(p.length>1&&p.slice(-1)==='/')" +
+          "l.replace(p.replace(/\\/+$/,'')+l.search+l.hash)})(location)</script>";
+        if (!html.includes('<head>')) {
+          throw new Error('404.html has no <head>');
         }
+        await fs.writeFile(file, html.replace('<head>', `<head>${script}`));
       },
     }),
     // The search results draw their icons from a module of HTML strings:
@@ -197,12 +188,12 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // The card social networks show for every page: 1200×630, the lockup and
-    // the line "Hosting che si misura" (brand files, static/img/og.png).
+    // The card social networks show for every page: 1200×630, the mark, the
+    // name and the line "Hosting che si misura" (static/img/og.png).
     image: 'img/og.png',
     metadata: [
-      {name: 'theme-color', content: '#fbfaf6', media: '(prefers-color-scheme: light)'},
-      {name: 'theme-color', content: '#131418', media: '(prefers-color-scheme: dark)'},
+      {name: 'theme-color', content: '#f9fafc', media: '(prefers-color-scheme: light)'},
+      {name: 'theme-color', content: '#0e1117', media: '(prefers-color-scheme: dark)'},
       {name: 'referrer', content: 'strict-origin-when-cross-origin'},
     ],
     colorMode: {
@@ -214,9 +205,8 @@ const config: Config = {
       sidebar: {hideable: false, autoCollapseCategories: false},
     },
     navbar: {
-      // The lockup (mark and wordmark), shown at the top of the mobile drawer.
-      // The bar itself draws the mark inline (src/theme/Navbar/Content).
-      logo: {alt: 'CloudGround', src: 'img/logo.svg', srcDark: 'img/logo-dark.svg', width: 128, height: 25},
+      // No logo here: the bar, the drawer and the footer draw the mark inline
+      // (src/components/LogoMark).
       items: [
         {type: 'docSidebar', sidebarId: 'guide', position: 'left', label: 'Guida'},
         {type: 'docSidebar', sidebarId: 'cli', position: 'left', label: 'CLI'},
@@ -244,22 +234,22 @@ const config: Config = {
         themeVariables: {
           fontFamily: "'IBM Plex Sans', system-ui, sans-serif",
           fontSize: '14px',
-          primaryColor: '#f3f1ea',
-          primaryTextColor: '#15161a',
-          primaryBorderColor: '#86837a',
-          secondaryColor: '#fbfaf6',
-          tertiaryColor: '#fbfaf6',
-          lineColor: '#5b5d64',
-          textColor: '#15161a',
-          mainBkg: '#f3f1ea',
-          clusterBkg: '#fbfaf6',
-          clusterBorder: '#d6d3c8',
-          edgeLabelBackground: '#fbfaf6',
-          noteBkgColor: '#fbfaf6',
-          noteBorderColor: '#2343c2',
-          actorBkg: '#f3f1ea',
-          actorBorder: '#86837a',
-          signalColor: '#15161a',
+          primaryColor: '#f1f3f8',
+          primaryTextColor: '#11141c',
+          primaryBorderColor: '#7c8396',
+          secondaryColor: '#f9fafc',
+          tertiaryColor: '#f9fafc',
+          lineColor: '#586074',
+          textColor: '#11141c',
+          mainBkg: '#f1f3f8',
+          clusterBkg: '#f9fafc',
+          clusterBorder: '#d7dce7',
+          edgeLabelBackground: '#f9fafc',
+          noteBkgColor: '#f9fafc',
+          noteBorderColor: '#2549e0',
+          actorBkg: '#f1f3f8',
+          actorBorder: '#7c8396',
+          signalColor: '#11141c',
         },
       },
     },

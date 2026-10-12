@@ -34,15 +34,17 @@ adds new keys). The rules it keeps:
   written. No other panel or host is named or compared.
 - **No JavaScript needed for the content**: everything is rendered at build time; the cache switch
   and the copy buttons are the only controls. Transitions stop with `prefers-reduced-motion`.
-- **Orange is for the outcome and the primary action only** (the install Copy and the stamp);
-  links, focus and protocol are blue. Text pairs reach WCAG AA in both themes (DESIGN.md).
+- **One blue, from the logo**: links, focus and the primary action (the install button and Copy)
+  are blue; the outcome stamp is green. There is no orange. Text pairs reach WCAG AA in both
+  themes (DESIGN.md).
 - **No external requests**: fonts, search and images are served by the site; no analytics, no
   forms. `/privacy` says so, and changes in the same commit as anything that changes it.
 - Light and dark from the tokens in `src/css/custom.css`; 16px gutters on a phone.
 
-The social card is `static/img/og.png` (1200×630). The logo files are `static/img/logo.svg` and
-`logo-dark.svg` (the lockup, used in the mobile drawer) and `favicon.svg`; the navbar and footer
-draw the mark inline (`src/components/LogoMark`) in the theme colours.
+The social card is `static/img/og.png` (1200×630). The mark "Messa a terra" (a cloud on the
+ground symbol) is drawn inline by `src/components/LogoMark` in the navbar, the drawer and the
+footer, in `--cg-logo`. The favicon is the pixel version (`static/img/favicon.svg`,
+`static/favicon.ico`); `apple-touch-icon.png` and `icon-192/512.png` are the blue tile.
 
 ## Structure
 

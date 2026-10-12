@@ -1,10 +1,10 @@
 /*
- * CloudGround site theme: "Rapporto di prova".
- * Source of truth: design/DESIGN.md and the artboard design/index.html of the
- * CloudGround design folder. Warm white paper, near-black ink, blue for links,
- * focus and protocol; orange only for the primary action and the outcome
- * stamp. IBM Plex Sans for text, IBM Plex Mono only for commands, figures,
- * paths and identifiers. 1px rules, no shadows, no gradients.
+ * CloudGround site theme: "Rapporto di prova", palette v3 (from the logo).
+ * Source of truth: design/DESIGN.md. Cool white paper, near-black ink, one
+ * electric blue from the logo for links, focus and the primary action; green
+ * for the outcome stamp. IBM Plex Sans for text, IBM Plex Mono only for
+ * commands, figures, paths and identifiers. 1px rules, no shadows, no
+ * gradients.
  */
 
 /* ---------- Fonts (self-hosted, OFL — licence in static/fonts) ---------- */
@@ -63,37 +63,43 @@
   --cg-font-sans: 'IBM Plex Sans', system-ui, sans-serif;
   --cg-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  --cg-paper: #fbfaf6; /* page ground */
-  --cg-paper-2: #f3f1ea; /* sidebars, table heads, protocol strip */
-  --cg-paper-3: #e9e6dc; /* hover, inline code */
-  --cg-rule: #d6d3c8; /* 1px decorative rules */
-  --cg-rule-strong: #86837a; /* control borders, frames (3:1) */
-  --cg-ink: #15161a; /* headings, strong text, active fill */
-  --cg-text: #2e3036; /* body */
-  --cg-muted: #5b5d64; /* method notes, secondary */
-  --cg-blue: #2343c2; /* links, focus, selection, protocol */
-  --cg-blue-tint: #e7ebfa;
-  --cg-orange: #c8471a; /* primary action fill, stamp frame */
-  --cg-orange-hover: #b13b0c;
-  --cg-on-orange: #ffffff;
-  --cg-stamp: #b13b0c; /* orange text on paper */
-  --cg-ok: #1c7038;
-  --cg-ok-tint: #e5f2e8;
-  --cg-warn: #835400;
-  --cg-warn-tint: #f8efd9;
-  --cg-err: #b3261e;
-  --cg-err-tint: #fbe9e6;
-  --cg-code-bg: #15161a;
-  --cg-code-fg: #f2f0ea;
-  --cg-code-muted: #a6a59e;
-  --cg-code-rule: #2c2e35;
-  --cg-code-control: #6c6f78;
-  --cg-code-hover: #24262d;
-  /* On ink in both themes (home terminal, ownership band): the dark theme's
-     ok and blue, which reach 4.5:1 on --cg-code-bg. */
-  --cg-code-ok: #63cf8a;
-  --cg-code-accent: #93a8ff;
-  --cg-logo-orange: #e0612b; /* the logo's lower bar, in both themes */
+  --cg-paper: #f9fafc; /* page ground */
+  --cg-paper-2: #f1f3f8; /* sidebars, table heads, second layer */
+  --cg-paper-3: #e6e9f1; /* hover, inline code */
+  --cg-rule: #d7dce7; /* 1px decorative rules */
+  --cg-rule-strong: #7c8396; /* control borders, frames (3:1) */
+  --cg-ink: #11141c; /* headings, strong text, active fill */
+  --cg-text: #2a2f3b; /* body */
+  --cg-muted: #586074; /* secondary */
+  --cg-brand: #2f5bff; /* the logo, app tile, large fills only */
+  --cg-logo: #2f5bff; /* the mark's stroke */
+  --cg-primary: #2f5bff; /* primary button fill, active tab, focus ring */
+  --cg-primary-hover: #1f45e0;
+  --cg-on-primary: #ffffff;
+  --cg-blue: #2549e0; /* links, blue text, accent words, selection */
+  --cg-blue-tint: #ebf0ff; /* selected row/tile, info banner */
+  --cg-blue-line: #c9d5ff; /* selected-tile frame, info border */
+  --cg-ok: #18794e; /* success, the outcome stamp */
+  --cg-ok-tint: #e3f4ea;
+  --cg-warn: #8a5a00;
+  --cg-warn-tint: #fbf1db;
+  --cg-err: #c8302c;
+  --cg-err-tint: #fdeceb;
+  /* Command boxes and the terminal, dark in both themes. */
+  --cg-code-bg: #0e1220;
+  --cg-code-fg: #e8ecf6;
+  --cg-code-muted: #9aa3b8;
+  --cg-code-rule: #262d40;
+  --cg-code-control: #6e7790; /* borders on code (3:1) */
+  --cg-code-hover: #1a2033;
+  --cg-code-ok: #5fd39a;
+  --cg-code-accent: #8aa2ff;
+  /* The home's dark band. */
+  --cg-band-bg: #0e1220;
+  --cg-band-fg: #eef1f7;
+  --cg-band-muted: #9aa3b8;
+  --cg-band-rule: #262d40;
+  --cg-band-accent: #8aa2ff;
 
   --cg-nav-h: 60px;
 
@@ -104,13 +110,14 @@
   --ifm-heading-color: var(--cg-ink);
   --ifm-color-content: var(--cg-text);
   --ifm-color-content-secondary: var(--cg-muted);
-  --ifm-color-primary: #2343c2;
-  --ifm-color-primary-dark: #1f3caf;
-  --ifm-color-primary-darker: #1e39a5;
-  --ifm-color-primary-darkest: #182f88;
-  --ifm-color-primary-light: #2a4bd5;
-  --ifm-color-primary-lighter: #3654d8;
-  --ifm-color-primary-lightest: #5670de;
+  /* Infima's primary is the text blue; the scale is the usual ±5/10/30%. */
+  --ifm-color-primary: #2549e0;
+  --ifm-color-primary-dark: #1e41d2;
+  --ifm-color-primary-darker: #1d3ec6;
+  --ifm-color-primary-darkest: #1833a3;
+  --ifm-color-primary-light: #3a5ae3;
+  --ifm-color-primary-lighter: #4563e4;
+  --ifm-color-primary-lightest: #6982ea;
   --ifm-link-color: var(--cg-blue);
   --ifm-link-hover-color: var(--cg-blue);
   --ifm-link-decoration: underline;
@@ -143,10 +150,10 @@
   --ifm-menu-color-background-hover: var(--cg-paper-3);
   --ifm-dropdown-background-color: var(--cg-paper);
   --ifm-transition-fast: 150ms;
-  --docusaurus-highlighted-code-line-bg: #2c2e35;
+  --docusaurus-highlighted-code-line-bg: #1e2538;
   /* The theme's caret (drawer categories, the page index on small screens,
      back to top): chevron-up from src/icons, drawn in ink. */
-  --ifm-menu-link-sublist-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2315161a' stroke-width='1.75' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M6 15l6-6 6 6'/%3E%3C/svg%3E");
+  --ifm-menu-link-sublist-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2311141c' stroke-width='1.75' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M6 15l6-6 6 6'/%3E%3C/svg%3E");
 
   /* Search plugin */
   --search-local-modal-background: var(--cg-paper);
@@ -172,61 +179,71 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
-    --cg-paper: #131418;
-    --cg-paper-2: #1a1c21;
-    --cg-paper-3: #24262d;
-    --cg-rule: #31343c;
-    --cg-rule-strong: #72757e;
-    --cg-ink: #f2f0ea;
-    --cg-text: #d8d6cf;
-    --cg-muted: #a6a59e;
-    --cg-blue: #93a8ff;
-    --cg-blue-tint: #1e2544;
-    --cg-orange: #f07a3e;
-    --cg-orange-hover: #ff8d55;
-    --cg-on-orange: #131418;
-    --cg-stamp: #ff9360;
-    --cg-ok: #63cf8a;
-    --cg-ok-tint: #16301f;
-    --cg-warn: #f0b54a;
-    --cg-warn-tint: #33280f;
-    --cg-err: #ff8073;
-    --cg-err-tint: #3a1d1b;
-    --cg-code-bg: #0b0c0e;
-    --ifm-color-primary: #93a8ff;
+    --cg-paper: #0e1117;
+    --cg-paper-2: #151923;
+    --cg-paper-3: #1e2330;
+    --cg-rule: #2a3040;
+    --cg-rule-strong: #6e7790;
+    --cg-ink: #eef1f7;
+    --cg-text: #d3d8e4;
+    --cg-muted: #9aa3b8;
+    --cg-logo: #7d97ff;
+    --cg-primary: #3d63f5;
+    --cg-primary-hover: #2f52de;
+    --cg-blue: #8aa2ff;
+    --cg-blue-tint: #1a2246;
+    --cg-blue-line: #2e3d7a;
+    --cg-ok: #5fd39a;
+    --cg-ok-tint: #12291e;
+    --cg-warn: #f2c063;
+    --cg-warn-tint: #2e2510;
+    --cg-err: #ff8a80;
+    --cg-err-tint: #361818;
+    --cg-code-bg: #090b10;
+    --cg-code-hover: #151a28;
+    --cg-band-bg: #090b10;
+    --ifm-color-primary: #8aa2ff;
+    --ifm-color-primary-dark: #6f8cff;
+    --ifm-color-primary-darker: #6383ff;
+    --ifm-color-primary-darkest: #3a63ff;
+    --ifm-color-primary-light: #a5b8ff;
+    --ifm-color-primary-lighter: #b1c1ff;
+    --ifm-color-primary-lightest: #d6dfff;
   }
 }
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --cg-paper: #131418;
-  --cg-paper-2: #1a1c21;
-  --cg-paper-3: #24262d;
-  --cg-rule: #31343c;
-  --cg-rule-strong: #72757e;
-  --cg-ink: #f2f0ea;
-  --cg-text: #d8d6cf;
-  --cg-muted: #a6a59e;
-  --cg-blue: #93a8ff;
-  --cg-blue-tint: #1e2544;
-  --cg-orange: #f07a3e;
-  --cg-orange-hover: #ff8d55;
-  --cg-on-orange: #131418;
-  --cg-stamp: #ff9360;
-  --cg-ok: #63cf8a;
-  --cg-ok-tint: #16301f;
-  --cg-warn: #f0b54a;
-  --cg-warn-tint: #33280f;
-  --cg-err: #ff8073;
-  --cg-err-tint: #3a1d1b;
-  --cg-code-bg: #0b0c0e;
-  --ifm-color-primary: #93a8ff;
-  --ifm-color-primary-dark: #7b95ff;
-  --ifm-color-primary-darker: #6f8bff;
-  --ifm-color-primary-darkest: #4a6dff;
-  --ifm-color-primary-light: #abbbff;
-  --ifm-color-primary-lighter: #b7c5ff;
-  --ifm-color-primary-lightest: #dbe2ff;
-  --ifm-menu-link-sublist-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f2f0ea' stroke-width='1.75' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M6 15l6-6 6 6'/%3E%3C/svg%3E");
+  --cg-paper: #0e1117;
+  --cg-paper-2: #151923;
+  --cg-paper-3: #1e2330;
+  --cg-rule: #2a3040;
+  --cg-rule-strong: #6e7790;
+  --cg-ink: #eef1f7;
+  --cg-text: #d3d8e4;
+  --cg-muted: #9aa3b8;
+  --cg-logo: #7d97ff;
+  --cg-primary: #3d63f5;
+  --cg-primary-hover: #2f52de;
+  --cg-blue: #8aa2ff;
+  --cg-blue-tint: #1a2246;
+  --cg-blue-line: #2e3d7a;
+  --cg-ok: #5fd39a;
+  --cg-ok-tint: #12291e;
+  --cg-warn: #f2c063;
+  --cg-warn-tint: #2e2510;
+  --cg-err: #ff8a80;
+  --cg-err-tint: #361818;
+  --cg-code-bg: #090b10;
+  --cg-code-hover: #151a28;
+  --cg-band-bg: #090b10;
+  --ifm-color-primary: #8aa2ff;
+  --ifm-color-primary-dark: #6f8cff;
+  --ifm-color-primary-darker: #6383ff;
+  --ifm-color-primary-darkest: #3a63ff;
+  --ifm-color-primary-light: #a5b8ff;
+  --ifm-color-primary-lighter: #b1c1ff;
+  --ifm-color-primary-lightest: #d6dfff;
+  --ifm-menu-link-sublist-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23eef1f7' stroke-width='1.75' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M6 15l6-6 6 6'/%3E%3C/svg%3E");
 }
 
 /* ---------- Base ---------- */
@@ -276,7 +293,7 @@ samp {
   color: var(--cg-paper);
 }
 :focus-visible {
-  outline: 2px solid var(--cg-blue);
+  outline: 2px solid var(--cg-primary);
   outline-offset: 2px;
 }
 button {
@@ -286,15 +303,9 @@ button {
   flex: 0 0 auto;
   vertical-align: middle;
 }
-/* The mark: cloud in ink, upper bar in blue, lower bar in the logo orange. */
-.cg-mark__cloud {
-  fill: var(--cg-ink);
-}
-.cg-mark__upper {
-  fill: var(--cg-blue);
-}
-.cg-mark__lower {
-  fill: var(--cg-logo-orange);
+/* The mark "Messa a terra": a cloud over the ground symbol, one stroke. */
+.cg-mark {
+  color: var(--cg-logo);
 }
 
 /* Buttons: 40px (32px small), radius 3px, 1px strong border. */
@@ -370,12 +381,12 @@ button {
 .cg-nav__brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   color: var(--cg-ink);
   text-decoration: none;
   font-weight: 600;
   font-size: 1.125rem;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   flex: 0 0 auto;
 }
 .cg-nav__brand:hover {
@@ -478,7 +489,7 @@ button {
   min-width: 0;
 }
 .cg-nav__search:focus-within {
-  outline: 2px solid var(--cg-blue);
+  outline: 2px solid var(--cg-primary);
   outline-offset: 1px;
 }
 .cg-nav__search .navbar__search {
@@ -652,7 +663,7 @@ button {
   border: 1px solid var(--cg-rule-strong);
   border-radius: 3px;
   background: var(--cg-paper);
-  box-shadow: 0 8px 24px rgba(21, 22, 26, 0.12);
+  box-shadow: 0 8px 24px rgba(17, 20, 28, 0.12);
   transform: none;
   transition: none;
 }
@@ -751,7 +762,7 @@ button {
   transition-property: opacity, transform;
 }
 .navbar-sidebar__backdrop {
-  background: rgba(21, 22, 26, 0.48);
+  background: rgba(17, 20, 28, 0.48);
 }
 @media (min-width: 421px) {
   .navbar-sidebar {

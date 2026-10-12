@@ -19,7 +19,7 @@ export default function NavbarMobileSidebarHeader(): ReactNode {
         className="cg-nav__brand"
         onClick={() => mobileSidebar.toggle()}
         aria-label={translate({id: 'cg.nav.home', message: 'CloudGround, pagina iniziale'})}>
-        <LogoMark size={28} />
+        <LogoMark size={32} />
       </Link>
       <div className="cg-nav__end">
         <NavbarColorModeToggle />

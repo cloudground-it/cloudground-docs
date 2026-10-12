@@ -1,4 +1,4 @@
-/* The installer's terminal (Terminal.tsx): always on ink, in both themes. */
+/* The installer's terminal (Terminal.tsx): dark in both themes. */
 
 .term {
   background: var(--cg-code-bg);
@@ -23,15 +23,15 @@
   padding: 0 14px;
   border: 0;
   border-radius: 3px;
-  background: var(--cg-orange);
-  color: var(--cg-on-orange);
+  background: var(--cg-primary);
+  color: var(--cg-on-primary);
   font: 500 0.8125rem var(--cg-font-sans);
   letter-spacing: 0;
   cursor: pointer;
   transition: background-color 150ms ease-out;
 }
 .copy:hover {
-  background: var(--cg-orange-hover);
+  background: var(--cg-primary-hover);
 }
 .copy:focus-visible {
   outline: 2px solid var(--cg-code-accent);

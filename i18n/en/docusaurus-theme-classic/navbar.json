@@ -1,11 +1,7 @@
 {
   "title": {
-    "message": "cloudground",
-    "description": "The title in the navbar"
-  },
-  "logo.alt": {
     "message": "CloudGround",
-    "description": "The alt text of navbar logo"
+    "description": "The title in the navbar"
   },
   "item.label.Guida": {
     "message": "Guide",
