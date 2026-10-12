@@ -9,7 +9,7 @@ import {RELEASE, REPO} from '@site/src/data/site';
 
 export default function HomePage(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
-  const title = translate({id: 'home.meta.title', message: 'CloudGround — hosting che si misura'});
+  const title = translate({id: 'home.meta.title', message: 'CloudGround — il pannello di hosting per il tuo server Ubuntu'});
   const description = translate({
     id: 'home.meta.description',
     message:
