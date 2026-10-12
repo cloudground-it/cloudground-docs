@@ -4,7 +4,7 @@ description: Ogni comando di cgctl, le opzioni, le variabili di configurazione e
 type: reference
 prerequisites:
   - Un token API, o email e password di un account
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 1
 ---
@@ -136,6 +136,27 @@ cgctl protect add 3 /wp-admin editor < password.txt
 | `cgctl audit` | `GET /api/audit` | Le ultime 200 righe del registro attività. |
 | `cgctl settings get` | `GET /api/settings` | Le impostazioni del pannello. |
 | `cgctl settings set <chiave> <valore>` | `PUT /api/settings` | Cambia un'impostazione. |
+
+### Blocchi {#blocklist}
+
+*Da v0.3.0.* Vedi [blocca gli indirizzi che sbagliano l'accesso](/docs/access/block-addresses) e
+[rifiuta visitatori](/docs/access/refuse-visitors). Le modifiche alla lista dei blocchi sono rotte solo
+per sessioni: questi comandi accedono con email e password (e `CLOUDGROUND_TOTP`), non con un token. Sul
+server, sul socket dell'API, funzionano da root anche se sei bloccato fuori.
+
+| Comando | Richiesta | Cosa fa |
+| --- | --- | --- |
+| `cgctl blocklist` | `GET /api/blocklist` | La lista dei blocchi: indirizzi bloccati, sempre consentiti, impostazioni e se il server la applica. |
+| `cgctl blocklist block <indirizzo-o-rete> [minuti]` | `POST /api/blocklist/blocks` | Blocca un indirizzo o una rete. `minuti` è un intero da 0 (finché non lo rimuovi, il predefinito) a 525600. |
+| `cgctl blocklist unblock <indirizzo-o-rete>` | `DELETE /api/blocklist/blocks` | Toglie il blocco. |
+| `cgctl blocklist allow <indirizzo-o-rete>` | `POST /api/blocklist/allowed` | Consente sempre l'indirizzo o la rete. |
+| `cgctl blocklist disallow <indirizzo-o-rete>` | `DELETE /api/blocklist/allowed` | Toglie l'indirizzo dai sempre consentiti. |
+| `cgctl sites block <id-sito> '<regole-json>'` | `PUT /api/sites/<id>/blocking` | Imposta le regole del sito: `{"addresses": [...], "user_agents": [...], "countries": [...], "allow_countries_only": false}`. `'{}'` le toglie. Un JSON che non si legge è un errore d'uso (uscita 2). |
+
+L'indirizzo va nel corpo della richiesta, mai nell'URL.
+
+Le impostazioni dei controlli di sicurezza si cambiano con `cgctl settings set`: `malware_scan` (`1` o
+`0`, spenta in partenza) e `vulnerability_check` (`1` o `0`, acceso in partenza).
 
 ### Token API {#tokens}
 

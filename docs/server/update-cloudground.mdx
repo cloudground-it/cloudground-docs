@@ -4,7 +4,7 @@ description: Installa una release firmata più recente dal pannello o con cgctl 
 type: how-to
 prerequisites:
   - Un account amministratore, per il pannello; root sul server, per cgctl update
-version: v0.1.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 5
 ---
@@ -82,6 +82,23 @@ Il nuovo pannello migra il suo database in avanti al primo avvio, attraverso ogn
 release: puoi passare da una release a una qualsiasi più recente con un solo aggiornamento. La
 migrazione non va mai all'indietro, quindi la strada per tornare è lo snapshot, che un aggiornamento
 fallito rimette da solo.
+
+## I pacchetti di sistema nuovi {#packages}
+
+*Da v0.3.0.* Una release può richiedere un pacchetto di sistema che i server già installati non hanno:
+la v0.3.0 richiede `nftables`, per la [lista dei blocchi](/docs/access/block-addresses). Prima che
+l'agent della nuova release parta, un controllo guarda quali pacchetti della release mancano e li
+installa con `apt-get`, in un'unità temporanea con i privilegi di root. Se l'installazione fallisce
+la prima volta, ne tenta una seconda dopo `apt-get update`. Il controllo ha un tempo massimo di 100
+secondi, dentro l'attesa di 2 minuti con cui la guardia aspetta il riavvio dell'agent.
+
+- Durante un aggiornamento, un'installazione che fallisce fa fallire l'avvio dell'agent: l'aggiornamento
+  viene annullato come ogni aggiornamento che non parte, e la release precedente torna.
+- A un avvio qualsiasi (per esempio un riavvio del server senza rete) il controllo scrive un avviso nel
+  journal, con il comando `apt-get install` da lanciare, e l'agent parte lo stesso.
+
+Il controllo gira anche dall'aggiornamento di una release più vecchia, v0.2.0 compresa: serve solo il
+file dell'unità che la nuova release installa.
 
 ## Cosa tiene {#what-it-keeps}
 

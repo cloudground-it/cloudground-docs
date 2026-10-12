@@ -5,7 +5,7 @@ type: how-to
 prerequisites:
   - Root on the server
   - No backup, restore or task that cannot resume running
-version: v0.1.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 7
 ---
@@ -38,6 +38,8 @@ What happens to each part:
 | What | Without options | With `--remove-sites` |
 | --- | --- | --- |
 | CloudGround's services, units, binaries, its nginx, sshd, kernel, log rotation, cron and certbot hook files, the `cloudground` user, the panel's state | removed | removed |
+| *Since v0.3.0.* quarantined files and the malware scan's signatures (the ClamAV package stays) | removed | removed |
+| *Since v0.3.0.* the block list's `inet cloudground` table | removed | removed |
 | `nginx.conf` and the distribution's default site | put back as they were | put back as they were |
 | the sites' files under `/srv/sites` | **kept**, nothing serves them | deleted |
 | the site users `cg-site-<id>` | **kept and locked**: they own the files | deleted, with their groups |

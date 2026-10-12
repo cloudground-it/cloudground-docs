@@ -1,0 +1,55 @@
+---
+title: Harden WordPress
+description: Turn off XML-RPC, the file editor, the version and the readme files of a WordPress site, and optionally move the login address, each protection on its own.
+type: how-to
+prerequisites:
+  - A WordPress or WooCommerce site
+  - An administrator account, or an operator assigned to the site
+version: unreleased
+last_verified: unverified
+sidebar_position: 6.95
+---
+
+The most common WordPress protections, usually left to plugins, turn on from the panel, one by one. The
+**recommended set** does not change what visitors, WooCommerce customers or Jetpack see.
+
+## Turn the protections on {#turn-them-on}
+
+1. Open the site, the **WordPress** tab, the **Hardening** section.
+2. Turn on the ones you want, or press **Apply the recommended set** (all, except the login address).
+3. Save. The page cache is purged.
+
+None is on by default.
+
+| Protection | What it does |
+| --- | --- |
+| **Turn XML-RPC off** | `xmlrpc.php` answers 403, except to the addresses in **XML-RPC exceptions** (IP addresses or networks, one per line, up to 50) and to Jetpack's own signed requests. The WordPress mobile app and some publishing tools use XML-RPC. |
+| **Turn the file editor off** | No theme or plugin code edited from wp-admin, whatever `wp-config.php` says. |
+| **Hide the WordPress version** | No version in the page head, in feeds or in WordPress's file URLs. Browsers still fetch the new files after an update. |
+| **Block readme and licence files** | `readme.html`, `license.txt` and plugin and theme readme files answer 404: they tell the versions. |
+| **Login address** | Moves the sign-in page. |
+
+## Move the login address {#login-address}
+
+Type in **Login address** 3 to 64 lowercase letters, digits and hyphens, for example `entrance`. Empty,
+the site keeps `wp-login.php`. Set:
+
+- the sign-in page answers at `/entrance`, the two-factor step and the lost-password link included;
+- `wp-login.php` answers 404, spelled any way, and `/login` and `/admin` no longer redirect;
+- wp-admin answers 404 to visitors who are not signed in (`admin-ajax.php` and `admin-post.php` stay
+  open);
+- the new page skips the page cache.
+
+An address that collides with a WordPress or WooCommerce path is refused. Emails sent from wp-cli or from
+the system's scheduled tasks still carry the link to `wp-login.php`. Write the address down: nobody can
+find it for you.
+
+## With the API {#with-the-api}
+
+`PUT /api/sites/<id>/wp/hardening` with `{"xmlrpc_off", "xmlrpc_allow": [...], "file_edit_off",
+"hide_version", "block_readme", "login_path"}`, and `PUT /api/sites/<id>/wp/two-factor` with
+`{"mode": "off"}`, `optional` or `required`.
+
+## Next step {#next}
+
+Also check [WordPress for vulnerabilities](/docs/access/wordpress-vulnerabilities).

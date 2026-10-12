@@ -4,7 +4,7 @@ description: Dove risponde l'API del pannello, come ci si autentica, quali richi
 type: reference
 prerequisites:
   - Un account nel pannello, o un token API
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 1
 ---
@@ -80,8 +80,30 @@ Ogni rotta richiede uno di questi livelli: aperta, account collegato, tutto il s
 amministratore. Un ruolo non ammesso riceve **403**; un sito che un operatore non può raggiungere
 risponde **404**. Alcune rotte sono solo per sessioni e rispondono **403** a un token: il proprio
 account, gli utenti, i token, la shell e il routing dei siti, le regole del firewall e la sua
-accensione (`POST /api/firewall/enable`, da v0.2.0), il certificato e l'aggiornamento del pannello. La tabella completa è in
+accensione (`POST /api/firewall/enable`, da v0.2.0), le modifiche alla lista dei blocchi (da v0.3.0), il certificato e l'aggiornamento del pannello. La tabella completa è in
 [ruoli e permessi](/docs/reference/roles-and-permissions).
+
+## Sicurezza {#security}
+
+*Da v0.3.0.* Le rotte di blocco, controllo e protezione. L'elenco completo è nel file `docs/api.md` del
+repository del prodotto.
+
+| Rotta | Ruolo | Cosa fa |
+| --- | --- | --- |
+| `GET /api/blocklist` | tutto il server | La lista dei blocchi: `blocked`, `allowed`, `settings`, `enforced` (e `error`), `watching` (le letture di SSH e WordPress) e `your_address`. |
+| `POST /api/blocklist/blocks`, `DELETE /api/blocklist/blocks` | amministratore, sessione | Blocca (`{"address", "note", "minutes"}`) o sblocca (`{"address"}`). |
+| `POST /api/blocklist/allowed`, `DELETE /api/blocklist/allowed` | amministratore, sessione | Aggiunge o toglie un indirizzo dai sempre consentiti. |
+| `PUT /api/blocklist/settings` | amministratore, sessione | Il blocco automatico: `enabled`, `max_failures` (3–100) in `window_minutes` (1–1440), `ban_minutes` (1–43200). |
+| `PUT /api/sites/<id>/blocking` | gestione | Le regole del sito: `addresses`, `user_agents`, `countries`, `allow_countries_only`. |
+| `GET /api/sites/<id>/vulnerabilities` | account collegato | L'ultimo controllo di un sito WordPress: `enabled`, `checked_at`, `error`, `components` e i `findings` (`component`, `slug`, `version`, `title`, `severity`, `cve`, `fixed_in`, `unfixed`, `link`). |
+| `POST /api/sites/<id>/vulnerabilities/check` | gestione | Controlla ora; risponde **202** con l'attività. |
+| `GET /api/sites/<id>/malware` | account collegato | Le scansioni del sito: `enabled`, `next_scan`, l'ultima `scan` e i `findings` (`id`, `path`, `signature`, `status`: `open`, `quarantined` o `gone`). |
+| `POST /api/sites/<id>/malware/scan` | gestione | Scansiona ora (serve `malware_scan` acceso); **202** con l'attività. |
+| `POST /api/sites/<id>/malware/findings/<finding>/quarantine` | gestione | Mette il file in quarantena. |
+| `PUT /api/sites/<id>/wp/two-factor` | gestione | `{"mode": "off"}`, `"optional"` o `"required"`. |
+| `PUT /api/sites/<id>/wp/hardening` | gestione | `{"xmlrpc_off", "xmlrpc_allow", "file_edit_off", "hide_version", "block_readme", "login_path"}`. |
+
+Gli avvisi del tipo `vulnerability` e `malware` compaiono nell'elenco degli avvisi come gli altri.
 
 ## Errori {#errors}
 

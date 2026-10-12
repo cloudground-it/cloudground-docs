@@ -5,7 +5,7 @@ type: how-to
 prerequisites:
   - Un account amministratore
   - Il firewall del server (ufw) installato; attivo perché le regole abbiano effetto
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 6
 ---
@@ -19,6 +19,10 @@ e uno script che accende ufw può chiuderti fuori, per esempio quando SSH ascolt
 scelta resta tua: dalla v0.2.0 la fai dal pannello, con un pulsante. Su un server cloud appena creato ufw
 di solito è installato ma spento, e la pagina dice **inattivo**. Finché è inattivo le regole vengono salvate ma non hanno effetto: la pagina le mostra con
 *Il firewall non è attivo: queste regole sono salvate e si applicano solo quando viene attivato.*
+
+*Da v0.3.0.* Gli indirizzi che sbagliano troppo l'accesso li blocca una tabella a parte, `inet cloudground`
+di nftables, che non dipende da ufw: funziona anche con il firewall spento. Vedi [blocca gli indirizzi
+che sbagliano l'accesso](/docs/access/block-addresses).
 
 ## Cosa fa l'installer {#installer}
 

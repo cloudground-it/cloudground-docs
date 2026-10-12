@@ -1,0 +1,63 @@
+---
+title: Two-factor sign-in for WordPress
+description: Ask for a code from an authenticator app at every sign-in to wp-admin, optionally or as a requirement for administrators and shop managers.
+type: how-to
+prerequisites:
+  - A WordPress or WooCommerce site
+  - An administrator account, or an operator assigned to the site
+  - An authenticator app on your phone
+version: unreleased
+last_verified: unverified
+sidebar_position: 6.9
+---
+
+WordPress administrators are the most attacked accounts of a site, and wp-admin accepts a password alone.
+With two-factor sign-in, after the right password WordPress asks for a 6-digit code from the app. It is
+not the panel's [two-step verification](/docs/access/two-step-verification): it is the one for the
+accounts of the WordPress site.
+
+## Choose the mode {#choose-the-mode}
+
+1. Open the site, the **WordPress** tab, the **Two-factor sign-in** section.
+2. Choose and save:
+
+| Mode | Effect |
+| --- | --- |
+| **Off** | Accounts sign in with the password alone. Keys already set up stay and count again if you turn it back on. |
+| **Optional** | Each account can turn it on from its WordPress profile. |
+| **Required for administrators and shop managers** | These accounts cannot sign in with the password alone. |
+
+The mode applies to every way of signing in with a form: `wp-login.php` and, on WooCommerce, the **My
+account** and checkout forms. Customers and the other roles sign in as before. XML-RPC, REST, Ajax and
+wp-cli do not accept the password alone of an account that uses two factors; application passwords keep
+working. The mode lives in the site's PHP configuration, which the site's own `wp-config.php` cannot turn
+off.
+
+## Set up your account {#set-up-your-account}
+
+1. In WordPress open your profile and the two-factor section.
+2. Enter the key shown in the app (or open its link from the phone; there is no QR code), then the code
+   the app shows.
+3. Keep the 10 **recovery codes** that appear once: each works only once.
+
+With the required mode, whoever has no app yet sets it up at the next sign-in. So that a stolen password
+is not enough to set up an attacker's app, it also takes a code sent by email to the account.
+
+## If you lose your phone {#lost-phone}
+
+- Sign in with a recovery code and set up again from the profile.
+- A site administrator resets another account's two factors from that account's profile.
+- **Log in to WordPress** from the panel always works and does not ask for the second factor: your panel
+  sign-in, with its own two-step verification, is the second factor. The link stays signed and good for
+  one use.
+
+## Attempts {#attempts}
+
+An open sign-in allows 5 attempts. From the fifth wrong code of an account, the account waits 60 seconds,
+and the wait doubles with each error up to an hour: in that time no code is checked, not even the right
+one. A wrong code also counts for [address blocking](/docs/access/block-addresses). A code does not work
+twice.
+
+## Next step {#next}
+
+[Harden WordPress](/docs/access/harden-wordpress) with the site's other protections.

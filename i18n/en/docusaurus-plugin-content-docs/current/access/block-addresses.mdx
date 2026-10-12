@@ -1,0 +1,92 @@
+---
+title: Block addresses that keep failing to sign in
+description: Let the server block, by itself, the addresses that fail to sign in to SSH, WordPress or the panel too many times, and manage the blocks and the addresses that are always allowed.
+type: how-to
+prerequisites:
+  - An administrator account (read-only to look)
+  - The nftables package on the server (the installer and updates install it)
+version: unreleased
+last_verified: unverified
+sidebar_position: 6.5
+---
+
+Anyone who tries passwords in bulk on SSH, `wp-login.php`, `xmlrpc.php` or the panel is blocked for a
+while: their packets are dropped on every port of the server. The **Blocking** page, in the **Server**
+group, shows the blocked addresses and the always allowed ones, and changes their settings. How it works
+inside is in [address blocking](/docs/explanation/blocking).
+
+## Automatic blocking {#automatic-blocking}
+
+Failed sign-ins count towards a block in three places:
+
+- **SSH**: the passwords and keys sshd refuses;
+- **WordPress**: wrong passwords on `wp-login.php`, on XML-RPC and for application passwords, and wrong
+  codes of the site's [two-factor sign-in](/docs/access/wordpress-two-factor);
+- **the panel**: wrong passwords and wrong two-step verification codes.
+
+An address over the threshold is blocked. The **Automatic blocking** box has these settings:
+
+| Field | Default | Bounds |
+| --- | --- | --- |
+| **Block addresses that keep failing to sign in** | on | |
+| **Failed sign-ins** | 6 | 3 to 100 |
+| **Within (minutes)** | 10 | 1 to 1440 |
+| **Block for (minutes)** | 60 | 1 to 43200 |
+
+An IPv6 address counts together with its whole /64. The box also says which readers are on (**SSH:
+read**, **WordPress: read**, **Panel sign-in: counted**). If the server does not enforce the list, the top
+of the page says **The block list is not enforced**.
+
+These are never blocked: loopback, the server's own addresses and the addresses on the always allowed
+list.
+
+## Always allow your address {#allow-yours}
+
+Do this first: a few mistyped passwords must never lock you out.
+
+1. Open **Blocking**. The page shows **Your address** at the top.
+2. In the **Always allowed** box press **Always allow it**, or type an **Address or network** (an IP
+   address, or a network such as `203.0.113.0/24`) and press **Allow**.
+
+An allowed address is never blocked, however many sign-ins fail from it. To remove it, press the bin
+icon on its row and confirm: its failed sign-ins count again.
+
+## Block or unblock by hand {#manual}
+
+- To block, in the **Blocked addresses** box press **Block an address**, type the **Address or
+  network**, choose **For** (**One hour**, **One day**, **One week** or **Until removed**) and save.
+  The address's packets are dropped at once, on every port.
+- To unblock, press **Unblock** on its row and confirm. Its packets get through again at once, and its
+  failed sign-ins count from zero.
+
+Each row says **Why** (**by hand**, **SSH**, **WordPress** or **panel sign-in**) and **Until**. The panel
+refuses a block that holds your address, the server, loopback or an allowed address, and a block wider
+than /8 for IPv4 or /16 for IPv6.
+
+## If you locked yourself out {#locked-out}
+
+Get in from your provider's console and, as root on the server:
+
+```bash prompt
+cgctl blocklist unblock <address>
+```
+
+`<address>` is your address. On the server `cgctl` talks to the API socket, which has no address to block,
+so the command works even when you are blocked from the panel and from SSH.
+
+## With cgctl or the API {#with-cgctl-or-the-api}
+
+| Command | What it does |
+| --- | --- |
+| `cgctl blocklist` | Prints the block list. |
+| `cgctl blocklist block <address-or-network> [minutes]` | Blocks; without minutes, until removed. |
+| `cgctl blocklist unblock <address-or-network>` | Removes the block. |
+| `cgctl blocklist allow <address-or-network>` | Always allows. |
+| `cgctl blocklist disallow <address-or-network>` | Takes the address off the always allowed list. |
+
+The changes are session-only routes: `cgctl` signs in with an email and password (and the 2FA code), as
+for tokens, never with a token. The routes are in [the API](/docs/api).
+
+## Next step {#next}
+
+[Refuse visitors by address, user agent or country](/docs/access/refuse-visitors) on a single site.

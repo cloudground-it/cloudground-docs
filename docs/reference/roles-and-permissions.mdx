@@ -3,7 +3,7 @@ title: Ruoli e permessi
 description: Cosa può fare ogni ruolo, cosa può fare un token API e in che ordine il pannello controlla una richiesta.
 type: reference
 prerequisites: []
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 3
 ---
@@ -72,6 +72,15 @@ assegnati.
 | Controllo di disponibilità | sì | sì | vede |
 | Percorsi protetti | sì | sì | vede i percorsi |
 | Editor del routing (Vhost) | sì | no | no |
+| Lista dei blocchi del server: vedere | sì | no | vede |
+| Lista dei blocchi del server: bloccare, sbloccare, indirizzi consentiti, impostazioni | sì, da una sessione | no | no |
+| Regole di un sito (indirizzi, user agent, paesi): vedere | sì | sì | vede |
+| Regole di un sito: cambiare | sì | sì | no |
+| Vulnerabilità note di un sito: vedere | sì | sì | vede |
+| Vulnerabilità note di un sito: controllare ora | sì | sì | no |
+| Scansione malware di un sito: vedere | sì | sì | vede |
+| Scansione malware di un sito: scansionare ora, quarantena | sì | sì | no |
+| WordPress: accesso a due fattori e protezione (XML-RPC, editor, versione, readme, indirizzo di accesso) | sì | sì | no |
 | Certificati del sito | sì | sì | vede |
 | Svuotare e riscaldare la cache | sì | sì | vede le statistiche |
 | Rilasci: pubblicare, promuovere, rollback | sì | sì | vede |
@@ -106,6 +115,8 @@ assegnati.
 *Da v0.2.0.* Le righe su estensioni PHP, [risorse del sito](/docs/sites/resource-usage-and-limits),
 [controllo di disponibilità](/docs/sites/uptime-monitoring), [percorsi protetti](/docs/access/protected-paths)
 e attivazione del firewall, e i comandi in forma ridotta delle attività pianificate per la sola lettura.
+
+*Da v0.3.0.* Le righe su lista dei blocchi, regole di un sito, vulnerabilità, scansione malware, accesso a due fattori e protezione di WordPress. Le impostazioni **Controlla i siti WordPress per vulnerabilità note** e **Scansiona ogni settimana i file dei siti alla ricerca di malware** sono impostazioni del pannello: le cambia solo un amministratore. Le modifiche alla lista dei blocchi sono rotte solo per sessioni, come il firewall: un token API le rifiuta con **403**, e anche `cgctl blocklist` accede con email e password.
 
 ## Token API {#api-tokens}
 

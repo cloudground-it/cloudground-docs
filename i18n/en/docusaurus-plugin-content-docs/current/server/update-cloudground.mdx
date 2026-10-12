@@ -4,7 +4,7 @@ description: Install a newer signed release from the panel or with cgctl update;
 type: how-to
 prerequisites:
   - An administrator account, for the panel; root on the server, for cgctl update
-version: v0.1.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 5
 ---
@@ -80,6 +80,23 @@ state from <snapshot>`, exit 1.
 The new panel migrates its database forward at its first start, through every step between the two
 releases: you can go from one release to any newer one in a single update. The migration never runs
 backwards, so the way back is the snapshot, which a failed update restores by itself.
+
+## New system packages {#packages}
+
+*Since v0.3.0.* A release can need a system package that servers installed earlier do not have: v0.3.0
+needs `nftables`, for the [block list](/docs/access/block-addresses). Before the new release's agent
+starts, a check looks at which of the release's packages are missing and installs them with `apt-get`,
+in a transient unit with root privileges. If the install fails the first time, it tries a second time
+after `apt-get update`. The check has a time limit of 100 seconds, inside the 2 minutes the guard waits
+for the agent to restart.
+
+- During an update, an install that fails makes the agent's start fail: the update is rolled back like
+  any update that does not come up, and the previous release returns.
+- At any other start (for example a server reboot without a network) the check writes a warning to the
+  journal, with the `apt-get install` command to run, and the agent starts anyway.
+
+The check also runs from an update of an older release, v0.2.0 included: it needs only the unit file the
+new release installs.
 
 ## What it keeps {#what-it-keeps}
 

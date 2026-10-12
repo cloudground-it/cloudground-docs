@@ -1,0 +1,52 @@
+---
+title: Controlla le vulnerabilità di WordPress
+description: Leggi nella scheda Sicurezza di un sito WordPress le vulnerabilità note di WordPress, dei plugin e dei temi installati, e ricevi un avviso quando ne compare una.
+type: how-to
+prerequisites:
+  - Un sito WordPress o WooCommerce attivo
+  - Un account amministratore oppure operatore assegnato al sito (sola lettura per guardare)
+version: unreleased
+last_verified: unverified
+sidebar_position: 6.7
+---
+
+Una volta al giorno il pannello cerca le versioni installate di WordPress, dei suoi plugin e dei suoi
+temi in un database pubblico di vulnerabilità. Quello che riguarda le tue versioni compare nella scheda
+**Sicurezza** del sito e apre un avviso. Il pannello non aggiorna nulla da solo: l'aggiornamento resta
+una tua scelta.
+
+## Leggi i risultati {#read-the-results}
+
+1. Apri il sito e la scheda **Sicurezza**, riquadro **Vulnerabilità note**.
+2. In alto vedi l'esito: **nessuna nota**, **N trovate**, **primo controllo a breve** o **disattivato**.
+3. La tabella elenca, per ogni vulnerabilità: il tipo (**WordPress**, **Plugin** o **Tema**),
+   **Installato**, **Gravità** (**Critica**, **Alta**, **Media**, **Bassa**), la **Vulnerabilità** con il
+   suo CVE e un link all'avviso, e la **Correzione**:
+   - **Aggiorna alla `<versione>`**: esiste una versione corretta;
+   - **Ancora nessuna correzione**: nessuna versione la risolve ancora;
+   - **Vedi l'avviso**: il database non dice quale versione la risolve.
+4. Sotto la tabella trovi **Ultimo controllo** e i **Componenti controllati**.
+
+Per controllare subito premi **Controlla ora**. Il controllo parte come attività; se fallisce, la pagina
+dice **L'ultimo controllo, `<quando>`, non è stato completato** e mostra l'elenco di quello prima.
+
+## L'avviso {#the-alert}
+
+Un sito con vulnerabilità apre un avviso di tipo **Vulnerabilità**, che arriva anche al webhook come
+ogni altro avviso (vedi [avvisi e notifiche](/docs/server/alerts-and-notifications)). È un **errore**
+se una è di gravità alta o critica, altrimenti un'**attenzione**. Quando compare una vulnerabilità
+nuova l'avviso ricompare, anche se lo avevi archiviato.
+
+## Spegni il controllo {#turn-it-off}
+
+Il controllo è acceso in partenza. Per spegnerlo, in **Impostazioni** togli **Controlla i siti
+WordPress per vulnerabilità note** e salva. Con cgctl: `cgctl settings set vulnerability_check 0` (e `1` per riaccenderlo). La scheda
+**Sicurezza** dice allora **disattivato**.
+
+Il controllo manda fuori dal server solo il nome e la versione di ogni componente, mai il dominio né
+altro del server. Come funziona e da dove vengono i dati lo spiega
+[i controlli di sicurezza](/docs/explanation/security-scans).
+
+## Prossimo passo {#next}
+
+[Cerca malware nei file di un sito](/docs/access/malware-scan).

@@ -17,4 +17,6 @@ hide_table_of_contents: true
   <Card to="/docs/explanation/releases-and-rollback" title="Releases and rollback" />
   <Card to="/docs/explanation/quarry" title="How Quarry works" />
   <Card to="/docs/explanation/sign-in-protection" title="Sign-in protection" />
+  <Card to="/docs/explanation/blocking" title="Address blocking" />
+  <Card to="/docs/explanation/security-scans" title="Security checks" />
 </Cards>

@@ -3,7 +3,7 @@ title: Paths, ports and services
 description: The ports the server listens on, the systemd services, the system users and the paths CloudGround uses.
 type: reference
 prerequisites: []
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 5
 ---
@@ -39,6 +39,7 @@ The panel has no TCP port of its own: nginx talks to it on the socket `/run/clou
 | `cloudground-php-cg-site-<id>.service` | `cg-site-<id>` | a site's PHP-FPM, in the slice `cg-site-<id>.slice` |
 | `cg-site-<id>.slice` | — | a site's slice: all its processes, with their counters and [limits](/docs/sites/resource-usage-and-limits) (unit in `/etc/systemd/system/`) |
 | `cloudground-update-guard.service` | root | transient, during a panel update |
+| `cg-helper-<tool>-<n>.service` | root, sandboxed | *Since v0.3.0.* transient, in the `cg-helper.slice` slice: a `restic`, `mariadb-dump`, `mariadb` or `certbot` run by the agent (see [services](/docs/server/services#helper-units)) |
 | `nginx.service` | root and `www-data` | the web server |
 | `mariadb.service` | `mysql` | the databases |
 | `redis-server.service` | — | not installed on a new server; a server upgraded from an earlier version keeps it switched off |
@@ -112,6 +113,11 @@ The panel has no TCP port of its own: nginx talks to it on the socket `/run/clou
 | `/etc/nginx/sites-enabled/cloudground-panel-bootstrap.conf` | the default servers on :80 and :443 and the panel on :8443 |
 | `/etc/nginx/nginx.conf.cloudground-pre` | `nginx.conf` as it was before the installer, put back by the uninstall |
 | `/etc/letsencrypt/renewal-hooks/deploy/cloudground-reload-nginx.sh` | reloads nginx after a certificate renewal |
+| `/var/lib/cloudground-agent/quarantine/<site-id>/` | *Since v0.3.0.* files put in [quarantine](/docs/access/malware-scan#quarantine), with a `.json` file beside each that records the site, the path and the SHA-256 (folder 0700, files 0600, root's) |
+| `/var/lib/cloudground-agent/geo/` | *Since v0.3.0.* the copy of DB-IP *IP to Country Lite* for the [country rules](/docs/access/refuse-visitors#country-data) |
+| `/etc/nginx/conf.d/cloudground-block-<id>.conf` | *Since v0.3.0.* a site's per-site rules; absent for a site without rules |
+| nft table `inet cloudground` | *Since v0.3.0.* the block list, in the kernel; uninstalling removes it |
+| `/run/cloudground/auth-log.sock` | *Since v0.3.0.* the socket the agent reads failed WordPress sign-ins from |
 | `/usr/local/bin/restic`, `wp`, `composer` | restic, wp-cli and composer, at the versions the installer pins |
 
 ## Directories the installer creates {#directories}

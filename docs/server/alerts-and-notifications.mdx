@@ -5,7 +5,7 @@ type: how-to
 prerequisites:
   - Un account nel pannello per leggere gli avvisi
   - Un account amministratore per configurare il webhook
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 4
 ---
@@ -26,10 +26,14 @@ servizio che si ferma.
 | **Servizio** | Qualcuno prova molti token sbagliati del connettore WordPress. | errore |
 | **Disponibilità** | *Da v0.2.0.* Un sito con il [controllo di disponibilità](/docs/sites/uptime-monitoring) attivo non risponde dal suo indirizzo pubblico per due controlli di fila. | errore |
 | **Risorse** | *Da v0.2.0.* Un sito resta per 15 minuti sopra la sua soglia di CPU o di memoria, o il suo disco supera la soglia (vedi [uso delle risorse e limiti](/docs/sites/resource-usage-and-limits)). | attenzione |
+| **Vulnerabilità** | *Da v0.3.0.* Un sito WordPress ha una vulnerabilità nota in WordPress, in un plugin o in un tema (vedi [controlla le vulnerabilità di WordPress](/docs/access/wordpress-vulnerabilities)). Ricompare quando ne compare una nuova. | errore se alta o critica, altrimenti attenzione |
+| **Malware** | *Da v0.3.0.* La [scansione malware](/docs/access/malware-scan) trova file infetti in un sito. | errore |
 | **Configurazione** | File gestiti dal pannello sono cambiati fuori dal pannello. | attenzione |
 | Rilascio | Il sito serve un rilascio diverso da quello registrato, o un rilascio non ha finito la verifica dopo la promozione. | attenzione |
 
 Un operatore vede solo gli avvisi dei suoi siti; gli altri ruoli li vedono tutti.
+
+*Da v0.3.0.* Gli avvisi di **Vulnerabilità** e di **Malware** nominano i componenti o i file, e come gli altri arrivano ai canali di notifica e al webhook.
 
 *Da v0.2.0.* Un avviso di tipo **Attività** nomina l'attività a parole, nella tua lingua (*Ripristino di
 prova*, *Backup programmato*), come l'elenco delle attività, non con il suo nome interno.
@@ -102,7 +106,7 @@ nessuna lingua.
 | `text`, `content` | Lo stesso testo, nella lingua degli amministratori: il livello, il sito e il messaggio. Un'attività è nominata a parole. |
 | `cloudground.id` | L'identificativo dell'avviso. Resta lo stesso finché la condizione non cambia. |
 | `cloudground.level` | `error` o `warning`. |
-| `cloudground.kind` | Il tipo: `certificate`, `task`, `service`, `uptime`, `usage`, `drift` o `deploy`. |
+| `cloudground.kind` | Il tipo: `certificate`, `task`, `service`, `uptime`, `usage`, `vulnerability`, `malware`, `drift` o `deploy`. |
 | `cloudground.site` | Il dominio del sito. Assente per un avviso di tutto il server. |
 | `cloudground.task_kind` | Solo per un avviso di tipo `task`: il nome interno dell'attività, per esempio `backup.run`. |
 | `cloudground.at` | Il momento dell'avviso, in formato RFC 3339: quando è partita l'attività fallita, quando il sito ha smesso di rispondere, quando scade il certificato. Può mancare. |

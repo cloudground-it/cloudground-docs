@@ -3,7 +3,7 @@ title: Roles and permissions
 description: What each role can do, what an API token can do, and in what order the panel checks a request.
 type: reference
 prerequisites: []
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 3
 ---
@@ -72,6 +72,15 @@ only.
 | Uptime check | yes | yes | sees |
 | Protected paths | yes | yes | sees the paths |
 | Routing editor (Vhost) | yes | no | no |
+| The server's block list: view | yes | no | views |
+| The server's block list: block, unblock, allowed addresses, settings | yes, from a session | no | no |
+| A site's rules (addresses, user agents, countries): view | yes | yes | views |
+| A site's rules: change | yes | yes | no |
+| A site's known vulnerabilities: view | yes | yes | views |
+| A site's known vulnerabilities: check now | yes | yes | no |
+| A site's malware scan: view | yes | yes | views |
+| A site's malware scan: scan now, quarantine | yes | yes | no |
+| WordPress: two-factor sign-in and hardening (XML-RPC, editor, version, readme, login address) | yes | yes | no |
 | Site certificates | yes | yes | sees |
 | Purge and warm the cache | yes | yes | sees the statistics |
 | Releases: deploy, promote, roll back | yes | yes | sees |
@@ -106,6 +115,8 @@ only.
 *Since v0.2.0.* The rows on PHP extensions, [site resources](/docs/sites/resource-usage-and-limits),
 the [uptime check](/docs/sites/uptime-monitoring), [protected paths](/docs/access/protected-paths)
 and turning on the firewall, and the shortened scheduled-task commands for read-only accounts.
+
+*Since v0.3.0.* The rows on the block list, a site's rules, vulnerabilities, the malware scan, WordPress two-factor sign-in and hardening. The settings **Check WordPress sites for known vulnerabilities** and **Scan the sites' files for malware every week** are panel settings: only an administrator changes them. Changes to the block list are session-only routes, like the firewall's: an API token is refused with **403**, and `cgctl blocklist` also signs in with an email and password.
 
 ## API tokens {#api-tokens}
 

@@ -5,7 +5,7 @@ type: how-to
 prerequisites:
   - An administrator account
   - The server's firewall (ufw) installed; active for the rules to take effect
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 6
 ---
@@ -18,6 +18,10 @@ firewall, and a script that turns ufw on can lock you out, for example when SSH 
 port. The choice stays yours: since v0.2.0 you make it from the panel, with one button. On a freshly
 created cloud server ufw is usually installed but off, and the page says **inactive**. While it is inactive, rules are saved but have no effect: the page shows them with
 *The firewall is inactive: these rules are stored, and apply only once it is enabled.*
+
+*Since v0.3.0.* Addresses that fail to sign in too often are blocked by a separate table, nftables'
+`inet cloudground`, which does not depend on ufw: it works with the firewall off too. See [block
+addresses that keep failing to sign in](/docs/access/block-addresses).
 
 ## What the installer does {#installer}
 

@@ -1,0 +1,60 @@
+---
+title: I controlli di sicurezza
+description: Cosa guarda il controllo delle vulnerabilità e la scansione malware, da dove vengono i loro dati, cosa esce dal server e perché non restano in memoria.
+type: explanation
+prerequisites: []
+version: unreleased
+last_verified: unverified
+sidebar_position: 12
+---
+
+Il pannello sa due cose di un sito che il sito da solo non dice: se una versione installata ha una
+vulnerabilità nota, e se un suo file somiglia a un malware noto. Nessuna delle due cambia il sito: il
+pannello segnala, tu decidi. Come usarle: [controlla le vulnerabilità di
+WordPress](/docs/access/wordpress-vulnerabilities) e [cerca malware nei file di un
+sito](/docs/access/malware-scan).
+
+## Le vulnerabilità {#vulnerabilities}
+
+Una volta al giorno per sito, il pannello chiede a WordPress, dentro la sandbox del sito, le versioni
+di core, plugin e temi, e le cerca in WPVulnerability, un database pubblico con licenza CC0 che raccoglie
+fonti diverse (CVE e altri avvisi). Non servono né un account né una chiave.
+
+- **Cosa esce dal server**: una richiesta per componente, con il suo nome e la sua versione, e uno
+  `User-Agent` che nomina CloudGround. Mai il dominio, né altro del server.
+- Le risposte restano in memoria per 6 ore, condivise tra i siti, e i controlli girano uno alla volta:
+  ogni sito all'ora in cui è stato visto la prima volta, così si spargono nella giornata.
+- Una versione ha una vulnerabilità quando cade negli intervalli che il database indica, confrontati come
+  fa PHP con le versioni. Un confronto che il pannello non conosce non risulta mai una vulnerabilità.
+- Un controllo fallito non cancella i risultati precedenti: li lascia, con l'errore.
+
+Il database dice se una versione è colpita, non se il tuo sito lo è davvero: un plugin installato ma
+spento può comparire. L'avviso serve a farti guardare.
+
+## La scansione malware {#malware}
+
+La scansione usa ClamAV, ma in modo diverso da come lo si installa di solito.
+
+- **Mai residente.** Non c'è il demone di ClamAV, e quello che aggiorna le firme è fermo. `clamscan`
+  parte solo per la scansione, come l'utente del sito, nella sua slice e nella sua sandbox, con un tetto
+  di memoria di 768 MB, priorità minima di CPU e di disco, e al massimo due ore. Non segue i link
+  simbolico, resta su un solo filesystem e salta i file oltre 25 MB.
+- **Un insieme ridotto di firme.** Il pannello tiene le firme per i file di un sito web (PHP, HTML,
+  JavaScript, script) e toglie quelle per Windows, documenti e posta, che sono la parte più grande della
+  memoria. Aggiunge le regole PHP di Linux Malware Detect, che scarica sul server e non distribuisce.
+  Le firme si aggiornano al massimo una volta al giorno, prima di una scansione.
+- **Le scansioni si spargono.** Una alla volta sul server, una volta a settimana per sito, ognuno a una
+  sua ora, così non pesano insieme sui siti.
+- **La quarantena** copia il file in una cartella di root, fuori da ogni percorso che il sito, nginx, i
+  backup o l'SFTP raggiungono, e poi lo toglie dal sito. Se non riesce a toglierlo, la copia resta e
+  l'operazione fallisce.
+
+Le tre operazioni che toccano il sistema (installare i pacchetti, ricaricare il profilo AppArmor di
+freshclam, aggiornare le firme) girano in unità temporanee con i privilegi che servono, perché l'agent
+non li ha: lo stesso schema delle [estensioni PHP](/docs/sites/change-site-settings).
+
+Una scansione pulita non dimostra che il sito sia pulito: le firme riconoscono il malware già noto.
+
+## Prossimo passo {#next}
+
+[L'isolamento dei siti](/docs/explanation/site-isolation) spiega perché ogni scansione gira nella sandbox del sito.

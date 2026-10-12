@@ -4,7 +4,7 @@ description: Where the panel's API answers, how to authenticate, which requests 
 type: reference
 prerequisites:
   - An account in the panel, or an API token
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 1
 ---
@@ -78,9 +78,31 @@ attempt is not evaluated and gets **429**.
 Every route needs one of these levels: open, signed in, whole server, manage, administrator. A role
 that is not allowed gets **403**; a site an operator cannot reach answers **404**. Some routes are
 session-only and answer a token with **403**: your own account, users, tokens, the sites' shell and
-routing, the firewall's rules and turning it on (`POST /api/firewall/enable`, since v0.2.0), the
+routing, the firewall's rules and turning it on (`POST /api/firewall/enable`, since v0.2.0), changes to the block list (since v0.3.0), the
 panel's certificate and its update. The
 full table is in [roles and permissions](/docs/reference/roles-and-permissions).
+
+## Security {#security}
+
+*Since v0.3.0.* The routes for blocking, checking and hardening. The complete list is in the product
+repository's `docs/api.md`.
+
+| Route | Role | What it does |
+| --- | --- | --- |
+| `GET /api/blocklist` | whole server | The block list: `blocked`, `allowed`, `settings`, `enforced` (and `error`), `watching` (the SSH and WordPress readers) and `your_address`. |
+| `POST /api/blocklist/blocks`, `DELETE /api/blocklist/blocks` | administrator, session | Blocks (`{"address", "note", "minutes"}`) or unblocks (`{"address"}`). |
+| `POST /api/blocklist/allowed`, `DELETE /api/blocklist/allowed` | administrator, session | Adds or removes an always allowed address. |
+| `PUT /api/blocklist/settings` | administrator, session | Automatic blocking: `enabled`, `max_failures` (3–100) in `window_minutes` (1–1440), `ban_minutes` (1–43200). |
+| `PUT /api/sites/<id>/blocking` | manage | The site's rules: `addresses`, `user_agents`, `countries`, `allow_countries_only`. |
+| `GET /api/sites/<id>/vulnerabilities` | signed in | A WordPress site's last check: `enabled`, `checked_at`, `error`, `components` and the `findings` (`component`, `slug`, `version`, `title`, `severity`, `cve`, `fixed_in`, `unfixed`, `link`). |
+| `POST /api/sites/<id>/vulnerabilities/check` | manage | Checks now; answers **202** with the task. |
+| `GET /api/sites/<id>/malware` | signed in | The site's scans: `enabled`, `next_scan`, the last `scan` and the `findings` (`id`, `path`, `signature`, `status`: `open`, `quarantined` or `gone`). |
+| `POST /api/sites/<id>/malware/scan` | manage | Scans now (needs `malware_scan` on); **202** with the task. |
+| `POST /api/sites/<id>/malware/findings/<finding>/quarantine` | manage | Puts the file in quarantine. |
+| `PUT /api/sites/<id>/wp/two-factor` | manage | `{"mode": "off"}`, `"optional"` or `"required"`. |
+| `PUT /api/sites/<id>/wp/hardening` | manage | `{"xmlrpc_off", "xmlrpc_allow", "file_edit_off", "hide_version", "block_readme", "login_path"}`. |
+
+`vulnerability` and `malware` alerts appear in the alert list like the others.
 
 ## Errors {#errors}
 

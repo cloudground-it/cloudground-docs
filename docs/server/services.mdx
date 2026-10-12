@@ -4,7 +4,7 @@ description: Controlla lo stato dei servizi di sistema che fanno girare i siti e
 type: how-to
 prerequisites:
   - Un account amministratore per riavviare; sola lettura per guardare
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 2
 ---
@@ -38,6 +38,20 @@ sempre.
 
 Un servizio **in errore** o **fermo** apre un avviso nella dashboard: vedi
 [avvisi e notifiche](./alerts-and-notifications.mdx).
+
+## Le unità degli strumenti {#helper-units}
+
+*Da v0.3.0.* Per un backup, una copia di un database o un certificato, l'agent non lancia `restic`,
+`mariadb-dump`, il client `mariadb` o `certbot` nel suo processo: ognuno gira in un'unità
+temporanea `cg-helper-<strumento>-<n>.service`, nella slice `cg-helper.slice`, con la stessa sandbox
+dell'agent e un tetto di memoria suo, il 75% della memoria del server. Se uno di questi strumenti
+supera il tetto, il kernel lo ferma: fallisce quell'operazione, per esempio un backup, e il pannello
+e l'agent continuano. All'avvio l'agent ferma le unità rimaste da una sua esecuzione precedente.
+
+L'unità `cloudground-agent.service` ha un limite di memoria suo: oltre 768 MB il kernel la rallenta e
+oltre 1 GB ferma il processo che ha ecceduto. Le unità temporanee compaiono in `systemctl list-units
+'cg-helper-*'` solo mentre lavorano. Perché stanno fuori dall'unità dell'agent lo spiega
+[l'architettura](/docs/explanation/architecture#the-agent).
 
 ## Riavvia un servizio {#restart}
 

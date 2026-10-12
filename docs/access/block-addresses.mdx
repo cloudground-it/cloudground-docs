@@ -1,0 +1,92 @@
+---
+title: Blocca gli indirizzi che sbagliano l'accesso
+description: Lascia che il server blocchi da solo gli indirizzi che sbagliano troppe volte l'accesso a SSH, a WordPress o al pannello, e gestisci i blocchi e gli indirizzi sempre consentiti.
+type: how-to
+prerequisites:
+  - Un account amministratore (sola lettura per guardare)
+  - Il pacchetto nftables sul server (lo installano l'installer e gli aggiornamenti)
+version: unreleased
+last_verified: unverified
+sidebar_position: 6.5
+---
+
+Chi prova password a raffica su SSH, su `wp-login.php`, su `xmlrpc.php` o sul pannello viene bloccato per un
+po': i suoi pacchetti vengono scartati su ogni porta del server. La pagina **Blocchi**, nel gruppo
+**Server**, mostra gli indirizzi bloccati e quelli sempre consentiti, e ne cambia le impostazioni. Come
+funziona dentro lo spiega [il blocco degli indirizzi](/docs/explanation/blocking).
+
+## Il blocco automatico {#automatic-blocking}
+
+Gli accessi falliti contano per il blocco in tre posti:
+
+- **SSH**: le password e le chiavi rifiutate da sshd;
+- **WordPress**: le password sbagliate su `wp-login.php`, su XML-RPC e per le password applicative, e i
+  codici sbagliati dell'[accesso a due fattori](/docs/access/wordpress-two-factor) del sito;
+- **il pannello**: le password e i codici della verifica in due passaggi sbagliati.
+
+Un indirizzo che supera la soglia viene bloccato. Il riquadro **Blocco automatico** ha queste impostazioni:
+
+| Campo | Predefinito | Limiti |
+| --- | --- | --- |
+| **Blocca gli indirizzi che continuano a sbagliare l'accesso** | acceso | |
+| **Accessi falliti** | 6 | da 3 a 100 |
+| **Entro (minuti)** | 10 | da 1 a 1440 |
+| **Blocca per (minuti)** | 60 | da 1 a 43200 |
+
+Un indirizzo IPv6 conta insieme a tutta la sua /64. Il riquadro dice anche quali letture sono attive
+(**SSH: letto**, **WordPress: letto**, **Accesso al pannello: contato**). Se la lista non è applicata dal
+server, in cima alla pagina compare **La lista dei blocchi non è applicata**.
+
+Non vengono mai bloccati il loopback, gli indirizzi del server stesso e quelli della lista dei sempre
+consentiti.
+
+## Consenti sempre il tuo indirizzo {#allow-yours}
+
+Fallo prima di tutto: qualche password sbagliata di troppo non deve chiuderti fuori.
+
+1. Apri **Blocchi**. In alto la pagina mostra **Il tuo indirizzo**.
+2. Nel riquadro **Sempre consentiti** premi **Consentilo sempre**, oppure scrivi un **Indirizzo o rete**
+   (un indirizzo IP, o una rete come `203.0.113.0/24`) e premi **Consenti**.
+
+Un indirizzo consentito non viene mai bloccato, per quanti accessi falliscano. Per toglierlo premi il
+cestino sulla riga e conferma: i suoi accessi falliti tornano a contare.
+
+## Blocca o sblocca a mano {#manual}
+
+- Per bloccare, nel riquadro **Indirizzi bloccati** premi **Blocca un indirizzo**, scrivi l'**Indirizzo
+  o rete**, scegli **Per** (**Un'ora**, **Un giorno**, **Una settimana** o **Finché non lo rimuovi**) e
+  salva. I pacchetti dell'indirizzo vengono scartati subito, su ogni porta.
+- Per sbloccare, premi **Sblocca** sulla riga e conferma. I pacchetti tornano a passare subito, e i suoi
+  accessi falliti ricominciano da zero.
+
+Ogni riga dice **Motivo** (**a mano**, **SSH**, **WordPress** o **accesso al pannello**) e **Fino a**. Il
+pannello rifiuta un blocco che contiene il tuo indirizzo, il server, il loopback o un indirizzo
+consentito, e un blocco più largo di /8 per IPv4 o di /16 per IPv6.
+
+## Se ti sei bloccato fuori {#locked-out}
+
+Entra dalla console del provider e, da root sul server:
+
+```bash prompt
+cgctl blocklist unblock <indirizzo>
+```
+
+`<indirizzo>` è il tuo indirizzo. Sul server `cgctl` parla con il socket dell'API, che non ha un
+indirizzo da bloccare, quindi il comando funziona anche quando sei bloccato dal pannello e da SSH.
+
+## Con cgctl o l'API {#with-cgctl-or-the-api}
+
+| Comando | Cosa fa |
+| --- | --- |
+| `cgctl blocklist` | Stampa la lista dei blocchi. |
+| `cgctl blocklist block <indirizzo-o-rete> [minuti]` | Blocca; senza minuti, finché non lo rimuovi. |
+| `cgctl blocklist unblock <indirizzo-o-rete>` | Toglie il blocco. |
+| `cgctl blocklist allow <indirizzo-o-rete>` | Consente sempre. |
+| `cgctl blocklist disallow <indirizzo-o-rete>` | Toglie l'indirizzo dai sempre consentiti. |
+
+Le modifiche sono rotte solo per sessioni: `cgctl` accede con email e password (e il codice della 2FA)
+come per i token, mai con un token. Le rotte sono in [l'API](/docs/api).
+
+## Prossimo passo {#next}
+
+[Rifiuta visitatori per indirizzo, user agent o paese](/docs/access/refuse-visitors) su un singolo sito.

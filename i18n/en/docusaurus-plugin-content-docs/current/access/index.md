@@ -14,5 +14,11 @@ hide_table_of_contents: true
   <Card to="/docs/access/two-step-verification" title="Two-step verification" />
   <Card to="/docs/access/api-tokens-and-cgctl" title="API tokens and cgctl" />
   <Card to="/docs/access/firewall" title="Firewall" />
+  <Card to="/docs/access/block-addresses" title="Block addresses that keep failing to sign in" />
+  <Card to="/docs/access/refuse-visitors" title="Refuse visitors by address, user agent or country" />
+  <Card to="/docs/access/wordpress-vulnerabilities" title="Check WordPress for vulnerabilities" />
+  <Card to="/docs/access/malware-scan" title="Scan a site's files for malware" />
+  <Card to="/docs/access/wordpress-two-factor" title="Two-factor sign-in for WordPress" />
+  <Card to="/docs/access/harden-wordpress" title="Harden WordPress" />
   <Card to="/docs/access/recover-admin-access" title="Recover administrator access" />
 </Cards>

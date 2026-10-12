@@ -1,0 +1,77 @@
+---
+title: Address blocking
+description: How the server blocks the addresses that fail to sign in, how it refuses the visitors of a single site, and why these two defences live in different places.
+type: explanation
+prerequisites: []
+version: unreleased
+last_verified: unverified
+sidebar_position: 11
+---
+
+CloudGround has two defences against unwanted visitors, and they do not do the same thing. The **block
+list** covers the whole server and triggers by itself when an address fails to sign in too often. The
+**per-site rules** cover one site and you write them. How to use them: [block addresses that keep
+failing to sign in](/docs/access/block-addresses) and [refuse visitors by address, user agent or
+country](/docs/access/refuse-visitors).
+
+## The block list {#block-list}
+
+```mermaid
+flowchart LR
+  ssh["sshd: refused sign-ins"] -->|"errors in the journal"| agent["panel-agent"]
+  wp["WordPress: wrong sign-in"] -->|"marked POST, written by nginx"| agent
+  panel["panel: wrong password or code"] --> api["panel-api"]
+  agent -->|"failures read every 10 s"| api
+  api -->|"block list"| agent
+  agent -->|"nft table inet cloudground"| kernel["netfilter: drops the packets"]
+```
+
+Three sources tell the panel how many sign-ins failed, and from which address:
+
+- **SSH**: the agent reads sshd's journal and counts a line only if the journal's trusted fields say sshd
+  wrote it, because a user can write lines that look like sshd's into the journal;
+- **WordPress**: the connector marks a failed sign-in request with a header, and nginx writes the address of
+  that `POST` to a socket only the agent reads. Only a `POST` that really reached the site counts, never a
+  `GET` served from the cache, and a site cannot make failures count against an address that never wrote to
+  it;
+- **the panel**: every wrong password and wrong code.
+
+The panel counts an address's failures in a sliding window. An IPv6 address counts together with its whole
+/64, because a single customer usually gets a whole /64. Over the threshold, the panel stores the block and
+sends the list to the agent, which applies it in a netfilter table of the panel's own (`inet cloudground`).
+It sends it again every 10 minutes, because a reboot empties netfilter.
+
+**Why netfilter.** A dropped packet costs sshd and nginx nothing, and one table covers SSH, the sites and
+the panel. It does not depend on ufw, which may be off: that is why the `nftables` package is among the
+installer's, and why an [update](/docs/server/update-cloudground) installs the new packages a release
+needs. If `nftables` is missing, the **Blocking** page says the list is not enforced.
+
+**Why it does not block you.** Loopback, the server's own addresses and the always allowed list are never
+blocked; a manual block that holds your address, the server or an allowed address is refused. From the
+server's console, `cgctl blocklist unblock` is always possible.
+
+This defence adds to [sign-in protection](/docs/explanation/sign-in-protection), which slows the panel's
+attempts without blocking: the slowing protects the account, the block pushes the address away.
+
+## The per-site rules {#site-rules}
+
+A site's rules become an nginx configuration file of its own: a list of addresses, the prefixes of the
+chosen countries and a single expression for the user agents, which together decide one variable. The
+site's virtual host, on port 443, answers **403** when the variable is true, in the nginx phase that comes
+before the page cache. A site without rules has neither the file nor the check, and pays nothing. If nginx
+does not accept the file, the panel does not save and undoes the change.
+
+The rules never touch the server's own addresses and loopback, so the panel's checks of the site keep
+working, and they leave port 80 open for certificates.
+
+**Countries.** An address's country comes from DB-IP's *IP to Country Lite* database (CC BY 4.0), which
+the agent downloads by itself and keeps on the server in `/var/lib/cloudground-agent/geo/`, refreshed
+after 35 days. The ranges become exact networks, for IPv4 and IPv6, and the attribution is in every
+generated file. The database is wrong now and then: it is a filter, not a barrier.
+
+**The user agent** is declared by the visitor. A user agent rule turns away polite crawlers, not an
+attacker.
+
+## Next step {#next}
+
+[How the security checks work](/docs/explanation/security-scans).

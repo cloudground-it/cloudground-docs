@@ -1,0 +1,59 @@
+---
+title: Security checks
+description: What the vulnerability check and the malware scan look at, where their data comes from, what leaves the server and why they do not stay in memory.
+type: explanation
+prerequisites: []
+version: unreleased
+last_verified: unverified
+sidebar_position: 12
+---
+
+The panel knows two things about a site that the site does not say by itself: whether an installed version
+has a known vulnerability, and whether one of its files looks like known malware. Neither changes the site:
+the panel reports, you decide. How to use them: [check WordPress for
+vulnerabilities](/docs/access/wordpress-vulnerabilities) and [scan a site's files for
+malware](/docs/access/malware-scan).
+
+## Vulnerabilities {#vulnerabilities}
+
+Once a day per site, the panel asks WordPress, inside the site's sandbox, for the versions of core, plugins
+and themes, and looks them up in WPVulnerability, a public CC0-licensed database that collects different
+sources (CVEs and other advisories). It needs neither an account nor a key.
+
+- **What leaves the server**: one request per component, with its name and version, and a `User-Agent`
+  that names CloudGround. Never the domain, nor anything else about the server.
+- Answers stay in memory for 6 hours, shared between sites, and the checks run one at a time: each site at
+  the hour it was first seen, so they spread over the day.
+- A version has a vulnerability when it falls in the ranges the database gives, compared the way PHP
+  compares versions. A comparison the panel does not know never counts as a vulnerability.
+- A failed check does not erase the previous results: it leaves them, with the error.
+
+The database says whether a version is affected, not whether your site really is: a plugin that is
+installed but off can appear. The alert is there to make you look.
+
+## The malware scan {#malware}
+
+The scan uses ClamAV, but not the way it is usually installed.
+
+- **Never resident.** There is no ClamAV daemon, and the one that updates signatures is stopped.
+  `clamscan` starts only for the scan, as the site's user, in its slice and its sandbox, with a 768 MB
+  memory cap, the lowest CPU and disk priority, and at most two hours. It follows no symbolic links, stays
+  on one filesystem and skips files over 25 MB.
+- **A reduced set of signatures.** The panel keeps the signatures for a website's files (PHP, HTML,
+  JavaScript, scripts) and drops those for Windows, documents and mail, which are the biggest part of the
+  memory. It adds Linux Malware Detect's PHP rules, which it downloads onto the server and does not
+  distribute. Signatures update at most once a day, before a scan.
+- **Scans spread out.** One at a time on the server, once a week per site, each at its own hour, so they
+  do not weigh on the sites together.
+- **Quarantine** copies the file to a root folder, out of every path the site, nginx, the backups or SFTP
+  reach, and then removes it from the site. If it cannot remove it, the copy stays and the operation fails.
+
+The three operations that touch the system (installing the packages, reloading freshclam's AppArmor
+profile, updating the signatures) run in transient units with the privileges they need, because the agent
+does not have them: the same pattern as [PHP extensions](/docs/sites/change-site-settings#php-extensions).
+
+A clean scan does not prove the site is clean: the signatures recognise malware that is already known.
+
+## Next step {#next}
+
+[Site isolation](/docs/explanation/site-isolation) explains why each scan runs in the site's sandbox.

@@ -3,7 +3,7 @@ title: La protezione dell'accesso
 description: Come il pannello e Quarry rallentano chi prova a indovinare le password, perché una password sbagliata non blocca mai l'utente vero, e quanto costa.
 type: explanation
 prerequisites: []
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 10
 ---
@@ -23,7 +23,7 @@ tentativi, e rallenta **la rete da cui arrivano**, non l'account.
   rete che sbaglia ha circa un tentativo al minuto su un account.
 - L'utente vero, che accede da un'altra parte, aspetta al massimo 2 secondi, e non viene mai rifiutato
   per colpa dei tentativi di altri.
-- Non viene mai bloccato nulla. La password giusta entra sempre.
+- L'account non viene mai bloccato, e la password giusta entra sempre. *Da v0.3.0.* Un indirizzo che continua a sbagliare può essere bloccato dal server per un po', su tutte le porte: vedi [il blocco degli indirizzi](/docs/explanation/blocking).
 - La risposta è la stessa che l'email esista o no: *invalid credentials*, dopo la stessa attesa. Le
   attese non dicono a chi attacca quali account esistono.
 

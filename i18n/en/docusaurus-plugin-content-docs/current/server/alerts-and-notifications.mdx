@@ -5,7 +5,7 @@ type: how-to
 prerequisites:
   - An account in the panel to read alerts
   - An administrator account to set the webhook up
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 4
 ---
@@ -26,10 +26,14 @@ service that stopped.
 | **Service** | Something is trying many wrong WordPress connector tokens. | error |
 | **Uptime** | *Since v0.2.0.* A site with the [uptime check](/docs/sites/uptime-monitoring) on does not answer from its public address for two checks in a row. | error |
 | **Resources** | *Since v0.2.0.* A site stays above its CPU or memory threshold for 15 minutes, or its disk use passes its threshold (see [resource usage and limits](/docs/sites/resource-usage-and-limits)). | warning |
+| **Vulnerability** | *Since v0.3.0.* A WordPress site has a known vulnerability in WordPress, a plugin or a theme (see [check WordPress for vulnerabilities](/docs/access/wordpress-vulnerabilities)). It comes back when a new one appears. | error if high or critical, otherwise warning |
+| **Malware** | *Since v0.3.0.* The [malware scan](/docs/access/malware-scan) finds infected files in a site. | error |
 | **Configuration** | Files the panel manages changed outside the panel. | warning |
 | Release | The site serves a release other than the one recorded, or a release did not finish its check after promotion. | warning |
 
 An operator sees only the alerts of its sites; the other roles see them all.
+
+*Since v0.3.0.* **Vulnerability** and **Malware** alerts name the components or the files, and like the others reach the notification channels and the webhook.
 
 *Since v0.2.0.* A **Task** alert names the task in words, in your language (*Restore test*,
 *Scheduled backup*), as the task list does, not by its internal name.
@@ -101,7 +105,7 @@ language.
 | `text`, `content` | The same text, in the administrators' language: the level, the site and the message. A task is named in words. |
 | `cloudground.id` | The alert's identifier. It stays the same while the condition does not change. |
 | `cloudground.level` | `error` or `warning`. |
-| `cloudground.kind` | The kind: `certificate`, `task`, `service`, `uptime`, `usage`, `drift` or `deploy`. |
+| `cloudground.kind` | The kind: `certificate`, `task`, `service`, `uptime`, `usage`, `vulnerability`, `malware`, `drift` or `deploy`. |
 | `cloudground.site` | The site's domain. Absent for a server-wide alert. |
 | `cloudground.task_kind` | Only on a `task` alert: the task's internal name, for example `backup.run`. |
 | `cloudground.at` | The alert's moment, in RFC 3339 format: when the failed task started, when the site stopped answering, when the certificate expires. It can be missing. |

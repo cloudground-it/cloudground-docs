@@ -1,0 +1,56 @@
+---
+title: Proteggi WordPress
+description: Spegni XML-RPC, l'editor dei file, la versione e i file readme di un sito WordPress, e sposta se vuoi l'indirizzo di accesso, ogni protezione da sola.
+type: how-to
+prerequisites:
+  - Un sito WordPress o WooCommerce
+  - Un account amministratore oppure operatore assegnato al sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 6.95
+---
+
+Le protezioni più comuni di WordPress, di solito lasciate ai plugin, si accendono dal pannello, una per
+una. Il **set consigliato** non cambia ciò che vedono visitatori, clienti WooCommerce o Jetpack.
+
+## Accendi le protezioni {#turn-them-on}
+
+1. Apri il sito, la scheda **WordPress**, la sezione **Protezione**.
+2. Accendi quelle che vuoi, oppure premi **Applica il set consigliato** (tutte, tranne l'indirizzo di
+   accesso).
+3. Salva. La cache di pagina viene svuotata.
+
+Nessuna è accesa in partenza.
+
+| Protezione | Cosa fa |
+| --- | --- |
+| **Disattiva XML-RPC** | `xmlrpc.php` risponde 403, tranne che agli indirizzi di **Eccezioni XML-RPC** (indirizzi IP o reti, uno per riga, fino a 50) e alle richieste firmate di Jetpack. L'app WordPress per dispositivi mobili e alcuni strumenti di pubblicazione usano XML-RPC. |
+| **Disattiva l'editor dei file** | Nessuna modifica al codice di temi e plugin da wp-admin, qualunque cosa dica `wp-config.php`. |
+| **Nascondi la versione di WordPress** | Nessuna versione nell'intestazione delle pagine, nei feed e negli URL dei file di WordPress. I browser caricano comunque i file nuovi dopo un aggiornamento. |
+| **Blocca i file readme e di licenza** | `readme.html`, `license.txt` e i readme di plugin e temi rispondono 404: indicano le versioni. |
+| **Indirizzo di accesso** | Sposta la pagina di accesso. |
+
+## Sposta l'indirizzo di accesso {#login-address}
+
+Scrivi in **Indirizzo di accesso** da 3 a 64 lettere minuscole, cifre e trattini, per esempio `ingresso`.
+Vuoto, il sito tiene `wp-login.php`. Impostato:
+
+- la pagina di accesso risponde a `/ingresso`, anche per il passo dei due fattori e il collegamento
+  della password dimenticata;
+- `wp-login.php` risponde 404, in qualsiasi forma, e `/login` e `/admin` non reindirizzano più;
+- wp-admin risponde 404 a chi non ha fatto l'accesso (`admin-ajax.php` e `admin-post.php` restano aperti);
+- la pagina nuova non passa dalla cache di pagina.
+
+Un indirizzo che coincide con un percorso di WordPress o di WooCommerce viene rifiutato. Le email
+inviate da wp-cli o dalle attività pianificate del sistema portano ancora il collegamento a
+`wp-login.php`. Annota l'indirizzo: nessuno lo ritrova per te.
+
+## Con l'API {#with-the-api}
+
+`PUT /api/sites/<id>/wp/hardening` con `{"xmlrpc_off", "xmlrpc_allow": [...], "file_edit_off",
+"hide_version", "block_readme", "login_path"}`, e `PUT /api/sites/<id>/wp/two-factor` con
+`{"mode": "off"}`, `optional` o `required`.
+
+## Prossimo passo {#next}
+
+Controlla anche [le vulnerabilità di WordPress](/docs/access/wordpress-vulnerabilities).

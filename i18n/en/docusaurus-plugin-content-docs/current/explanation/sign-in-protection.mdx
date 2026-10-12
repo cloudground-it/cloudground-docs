@@ -3,7 +3,7 @@ title: Sign-in protection
 description: How the panel and Quarry slow down someone guessing passwords, why a wrong password never locks the real user out, and what that costs.
 type: explanation
 prerequisites: []
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 10
 ---
@@ -22,7 +22,7 @@ down **the network they come from**, not the account.
   failing network gets about one guess a minute at an account.
 - The real user, signing in from somewhere else, waits at most 2 seconds, and is never refused because
   of someone else's attempts.
-- Nothing is ever locked. The right password always gets in.
+- The account is never locked, and the right password always gets in. *Since v0.3.0.* An address that keeps failing can be blocked by the server for a while, on every port: see [address blocking](/docs/explanation/blocking).
 - The answer is the same whether the e-mail exists or not: *invalid credentials*, after the same
   wait. The delays do not tell an attacker which accounts exist.
 

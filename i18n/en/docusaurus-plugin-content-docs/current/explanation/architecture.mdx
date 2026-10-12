@@ -3,8 +3,8 @@ title: Architecture
 description: CloudGround is made of three parts with different privileges, the panel, the agent and the sites, with nginx in front of them all. Here you see who talks to whom, and why.
 type: explanation
 prerequisites: []
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 1
 ---
 
@@ -82,6 +82,15 @@ The agent runs in a sandbox too: it can write only to the paths its work needs, 
 starts inherits that sandbox. It talks to the system through typed adapters: systemd over D-Bus,
 nginx with `nginx -t` before every reload, restic through its exit codes. It always builds argument
 lists, never shell strings, and never passes a secret on a command line.
+
+*Since v0.3.0.* The agent's unit has a memory limit (768 MB threshold, 1 GB cap), as a second guard on
+top of the bounds on the output of the programs it starts. The heavy tools, `restic`, `mariadb-dump`, the
+`mariadb` client and `certbot`, do not run in its process group: if they did, a large backup would be cut
+by the agent's limit. Each has a transient unit of its own in `cg-helper.slice`, with the agent's sandbox.
+Its environment, restic's secrets included, travels on standard input, never on the command line or in
+the unit's properties. A backup that runs out of memory fails on its own and the agent stays up. The
+agent's start also checks that the system packages the release needs are installed (see [update
+CloudGround](/docs/server/update-cloudground#packages)).
 
 ## The sites {#the-sites}
 

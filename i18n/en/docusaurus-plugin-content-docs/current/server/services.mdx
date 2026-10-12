@@ -4,7 +4,7 @@ description: Check the state of the system services that run the sites, and rest
 type: how-to
 prerequisites:
   - An administrator account to restart; read-only to look
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 2
 ---
@@ -37,6 +37,20 @@ off, and its row says **disabled**. The `nginx` and `mariadb` rows are always th
 
 A **failed** or **stopped** service raises an alert on the dashboard: see
 [alerts and notifications](./alerts-and-notifications.mdx).
+
+## The tools' units {#helper-units}
+
+*Since v0.3.0.* For a backup, a database dump or a certificate, the agent does not run `restic`,
+`mariadb-dump`, the `mariadb` client or `certbot` in its own process: each runs in a transient unit
+`cg-helper-<tool>-<n>.service`, in the `cg-helper.slice` slice, with the agent's own sandbox and a
+memory cap of its own, 75% of the server's memory. If one of these tools goes over the cap, the kernel
+stops it: that operation, for example a backup, fails, and the panel and the agent carry on. At start the
+agent stops any units left by an earlier run of itself.
+
+The `cloudground-agent.service` unit has a memory limit of its own: over 768 MB the kernel slows it, and
+over 1 GB it stops the process that exceeded it. The transient units show in `systemctl list-units
+'cg-helper-*'` only while they work. Why they sit outside the agent's unit is explained in
+[the architecture](/docs/explanation/architecture#the-agent).
 
 ## Restart a service {#restart}
 

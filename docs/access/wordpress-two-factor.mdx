@@ -1,0 +1,64 @@
+---
+title: Accesso a due fattori per WordPress
+description: Chiedi un codice di un'app di autenticazione a ogni accesso a wp-admin, in modo facoltativo o obbligatorio per amministratori e gestori del negozio.
+type: how-to
+prerequisites:
+  - Un sito WordPress o WooCommerce
+  - Un account amministratore oppure operatore assegnato al sito
+  - Un'app di autenticazione sul telefono
+version: unreleased
+last_verified: unverified
+sidebar_position: 6.9
+---
+
+Gli amministratori di WordPress sono gli account più attaccati di un sito, e wp-admin accetta la sola
+password. Con l'accesso a due fattori, dopo la password giusta WordPress chiede un codice a 6 cifre
+dell'app. Non è la [verifica in due passaggi](/docs/access/two-step-verification) del pannello: è quella
+degli account del sito WordPress.
+
+## Scegli la modalità {#choose-the-mode}
+
+1. Apri il sito, la scheda **WordPress**, la sezione **Accesso a due fattori**.
+2. Scegli e salva:
+
+| Modalità | Effetto |
+| --- | --- |
+| **Disattivato** | Si accede con la sola password. Le chiavi già configurate restano e tornano a contare se riaccendi. |
+| **Facoltativo** | Ogni account può attivarlo dal suo profilo WordPress. |
+| **Obbligatorio per amministratori e gestori del negozio** | Questi account non entrano con la sola password. |
+
+La modalità vale per tutti i modi di accedere con il modulo: `wp-login.php` e, su WooCommerce, i moduli
+**Il mio account** e di checkout. I clienti e gli altri ruoli accedono come prima. XML-RPC, REST, Ajax e
+wp-cli non accettano la sola password di un account che usa i due fattori; le password applicative
+continuano a funzionare. La modalità sta nella configurazione del PHP del sito, che il `wp-config.php`
+del sito non può spegnere.
+
+## Attiva il tuo account {#set-up-your-account}
+
+1. In WordPress apri il tuo profilo e la sezione dei due fattori.
+2. Inserisci la chiave mostrata nell'app (o apri il suo link dal telefono; non c'è un codice QR), poi
+   il codice che l'app mostra.
+3. Conserva i 10 **codici di recupero** che compaiono una sola volta: ognuno vale una volta sola.
+
+Con la modalità obbligatoria, chi non ha ancora un'app la configura al prossimo accesso. Per evitare
+che una password rubata basti a configurare l'app di chi attacca, serve anche un codice inviato per
+email all'account.
+
+## Se perdi il telefono {#lost-phone}
+
+- Accedi con un codice di recupero e rifai la configurazione dal profilo.
+- Un amministratore del sito azzera i due fattori di un altro account dal profilo di quell'account.
+- **Entra in WordPress** dal pannello funziona sempre e non chiede il secondo fattore: l'accesso al
+  pannello, con la sua verifica in due passaggi, fa da secondo fattore. Il collegamento resta firmato e
+  valido una volta sola.
+
+## I tentativi {#attempts}
+
+Un accesso aperto ammette 5 tentativi. Dal quinto codice sbagliato di un account, l'account aspetta 60
+secondi, e l'attesa raddoppia a ogni errore fino a un'ora: in quel tempo non viene controllato nessun
+codice, nemmeno quello giusto. Un codice sbagliato conta anche per [il blocco degli
+indirizzi](/docs/access/block-addresses). Un codice non vale due volte.
+
+## Prossimo passo {#next}
+
+[Proteggi WordPress](/docs/access/harden-wordpress) con le altre protezioni del sito.

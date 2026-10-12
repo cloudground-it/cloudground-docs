@@ -1,0 +1,66 @@
+---
+title: Rifiuta visitatori per indirizzo, user agent o paese
+description: Fai rispondere 403 a un sito per certi indirizzi o reti, certi user agent (anche i crawler di IA e SEO) o certi paesi, oppure servi solo alcuni paesi.
+type: how-to
+prerequisites:
+  - Un account amministratore (un operatore assegnato al sito può usare cgctl o l'API)
+version: unreleased
+last_verified: unverified
+sidebar_position: 6.6
+---
+
+Ogni sito può rifiutare dei visitatori con **403**, senza toccare gli altri siti. Le regole sono per
+sito e valgono subito dopo il salvataggio. Un sito senza regole non paga nulla. Come lavora nginx lo
+spiega [il blocco degli indirizzi](/docs/explanation/blocking#site-rules).
+
+## Scrivi le regole {#write-the-rules}
+
+1. Apri **Blocchi**, nel gruppo **Server**, e vai al riquadro **Regole per sito**.
+2. Premi **Aggiungi regole a un sito** (o **Modifica** sulla riga di un sito che ne ha già).
+3. Scegli il **Sito**.
+4. Compila quello che serve:
+   - **Indirizzi e reti**: uno per riga, `203.0.113.4` o `203.0.113.0/24`;
+   - **User agent**: uno per riga. Un visitatore il cui User-Agent ne contiene uno, maiuscole o
+     minuscole, viene rifiutato. I pulsanti **Crawler di IA** e **Crawler SEO** aggiungono gli elenchi
+     già pronti;
+   - **Paesi**: scegli dall'elenco;
+   - **Servi solo questi paesi**: rifiuta tutti gli altri paesi, e anche gli indirizzi senza paese.
+5. Premi **Salva**.
+
+I limiti: 500 reti per sito, ognuna non più larga di /8 (IPv4) o /16 (IPv6); 50 user agent di 2–100
+caratteri stampabili, senza `"`, `\`, `$`, `{` e `}`; 50 paesi. Il pannello rifiuta regole che
+contengono il tuo indirizzo, il loopback o il server.
+
+Per togliere tutto premi **Rimuovi tutte le regole**.
+
+## Cosa non viene mai rifiutato {#never-refused}
+
+- Gli indirizzi del server stesso e il loopback: i controlli di disponibilità, Performance Guard e il
+  riscaldamento della cache continuano a passare.
+- La porta 80: resta aperta per la verifica dei certificati.
+
+:::note
+
+Chiunque può inviare qualsiasi User-Agent: la regola sugli user agent allontana i crawler che si
+dichiarano, non chi attacca.
+
+:::
+
+## I dati dei paesi {#country-data}
+
+Il paese di un indirizzo viene dal database **IP to Country Lite** di DB-IP (licenza CC BY 4.0, con
+l'attribuzione che il pannello mostra nell'elenco dei paesi). Il server lo scarica da solo, senza
+account né chiave, e lo rinnova dopo 35 giorni; se il rinnovo fallisce tiene la copia vecchia. Senza
+copia e senza rete, il salvataggio delle regole sui paesi fallisce e non cambia nulla.
+
+## Con cgctl o l'API {#with-cgctl-or-the-api}
+
+```bash
+cgctl sites block <id-sito> '{"addresses": ["203.0.113.0/24"], "user_agents": ["badbot"], "countries": ["NL"], "allow_countries_only": false}'
+```
+
+`'{}'` toglie ogni regola. L'API è `PUT /api/sites/<id>/blocking` con lo stesso oggetto.
+
+## Prossimo passo {#next}
+
+Per tenere fuori chi indovina le password, vedi [blocca gli indirizzi che sbagliano l'accesso](/docs/access/block-addresses).

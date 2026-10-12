@@ -4,7 +4,7 @@ description: Every cgctl command, its options, the configuration variables and t
 type: reference
 prerequisites:
   - An API token, or an account's email and password
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 1
 ---
@@ -135,6 +135,27 @@ cgctl protect add 3 /wp-admin editor < password.txt
 | `cgctl audit` | `GET /api/audit` | The latest 200 rows of the audit log. |
 | `cgctl settings get` | `GET /api/settings` | The panel's settings. |
 | `cgctl settings set <key> <value>` | `PUT /api/settings` | Changes one setting. |
+
+### Blocking {#blocklist}
+
+*Since v0.3.0.* See [block addresses that keep failing to sign in](/docs/access/block-addresses) and
+[refuse visitors](/docs/access/refuse-visitors). Changes to the block list are session-only routes:
+these commands sign in with an email and password (and `CLOUDGROUND_TOTP`), not with a token. On the
+server, over the API socket, they work as root even if you are blocked out.
+
+| Command | Request | What it does |
+| --- | --- | --- |
+| `cgctl blocklist` | `GET /api/blocklist` | The block list: blocked and always allowed addresses, settings, and whether the server enforces it. |
+| `cgctl blocklist block <address-or-network> [minutes]` | `POST /api/blocklist/blocks` | Blocks an address or a network. `minutes` is an integer from 0 (until removed, the default) to 525600. |
+| `cgctl blocklist unblock <address-or-network>` | `DELETE /api/blocklist/blocks` | Removes the block. |
+| `cgctl blocklist allow <address-or-network>` | `POST /api/blocklist/allowed` | Always allows the address or network. |
+| `cgctl blocklist disallow <address-or-network>` | `DELETE /api/blocklist/allowed` | Takes the address off the always allowed list. |
+| `cgctl sites block <site-id> '<rules-json>'` | `PUT /api/sites/<id>/blocking` | Sets the site's rules: `{"addresses": [...], "user_agents": [...], "countries": [...], "allow_countries_only": false}`. `'{}'` removes them. JSON that does not parse is a usage error (exit 2). |
+
+The address goes in the request body, never in the URL.
+
+The security checks' settings change with `cgctl settings set`: `malware_scan` (`1` or `0`, off by
+default) and `vulnerability_check` (`1` or `0`, on by default).
 
 ### API tokens {#tokens}
 
