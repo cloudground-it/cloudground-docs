@@ -50,9 +50,9 @@ export default function NavbarContent(): ReactNode {
           to="/"
           className="cg-nav__brand"
           aria-label={translate({id: 'cg.nav.home', message: 'CloudGround, pagina iniziale'})}>
-          <LogoMark size={28} />
+          <LogoMark size={32} />
           <span className="cg-nav__name" aria-hidden="true">
-            cloudground
+            CloudGround
           </span>
         </Link>
         <div className="cg-nav__links">
