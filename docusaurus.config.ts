@@ -133,7 +133,8 @@ const config: Config = {
     // trailingSlash is false, so /docs is docs.html and the folder docs/ has
     // no index: GitHub Pages answers /docs/ with its 404 page. That page
     // (404.html at the root serves every locale) drops the trailing slash and
-    // tries again, keeping the query and the anchor. A page that really does
+    // tries again, keeping the query and the anchor; under /en it swaps in
+    // the English 404 (en/404.html) synchronously, before the first paint. A page that really does
     // not exist then shows the 404 without the slash; no redirect files sit
     // next to the pages, so `docusaurus serve` keeps working.
     () => ({
@@ -144,7 +145,13 @@ const config: Config = {
         const html = await fs.readFile(file, 'utf8');
         const script =
           "<script>(function(l){var p=l.pathname;if(p.length>1&&p.slice(-1)==='/')" +
-          "l.replace(p.replace(/\\/+$/,'')+l.search+l.hash)})(location)</script>";
+          "l.replace(p.replace(/\\/+$/,'')+l.search+l.hash);" +
+          // GitHub Pages serves this one page for every locale: under /en
+          // swap in the built English 404 before the first paint.
+          "else if(/^\\/en(\\/|$)/.test(p)){try{var x=new XMLHttpRequest();" +
+          "x.open('GET','/en/404.html',false);x.send();" +
+          "if(x.status===200){document.open();document.write(x.responseText);document.close()}}catch(e){}}" +
+          "})(location)</script>";
         if (!html.includes('<head>')) {
           throw new Error('404.html has no <head>');
         }
