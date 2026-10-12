@@ -60,6 +60,15 @@ const config: Config = {
   },
 
   headTags: [
+    // Motion is allowed: the home keeps its hero hidden until GSAP plays it
+    // (src/components/Home/useHomeMotion.ts). Without JavaScript nothing hides.
+    // An attribute, not a class: the head manager rewrites <html class>.
+    {
+      tagName: 'script',
+      attributes: {},
+      innerHTML:
+        "if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.setAttribute('data-cg-motion','on')",
+    },
     {
       tagName: 'link',
       attributes: {
@@ -115,6 +124,42 @@ const config: Config = {
   clientModules: ['./src/clientModules/colorModeSync.ts'],
 
   plugins: [
+    // trailingSlash is false, so /docs is docs.html and the folder docs/ has
+    // no index: GitHub Pages answers /docs/ with a 404. Give every page whose
+    // folder lacks an index a small page there that sends to the address
+    // without the slash, keeping the query and the anchor.
+    () => ({
+      name: 'slash-redirects',
+      async postBuild({outDir, baseUrl, routesPaths, siteConfig}) {
+        const fs = await import('node:fs/promises');
+        const exists = (p: string) =>
+          fs.access(p).then(
+            () => true,
+            () => false,
+          );
+        for (const route of new Set(routesPaths)) {
+          if (route.endsWith('/') || !route.startsWith(baseUrl)) {
+            continue;
+          }
+          const rel = route.slice(baseUrl.length);
+          const index = path.join(outDir, rel, 'index.html');
+          if (!(await exists(path.join(outDir, `${rel}.html`))) || (await exists(index))) {
+            continue;
+          }
+          const url = JSON.stringify(route);
+          const href = route.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+          await fs.mkdir(path.dirname(index), {recursive: true});
+          await fs.writeFile(
+            index,
+            `<!doctype html><html><head><meta charset="utf-8"><title>CloudGround</title>` +
+              `<meta name="robots" content="noindex"><link rel="canonical" href="${siteConfig.url}${href}">` +
+              `<script>location.replace(${url}+location.search+location.hash)</script>` +
+              `<meta http-equiv="refresh" content="0; url=${href}"></head>` +
+              `<body><a href="${href}">${href}</a></body></html>`,
+          );
+        }
+      },
+    }),
     // The search results draw their icons from a module of HTML strings:
     // swap it for ours (src/components/Icon/searchHitIcons.ts).
     () => ({

@@ -70,11 +70,11 @@
     "message": "On this page"
   },
   "theme.ErrorPageContent.title": {
-    "message": "This page crashed.",
+    "message": "Something broke on this page.",
     "description": "The title of the fallback page when the page crashed"
   },
   "theme.BackToTopButton.buttonAriaLabel": {
-    "message": "Scroll back to top",
+    "message": "Back to top",
     "description": "The ARIA label for the back to top button"
   },
   "theme.blog.archive.title": {
@@ -130,7 +130,7 @@
     "description": "The name for the dark color mode"
   },
   "theme.colorToggle.ariaLabel": {
-    "message": "Switch between dark and light mode (currently {mode})",
+    "message": "Switch between dark and light mode (now {mode})",
     "description": "The ARIA label for the color mode toggle"
   },
   "theme.docs.paginator.previous": {
@@ -189,7 +189,7 @@
     "description": "The sentence used to display when a page has been last updated, and by who"
   },
   "theme.NotFound.title": {
-    "message": "Page Not Found",
+    "message": "Page not found",
     "description": "The title of the 404 page"
   },
   "theme.navbar.mobileVersionsDropdown.label": {
@@ -241,15 +241,15 @@
     "description": "The ARIA label to collapse the sidebar category"
   },
   "theme.IconExternalLink.ariaLabel": {
-    "message": "(opens in new tab)",
+    "message": "(opens in a new tab)",
     "description": "The ARIA label for the external link icon"
   },
   "theme.NotFound.p1": {
-    "message": "We could not find what you were looking for.",
+    "message": "There’s nothing at this address. It may have moved, or it never existed.",
     "description": "The first paragraph of the 404 page"
   },
   "theme.NotFound.p2": {
-    "message": "Please contact the owner of the site that linked you to the original URL and let them know their link is broken.",
+    "message": "Try the search, or start again from the home page. If a link sent you here, the link is out of date.",
     "description": "The 2nd paragraph of the 404 page"
   },
   "theme.NavBar.navAriaLabel": {
@@ -325,38 +325,38 @@
     "description": "The ARIA label for hamburger menu button of mobile navigation"
   },
   "theme.SearchPage.existingResultsTitle": {
-    "message": "Search results for \"{query}\"",
+    "message": "Results for “{query}”",
     "description": "The search page title for non-empty query"
   },
   "theme.SearchPage.emptyResultsTitle": {
-    "message": "Search the documentation",
+    "message": "Search the docs",
     "description": "The search page title for empty query"
   },
   "theme.SearchPage.searchContext.everywhere": {
     "message": "Everywhere"
   },
   "theme.SearchPage.documentsFound.plurals": {
-    "message": "1 document found|{count} documents found",
+    "message": "1 page found|{count} pages found",
     "description": "Pluralized label for \"{count} documents found\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
   },
   "theme.SearchPage.noResultsText": {
-    "message": "No documents were found",
+    "message": "Nothing matched. Try a command name or an error message.",
     "description": "The paragraph for empty search result"
   },
   "theme.SearchBar.noResultsText": {
-    "message": "No results"
+    "message": "Nothing found"
   },
   "theme.SearchBar.seeAllOutsideContext": {
-    "message": "See all results outside \"{context}\""
+    "message": "See all results outside “{context}”"
   },
   "theme.SearchBar.searchInContext": {
-    "message": "See all results within \"{context}\""
+    "message": "See all results in “{context}”"
   },
   "theme.SearchBar.seeAll": {
     "message": "See all results"
   },
   "theme.SearchBar.label": {
-    "message": "Search a command, a page, an error",
+    "message": "Search commands, pages, errors",
     "description": "The ARIA label and placeholder for search button"
   },
   "theme.blog.post.plurals": {
@@ -408,7 +408,7 @@
     "description": "The label of the button to try again rendering when the React error boundary captures an error"
   },
   "theme.common.skipToMainContent": {
-    "message": "Skip to main content",
+    "message": "Skip to content",
     "description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
   },
   "theme.tags.tagsPageTitle": {
@@ -437,13 +437,13 @@
     "message": "Unverified"
   },
   "home.meta.title": {
-    "message": "CloudGround — The hosting panel for your Ubuntu server"
+    "message": "CloudGround — The hosting panel you run on your own Ubuntu server"
   },
   "home.meta.description": {
-    "message": "One command installs the panel on your server. Every site starts with its own cache, its own PHP, its own certificate, and backups that are test-restored after every copy."
+    "message": "One command puts the panel on your Ubuntu server. Every site gets its own cache, its own PHP and its own certificate, plus backups that are restored as a test after every run."
   },
   "home.hero.lede": {
-    "message": "One command installs the panel on your Ubuntu server. Every site starts with its own cache, its own PHP, its own certificate, and backups that are test-restored after every copy."
+    "message": "One command puts the panel on your Ubuntu server. Every site gets its own cache, its own PHP and its own certificate, plus backups that are restored as a test after every run."
   },
   "home.measures.cached": {
     "message": "Cached page"
@@ -467,19 +467,19 @@
     "message": "mixed headers and links, 200 connections"
   },
   "home.measures.uncached": {
-    "message": "Without cache"
+    "message": "No cache"
   },
   "home.measures.uncached.note": {
     "message": "PHP + database, 10 connections"
   },
   "home.measures.caption": {
-    "message": "Measurement results, by scenario"
+    "message": "Benchmark results by scenario"
   },
   "home.measures.title": {
-    "message": "Measured, not {accent}"
+    "message": "Numbers, not {accent}"
   },
   "home.measures.intro": {
-    "message": "Release v0.1.0 on a small VPS, under wrk: three runs per scenario, the mean shown here. The method and every run are public."
+    "message": "Release v0.1.0 on a small VPS, hit with wrk: three runs per scenario, averaged here. The method and every run are public."
   },
   "home.measures.scenario": {
     "message": "Scenario"
@@ -491,43 +491,43 @@
     "message": "Requests per second"
   },
   "home.measures.data": {
-    "message": "The data"
+    "message": "Raw data"
   },
   "home.measures.method": {
-    "message": "The method"
+    "message": "Method"
   },
   "cg.footer.tagline": {
-    "message": "Hosting that’s measured"
+    "message": "Hosting that measures up"
   },
   "cg.footer.licenseLine": {
-    "message": "CloudGround is source-available under the {license}: free to use on your own servers."
+    "message": "Source available under the {license}. Free to run on your own servers."
   },
   "cg.footer.label": {
-    "message": "Footer"
+    "message": "Site footer"
   },
   "cg.footer.product": {
     "message": "Product"
   },
   "cg.footer.measures": {
-    "message": "Measurements"
+    "message": "Benchmarks"
   },
   "cg.footer.install": {
-    "message": "Installation"
+    "message": "Install"
   },
   "cg.footer.resources": {
     "message": "Resources"
   },
   "cg.footer.docs": {
-    "message": "Documentation"
+    "message": "Docs"
   },
   "cg.footer.code": {
-    "message": "The code"
+    "message": "Source code"
   },
   "cg.footer.issues": {
-    "message": "Report a problem"
+    "message": "Report a bug"
   },
   "cg.footer.docsRepo": {
-    "message": "This site and the guide"
+    "message": "Source of this site"
   },
   "cg.footer.legal": {
     "message": "Legal"
@@ -536,10 +536,10 @@
     "message": "Licence"
   },
   "cg.nav.home": {
-    "message": "CloudGround, home page"
+    "message": "CloudGround home"
   },
   "cg.crumbs.docs": {
-    "message": "Documentation"
+    "message": "Docs"
   },
   "cg.footer.release": {
     "message": "Release {version}"
@@ -554,25 +554,25 @@
     "message": "[ok] nginx · PHP-FPM · MariaDB · restic installed"
   },
   "home.terminal.line4": {
-    "message": "[ok] panel running on https://<ip>:8443"
+    "message": "[ok] panel up at https://<ip>:8443"
   },
   "home.terminal.line5": {
-    "message": "→ create the administrator: https://<ip>:8443/setup/…"
+    "message": "→ create the admin account: https://<ip>:8443/setup/…"
   },
   "home.hero.kicker": {
-    "message": "A hosting panel on your own servers"
+    "message": "A hosting panel for servers you own"
   },
   "home.hero.title1": {
     "message": "Hosting"
   },
   "home.hero.title2": {
-    "message": "that’s {accent}"
+    "message": "that {accent}"
   },
   "home.hero.titleAccent": {
-    "message": "measured."
+    "message": "measures up."
   },
   "home.hero.install": {
-    "message": "Install with one command"
+    "message": "Install in one command"
   },
   "home.hero.docs": {
     "message": "Read the guide"
@@ -584,7 +584,7 @@
     "message": "Source available"
   },
   "home.hero.fact3": {
-    "message": "On your servers"
+    "message": "Runs on your servers"
   },
   "home.scope.cache": {
     "message": "Cache"
@@ -596,7 +596,7 @@
     "message": "idle"
   },
   "home.scope.phpOff": {
-    "message": "at the limit"
+    "message": "maxed out"
   },
   "home.scope.db": {
     "message": "Database"
@@ -608,61 +608,61 @@
     "message": "busy"
   },
   "home.scope.caption": {
-    "message": "Simulation · a WordPress site under traffic"
+    "message": "Simulation · a WordPress site under load"
   },
   "home.scope.switch": {
     "message": "Page cache"
   },
   "home.scope.with": {
-    "message": "With cache"
+    "message": "Cache on"
   },
   "home.scope.without": {
-    "message": "Without cache"
+    "message": "Cache off"
   },
   "home.scope.describeOn": {
-    "message": "With the cache, response time stays low and flat"
+    "message": "With the cache on, response time stays low and flat"
   },
   "home.scope.describeOff": {
-    "message": "Without the cache, response time climbs and swings"
+    "message": "With the cache off, response time climbs and swings"
   },
   "home.scope.axis": {
     "message": "Response time"
   },
   "home.scope.stable": {
-    "message": "Stable"
+    "message": "Steady"
   },
   "home.scope.strained": {
-    "message": "Under strain"
+    "message": "Struggling"
   },
   "home.scope.note": {
-    "message": "An illustration, not a measurement. The real numbers are in the {link}."
+    "message": "A sketch, not a benchmark. The real numbers are in {link}."
   },
   "home.scope.noteLink": {
-    "message": "measurements"
+    "message": "the measurements"
   },
   "home.tech.label": {
-    "message": "Technologies"
+    "message": "Built on"
   },
   "home.features.kicker": {
     "message": "01 / Features"
   },
   "home.features.title": {
-    "message": "The control a {accent} won’t give you."
+    "message": "The parts every {accent} skips."
   },
   "home.features.titleAccent": {
     "message": "tutorial"
   },
   "home.features.intro": {
-    "message": "Eight things you usually set up by hand, one evening at a time. Here they are on from the first site."
+    "message": "Eight things you would normally wire up by hand, one late night at a time. Here they are on from your first site."
   },
   "home.features.1.tag": {
     "message": "Speed"
   },
   "home.features.1.title": {
-    "message": "A page cache that aims"
+    "message": "A page cache that purges precisely"
   },
   "home.features.1.text": {
-    "message": "nginx serves pages without touching PHP. When you change a post or a price, only the pages that show it are purged."
+    "message": "nginx serves pages without waking PHP. Change a post or a price and only the pages that show it are purged."
   },
   "home.features.2.tag": {
     "message": "Isolation"
@@ -671,64 +671,64 @@
     "message": "One PHP per site"
   },
   "home.features.2.text": {
-    "message": "Separate system user, PHP and database. A compromised site cannot see the others."
+    "message": "Its own system user, PHP and database. A compromised site can’t see its neighbours."
   },
   "home.features.3.tag": {
     "message": "Backups"
   },
   "home.features.3.title": {
-    "message": "Restores already tested"
+    "message": "Restores, rehearsed"
   },
   "home.features.3.text": {
-    "message": "Every copy goes, encrypted, where you choose, and is test-restored right after."
+    "message": "Every backup is encrypted, stored wherever you choose and restored as a test straight after."
   },
   "home.features.4.tag": {
     "message": "Staging"
   },
   "home.features.4.title": {
-    "message": "Try first, then measure"
+    "message": "Staging with a stopwatch"
   },
   "home.features.4.text": {
-    "message": "A password-protected copy. A release slower than production is stopped."
+    "message": "A password-protected copy of the site. A release slower than production doesn’t ship."
   },
   "home.features.security.tag": {
     "message": "Security"
   },
   "home.features.security.title": {
-    "message": "Vulnerabilities and malware"
+    "message": "Known holes and malware"
   },
   "home.features.security.text": {
-    "message": "Plugins with known flaws flagged, suspicious files found, 2FA for wp-admin and blocking by country."
+    "message": "Plugins with known flaws get flagged and suspicious files get found. Plus 2FA for wp-admin and blocking by country."
   },
   "home.features.5.title": {
-    "message": "Certificates that renew"
+    "message": "Certificates that renew themselves"
   },
   "home.features.5.text": {
-    "message": "Let’s Encrypt, wildcards included, or your own certificates."
+    "message": "Let’s Encrypt, wildcards included, or bring your own."
   },
   "home.features.7.title": {
-    "message": "The database, inside the panel"
+    "message": "The database, right in the panel"
   },
   "home.features.7.text": {
-    "message": "Tables, data and SQL with the site’s own permissions only, no outside tools."
+    "message": "Tables, rows and SQL, with that site’s permissions and nothing more. No extra tools."
   },
   "home.features.8.tag": {
     "message": "Access"
   },
   "home.features.8.title": {
-    "message": "Roles and two factors"
+    "message": "Roles and two-factor"
   },
   "home.features.8.text": {
-    "message": "Administrators, operators on their own sites, read-only. 2FA required if you want."
+    "message": "Admins, operators limited to their own sites, read-only users. Make 2FA mandatory if you like."
   },
   "home.own.kicker": {
     "message": "02 / Ownership"
   },
   "home.own.title": {
-    "message": "Stop {accent} your own server."
+    "message": "Stop paying {accent} on your own server."
   },
   "home.own.titleAccent": {
-    "message": "renting"
+    "message": "rent"
   },
   "home.own.a.title": {
     "message": "Source available"
@@ -740,28 +740,28 @@
     "message": "Yours to keep"
   },
   "home.own.b.text": {
-    "message": "No licence to renew, no fee per server. If the project stopped, the panel would keep working."
+    "message": "No licence to renew, no per-server fee. If the project ever stopped, the panel would keep running."
   },
   "home.own.c.title": {
     "message": "No middleman"
   },
   "home.own.c.text": {
-    "message": "No account with us, no service in between. Backups go where you choose."
+    "message": "No account with us, no service in the middle. Backups go wherever you choose."
   },
   "home.measures.kicker": {
-    "message": "03 / Measurements"
+    "message": "03 / Benchmarks"
   },
   "home.measures.titleAccent": {
-    "message": "promised."
+    "message": "adjectives."
   },
   "home.measures.outcome": {
-    "message": "Outcome"
+    "message": "Result"
   },
   "home.measures.noErrors": {
     "message": "0 errors"
   },
   "home.measures.passed": {
-    "message": "Passed"
+    "message": "Pass"
   },
   "home.measures.reference": {
     "message": "Baseline"
@@ -770,37 +770,37 @@
     "message": "Server: 2 vCPU VPS · Ubuntu 26.04"
   },
   "home.measures.site": {
-    "message": "Site: WooCommerce, the shop page"
+    "message": "Site: WooCommerce shop page"
   },
   "home.measures.load": {
-    "message": "Load: wrk on the same server"
+    "message": "Load: wrk, on the same server"
   },
   "home.measures.date": {
     "message": "Measured: 11 October 2026"
   },
   "home.install.kicker": {
-    "message": "04 / Installation"
+    "message": "04 / Install"
   },
   "home.install.title": {
     "message": "One command. {accent}"
   },
   "home.install.titleAccent": {
-    "message": "Really."
+    "message": "That’s it."
   },
   "home.install.step1": {
-    "message": "A freshly created Ubuntu 24.04 or 26.04 server, with root access."
+    "message": "A fresh Ubuntu 24.04 or 26.04 server and root access."
   },
   "home.install.step2": {
-    "message": "The command alongside. It checks the server before it touches anything."
+    "message": "Run this command. It checks the server before it changes anything."
   },
   "home.install.step3": {
-    "message": "Open the one-time link, create the administrator, create the first site."
+    "message": "Open the one-time link, create the admin account, then your first site."
   },
   "home.install.guide": {
-    "message": "The installation guide"
+    "message": "Read the install guide"
   },
   "home.install.note": {
-    "message": "Output shortened. The full log stays in {path}."
+    "message": "Output trimmed. The full log is kept in {path}."
   },
   "home.terminal.copy": {
     "message": "Copy"
@@ -818,25 +818,25 @@
     "message": "Free · No subscription"
   },
   "home.closing.title1": {
-    "message": "Switch on"
+    "message": "Put your"
   },
   "home.closing.title2": {
-    "message": "your {accent}"
+    "message": "server {accent}"
   },
   "home.closing.titleAccent": {
-    "message": "server."
+    "message": "to work."
   },
   "home.closing.install": {
     "message": "Install CloudGround"
   },
   "home.closing.github": {
-    "message": "The code on GitHub"
+    "message": "Read the code on GitHub"
   },
   "cg.footer.features": {
     "message": "Features"
   },
   "cg.colorMode.dark": {
-    "message": "Dark theme"
+    "message": "Dark mode"
   },
   "cg.drawer.language": {
     "message": "Language"
