@@ -29,8 +29,9 @@ function NavbarItems({items}: {items: NavbarItemConfig[]}): ReactNode {
 }
 
 /**
- * Segmented navbar: mark (home) + "docs" tag inside the docs | search field |
- * section links. Each segment is separated by a hairline, as in the design.
+ * One ruled row: the mark and the name (home), the section links, the search
+ * field, then language, GitHub and the colour mode. On small screens the links
+ * move into the drawer and, inside the docs, the search takes a second row.
  */
 export default function NavbarContent(): ReactNode {
   const mobileSidebar = useNavbarMobileSidebar();
@@ -42,32 +43,29 @@ export default function NavbarContent(): ReactNode {
   const inDocs = pathname === docsBase || pathname.startsWith(`${docsBase}/`);
 
   return (
-    <div className="cg-nav">
-      <div className="cg-nav__brandcell">
+    <div className={`cg-nav${inDocs ? ' cg-nav--docs' : ''}`}>
+      <div className="cg-nav__row">
         {!mobileSidebar.disabled && <NavbarMobileSidebarToggle />}
         <Link
           to="/"
           className="cg-nav__brand"
           aria-label={translate({id: 'cg.nav.home', message: 'CloudGround, pagina iniziale'})}>
-          <LogoMark size={28} animated />
-          <span className="disp cg-nav__name" aria-hidden="true">
+          <LogoMark size={28} />
+          <span className="cg-nav__name" aria-hidden="true">
             cloudground
           </span>
-          {inDocs && (
-            <span className="hud cg-tag" aria-hidden="true">
-              docs
-            </span>
-          )}
         </Link>
-      </div>
-      <div className="cg-nav__search">
-        <Icon name="search" className="cg-nav__searchicon" />
-        <SearchBar />
-      </div>
-      <div className="cg-nav__links">
-        <NavbarItems items={left} />
-        <NavbarItems items={right} />
-        <NavbarColorModeToggle className="cg-nav__mode" />
+        <div className="cg-nav__links">
+          <NavbarItems items={left} />
+        </div>
+        <div className="cg-nav__search">
+          <Icon name="search" className="cg-nav__searchicon" />
+          <SearchBar />
+        </div>
+        <div className="cg-nav__tools">
+          <NavbarItems items={right} />
+          <NavbarColorModeToggle className="cg-nav__mode" />
+        </div>
       </div>
     </div>
   );

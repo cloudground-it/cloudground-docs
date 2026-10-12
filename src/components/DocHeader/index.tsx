@@ -1,14 +1,15 @@
 import React, {type ReactNode} from 'react';
-import {useDoc} from '@docusaurus/plugin-content-docs/client';
+import Link from '@docusaurus/Link';
+import {useDoc, useSidebarBreadcrumbs} from '@docusaurus/plugin-content-docs/client';
 import {translate} from '@docusaurus/Translate';
-import {useSidebarNumber} from '@site/src/utils/sidebarNumber';
+import Icon from '@site/src/components/Icon';
 
 /**
  * Front matter read by the page header, besides title and description
  * (the full template is in STANDARD.md §2):
  *
  *   heading: Installa            # big title; defaults to `title`
- *   heading_accent: CloudGround. # set in the serif italic, in blue
+ *   heading_accent: CloudGround. # the title's last words (same face)
  *   type: how-to                 # tutorial | how-to | reference | explanation | index
  *   prerequisites: [...]         # shown as "Serve"
  *   version: unreleased
@@ -27,29 +28,46 @@ type HeaderFrontMatter = {
   meta?: {time?: string; level?: string; requires?: string};
 };
 
+/** Documentazione › group › page, from the sidebar the page belongs to. */
+function Crumbs(): ReactNode {
+  const crumbs = useSidebarBreadcrumbs() ?? [];
+  const {metadata} = useDoc();
+  const trail = crumbs.filter((item) => item.type !== 'category' || item.label);
+  return (
+    <nav className="cg-crumbs" aria-label={translate({id: 'theme.docs.breadcrumbs.navAriaLabel', message: 'Breadcrumbs'})}>
+      <ol>
+        <li>
+          <Link to="/docs">{translate({id: 'cg.crumbs.docs', message: 'Documentazione'})}</Link>
+        </li>
+        {trail.slice(0, -1).map((item, i) => (
+          <li key={i}>
+            <Icon name="chevron-right" size={14} />
+            {item.href ? <Link to={item.href}>{item.label}</Link> : <span>{item.label}</span>}
+          </li>
+        ))}
+        {metadata.permalink !== '/docs' && trail.length > 0 && (
+          <li aria-current="page">
+            <Icon name="chevron-right" size={14} />
+            <span>{trail[trail.length - 1]!.label}</span>
+          </li>
+        )}
+      </ol>
+    </nav>
+  );
+}
+
 export function DocHeader(): ReactNode {
   const {metadata, frontMatter} = useDoc();
   const fm = frontMatter as typeof frontMatter & HeaderFrontMatter;
-  const num = useSidebarNumber(metadata.permalink);
   const heading = fm.heading ?? metadata.title;
   return (
     <header className="cg-pagehead">
-      {num && (
-        <span className="hud cg-pagehead__crumb cg-in1">
-          {num.group} / {num.groupLabel}
-          {num.position.includes('.') ? ` · ${num.position}` : ''}
-        </span>
-      )}
-      <h1 className="disp cg-pagehead__title cg-in2">
+      <Crumbs />
+      <h1 className="cg-pagehead__title">
         {heading}
-        {fm.heading_accent && (
-          <>
-            {' '}
-            <span className="ser cg-accent">{fm.heading_accent}</span>
-          </>
-        )}
+        {fm.heading_accent ? ` ${fm.heading_accent}` : ''}
       </h1>
-      {metadata.description && <p className="cg-pagehead__lead cg-in3">{metadata.description}</p>}
+      {metadata.description && <p className="cg-pagehead__lead">{metadata.description}</p>}
     </header>
   );
 }
@@ -79,26 +97,31 @@ export function DocMetaStrip(): ReactNode {
   const lv = fm.last_verified instanceof Date ? fm.last_verified.toISOString().slice(0, 10) : fm.last_verified;
   const unverified = !lv || lv === 'unverified';
   const requires = fm.prerequisites?.length ? fm.prerequisites.join(' · ') : meta.requires;
-  const cells: [string, string | undefined, boolean?][] = [
+  // The short facts on one ruled line, what the page needs on its own below.
+  const cells: [string, string | undefined, ('warn' | 'wide')?][] = [
     [translate({id: 'cg.meta.type', message: 'Tipo'}), typeLabel(fm.type)],
     [translate({id: 'cg.meta.time', message: 'Tempo'}), meta.time],
     [translate({id: 'cg.meta.level', message: 'Livello'}), meta.level],
-    [translate({id: 'cg.meta.requires', message: 'Serve'}), requires],
     [translate({id: 'cg.meta.version', message: 'Versione'}), fm.version],
     [
       translate({id: 'cg.meta.verified', message: 'Ultima verifica'}),
       unverified ? translate({id: 'cg.meta.unverified', message: 'Non verificata'}) : lv,
-      unverified,
+      unverified ? 'warn' : undefined,
     ],
+    [translate({id: 'cg.meta.requires', message: 'Serve'}), requires, 'wide'],
   ];
   return (
     <dl className="cg-metastrip">
       {cells
         .filter(([, value]) => value)
-        .map(([label, value, warn]) => (
-          <div key={label} className={`cg-metastrip__cell${warn ? ' cg-metastrip__cell--unverified' : ''}`}>
-            <dt className="hud">{label}</dt>
-            <dd className="disp">{value}</dd>
+        .map(([label, value, flag]) => (
+          <div
+            key={label}
+            className={`cg-metastrip__cell${flag === 'warn' ? ' cg-metastrip__cell--unverified' : ''}${
+              flag === 'wide' ? ' cg-metastrip__cell--wide' : ''
+            }`}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
           </div>
         ))}
     </dl>

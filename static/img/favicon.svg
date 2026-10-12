@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512px" height="512px" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <path d="M0,0 L512,0 L512,512 L0,512 Z" id="path-1"></path>
+    </defs>
+    <g id="favicon" stroke="none" fill="none" xlink:href="#path-1" fill-rule="evenodd">
+        <use fill="#FFFFFF" xlink:href="#path-1"></use>
+        <g id="favicon-tile" stroke-width="1">
+            <g id="Group">
+                <rect id="Rectangle" fill="#15161A" x="0" y="0" width="512" height="512" rx="10"></rect>
+                <g transform="translate(98.56, 97.5911)">
+                    <path d="M69.9733333,174.942275 C43.0284628,174.939647 18.4789101,159.465869 6.85403087,135.157676 C-4.77084838,110.849483 -1.40552234,82.0260046 15.5066135,61.0496914 C32.4187493,40.0733781 59.8727126,30.6713439 86.09344,36.8761412 C106.621841,7.92714365 142.607622,-5.74832576 177.180959,2.26067494 C211.754296,10.2696756 238.06135,38.3754371 243.7696,73.4022212 C263.436438,65.9319757 285.663645,70.9282645 300.241817,86.0961914 C314.819988,101.264118 318.93133,123.671896 310.68742,143.027181 C302.44351,162.382465 283.437801,174.944101 262.4,174.942275 L69.9733333,174.942275 Z" id="Path" fill="#F2F0EA"></path>
+                    <rect id="Rectangle" fill="#93A8FF" x="69.9733333" y="209.928941" width="244.906667" height="40.2346667" rx="0.82"></rect>
+                    <rect id="Rectangle" fill="#E0612B" x="0" y="279.902275" width="244.906667" height="40.2346667" rx="0.82"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

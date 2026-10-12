@@ -10,7 +10,7 @@ import type {Props} from '@theme/DocRoot/Layout';
 const noop = () => {};
 
 /**
- * Three hairline columns inside a 1440px frame: numbered index | page | (the
+ * Three ruled columns inside a 1440px frame: the index on the second paper | page | (the
  * page's own "In questa pagina" column, drawn by DocItem/Layout).
  */
 export default function DocRootLayout({children}: Props): ReactNode {

@@ -21,8 +21,10 @@ The installer (`get.cloudground.it`) is not here: the product repository's own P
 
 ## The home
 
-React components and CSS modules in `src/components/Home/`, ported from the approved design
-(`design/reference/home.dc.html` of the former WordPress project). Italian copy in the components,
+React components and a CSS module in `src/components/Home/`, built from the approved design
+"Rapporto di prova" ([`design/DESIGN.md`](./design/DESIGN.md), artboard `design/index.html`): the home reads
+as a lab's test report — protocol strip, install command, one measured result with its outcome
+stamp, every measurement, the safety tests, the limits of the test and the install procedure. Italian copy in the components,
 English in `i18n/en/code.json` (keys `home.*`, `cg.*`; `npm run write-translations -- --locale en`
 adds new keys). The rules it keeps:
 
@@ -30,13 +32,17 @@ adds new keys). The rules it keeps:
   `bench/phase-10-fresh.md` of the product repository (section *The release candidate on the
   purged box*); `src/data/site.ts` links it. A number that is not in a benchmark record is not
   written. No other panel or host is named or compared.
-- **No JavaScript needed for the content**: the cache switch and the copy button are the only
-  controls, and without JavaScript they are not drawn. Motion stops with `prefers-reduced-motion`.
+- **No JavaScript needed for the content**: everything is rendered at build time; the cache switch
+  and the copy buttons are the only controls. Transitions stop with `prefers-reduced-motion`.
+- **Orange is for the outcome and the primary action only** (the install Copy and the stamp);
+  links, focus and protocol are blue. Text pairs reach WCAG AA in both themes (DESIGN.md).
 - **No external requests**: fonts, search and images are served by the site; no analytics, no
   forms. `/privacy` says so, and changes in the same commit as anything that changes it.
 - Light and dark from the tokens in `src/css/custom.css`; 16px gutters on a phone.
 
-The social card is `static/img/og.png` (1200×630), drawn from `scripts/og-image.html`.
+The social card is `static/img/og.png` (1200×630). The logo files are `static/img/logo.svg` and
+`logo-dark.svg` (the lockup, used in the mobile drawer) and `favicon.svg`; the navbar and footer
+draw the mark inline (`src/components/LogoMark`) in the theme colours.
 
 ## Structure
 
@@ -86,7 +92,7 @@ Start from the front matter template in [STANDARD.md](./STANDARD.md) §2. The th
 
 ```yaml
 heading: Installa               # big title (defaults to title)
-heading_accent: CloudGround.    # serif italic accent, in blue
+heading_accent: CloudGround.    # last words of the title (kept for older pages)
 type: how-to                    # shown in the header strip
 prerequisites: [Accesso root]   # shown as "Serve"
 version: unreleased
@@ -95,8 +101,9 @@ meta: {time: '10 minuti', level: Base}   # optional extra cells
 ```
 
 Available in every page without an import: `<Tabs>`/`<TabItem>`, `<Steps>`/`<Step title>`,
-`<Cards>`/`<Card to label title>`. Diagrams: a ` ```mermaid ` block, with no colours of its own (the theme sets them). Admonitions: `:::warning[Title]` and `:::danger` draw an ink
-bar, `:::note`, `:::info` and `:::tip` a blue one. Code blocks have line numbers
+`<Cards>`/`<Card to label title>`. Diagrams: a ` ```mermaid ` block, with no colours of its own (the theme sets them). Admonitions: a 1px frame on a tint with an icon —
+`:::danger` in the error colour, `:::warning`/`:::caution` in amber, `:::note`, `:::info` and
+`:::tip` in blue. Code blocks have line numbers
 (`noLineNumbers` turns them off); `prompt` in the meta draws a root `#` before each command and
 leaves comments out of Copy.
 
@@ -111,9 +118,10 @@ deploys `build/` to GitHub Pages (source: GitHub Actions). `static/CNAME` holds 
 
 ## Design
 
-The docs theme implements `design/reference/docs.dc.html`; the home, navbar, status strip and
-footer follow the website's home design, so the two read as one site. Fonts are self-hosted from
-`static/fonts/` (Archivo, Instrument Serif, Geist Mono — SIL Open Font License, texts alongside).
+The whole site implements [`design/DESIGN.md`](./design/DESIGN.md) ("Rapporto di prova"); the
+artboard `design/index.html` (it also holds the panel screens) wins when the two disagree. Tokens live at the
+top of `src/css/custom.css` (`--cg-*`). Fonts are IBM Plex Sans and IBM Plex Mono, self-hosted
+from `static/fonts/` (SIL Open Font License, text alongside).
 Search is local (built at build time); there is no analytics and no external service.
 
 ## Status

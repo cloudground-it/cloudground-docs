@@ -3,32 +3,21 @@ import Link from '@docusaurus/Link';
 import {translate} from '@docusaurus/Translate';
 import type {Props} from '@theme/DocPaginator';
 import Icon from '@site/src/components/Icon';
-import {useSidebarNumber} from '@site/src/utils/sidebarNumber';
 
 type Nav = NonNullable<Props['previous']>;
 
 function Cell({nav, isNext}: {nav: Nav; isNext: boolean}): ReactNode {
-  const num = useSidebarNumber(nav.permalink);
   const word = isNext
     ? translate({id: 'cg.paginator.next', message: 'Successiva'})
     : translate({id: 'cg.paginator.previous', message: 'Precedente'});
-  const sub = isNext ? (
-    <>
-      {num ? `${num.position} · ` : ''}
-      {word}
-      <Icon name="arrow-right" size={14} />
-    </>
-  ) : (
-    <>
-      <Icon name="arrow-left" size={14} />
-      {word}
-      {num ? ` · ${num.position}` : ''}
-    </>
-  );
   return (
-    <Link to={nav.permalink} className={`cg-inv cg-pager__cell${isNext ? ' cg-pager__cell--next' : ''}`} rel={isNext ? 'next' : 'prev'}>
-      <span className="hud cg-m cg-pager__sub">{sub}</span>
-      <span className="disp cg-pager__title">{nav.title}</span>
+    <Link to={nav.permalink} className={`cg-pager__cell${isNext ? ' cg-pager__cell--next' : ''}`} rel={isNext ? 'next' : 'prev'}>
+      <small className="cg-pager__sub">
+        {!isNext && <Icon name="arrow-left" size={14} />}
+        {word}
+        {isNext && <Icon name="arrow-right" size={14} />}
+      </small>
+      <span className="cg-pager__title">{nav.title}</span>
     </Link>
   );
 }

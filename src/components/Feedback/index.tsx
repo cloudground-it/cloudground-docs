@@ -17,10 +17,10 @@ export default function Feedback(): ReactNode {
           <span className="cg-feedback__q">
             <Translate id="cg.feedback.question">Questa pagina ti è stata utile?</Translate>
           </span>
-          <button type="button" className="hud cg-btn-line" onClick={() => setAnswer('yes')}>
+          <button type="button" className="cg-btn cg-btn--sm" onClick={() => setAnswer('yes')}>
             <Translate id="cg.feedback.yes">Sì</Translate>
           </button>
-          <button type="button" className="hud cg-btn-line" onClick={() => setAnswer('no')}>
+          <button type="button" className="cg-btn cg-btn--sm" onClick={() => setAnswer('no')}>
             <Translate id="cg.feedback.no">No</Translate>
           </button>
         </>

@@ -22,14 +22,14 @@ function CopyButton({text}: {text: string}): ReactNode {
     void copyToClipboard(text).then(() => {
       setCopied(true);
       window.clearTimeout(timeout.current);
-      timeout.current = window.setTimeout(() => setCopied(false), 1600);
+      timeout.current = window.setTimeout(() => setCopied(false), 2000);
     });
   }, [text]);
   useEffect(() => () => window.clearTimeout(timeout.current), []);
   return (
     <button
       type="button"
-      className="hud cg-copy"
+      className="cg-copy"
       onClick={onClick}
       aria-label={translate({id: 'theme.CodeBlock.copyButtonAriaLabel', message: 'Copia il codice negli appunti'})}>
       <Icon name={copied ? 'check' : 'copy'} size={14} />
@@ -56,7 +56,7 @@ export default function CodeBlockLayout({className}: Props): ReactNode {
   return (
     <Container as="div" className={clsx(className, metadata.className, 'cg-code')}>
       <div className="cg-code__bar">
-        <span className="hud cg-code__label">{label}</span>
+        <span className="cg-code__label">{label}</span>
         <CopyButton text={text} />
       </div>
       <div className="cg-code__content">

@@ -2,20 +2,19 @@ import React, {type ReactNode} from 'react';
 import Link from '@docusaurus/Link';
 import Translate, {translate} from '@docusaurus/Translate';
 import LogoMark from '@site/src/components/LogoMark';
-import {DOCS_REPO, ISSUES_URL, RELEASES_URL, REPO} from '@site/src/data/site';
+import {DOCS_REPO, ISSUES_URL, RELEASE, RELEASE_URL, REPO} from '@site/src/data/site';
 
 type FooterLink = {to?: string; href?: string; label: ReactNode};
 
 /**
- * The footer of every page: the mark and its line, short columns of links
- * grouped by kind, and the name drawn as large as the page allows, cut off by
- * the bottom edge. Nothing in it needs a server: questions and reports go to
- * GitHub.
+ * The footer of every page, on the second paper: the mark and the licence
+ * line, then short columns of links grouped by kind. Nothing in it needs a
+ * server: questions and reports go to GitHub.
  */
 function Column({title, links}: {title: ReactNode; links: FooterLink[]}): ReactNode {
   return (
     <div className="cg-footer__col">
-      <p className="hud cg-footer__head">{title}</p>
+      <h2 className="cg-footer__head">{title}</h2>
       <ul>
         {links.map((link, i) => (
           <li key={i}>
@@ -36,8 +35,11 @@ function Footer(): ReactNode {
     <footer className="cg-footer">
       <div className="cg-footer__top">
         <div className="cg-footer__brand">
-          <LogoMark size={40} inverted />
-          <p className="hud">
+          <Link to="/" className="cg-footer__logo">
+            <LogoMark size={28} />
+            <span>cloudground</span>
+          </Link>
+          <p className="cg-footer__tagline">
             <Translate id="cg.footer.tagline">Hosting che si misura</Translate>
           </p>
           <p className="cg-footer__license">
@@ -58,8 +60,8 @@ function Footer(): ReactNode {
           <Column
             title={<Translate id="cg.footer.product">Prodotto</Translate>}
             links={[
-              {to: '/#funzioni', label: <Translate id="cg.footer.features">Funzioni</Translate>},
               {to: '/#misure', label: <Translate id="cg.footer.measures">Misure</Translate>},
+              {to: '/#prove', label: <Translate id="cg.footer.tests">Prove di sicurezza</Translate>},
               {to: '/#installa', label: <Translate id="cg.footer.install">Installazione</Translate>},
             ]}
           />
@@ -69,7 +71,14 @@ function Footer(): ReactNode {
               {to: '/docs', label: <Translate id="cg.footer.docs">Documentazione</Translate>},
               {to: '/docs/cli', label: 'CLI'},
               {to: '/docs/api', label: 'API'},
-              {href: RELEASES_URL, label: <Translate id="cg.footer.releases">Novità</Translate>},
+              {
+                href: RELEASE_URL,
+                label: (
+                  <Translate id="cg.footer.release" values={{version: RELEASE}}>
+                    {'Release {version}'}
+                  </Translate>
+                ),
+              },
             ]}
           />
           <Column
@@ -88,11 +97,6 @@ function Footer(): ReactNode {
             ]}
           />
         </nav>
-      </div>
-      {/* The name as a picture: neither read aloud nor measured as text, which
-          at this contrast it is not meant to be. */}
-      <div className="cg-footer__word disp" aria-hidden="true">
-        cloudground
       </div>
     </footer>
   );
