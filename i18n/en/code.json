@@ -804,5 +804,20 @@
   },
   "home.procedure.guide": {
     "message": "The full installation guide"
+  },
+  "home.terminal.line1": {
+    "message": "[ok] server checked: Ubuntu, memory, disk, ports"
+  },
+  "home.terminal.line2": {
+    "message": "[ok] release signature verified"
+  },
+  "home.terminal.line3": {
+    "message": "[ok] nginx · PHP-FPM · MariaDB · restic installed"
+  },
+  "home.terminal.line4": {
+    "message": "[ok] panel running on https://<ip>:8443"
+  },
+  "home.terminal.line5": {
+    "message": "→ create the administrator: https://<ip>:8443/setup/…"
   }
 }
