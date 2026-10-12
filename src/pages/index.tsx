@@ -1,5 +1,6 @@
 import React, {type ReactNode} from 'react';
 import Head from '@docusaurus/Head';
+import {HtmlClassNameProvider} from '@docusaurus/theme-common';
 import Layout from '@theme/Layout';
 import {translate} from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
@@ -31,15 +32,19 @@ export default function HomePage(): ReactNode {
     sameAs: REPO,
     offers: {'@type': 'Offer', price: '0', priceCurrency: 'EUR'},
   };
+  // cg-home: on this page only the navbar scrolls away with the page
+  // (custom.css, Navbar).
   return (
-    <Layout description={description}>
-      <Head>
-        <title>{title}</title>
-        <meta property="og:title" content={title} />
-        <meta property="og:type" content="website" />
-        <script type="application/ld+json">{JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>
-      </Head>
-      <Home />
-    </Layout>
+    <HtmlClassNameProvider className="cg-home">
+      <Layout description={description}>
+        <Head>
+          <title>{title}</title>
+          <meta property="og:title" content={title} />
+          <meta property="og:type" content="website" />
+          <script type="application/ld+json">{JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>
+        </Head>
+        <Home />
+      </Layout>
+    </HtmlClassNameProvider>
   );
 }

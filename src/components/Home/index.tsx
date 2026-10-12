@@ -1,293 +1,335 @@
-import React, {useCallback, useEffect, useRef, useState, type ReactNode} from 'react';
+import React, {type ReactNode} from 'react';
 import Link from '@docusaurus/Link';
 import Translate, {translate} from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import CacheScope from './CacheScope';
+import Terminal from './Terminal';
 import useAnchor from './useAnchor';
-import Icon, {type IconName} from '@site/src/components/Icon';
-import {BENCH_METHOD_URL, BENCH_URL, INSTALL_COMMAND, RELEASE, RELEASE_URL} from '@site/src/data/site';
+import Icon from '@site/src/components/Icon';
+import {BENCH_METHOD_URL, BENCH_URL, REPO} from '@site/src/data/site';
 import styles from './Home.module.css';
 
 /**
- * The home as a test report ("Rapporto di prova", design/DESIGN.md): the
- * protocol strip, the install command, one measured result with its outcome,
- * every measurement of the release, the safety tests, the limits of the test
- * and the install procedure. Every figure is a mean from bench/phase-10-fresh.md
- * in the product repository (section "The release candidate on the purged
- * box", the v0.1.0 tree, three runs per scenario). Never type a number here
- * that is not in that file.
+ * The home page: a framed column with the hero and the cache scope, the
+ * technology ribbon, the features, the ownership band, the measurements,
+ * the install terminal and the closing call, in the "Rapporto di prova"
+ * tokens (design/DESIGN.md). Every section is plain markup rendered at build
+ * time: the cache switch and the copy button are the only parts that need
+ * JavaScript, and without it they are simply not drawn.
  */
 
-type Locale = string;
-
-function useNumber(): (n: number) => string {
-  const {i18n} = useDocusaurusContext();
-  return (n: number) =>
-    new Intl.NumberFormat(i18n.currentLocale as Locale, {
-      maximumFractionDigits: n < 100 ? 2 : 0,
-      // Italian leaves four-digit numbers ungrouped by default; the column
-      // reads better when 9.710 and 15.478 look alike.
-      useGrouping: 'always',
-    } as unknown as Intl.NumberFormatOptions).format(n);
+function Accent({children}: {children: ReactNode}): ReactNode {
+  return <span className={styles.acc}>{children}</span>;
 }
 
-async function copyText(text: string): Promise<void> {
-  if (navigator.clipboard) {
-    return navigator.clipboard.writeText(text);
-  }
-  const {default: copy} = await import('copy-text-to-clipboard');
-  copy(text);
+function Label({children}: {children: ReactNode}): ReactNode {
+  return <span className={styles.label}>{children}</span>;
 }
 
-/** The install command on ink, with an orange Copy that says Copiato for 2 s. */
-function Command(): ReactNode {
-  const [copied, setCopied] = useState(false);
-  const timeout = useRef<number | undefined>(undefined);
-  const onClick = useCallback(() => {
-    void copyText(INSTALL_COMMAND).then(() => {
-      setCopied(true);
-      window.clearTimeout(timeout.current);
-      timeout.current = window.setTimeout(() => setCopied(false), 2000);
-    });
-  }, []);
-  useEffect(() => () => window.clearTimeout(timeout.current), []);
-  const output = [
-    translate({id: 'home.terminal.line1', message: '[ok] server controllato: Ubuntu, memoria, disco, porte'}),
-    translate({id: 'home.terminal.line2', message: '[ok] firma della release verificata'}),
-    translate({id: 'home.terminal.line3', message: '[ok] nginx · PHP-FPM · MariaDB · restic installati'}),
-    translate({id: 'home.terminal.line4', message: '[ok] pannello attivo su https://<ip>:8443'}),
-    translate({id: 'home.terminal.line5', message: '→ crea l’amministratore: https://<ip>:8443/setup/…'}),
-  ];
+function Hero(): ReactNode {
   return (
-    <div className={styles.cmd}>
-      <div className={styles.cmdRow}>
-      <code>
-        <span className={styles.pr} aria-hidden="true">
-          ${' '}
-        </span>
-        {INSTALL_COMMAND}
-      </code>
-      <button
-        type="button"
-        className={styles.copy}
-        onClick={onClick}
-        aria-label={translate({id: 'home.install.copyLabel', message: 'Copia il comando di installazione'})}>
-        <Icon name={copied ? 'check' : 'copy'} size={18} />
-        <span aria-live="polite">
-          {copied
-            ? translate({id: 'theme.CodeBlock.copied', message: 'Copiato'})
-            : translate({id: 'theme.CodeBlock.copy', message: 'Copia'})}
-        </span>
-      </button>
-      </div>
-      <div className={styles.out}>
-        {output.map((line, i) => (
-          <p key={i}>{line}</p>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function Protocol(): ReactNode {
-  const {siteConfig, i18n} = useDocusaurusContext();
-  const built = String(siteConfig.customFields?.buildDate ?? '');
-  const date = built
-    ? new Intl.DateTimeFormat(i18n.currentLocale, {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC'}).format(
-        new Date(`${built}T00:00:00Z`),
-      )
-    : '';
-  return (
-    <div className={styles.protocol}>
-      <div className={styles.wrap}>
-      <dl>
-        <div>
-          <dt>
-            <Translate id="home.protocol.object">Oggetto della prova</Translate>
-          </dt>
-          <dd>
-            <Translate id="home.protocol.objectValue">Un server Ubuntu con CloudGround</Translate>
-          </dd>
-        </div>
-        <div>
-          <dt>
-            <Translate id="home.protocol.document">Documento</Translate>
-          </dt>
-          <dd className={styles.num}>CG-RP</dd>
-        </div>
-        <div>
-          <dt>
-            <Translate id="home.protocol.revision">Revisione</Translate>
-          </dt>
-          <dd className={styles.num}>
-            <a href={RELEASE_URL}>{RELEASE}</a>
-          </dd>
-        </div>
-        <div>
-          <dt>
-            <Translate id="home.protocol.date">Data</Translate>
-          </dt>
-          <dd>{date}</dd>
-        </div>
-      </dl>
-      </div>
-    </div>
-  );
-}
-
-type Mode = 'con' | 'senza';
-
-function Result(): ReactNode {
-  const [mode, setMode] = useState<Mode>('con');
-  const number = useNumber();
-  const on = mode === 'con';
-  return (
-    <section className={styles.result} aria-labelledby="risultato-title">
-      <div className={styles.resultHead}>
-        <h2 id="risultato-title">
-          <Translate id="home.result.title">Pagina del negozio WooCommerce</Translate>
-        </h2>
-        <div
-          className={styles.seg}
-          role="group"
-          aria-label={translate({id: 'home.result.condition', message: 'Condizione della prova'})}>
-          <button type="button" aria-pressed={on} onClick={() => setMode('con')}>
-            <Translate id="home.result.with">Con cache</Translate>
-          </button>
-          <button type="button" aria-pressed={!on} onClick={() => setMode('senza')}>
-            <Translate id="home.result.without">Senza cache</Translate>
-          </button>
-        </div>
-      </div>
-      <div className={styles.resultBody}>
-        <div>
-          <p className={styles.figLine} aria-live="polite">
-            <span className={styles.fig}>{number(on ? 9710 : 6.82)}</span>
-            <span className={styles.figUnit}>
-              <Translate id="home.result.unit">richieste al secondo, media di 3 run</Translate>
-            </span>
-          </p>
-          <dl className={styles.rows}>
-            <dt>
-              <Translate id="home.result.connections">Connessioni contemporanee</Translate>
-            </dt>
-            <dd>
-              <span className={styles.num}>{on ? 500 : 10}</span>
-            </dd>
-            <dt>
-              <Translate id="home.result.who">Chi risponde</Translate>
-            </dt>
-            <dd>
-              {on
-                ? translate({id: 'home.result.whoCache', message: 'cache di pagina nginx'})
-                : translate({id: 'home.result.whoPhp', message: 'PHP e database, a ogni richiesta'})}
-            </dd>
-            <dt>
-              <Translate id="home.result.errors">Errori</Translate>
-            </dt>
-            <dd>
-              <Translate id="home.result.errorsValue" values={{n: <span className={styles.num}>0</span>}}>
-                {'{n} in 3 run'}
-              </Translate>
-            </dd>
-          </dl>
-        </div>
-        <p className={on ? styles.stamp : `${styles.stamp} ${styles.stampRef}`}>
-          <b>
-            {on
-              ? translate({id: 'home.result.passed', message: 'Superato'})
-              : translate({id: 'home.result.reference', message: 'Riferimento'})}
-          </b>
-          <span>
-            {on
-              ? translate({id: 'home.result.criterion', message: 'criterio: zero errori'})
-              : translate({id: 'home.result.referenceNote', message: 'la stessa pagina senza cache'})}
-          </span>
+    <header className={`${styles.frame} ${styles.hero}`}>
+      <div className={styles.heroText}>
+        <Label>
+          <Translate id="home.hero.kicker">Pannello di hosting sui tuoi server</Translate>
+        </Label>
+        <h1 className={styles.h1}>
+          <Translate id="home.hero.title1">Hosting</Translate>
+          <br />
+          <Translate
+            id="home.hero.title2"
+            values={{
+              accent: (
+                <Accent>
+                  <Translate id="home.hero.titleAccent">misura.</Translate>
+                </Accent>
+              ),
+            }}>
+            {'che si {accent}'}
+          </Translate>
+        </h1>
+        <p className={styles.lede}>
+          <Translate id="home.hero.lede">
+            Un comando installa il pannello sul tuo server Ubuntu. Ogni sito nasce con la sua cache, il suo PHP, il suo
+            certificato e backup che vengono ripristinati per prova dopo ogni copia.
+          </Translate>
         </p>
-      </div>
-      <div className={styles.method}>
-        <p aria-live="polite">
-          {on
-            ? translate({
-                id: 'home.result.methodWith',
-                message:
-                  'Metodo: wrk, 500 connessioni per 3 run, si riporta la media. Release v0.1.0 su un VPS da 2 vCPU con Ubuntu 26.04.',
-              })
-            : translate({
-                id: 'home.result.methodWithout',
-                message:
-                  'Metodo: wrk, 10 connessioni per 3 run, si riporta la media. Ogni richiesta passa da PHP e dal database. Stessa macchina, stessa pagina.',
-              })}
-        </p>
-        <p>
-          <a href={BENCH_METHOD_URL}>
-            <Translate id="home.result.methodLink">Metodo e dati grezzi nella cartella bench/ del repository</Translate>
+        <div className={styles.actions}>
+          <a href="#installa" className={`${styles.btn} ${styles.btnPrimary}`}>
+            <Translate id="home.hero.install">Installa in un comando</Translate>
+            <Icon name="arrow-right" size={18} />
           </a>
-        </p>
+          <Link to="/docs" className={styles.btn}>
+            <Translate id="home.hero.docs">Leggi la guida</Translate>
+          </Link>
+        </div>
+        <ul className={styles.facts}>
+          <li>
+            <Translate id="home.hero.fact1">Gratis</Translate>
+          </li>
+          <li>
+            <Translate id="home.hero.fact2">Codice consultabile</Translate>
+          </li>
+          <li>
+            <Translate id="home.hero.fact3">Sui tuoi server</Translate>
+          </li>
+        </ul>
+      </div>
+      <div className={styles.heroScope}>
+        <CacheScope />
+      </div>
+    </header>
+  );
+}
+
+// Names alternate upright and italic in blue, as in the design.
+const TECH = [
+  'nginx',
+  'PHP 8.5',
+  'MariaDB',
+  'APCu',
+  'restic',
+  'Let’s Encrypt',
+  'WooCommerce',
+  'WordPress',
+  'Laravel',
+  'systemd',
+];
+
+function Ribbon(): ReactNode {
+  const row = (hidden: boolean) => (
+    <ul aria-hidden={hidden || undefined}>
+      {TECH.map((name, i) => (
+        <li key={name} className={i % 2 ? styles.ribbonAlt : undefined}>
+          {name}
+        </li>
+      ))}
+    </ul>
+  );
+  return (
+    <section className={styles.ribbon} aria-label={translate({id: 'home.tech.label', message: 'Tecnologie'})}>
+      <div className={styles.ribbonTrack}>
+        {row(false)}
+        {row(true)}
       </div>
     </section>
   );
 }
 
-function Hero(): ReactNode {
-  return (
-    <div className={styles.hero}>
-      <div>
-        <h1 className={styles.h1}>
-          <Translate id="home.hero.title">Il pannello per un server Ubuntu che misura i suoi siti</Translate>
-        </h1>
-        <p className={styles.lede}>
-          <Translate id="home.hero.lede">
-            Un comando installa CloudGround. Ogni sito nasce in cache, dimensionato sulla macchina, isolato dagli altri e
-            con i backup fuori dal server. Le misure sono pubblicate, con il metodo.
-          </Translate>
-        </p>
-        <div className={styles.install}>
-          <p className={styles.installLabel}>
-            <Translate id="home.install.label">Su un server nuovo, come root:</Translate>
-          </p>
-          <Command />
-          <p className={styles.req}>
-            <Translate id="home.install.requirements">
-              Ubuntu 24.04 o 26.04 LTS, amd64, almeno 1 GB di RAM, porte 80 e 443 libere.
-            </Translate>
-          </p>
-        </div>
-        <p className={styles.heroLinks}>
-          <Link className={styles.linkArrow} to="/docs/tutorials/install">
-            <Translate id="home.hero.guide">Guida all’installazione</Translate>
-            <Icon name="arrow-right" size={18} />
-          </Link>
-          <Link to="/docs/server/verify-the-installer">
-            <Translate id="home.hero.verify">Verifica l’installer prima di lanciarlo</Translate>
-          </Link>
-        </p>
-      </div>
-      <Result />
-    </div>
-  );
-}
-
-function SectionHead({id, title, intro}: {id: string; title: ReactNode; intro: ReactNode}): ReactNode {
+function SectionHead({
+  id,
+  kicker,
+  title,
+  intro,
+}: {
+  id: string;
+  kicker: ReactNode;
+  title: ReactNode;
+  intro: ReactNode;
+}): ReactNode {
   return (
     <div className={styles.secHead}>
-      <h2 id={`${id}-title`}>{title}</h2>
-      <p>{intro}</p>
+      <div>
+        <Label>{kicker}</Label>
+        <h2 className={styles.h2} id={`${id}-title`}>
+          {title}
+        </h2>
+      </div>
+      <p className={styles.intro}>{intro}</p>
     </div>
   );
 }
 
-/** Means of bench/phase-10-fresh.md. Change them only together with that file. */
-const MEASURES = [
+function Features(): ReactNode {
+  const id = useAnchor('funzioni');
+  const features = [
+    {
+      tag: translate({id: 'home.features.1.tag', message: 'Velocità'}),
+      title: translate({id: 'home.features.1.title', message: 'Cache di pagina mirata'}),
+      text: translate({
+        id: 'home.features.1.text',
+        message:
+          'nginx serve le pagine senza toccare PHP. Quando cambi un articolo o un prezzo, si svuotano solo le pagine che lo mostrano.',
+      }),
+    },
+    {
+      tag: translate({id: 'home.features.2.tag', message: 'Isolamento'}),
+      title: translate({id: 'home.features.2.title', message: 'Un PHP per ogni sito'}),
+      text: translate({
+        id: 'home.features.2.text',
+        message: 'Utente di sistema, PHP e database separati. Un sito compromesso non vede gli altri.',
+      }),
+    },
+    {
+      tag: translate({id: 'home.features.3.tag', message: 'Backup'}),
+      title: translate({id: 'home.features.3.title', message: 'Ripristino già provato'}),
+      text: translate({
+        id: 'home.features.3.text',
+        message: 'Ogni copia va cifrata dove scegli tu e viene ripristinata per prova subito dopo.',
+      }),
+    },
+    {
+      tag: translate({id: 'home.features.4.tag', message: 'Staging'}),
+      title: translate({id: 'home.features.4.title', message: 'Prova prima, misura poi'}),
+      text: translate({
+        id: 'home.features.4.text',
+        message: 'Una copia protetta da password. Un rilascio più lento della produzione viene fermato.',
+      }),
+    },
+    {
+      tag: translate({id: 'home.features.security.tag', message: 'Sicurezza'}),
+      title: translate({id: 'home.features.security.title', message: 'Vulnerabilità e malware'}),
+      text: translate({
+        id: 'home.features.security.text',
+        message: 'Plugin con falle note segnalati, file sospetti trovati, 2FA per wp-admin e blocchi per paese.',
+      }),
+    },
+    {
+      tag: 'HTTPS',
+      title: translate({id: 'home.features.5.title', message: 'Certificati che si rinnovano'}),
+      text: translate({id: 'home.features.5.text', message: 'Let’s Encrypt, wildcard compresi, o i tuoi certificati.'}),
+    },
+    {
+      tag: 'Database',
+      title: translate({id: 'home.features.7.title', message: 'Il database, dentro il pannello'}),
+      text: translate({
+        id: 'home.features.7.text',
+        message: 'Tabelle, dati e SQL con i permessi del solo sito, senza strumenti esterni.',
+      }),
+    },
+    {
+      tag: translate({id: 'home.features.8.tag', message: 'Accesso'}),
+      title: translate({id: 'home.features.8.title', message: 'Ruoli e due fattori'}),
+      text: translate({
+        id: 'home.features.8.text',
+        message: 'Amministratori, operatori sui loro siti, sola lettura. 2FA obbligatoria se vuoi.',
+      }),
+    },
+  ];
+  return (
+    <section id={id} className={styles.frame} aria-labelledby={`${id}-title`}>
+      <SectionHead
+        id={id}
+        kicker={<Translate id="home.features.kicker">01 / Funzioni</Translate>}
+        title={
+          <Translate
+            id="home.features.title"
+            values={{
+              accent: (
+                <Accent>
+                  <Translate id="home.features.titleAccent">tutorial</Translate>
+                </Accent>
+              ),
+            }}>
+            {'Il controllo che un {accent} non ti dà.'}
+          </Translate>
+        }
+        intro={
+          <Translate id="home.features.intro">
+            Otto cose che di solito si configurano a mano, una sera alla volta. Qui sono accese dal primo sito.
+          </Translate>
+        }
+      />
+      <ul className={styles.cards}>
+        {features.map((f, i) => (
+          <li key={f.title} className={styles.card}>
+            <div className={styles.cardTop}>
+              <Label>{f.tag}</Label>
+              <span className={`${styles.label} ${styles.cardNum}`}>{String(i + 1).padStart(2, '0')}</span>
+            </div>
+            <h3>{f.title}</h3>
+            <p>{f.text}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function Ownership(): ReactNode {
+  const id = useAnchor('proprieta');
+  const items = [
+    {
+      title: translate({id: 'home.own.a.title', message: 'Codice consultabile'}),
+      text: translate({
+        id: 'home.own.a.text',
+        message: 'Leggi ogni riga che gira come root sul tuo server. Modificala, se serve.',
+      }),
+    },
+    {
+      title: translate({id: 'home.own.b.title', message: 'Tuo per sempre'}),
+      text: translate({
+        id: 'home.own.b.text',
+        message:
+          'Nessuna licenza da rinnovare, nessun costo per server. Se il progetto si fermasse, il pannello continuerebbe a funzionare.',
+      }),
+    },
+    {
+      title: translate({id: 'home.own.c.title', message: 'Nessun intermediario'}),
+      text: translate({
+        id: 'home.own.c.text',
+        message: 'Nessun account presso di noi, nessun servizio in mezzo. I backup vanno dove scegli tu.',
+      }),
+    },
+  ];
+  return (
+    <section id={id} className={styles.band} aria-labelledby={`${id}-title`}>
+      <div className={styles.frame}>
+        <div className={styles.bandHead}>
+          <Label>
+            <Translate id="home.own.kicker">02 / Proprietà</Translate>
+          </Label>
+          <h2 className={styles.h2} id={`${id}-title`}>
+            <Translate
+              id="home.own.title"
+              values={{
+                accent: (
+                  <Accent>
+                    <Translate id="home.own.titleAccent">affittare</Translate>
+                  </Accent>
+                ),
+              }}>
+              {'Smetti di {accent} il tuo server.'}
+            </Translate>
+          </h2>
+        </div>
+        <ul className={styles.bandGrid}>
+          {items.map((item, i) => (
+            <li key={item.title} className={styles.bandCell}>
+              <Label>{'ABC'[i]}</Label>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * The numbers are the means of bench/phase-10-fresh.md, section "The release
+ * candidate on the purged box" (v0.1.0, three runs each). Change them only
+ * together with that file; never type a number here that is not in it.
+ */
+const MEASURES: {key: 'cachedMany' | 'cachedOne' | 'static' | 'browsers' | 'uncached'; rps: number; reference?: boolean}[] = [
   {key: 'cachedMany', rps: 9710},
   {key: 'cachedOne', rps: 6347},
   {key: 'static', rps: 15478},
   {key: 'browsers', rps: 9641},
-  {key: 'uncached', rps: 6.82},
-] as const;
+  {key: 'uncached', rps: 6.82, reference: true},
+];
 
 function Measures(): ReactNode {
   const id = useAnchor('misure');
-  const number = useNumber();
+  const {i18n} = useDocusaurusContext();
+  const number = (n: number) =>
+    new Intl.NumberFormat(i18n.currentLocale, {
+      maximumFractionDigits: n < 100 ? 2 : 0,
+      // Italian leaves four-digit numbers ungrouped by default; the column
+      // reads better when 9.710 and 15.478 look alike.
+      useGrouping: 'always',
+    } as unknown as Intl.NumberFormatOptions).format(n);
   const labels: Record<(typeof MEASURES)[number]['key'], [string, string]> = {
     cachedMany: [
       translate({id: 'home.measures.cached', message: 'Pagina in cache'}),
@@ -310,16 +352,32 @@ function Measures(): ReactNode {
       translate({id: 'home.measures.uncached.note', message: 'PHP + database, 10 connessioni'}),
     ],
   };
-  const caption = translate({id: 'home.measures.caption', message: 'Richieste al secondo per scenario'});
+  const errors = translate({id: 'home.measures.noErrors', message: '0 errori'});
+  const passed = translate({id: 'home.measures.passed', message: 'Superato'});
+  const reference = translate({id: 'home.measures.reference', message: 'Riferimento'});
+  const caption = translate({id: 'home.measures.caption', message: 'Risultati delle misure, per scenario'});
   return (
-    <section id={id} className={styles.sec} aria-labelledby={`${id}-title`}>
+    <section id={id} className={styles.frame} aria-labelledby={`${id}-title`}>
       <SectionHead
         id={id}
-        title={<Translate id="home.measures.title">Tutte le misure della release v0.1.0</Translate>}
+        kicker={<Translate id="home.measures.kicker">03 / Misure</Translate>}
+        title={
+          <Translate
+            id="home.measures.title"
+            values={{
+              accent: (
+                <Accent>
+                  <Translate id="home.measures.titleAccent">promesso.</Translate>
+                </Accent>
+              ),
+            }}>
+            {'Misurato, non {accent}'}
+          </Translate>
+        }
         intro={
           <Translate id="home.measures.intro">
-            Cinque scenari sulla stessa macchina. I numeri sono quelli del file di benchmark pubblicato: niente
-            arrotondamenti a favore.
+            La release v0.1.0 su un piccolo VPS, sotto wrk: tre giri per scenario, qui la media. Il metodo e ogni giro
+            sono pubblici.
           </Translate>
         }
       />
@@ -331,367 +389,143 @@ function Measures(): ReactNode {
               <th scope="col">
                 <Translate id="home.measures.scenario">Scenario</Translate>
               </th>
-              <th scope="col" className={styles.cond}>
-                <Translate id="home.measures.conditions">Condizioni</Translate>
+              <th scope="col" className={styles.r}>
+                <Translate id="home.measures.rps">Richieste / s</Translate>
               </th>
               <th scope="col" className={styles.r}>
-                <Translate id="home.measures.rps">Richieste al secondo</Translate>
-              </th>
-              <th scope="col" className={styles.r}>
-                <Translate id="home.measures.errors">Errori</Translate>
+                <Translate id="home.measures.outcome">Esito</Translate>
               </th>
             </tr>
           </thead>
           <tbody>
             {MEASURES.map((m) => (
-              <tr key={m.key}>
+              <tr key={m.key} className={m.reference ? styles.ref : undefined}>
                 <th scope="row">
                   {labels[m.key][0]}
-                  <small>{labels[m.key][1]}</small>
+                  <small>
+                    {labels[m.key][1]} · {errors}
+                  </small>
                 </th>
-                <td className={styles.cond}>{labels[m.key][1]}</td>
-                <td className={`${styles.r} ${styles.num}`}>{number(m.rps)}</td>
-                <td className={`${styles.r} ${styles.num}`}>0</td>
+                <td className={styles.fig}>{number(m.rps)}</td>
+                <td className={styles.out}>
+                  <span className={m.reference ? `${styles.stamp} ${styles.stampRef}` : styles.stamp}>
+                    {m.reference ? reference : passed}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <p className={styles.tblNote}>
+      <ul className={styles.notes}>
+        <li>
+          <Translate id="home.measures.server">Server: VPS 2 vCPU · Ubuntu 26.04</Translate>
+        </li>
+        <li>
+          <Translate id="home.measures.site">Sito: WooCommerce, pagina del negozio</Translate>
+        </li>
+        <li>
+          <Translate id="home.measures.load">Carico: wrk sullo stesso server</Translate>
+        </li>
+        <li>
+          <Translate id="home.measures.date">Misura: 11 ottobre 2026</Translate>
+        </li>
+        <li>
+          <a href={BENCH_URL}>
+            <Translate id="home.measures.data">I dati</Translate>
+          </a>
+        </li>
+        <li>
+          <a href={BENCH_METHOD_URL}>
+            <Translate id="home.measures.method">Il metodo</Translate>
+          </a>
+        </li>
+      </ul>
+    </section>
+  );
+}
+
+function Install(): ReactNode {
+  const id = useAnchor('installa');
+  const steps = [
+    translate({id: 'home.install.step1', message: 'Un server Ubuntu 24.04 o 26.04 appena creato, accesso root.'}),
+    translate({id: 'home.install.step2', message: 'Il comando qui accanto. Controlla il server prima di toccare qualcosa.'}),
+    translate({id: 'home.install.step3', message: 'Apri il link monouso, crea l’amministratore, crea il primo sito.'}),
+  ];
+  return (
+    <section id={id} className={styles.installBand} aria-labelledby={`${id}-title`}>
+      <div className={`${styles.frame} ${styles.install}`}>
+        <div className={styles.installText}>
+          <Label>
+            <Translate id="home.install.kicker">04 / Installazione</Translate>
+          </Label>
+          <h2 className={styles.h2} id={`${id}-title`}>
+            <Translate
+              id="home.install.title"
+              values={{
+                accent: (
+                  <Accent>
+                    <Translate id="home.install.titleAccent">Davvero.</Translate>
+                  </Accent>
+                ),
+              }}>
+              {'Un comando. {accent}'}
+            </Translate>
+          </h2>
+          <ol className={styles.steps}>
+            {steps.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ol>
+          <Link to="/docs/tutorials/install" className={styles.more}>
+            <Translate id="home.install.guide">La guida all’installazione</Translate>
+            <Icon name="arrow-right" size={18} />
+          </Link>
+        </div>
+        <div className={styles.installTerm}>
+          <Terminal />
+          <p className={styles.termNote}>
+            <Translate id="home.install.note" values={{path: <code>/var/log/cloudground-install.log</code>}}>
+              {'Uscita abbreviata. Il log completo resta in {path}.'}
+            </Translate>
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Closing(): ReactNode {
+  return (
+    <section className={`${styles.frame} ${styles.closing}`} aria-labelledby="accendi-title">
+      <Label>
+        <Translate id="home.closing.kicker">Gratis · Nessun abbonamento</Translate>
+      </Label>
+      <h2 className={styles.h2} id="accendi-title">
+        <Translate id="home.closing.title1">Accendi il</Translate>
+        <br />
         <Translate
-          id="home.measures.note"
+          id="home.closing.title2"
           values={{
-            data: (
-              <a href={BENCH_URL}>
-                <Translate id="home.measures.data">i dati</Translate>
-              </a>
-            ),
-            method: (
-              <a href={BENCH_METHOD_URL}>
-                <Translate id="home.measures.method">il metodo</Translate>
-              </a>
+            accent: (
+              <Accent>
+                <Translate id="home.closing.titleAccent">server.</Translate>
+              </Accent>
             ),
           }}>
-          {
-            'VPS da 2 vCPU, Ubuntu 26.04, pagina negozio WooCommerce, wrk sullo stesso server, 3 run per scenario, media; misura dell’11 ottobre 2026. Le misure valgono per quella macchina: sul tuo server si rifanno con lo stesso metodo. Pubblici {data} e {method}.'
-          }
+          {'tuo {accent}'}
         </Translate>
-      </p>
-    </section>
-  );
-}
-
-type Test = {name: string; when: string; method: string; outcome: string; icon: IconName};
-
-function Annotation(): ReactNode {
-  const {i18n} = useDocusaurusContext();
-  const it = i18n.currentLocale === 'it';
-  // An illustration of the panel's Guard table, labelled as such on the page.
-  const rows: {page: string; pairs: number; median: string; interval: string; ok: boolean}[] = [
-    {page: '/', pairs: 60, median: '−0,6 ms', interval: '−1,9 … +0,7', ok: true},
-    {page: it ? '/negozio/' : '/shop/', pairs: 60, median: '+0,4 ms', interval: '−0,8 … +1,5', ok: true},
-    {page: it ? '/carrello/' : '/cart/', pairs: 60, median: '+38 ms', interval: '+31 … +45', ok: false},
-  ];
-  const dot = (s: string) => (it ? s : s.replace(/,/g, '.'));
-  const ok = translate({id: 'home.guard.ok', message: 'OK'});
-  const blocked = translate({id: 'home.guard.blocked', message: 'bloccato'});
-  return (
-    <figure
-      className={styles.annot}
-      aria-label={translate({
-        id: 'home.guard.label',
-        message: 'Esempio di rapporto del Guard nel pannello, con note',
-      })}>
-      <div className={styles.annotBox} />
-      <figcaption className={styles.annotCap}>
-        <b>
-          <Translate id="home.guard.caption">Rapporto del Guard, nel pannello</Translate>
-        </b>
-        <span>
-          <Translate id="home.guard.sample">Esempio, dati illustrativi</Translate>
-        </span>
-      </figcaption>
-      <div className={`${styles.mRow} ${styles.mHead}`} style={{gridRow: 2}}>
-        <span>
-          <Translate id="home.guard.page">Pagina</Translate>
-        </span>
-        <span className={styles.r}>
-          <Translate id="home.guard.pairs">Coppie</Translate>
-        </span>
-        <span>
-          <Translate id="home.guard.median">Mediana</Translate>
-          <span className={styles.mk}>1</span>
-        </span>
-        <span>
-          <Translate id="home.guard.interval">Intervallo 95%</Translate>
-        </span>
-        <span>
-          <Translate id="home.guard.verdict">Verdetto</Translate>
-          <span className={styles.mk}>2</span>
-        </span>
+      </h2>
+      <div className={styles.actions}>
+        <a href="#installa" className={`${styles.btn} ${styles.btnPrimary} ${styles.btnBig}`}>
+          <Translate id="home.closing.install">Installa CloudGround</Translate>
+          <Icon name="arrow-right" size={18} />
+        </a>
+        <a href={REPO} className={`${styles.btn} ${styles.btnBig}`}>
+          <Icon name="github" size={18} />
+          <Translate id="home.closing.github">Il codice su GitHub</Translate>
+        </a>
       </div>
-      <p className={styles.note} style={{gridRow: 2}}>
-        <span className={styles.mk}>1</span>
-        <Translate
-          id="home.guard.note1"
-          values={{b: <b>{translate({id: 'home.guard.note1.b', message: 'Mediana'})}</b>}}>
-          {'{b} della differenza di tempo server tra staging e produzione, con il suo intervallo al 95%.'}
-        </Translate>
-      </p>
-      {rows.map((row, i) => (
-        <div key={row.page} className={`${styles.mRow}${row.ok ? '' : ` ${styles.bad}`}`} style={{gridRow: 3 + i}}>
-          <span className={styles.mono}>{row.page}</span>
-          <span className={`${styles.num} ${styles.r}`}>{row.pairs}</span>
-          <span className={styles.num}>{dot(row.median)}</span>
-          <span className={styles.num}>{dot(row.interval)}</span>
-          <span className={`${styles.badge} ${row.ok ? styles.badgeOk : styles.badgeErr}`}>{row.ok ? ok : blocked}</span>
-        </div>
-      ))}
-      <p className={styles.note} style={{gridRow: 5}}>
-        <span className={styles.mk}>2</span>
-        <Translate
-          id="home.guard.note2"
-          values={{b: <b>{translate({id: 'home.guard.note2.b', message: 'Il verdetto'})}</b>}}>
-          {'{b} per pagina. Una pagina più lenta con certezza ferma il rilascio: è l’unica riga che rompe la tabella.'}
-        </Translate>
-      </p>
-      <p className={styles.mFoot} style={{gridRow: 6}}>
-        <Icon name="x-circle" size={18} />
-        <span>
-          <Translate id="home.guard.stopped">
-            Rilascio fermato: /carrello/ è più lenta della produzione. La produzione non è stata toccata.
-          </Translate>
-        </span>
-      </p>
-      <p className={`${styles.note} ${styles.noteTop}`} style={{gridRow: 6}}>
-        <Translate
-          id="home.guard.note3"
-          values={{b: <b>{translate({id: 'home.guard.note3.b', message: 'La produzione resta com’è'})}</b>}}>
-          {'{b}, e il rollback è un solo comando se serve tornare indietro dopo una pubblicazione.'}
-        </Translate>
-      </p>
-    </figure>
-  );
-}
-
-function Tests(): ReactNode {
-  const id = useAnchor('prove');
-  const tests: Test[] = [
-    {
-      name: 'Performance Guard',
-      when: translate({id: 'home.tests.guard.when', message: 'Prima di ogni Safe Push dallo staging'}),
-      method: translate({
-        id: 'home.tests.guard.method',
-        message:
-          'Coppie di richieste alle stesse pagine di staging e produzione, tempo misurato sul server. Si calcolano la mediana della differenza e il suo intervallo al 95%.',
-      }),
-      outcome: translate({
-        id: 'home.tests.guard.outcome',
-        message:
-          'Un rilascio più lento della produzione non viene pubblicato. Verdetti: OK, attenzione, bloccato, non concludente.',
-      }),
-      icon: 'shield-check',
-    },
-    {
-      name: translate({id: 'home.tests.restore.name', message: 'Ripristino di prova'}),
-      when: translate({id: 'home.tests.restore.when', message: 'Dopo ogni backup restic'}),
-      method: translate({
-        id: 'home.tests.restore.method',
-        message:
-          'Ogni snapshot, cifrato e deduplicato fuori dal server, viene ripristinato a parte e controllato. Il tempo di ripristino è misurato, non stimato.',
-      }),
-      outcome: translate({
-        id: 'home.tests.restore.outcome',
-        message:
-          'Un backup conta solo dopo che il ripristino di prova è riuscito. L’ultimo verificato non viene mai rimosso.',
-      }),
-      icon: 'restore',
-    },
-    {
-      name: translate({id: 'home.tests.isolation.name', message: 'Isolamento'}),
-      when: translate({id: 'home.tests.isolation.when', message: 'Per ogni sito, alla creazione'}),
-      method: translate({
-        id: 'home.tests.isolation.method',
-        message:
-          'Un utente Unix, un master PHP-FPM, una sandbox systemd e un account del database per sito. SFTP chiuso nella cartella del sito.',
-      }),
-      outcome: translate({
-        id: 'home.tests.isolation.outcome',
-        message: 'Un sito compromesso non vede i file né il database degli altri.',
-      }),
-      icon: 'lock',
-    },
-    {
-      name: translate({id: 'home.tests.drift.name', message: 'Deriva della configurazione'}),
-      when: translate({id: 'home.tests.drift.when', message: 'Sui file che il pannello gestisce'}),
-      method: translate({
-        id: 'home.tests.drift.method',
-        message: 'Il pannello confronta i file gestiti con quelli che ha scritto. Se qualcuno li cambia a mano, lo segnala.',
-      }),
-      outcome: translate({
-        id: 'home.tests.drift.outcome',
-        message: 'Non sovrascrive nulla da solo: scegli tu se ripristinare o mantenere la modifica.',
-      }),
-      icon: 'diff',
-    },
-  ];
-  const methodWord = translate({id: 'home.tests.method', message: 'Metodo'});
-  const outcomeWord = translate({id: 'home.tests.outcome', message: 'Esito'});
-  return (
-    <section id={id} className={styles.sec} aria-labelledby={`${id}-title`}>
-      <SectionHead
-        id={id}
-        title={<Translate id="home.tests.title">Prove di sicurezza</Translate>}
-        intro={
-          <Translate id="home.tests.intro">
-            Ogni garanzia del pannello ha un controllo che la verifica. Per ognuna: come si prova, e cosa succede quando
-            la prova non passa.
-          </Translate>
-        }
-      />
-      <div className={styles.tests}>
-        {tests.map((t) => (
-          <div key={t.name} className={styles.test}>
-            <div>
-              <h3>{t.name}</h3>
-              <p className={styles.when}>{t.when}</p>
-            </div>
-            <div>
-              <p className={styles.testK}>{methodWord}</p>
-              <p className={styles.testV}>{t.method}</p>
-            </div>
-            <div>
-              <p className={styles.testK}>{outcomeWord}</p>
-              <p className={styles.outcome}>
-                <Icon name={t.icon} size={20} />
-                <span>{t.outcome}</span>
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <Annotation />
-    </section>
-  );
-}
-
-function Limits(): ReactNode {
-  const id = useAnchor('limiti');
-  const items = [
-    {
-      title: translate({id: 'home.limits.release.title', message: 'Pre-release'}),
-      text: translate(
-        {
-          id: 'home.limits.release.text',
-          message: 'L’ultima release è la {version}. Le interfacce possono cambiare prima della 1.0.',
-        },
-        {version: RELEASE},
-      ),
-    },
-    {
-      title: translate({id: 'home.limits.audit.title', message: 'Nessun audit esterno'}),
-      text: translate({
-        id: 'home.limits.audit.text',
-        message: 'Il codice ha avuto una revisione di sicurezza interna. Nessuna società esterna l’ha ancora controllato.',
-      }),
-    },
-    {
-      title: translate({id: 'home.limits.machine.title', message: 'Una macchina sola'}),
-      text: translate({
-        id: 'home.limits.machine.text',
-        message: 'Le misure valgono per un VPS da 2 vCPU. Il metodo è pubblico: rifallo sul tuo server.',
-      }),
-    },
-    {
-      title: translate({id: 'home.limits.licence.title', message: 'Codice consultabile, non open source'}),
-      text: translate({
-        id: 'home.limits.licence.text',
-        message:
-          'Licenza Elastic License 2.0. Leggi ogni riga che gira come root sul tuo server; nessun account presso di noi, nessun canone per server.',
-      }),
-    },
-  ];
-  return (
-    <section id={id} className={styles.sec} aria-labelledby={`${id}-title`}>
-      <SectionHead
-        id={id}
-        title={<Translate id="home.limits.title">Limiti di questa prova</Translate>}
-        intro={<Translate id="home.limits.intro">Un rapporto di prova dice anche cosa non copre.</Translate>}
-      />
-      <div className={styles.limits}>
-        {items.map((item) => (
-          <div key={item.title}>
-            <h3>{item.title}</h3>
-            <p>{item.text}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Procedure(): ReactNode {
-  const id = useAnchor('installa');
-  return (
-    <section id={id} className={styles.sec} aria-labelledby={`${id}-title`}>
-      <SectionHead
-        id={id}
-        title={<Translate id="home.procedure.title">Procedura di installazione</Translate>}
-        intro={
-          <Translate id="home.procedure.intro">
-            Tre passi, nell’ordine. L’installer controlla il server prima di toccare qualcosa.
-          </Translate>
-        }
-      />
-      <ol className={styles.steps}>
-        <li>
-          <h3>
-            <Translate id="home.procedure.1.title">Prepara un server nuovo</Translate>
-          </h3>
-          <div>
-            <p>
-              <Translate id="home.procedure.1.text">
-                Ubuntu 24.04 o 26.04 LTS appena creato, amd64, almeno 1 GB di RAM e 10 GB di disco liberi, accesso root
-                via SSH. L’installer prende in mano nginx, PHP, MariaDB e SSH: usa un server dedicato.
-              </Translate>
-            </p>
-          </div>
-        </li>
-        <li>
-          <h3>
-            <Translate id="home.procedure.2.title">Lancia il comando</Translate>
-          </h3>
-          <div>
-            <Command />
-            <p>
-              <Translate id="home.procedure.2.text">
-                Se trova problemi (sistema, memoria, disco, porte occupate) li elenca tutti insieme e si ferma senza
-                toccare nulla. Lo script verifica lo SHA-256 della release e il manifesto firmato.
-              </Translate>
-            </p>
-          </div>
-        </li>
-        <li>
-          <h3>
-            <Translate id="home.procedure.3.title">Apri il link di setup</Translate>
-          </h3>
-          <div>
-            <p>
-              <Translate
-                id="home.procedure.3.text"
-                values={{url: <code className={styles.mono}>{'https://<ip>:8443/setup/…'}</code>}}>
-                {'Alla fine stampa un indirizzo {url} valido 24 ore, che funziona una volta. Crei l’amministratore, poi il primo sito.'}
-              </Translate>
-            </p>
-            <p>
-              <Link className={styles.linkArrow} to="/docs/tutorials/install">
-                <Translate id="home.procedure.guide">La guida completa all’installazione</Translate>
-                <Icon name="arrow-right" size={18} />
-              </Link>
-            </p>
-          </div>
-        </li>
-      </ol>
     </section>
   );
 }
@@ -699,14 +533,13 @@ function Procedure(): ReactNode {
 export default function Home(): ReactNode {
   return (
     <main id="top" className={styles.home}>
-      <Protocol />
-      <div className={styles.wrap}>
-        <Hero />
-        <Measures />
-        <Tests />
-        <Limits />
-        <Procedure />
-      </div>
+      <Hero />
+      <Ribbon />
+      <Features />
+      <Ownership />
+      <Measures />
+      <Install />
+      <Closing />
     </main>
   );
 }

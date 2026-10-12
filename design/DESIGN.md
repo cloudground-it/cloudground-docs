@@ -102,7 +102,7 @@ html[data-theme='dark'] { /* dark token values from the table */ }
 - Drop Archivo, Instrument Serif, the `.hud` mono labels and the accent-word titles (`heading_accent`).
 - Admonitions: restyle `.theme-admonition` to a 1px border plus a tint (`--warn`/`--warn-tint`, `--blue`/`--blue-tint`), with no left bar.
 - Doc header: render the frontmatter `type`, `meta.level`, `version` and `last_verified` as the `.d-meta` ruled strip. `unverified` shows "Non ancora verificata" in `--warn`.
-- Home (`src/components/Home`): rebuild as protocol strip → hero (headline, lede, `.cmd` with `INSTALL_COMMAND`, the result block from `BENCH_URL` numbers) → full results table → test records → annotated Guard excerpt → limits → three steps → footer.
+- Home (`src/components/Home`): since 2026-10-12 the approved "home classica": the earlier framed layout (hero with the cache scope, technology ribbon, feature grid, ownership band on ink, measurements with stamps, install terminal, closing) in these tokens. Its uppercase mono labels and italic blue accent words are a deliberate, user-approved exception to the rules above, for the home only. On the home the navbar is not sticky.
 
 ## Mapping to Nuxt UI (cloudground/ui)
 

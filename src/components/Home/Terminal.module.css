@@ -1,0 +1,98 @@
+/* The installer's terminal (Terminal.tsx): always on ink, in both themes. */
+
+.term {
+  background: var(--cg-code-bg);
+  color: var(--cg-code-fg);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 52px;
+  padding: 10px 14px 10px 18px;
+  border-bottom: 1px solid var(--cg-code-rule);
+  font: 500 0.75rem var(--cg-font-mono);
+  letter-spacing: 0.04em;
+  color: var(--cg-code-muted);
+}
+.copy {
+  margin-left: auto;
+  min-height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 3px;
+  background: var(--cg-orange);
+  color: var(--cg-on-orange);
+  font: 500 0.8125rem var(--cg-font-sans);
+  letter-spacing: 0;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+.copy:hover {
+  background: var(--cg-orange-hover);
+}
+.copy:focus-visible {
+  outline: 2px solid var(--cg-code-accent);
+  outline-offset: 2px;
+}
+.body {
+  display: grid;
+  gap: 2px;
+  padding: 22px 22px 26px;
+  font: 400 0.9375rem/1.75 var(--cg-font-mono);
+  font-variant-ligatures: none;
+}
+.body p {
+  margin: 0;
+}
+.body code {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  overflow-wrap: anywhere;
+}
+.cmd {
+  color: var(--cg-code-fg);
+  overflow-wrap: anywhere;
+}
+.prompt {
+  color: var(--cg-code-muted);
+  user-select: none;
+}
+.ok {
+  color: var(--cg-code-muted);
+}
+.ok b {
+  color: var(--cg-code-ok);
+  font-weight: 500;
+}
+.last {
+  color: var(--cg-code-accent);
+}
+.play .ok,
+.play .last {
+  animation: line 0.3s ease both;
+}
+@keyframes line {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (max-width: 480px) {
+  .body {
+    padding: 18px 16px 20px;
+    font-size: 0.8125rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .play .ok,
+  .play .last {
+    animation: none;
+  }
+}
