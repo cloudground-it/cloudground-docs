@@ -5,7 +5,7 @@ type: how-to
 prerequisites:
   - An administrator account (read-only accounts can view)
   - The nftables package on the server (the installer and updates install it)
-version: v0.3.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 6.5
 ---
@@ -37,8 +37,10 @@ An IPv6 address is counted together with its whole /64. The box also shows which
 read (**SSH: read**, **WordPress: read**, **Panel sign-in: counted**). If the server isn't enforcing
 the list, the top of the page shows **The block list is not enforced**.
 
-The following are never blocked: loopback, the server's own addresses and anything on the
-always-allowed list.
+The following are never blocked: loopback, the server's own addresses, anything on the
+always-allowed list, and Cloudflare's network (blocking one of its addresses would cut off every
+visitor Cloudflare sends through it). For a site behind Cloudflare, see
+[what changes for the block list](/docs/sites/behind-cloudflare#block-list).
 
 ## Always allow your own address {#allow-yours}
 
@@ -60,7 +62,8 @@ the bin icon on its row and confirm. Its failed sign-ins start counting again.
   failed sign-in count resets to zero.
 
 Each row shows **Why** (**by hand**, **SSH**, **WordPress** or **panel sign-in**) and **Until**. The
-panel rejects a block that includes your address, the server, loopback or an allowed address, and any
+panel rejects a block that includes your address, the server, loopback, Cloudflare's network or an
+allowed address, and any
 block wider than /8 for IPv4 or /16 for IPv6.
 
 ## If you've locked yourself out {#locked-out}
