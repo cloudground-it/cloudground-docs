@@ -5,7 +5,7 @@ type: how-to
 prerequisites:
   - Un account amministratore (sola lettura per guardare)
   - Il pacchetto nftables sul server (lo installano l'installer e gli aggiornamenti)
-version: v0.3.0
+version: v0.7.0
 last_verified: unverified
 sidebar_position: 6.5
 ---
@@ -37,8 +37,10 @@ Un indirizzo IPv6 conta insieme a tutta la sua /64. Il riquadro dice anche quali
 (**SSH: letto**, **WordPress: letto**, **Accesso al pannello: contato**). Se la lista non è applicata dal
 server, in cima alla pagina compare **La lista dei blocchi non è applicata**.
 
-Non vengono mai bloccati il loopback, gli indirizzi del server stesso e quelli della lista dei sempre
-consentiti.
+Non vengono mai bloccati il loopback, gli indirizzi del server stesso, quelli della lista dei sempre
+consentiti e la rete di Cloudflare (bloccarne un indirizzo taglierebbe fuori tutti i visitatori che
+Cloudflare fa passare da lì). Per un sito dietro Cloudflare, vedi
+[cosa cambia per la lista dei blocchi](/docs/sites/behind-cloudflare#block-list).
 
 ## Consenti sempre il tuo indirizzo {#allow-yours}
 
@@ -60,8 +62,8 @@ cestino sulla riga e conferma: i suoi accessi falliti tornano a contare.
   accessi falliti ricominciano da zero.
 
 Ogni riga dice **Motivo** (**a mano**, **SSH**, **WordPress** o **accesso al pannello**) e **Fino a**. Il
-pannello rifiuta un blocco che contiene il tuo indirizzo, il server, il loopback o un indirizzo
-consentito, e un blocco più largo di /8 per IPv4 o di /16 per IPv6.
+pannello rifiuta un blocco che contiene il tuo indirizzo, il server, il loopback, la rete di
+Cloudflare o un indirizzo consentito, e un blocco più largo di /8 per IPv4 o di /16 per IPv6.
 
 ## Se ti sei bloccato fuori {#locked-out}
 

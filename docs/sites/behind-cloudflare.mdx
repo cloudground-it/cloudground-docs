@@ -1,0 +1,94 @@
+---
+title: Un sito dietro Cloudflare
+description: Vedi gli indirizzi veri dei visitatori di un sito servito dal proxy di Cloudflare, e fai in modo che ogni svuotamento della cache svuoti anche quella di Cloudflare.
+type: how-to
+prerequisites:
+  - Un sito il cui dominio passa dal proxy di Cloudflare (la nuvola arancione nelle impostazioni DNS di Cloudflare)
+  - Un account amministratore, o operatore assegnato al sito
+  - Per svuotare anche la cache di Cloudflare, un amministratore che salvi un token Cloudflare nelle Impostazioni
+version: v0.7.0
+last_verified: unverified
+sidebar_position: 7.5
+---
+
+Quando un sito passa dal proxy di Cloudflare, ogni richiesta arriva al server da un indirizzo di
+Cloudflare. Così i log del sito, la [lista dei blocchi](/docs/access/block-addresses) e i
+[visitatori rifiutati dal sito](/docs/access/refuse-visitors) vedono Cloudflare e non il visitatore.
+E la cache di pagina del sito non è l'unica: Cloudflare può tenere una sua copia delle pagine.
+
+Il riquadro **Cloudflare**, nella scheda **Cache** del sito, risolve tutte e due le cose.
+
+## Vedi gli indirizzi veri dei visitatori {#real-addresses}
+
+1. Apri la pagina del sito e vai nella scheda **Cache**.
+2. Nel riquadro **Cloudflare**, attiva **Indirizzi reali dei visitatori**.
+3. Premi **Salva**.
+
+Da quel momento nginx prende l'indirizzo del visitatore dall'intestazione `CF-Connecting-IP` che
+aggiunge Cloudflare, e le crede solo per le richieste che arrivano dagli indirizzi di Cloudflare.
+Una richiesta mandata direttamente al server tiene il proprio indirizzo, qualunque intestazione
+porti: nessuno può scegliere l'indirizzo con cui viene registrato, limitato o bloccato.
+
+Il riquadro dice da dove viene l'elenco degli indirizzi di Cloudflare. CloudGround include l'elenco
+che Cloudflare pubblica e, finché un sito ha questa impostazione attiva, il pannello lo scarica di
+nuovo ogni giorno dall'API di Cloudflare. Un elenco che contiene qualcosa che non sia una rete
+pubblica viene scartato, e resta in uso quello di prima.
+
+Attivala solo per un sito che passa davvero da Cloudflare. Su un sito che non ci passa non cambia
+nulla, perché nessuna richiesta arriva da Cloudflare.
+
+### Cosa cambia per la lista dei blocchi {#block-list}
+
+Il server blocca gli indirizzi nel firewall, ma su un sito dietro Cloudflare il firewall vede solo
+Cloudflare. Per i siti con gli indirizzi reali attivi, anche nginx rifiuta gli indirizzi bloccati,
+con un 403 prima di leggere la cache di pagina.
+
+Gli indirizzi di Cloudflare non vengono mai bloccati, e gli accessi falliti che arrivano da lì non
+contano: bloccarne uno taglierebbe fuori tutti i visitatori che Cloudflare fa passare da quello, su
+tutti i siti.
+
+## Svuota anche la cache di Cloudflare {#cdn-purge}
+
+Prima un amministratore crea il token:
+
+1. Nella dashboard di Cloudflare, vai in **My Profile** → **API Tokens** e crea un token
+   personalizzato con il solo permesso **Zone** → **Cache Purge**, per la zona del sito.
+2. Nel pannello apri **Impostazioni**, scrivi il token in **Token Cloudflare per svuotare la cache**
+   nel riquadro **Certificati** e premi **Salva**.
+
+Questo token è separato da quello DNS dei certificati wildcard. Con il solo permesso Cache Purge, un
+token finito in mani sbagliate può svuotare cache e nient'altro. Il pannello lo conserva cifrato e
+lo manda solo a `api.cloudflare.com`.
+
+Poi, per ogni sito:
+
+1. Copia lo **Zone ID** dalla pagina **Overview** del dominio nella dashboard di Cloudflare.
+2. Nel riquadro **Cloudflare** del sito, incollalo in **ID della zona** e premi **Salva**.
+
+Quando zona e token ci sono tutti e due, il riquadro mostra **Lo svuotamento arriva a Cloudflare**.
+
+Da quel momento ogni svuotamento svuota anche la cache di Cloudflare per il sito:
+
+- **Svuota tutto** svuota da Cloudflare il dominio e gli alias del sito, non tutta la zona, che può
+  servire anche altri siti.
+- **Svuota** su un singolo indirizzo, e gli svuotamenti che il connettore WordPress manda quando un
+  contenuto cambia, svuotano da Cloudflare gli stessi indirizzi. Quelli di altri domini vengono
+  saltati.
+
+Se Cloudflare rifiuta la richiesta, la cache del server viene svuotata lo stesso e il pannello lo
+dice: **La cache di Cloudflare non è stata svuotata**, seguito dal motivo dato da Cloudflare. Gli
+svuotamenti del connettore arrivano a Cloudflare in background, così WordPress non li aspetta mai.
+
+## Con l'API {#with-the-api}
+
+- `GET /api/sites/<id>/cloudflare` risponde con `real_ip`, `zone_id`, `purge_ready` e
+  `ranges_updated_at` (assente finché è in uso l'elenco incluso).
+- `PUT /api/sites/<id>/cloudflare` con `{"real_ip": true, "zone_id": "<32 cifre esadecimali>"}` li
+  cambia. Un campo che non mandi resta com'è, e `"zone_id": ""` toglie la zona.
+- `POST /api/sites/<id>/purge` risponde anche con `cdn` (`purged` o `failed`, con `cdn_error`) per
+  un sito con una zona.
+- Il token è l'impostazione `cloudflare_purge_token` (`PUT /api/settings`).
+
+## Prossimo passo {#next}
+
+[Blocca gli indirizzi che sbagliano l'accesso](/docs/access/block-addresses).

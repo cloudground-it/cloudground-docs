@@ -42,6 +42,9 @@ interi positivi.
 | `cgctl cert issue <id-sito>` | `POST /api/sites/<id>/certificate` | Chiede il certificato del sito. |
 | `cgctl purge <id-sito> [url ...]` | `POST /api/sites/<id>/purge` | Svuota la cache di pagina: solo gli URL dati, o tutto il sito senza URL. |
 | `cgctl warm <id-sito>` | `POST /api/sites/<id>/warm` | Riscalda la cache del sito. |
+| `cgctl cleanup <id-sito> on [revisioni]\|off\|preview\|run` | `PUT /api/sites/<id>/wp/cleanup`, `POST …/cleanup/preview`, `…/cleanup/run` | La [pulizia settimanale](/docs/sites/clean-the-wordpress-database) di un sito WordPress: attivala (con quante revisioni per articolo restano, da 1 a 100) o spegnila, fai la simulazione, o pulisci subito. |
+| `cgctl maintenance <id-sito> <on\|off> [messaggio]` | `PUT /api/sites/<id>/maintenance` | Attiva o spegne la [pagina di manutenzione](/docs/sites/maintenance-page), con il testo se lo dai. |
+| `cgctl devmode <id-sito> <15\|30\|60\|off>` | `PUT /api/sites/<id>/dev-mode` | Salta la cache di pagina per 15, 30 o 60 minuti ([modalità sviluppo](/docs/sites/development-mode)), o la termina subito. |
 
 Per esempio, un sito WordPress:
 
@@ -85,6 +88,7 @@ cgctl --wait sites create shop.example.com laravel \
 | `cgctl safe-push <id-sito> [percorso ...]` | `POST /api/sites/<id>/safe-push` | Porta lo staging in produzione con Safe Push. I `percorso` sono i percorsi URL che Performance Guard misura (per esempio `/` e `/shop/`). |
 | `cgctl deploy <id-sito> <cartella>` | `POST /api/sites/<id>/deployments` | Pubblica un rilascio da una cartella dentro il sito (`source_dir`). |
 | `cgctl rollback <id-sito>` | `POST /api/sites/<id>/rollback` | Torna al rilascio precedente. |
+| `cgctl git-deploy <id-sito> [on <repository> [branch] [comando-di-build]\|off\|run\|secret\|key]` | `GET` o `PUT /api/sites/<id>/git-deploy`, `POST …/git-deploy/run`, `…/secret`, `…/key` | Pubblica da Git a ogni push (vedi [Pubblica da Git](/docs/data/deploy-from-git)). Senza verbo mostra le impostazioni, il percorso del webhook, il segreto, la chiave di deploy e le consegne; `run` pubblica subito il branch; `secret` crea un nuovo segreto e URL; `key` una nuova chiave. |
 
 ### Backup e database {#backups-and-database}
 

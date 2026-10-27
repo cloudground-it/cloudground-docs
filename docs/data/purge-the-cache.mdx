@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - Un sito con la cache di pagina attiva
   - Un account amministratore, o operatore del sito
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.7.0
+last_verified: unverified
 sidebar_position: 1
 ---
 
@@ -59,6 +59,12 @@ curl -sI https://<dominio>/blog/articolo/ | grep -i x-cloudground-cache
 ```
 
 Subito dopo lo svuotamento la risposta dice `MISS`; la richiesta successiva dice `HIT`.
+
+## Un sito dietro Cloudflare {#cloudflare}
+
+Se il sito passa dal proxy di Cloudflare, Cloudflare può tenere una sua copia delle pagine. Con lo
+Zone ID del sito e un token Cloudflare per svuotare la cache, ogni svuotamento qui sopra svuota anche
+quella: vedi [un sito dietro Cloudflare](/docs/sites/behind-cloudflare#cdn-purge).
 
 ## Prossimo passo {#next}
 
