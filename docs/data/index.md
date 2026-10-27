@@ -18,6 +18,7 @@ hide_table_of_contents: true
   <Card to="/docs/data/roll-back-a-release" title="Torna a un rilascio precedente" />
   <Card to="/docs/data/manage-databases" title="Gestisci i database" />
   <Card to="/docs/data/external-database-servers" title="Metti i database su un server esterno" />
+  <Card to="/docs/data/external-postgresql-servers" title="Metti i database su un server PostgreSQL" />
   <Card to="/docs/data/use-quarry" title="Usa Quarry" />
   <Card to="/docs/data/recover-the-database-record" title="Recupera il registro dei database" />
 </Cards>
