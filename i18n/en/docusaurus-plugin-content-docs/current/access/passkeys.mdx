@@ -1,0 +1,70 @@
+---
+title: Passkeys
+description: Sign in to the panel with your fingerprint, face or device PIN, after your password or instead of it.
+type: how-to
+prerequisites:
+  - An account on the panel
+  - The panel opened at its own domain name over HTTPS (see Secure the panel)
+  - A device or browser that supports passkeys, or a security key
+version: unreleased
+last_verified: unverified
+sidebar_position: 4.5
+---
+
+A passkey signs you in with your fingerprint, face or device PIN. It belongs to the panel's domain,
+so a look-alike site can't ask for it: it can't be phished. Use it as the second factor after your
+password, or on its own.
+
+:::note
+Passkeys work only when you open the panel at its domain name over HTTPS, not at
+`https://<server-ip>:8443`: browsers don't offer passkeys to an IP address. Give the panel a domain
+first, from **Settings** → **Panel domain and HTTPS**.
+:::
+
+## Add a passkey {#add-a-passkey}
+
+1. Open **Security** from your account menu.
+2. In the **Passkeys** section, check the suggested **Name** (the browser and system you're on) and
+   press **Add a passkey**.
+3. Confirm it's you: your password, plus a code, a passkey or a recovery code if you already have a
+   second factor.
+4. Follow your browser's prompt: your fingerprint, face, device PIN or security key.
+
+The passkey appears in the list. If it's your first second factor, the panel also shows your ten
+[recovery codes](./two-step-verification.mdx#recovery-codes): save them. Adding a passkey signs out
+your other sessions. You can add up to 20, one per device: a passkey synced by your phone's or
+browser's password manager is marked **synced**.
+
+## Sign in with your password and a passkey {#second-factor}
+
+After your email and password, press **Use a passkey** and confirm on your device.
+
+## Sign in with a passkey alone {#passkey-only}
+
+On the sign-in page, press **Sign in with a passkey** and pick your account in the browser's prompt.
+No email and no password: the passkey checks that it's you on the device (fingerprint, face or PIN),
+which is two factors in one.
+
+## Sign in with passkeys only {#turn-off-password}
+
+Once you have a passkey, you can stop your password from signing in, so a stolen password opens
+nothing:
+
+1. In the **Passkeys** section, next to **Sign in with your password**, press **Turn off**.
+2. Confirm with a passkey that checks it's you.
+
+From then on, signing in with your password is refused and only your passkeys work. Keep more than
+one passkey. To allow the password again, press **Turn on** and confirm with a passkey. An
+administrator who resets your password also turns password sign-in back on.
+
+## Remove a passkey {#remove}
+
+1. In the **Passkeys** section, press **Remove** next to the passkey and confirm.
+2. Confirm it's you.
+
+The panel signs out your other sessions. You can't remove your last passkey while password sign-in
+is off. If it was your last second factor, your recovery codes and API tokens go with it.
+
+## Next step {#next}
+
+Decide who must use a second factor: [require two-step verification](./two-step-verification.mdx#require-it).
