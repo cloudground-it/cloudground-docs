@@ -1,0 +1,63 @@
+---
+title: Guarda il traffico di un sito
+description: Pagine viste, visitatori, bot, errori e pagine più viste di un sito, calcolati sul server dal suo log di accesso, senza cookie e senza servizi esterni.
+type: how-to
+prerequisites:
+  - Un sito, e un account che lo può vedere
+version: unreleased
+last_verified: unverified
+sidebar_position: 7.6
+---
+
+Ogni sito ha le sue statistiche di visita, calcolate sul server dal log di accesso di nginx. Alle
+pagine non si aggiunge nulla: niente script, niente cookie, nessun servizio esterno. Gli indirizzi
+dei visitatori non vengono conservati.
+
+## Apri le statistiche {#open}
+
+1. Apri la pagina del sito.
+2. Nel menu **⋯** delle schede, scegli **Traffico**.
+3. Scegli **7 giorni**, **30 giorni** o **90 giorni**.
+
+Il pannello legge il log di accesso di ogni sito ogni cinque minuti, quindi una visita compare entro
+cinque minuti circa. Un sito nuovo ha statistiche dalla prima richiesta registrata.
+
+## Cosa vogliono dire i numeri {#figures}
+
+- **Pagine viste**: le pagine aperte dalle persone. Non contano i bot e gli script, le immagini, i
+  fogli di stile e gli altri file, l'amministrazione, l'accesso e l'API di WordPress, né le
+  richieste fallite.
+- **Visitatori**: visitatori distinti per giorno, riconosciuti da indirizzo e browser. Su più giorni
+  la pagina somma i giorni: chi torna in due giorni diversi conta due volte.
+- **Richieste**: tutte le richieste a cui il sito ha risposto, bot compresi, con la parte arrivata
+  da bot e script.
+- **Dati inviati**: la dimensione del corpo delle risposte.
+- **Servite dalla cache**: la parte delle richieste passate dalla cache di pagina a cui ha risposto
+  la cache (vedi il [comportamento della cache](/docs/reference/cache-behaviour)).
+- **Errori del server**: le risposte 5xx, con il numero delle 4xx (non trovate o rifiutate).
+
+Il grafico mostra pagine viste e visitatori per giorno, poi le pagine viste di ognuna delle ultime 48
+ore. **Pagine più viste** elenca i 20 percorsi più visti. **Non trovate** elenca i percorsi che hanno
+risposto 404: link rotti, o scanner che cercano file.
+
+I giorni sono giorni UTC. Le richieste del pannello stesso, come il controllo della disponibilità e
+il riscaldamento della cache, non contano affatto.
+
+## Privacy {#privacy}
+
+L'agente legge il log e conserva solo i totali di ogni giorno. Per contare i visitatori distinti
+tiene, per ogni giorno, un piccolo riassunto fatto con un hash di indirizzo e browser mescolato a un
+valore casuale. Riassunto e valore casuale vengono cancellati dopo due giorni, e resta solo il
+numero. Il pannello non riceve mai un indirizzo e niente viene mandato altrove.
+
+I log di accesso restano come sono e ruotano come prima (14 giorni conservati). Le statistiche
+tengono 90 giorni di totali.
+
+## Con l'API {#with-the-api}
+
+`GET /api/sites/<id>/traffic?days=7` (anche `30` o `90`) risponde con `days`, `hours` (le ultime
+48), `totals`, `top_pages`, `top_not_found` e `collected_at`.
+
+## Prossimo passo {#next}
+
+[Controlla che un sito risponda](/docs/sites/uptime-monitoring).
