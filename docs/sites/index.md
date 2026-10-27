@@ -14,5 +14,10 @@ hide_table_of_contents: true
   <Card to="/docs/sites/scheduled-tasks" title="Attività pianificate" />
   <Card to="/docs/sites/resource-usage-and-limits" title="Risorse e limiti di un sito" />
   <Card to="/docs/sites/uptime-monitoring" title="Controlla che un sito risponda" />
+  <Card to="/docs/sites/update-wordpress" title="Aggiorna WordPress con rollback automatico" />
+  <Card to="/docs/sites/clean-the-wordpress-database" title="Pulisci il database di WordPress" />
+  <Card to="/docs/sites/send-mail-from-a-site" title="Invia la posta di un sito" />
+  <Card to="/docs/sites/maintenance-page" title="Mostra una pagina di manutenzione" />
+  <Card to="/docs/sites/development-mode" title="Salta la cache mentre lavori" />
   <Card to="/docs/sites/delete-a-site" title="Elimina un sito" />
 </Cards>
