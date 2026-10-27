@@ -68,6 +68,9 @@ function Hero(): ReactNode {
           <Link to="/docs" className={styles.btn}>
             <Translate id="home.hero.docs">Leggi la guida</Translate>
           </Link>
+          <a href="https://get.cloudground.it/demo/" className={styles.btn}>
+            <Translate id="home.hero.demo">Prova la demo</Translate>
+          </a>
         </div>
         <ul className={styles.facts} data-intro>
           <li>
