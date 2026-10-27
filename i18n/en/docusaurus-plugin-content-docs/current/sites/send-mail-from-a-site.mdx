@@ -1,0 +1,78 @@
+---
+title: Send mail from a site through an SMTP relay
+description: Set up the relay your sites' mail goes through, send a test, give one site a relay or a sender of its own, and check its SPF, DKIM and DMARC records.
+type: how-to
+prerequisites:
+  - A relay account: your provider's SMTP, Amazon SES, Postmark, or a mailbox's SMTP server
+  - An administrator account
+  - A PHP, WordPress or WooCommerce site
+version: v0.4.0
+last_verified: unverified
+sidebar_position: 11
+---
+
+CloudGround runs no mail server. PHP's `mail()` and WordPress's `wp_mail()` hand each message to the
+panel, which sends it through an SMTP **relay** you choose. Order confirmations and password resets
+from your sites leave through it, and so do the [alert emails](/docs/server/alerts-and-notifications#email).
+The relay's password stays in the panel: the site never sees it.
+
+## Set the server's relay {#server-relay}
+
+1. Open **Settings** and find the **Mail** card.
+2. Fill in **SMTP server**, **Security**, **Port**, **Username** and **Password**.
+3. Fill in **Sender address**: the address messages come from when a site names none. Most relays
+   accept only addresses on a domain you verified with them.
+4. Click **Save**.
+5. Type your own address next to **Send a test** and click it.
+
+**Security** is one of:
+
+| Choice | Port | Behaviour |
+| --- | --- | --- |
+| **STARTTLS** (default) | 587 | The connection starts in plain text and is upgraded. A relay that does not offer it is refused: the panel never falls back to plain text. |
+| **TLS** | 465 | Encrypted from the first byte. |
+| **None** | 25 | No encryption. The panel refuses to send a password over it, unless the relay is this server itself. |
+
+Leave **Port** empty to take the port of the chosen security. The test message goes through exactly
+what a site's mail will use; if the relay refuses it, the panel shows the relay's answer.
+
+## Give a site its own settings {#per-site}
+
+Every PHP site sends through the server's relay. To change that for one site:
+
+1. Open the site and go to the **Mail** tab (under **More**).
+2. Set **Sender address**, for example `noreply@<your domain>`: WordPress then sends from this
+   address instead of its default one. Empty means the relay's sender.
+3. To use another relay for this site only, turn on **Use a relay of its own** and fill in its
+   server, security, port, username, password and sender.
+4. Click **Save**.
+
+The banner at the top of the card says where the mail goes: through the site's relay, through the
+server's, or nowhere. Turn off **Send mail from this site** and `mail()` fails: nothing is sent.
+Only an administrator can save these settings; an operator assigned to the site can send the test.
+
+A **staging copy sends no mail**, so a test never reaches a real customer.
+
+## Check SPF, DKIM and DMARC {#checklist}
+
+Receivers trust mail more when the sender's domain says that the relay may send for it. The
+**SPF, DKIM and DMARC** card looks up three records of the sender's domain and shows each as
+**found** or **missing**:
+
+- **SPF**, a TXT record starting `v=spf1`, on the domain;
+- **DKIM**, at `<selector>._domainkey.<domain>`: type the **DKIM selector** your relay gave you
+  above, save, and click **Check again**;
+- **DMARC**, at `_dmarc.<domain>`. A policy such as `p=none` is a good start.
+
+The panel only says whether the records are there. Your relay's provider says what each must say.
+
+## Limits {#limits}
+
+- A site can send 200 messages an hour; beyond that its mail fails until the hour has passed.
+- A message has at most 50 recipients and 10 MiB. A `Bcc` header is removed before it is sent.
+- When mail fails, `mail()` returns false and the reason is in the panel's journal: the site, the
+  number of recipients and the result, never the content or the addresses.
+
+## Next step {#next}
+
+Have the panel email you when something needs attention: [receive alerts by email](/docs/server/alerts-and-notifications#email).

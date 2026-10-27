@@ -1,0 +1,52 @@
+---
+title: Salta la cache di pagina mentre lavori
+description: "Attiva la modalità sviluppo per 15, 30 o 60 minuti perché un sito mostri subito le tue modifiche, poi lascia che riattivi la cache da sola."
+type: how-to
+prerequisites:
+  - Un sito attivo con una cache di pagina (non un sito statico o proxy)
+  - Un account amministratore oppure operatore assegnato al sito
+version: v0.4.0
+last_verified: unverified
+sidebar_position: 13
+---
+
+Con la cache di pagina attiva, i visitatori, e tu, ricevono una copia salvata della pagina. Mentre
+modifichi codice o template, è d'intralcio. La modalità sviluppo serve ogni richiesta da zero per un
+tempo stabilito, poi rimette la cache.
+
+## Attivala {#turn-on}
+
+1. Apri il sito e scegli la scheda **Cache**.
+2. Nel riquadro **Modalità sviluppo** premi **15 minuti**, **30 minuti** o **60 minuti**.
+
+Il riquadro dice allora che la cache di pagina è saltata fino a una certa ora. Premi lo stesso
+pulsante mentre la modalità è attiva per far ripartire il tempo.
+
+## Disattivala {#turn-off}
+
+Premi **Termina ora**, oppure aspetta. Scaduto il tempo, il pannello rimette la cache da solo, la
+svuota perché nessuna pagina di prima del tuo lavoro venga servita di nuovo, e la riscalda in
+background. Se rimettere la cache non riesce, il sito resta in modalità sviluppo e il pannello
+riprova un minuto dopo.
+
+## Da sapere {#notes}
+
+- Un sito statico, un proxy e un sito con la cache di pagina spenta non hanno nulla da saltare: il
+  riquadro lo dice.
+- Una [copia di staging](/docs/data/staging-and-safe-push) non parte mai in modalità sviluppo, qualunque
+  cosa faccia il sito di produzione.
+- Si salta solo la cache di pagina. Le altre impostazioni non cambiano, e la object cache di un sito
+  PHP è un'impostazione a parte.
+
+## Con cgctl {#cgctl}
+
+```bash
+cgctl devmode <id-sito> 30
+cgctl devmode <id-sito> off
+```
+
+La durata è `15`, `30` o `60`; `off` termina la modalità subito.
+
+## Prossimo passo {#next}
+
+Vedi cosa conserva la cache di pagina e quando salta una richiesta: [comportamento della cache](/docs/reference/cache-behaviour).

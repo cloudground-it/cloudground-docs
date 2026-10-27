@@ -1,0 +1,52 @@
+---
+title: Install Ubuntu updates
+description: See the server's pending packages, security ones first, install them from the panel and notice when a reboot is needed.
+type: how-to
+prerequisites:
+  - An administrator account to install updates; any administrator or read-only account can look
+version: v0.4.0
+last_verified: unverified
+sidebar_position: 5
+---
+
+The panel shows what `apt` would upgrade on the server, and installs it for you. Ubuntu already
+installs most security updates by itself every day; the panel covers the rest and tells you when
+the server has to restart.
+
+## See what is pending {#see}
+
+1. Open **Services** in the sidebar and find the **Ubuntu updates** card.
+2. Read the summary: the number of updates pending and how many of them are security updates.
+
+The table lists each package with its **Installed** version, the **New version** and the **Source**.
+Security updates come first and carry a **security** badge; a package that would be newly installed,
+a new kernel for example, carries **new**. The card also says when the package lists were last
+updated. Click **Check again** to update the lists now: it runs `apt-get update` as a task.
+
+The **Dashboard** warns you when security updates are waiting, with a button that opens this card.
+
+## Install them {#install}
+
+1. In the **Ubuntu updates** card, click **Install security updates** or **Upgrade everything**.
+2. Read the confirmation and confirm.
+
+The panel runs the upgrade as a task and names no package itself: it works out the list from apt.
+The task's last line says how many packages were upgraded and whether a reboot is now needed.
+
+:::warning
+Services whose packages are upgraded restart, so sites can pause for a moment. A configuration
+file you changed keeps your version. The panel never reboots the server.
+:::
+
+An upgrade holds off a panel update and an uninstall until it ends. Do not stop it halfway: a cut
+upgrade leaves the package manager half done.
+
+## Reboot when needed {#reboot}
+
+Some updates take effect only after a restart. When one needs it, the card and the Dashboard say
+**The server needs a reboot** and name the packages that asked for it. Choose a quiet moment: sites
+are down while the server restarts. Restart it yourself, for example with `reboot` over SSH.
+
+## Next step {#next}
+
+Keep the panel itself current too: [update CloudGround](/docs/server/update-cloudground).

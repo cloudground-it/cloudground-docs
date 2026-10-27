@@ -1,0 +1,72 @@
+---
+title: Sposta un sito da un altro server
+description: Prendi un sito e il suo database dal vecchio server via SSH o SFTP, o importa un archivio caricato, dietro uno snapshot di sicurezza.
+type: how-to
+prerequisites:
+  - Un account amministratore (per prendere il sito da un altro server)
+  - Un sito su questo pannello in cui spostare il vecchio, creato dello stesso tipo
+  - Un accesso SSH o SFTP al vecchio server (una password o una chiave privata)
+version: unreleased
+last_verified: unverified
+sidebar_position: 7.5
+---
+
+Il pannello può andare a prendere da solo un vecchio sito dal suo server: gli dai l'account SSH o SFTP
+e la cartella del sito, lui misura il sito, lo copia e lo importa in un sito di questo pannello come
+nuovo rilascio. Prima di cambiare qualsiasi cosa fa un backup del sito e lo verifica, così
+l'importazione si può annullare.
+
+## Prendi il sito dal vecchio server {#pull}
+
+1. Crea prima il sito su questo pannello, dello stesso tipo (WordPress per un sito WordPress).
+2. Aprilo e vai alla scheda **Migrazione**.
+3. In **Importa da un altro server** compila **Vecchio server**, **Porta** e **Utente SSH o SFTP**,
+   poi la **Password** o la **Chiave privata** di quell'account.
+4. In **Cartella del vecchio sito** indica la cartella che contiene il sito: per WordPress quella con
+   `wp-config.php` (`/var/www/html`, `public_html`).
+5. In **Database** scegli:
+   - **Solo i file**, per un sito senza database;
+   - **Esportalo sul vecchio server**: il pannello legge le impostazioni del database dal vecchio
+     `wp-config.php` ed esegue lì `mysqldump`. Serve un account con una shell;
+   - **Copia un dump già presente sul vecchio server**: indica il percorso di un file `.sql` sul
+     vecchio server. Funziona anche con un account solo SFTP.
+6. Per WordPress, se il dominio cambia, compila **Dominio precedente** nel modulo di importazione qui
+   sopra.
+7. Fai clic su **Misura**. Il pannello si collega, conta i file e la loro dimensione, dice se ha trovato
+   `wp-config.php` e se il sito entra su questo server, e mostra la chiave del vecchio server. Non
+   viene copiato niente.
+8. Se puoi, controlla la chiave del server, poi fai clic su **Importa**, scrivi il dominio del sito e
+   conferma.
+9. Segui l'attività: copia il sito, fa e verifica lo snapshot di sicurezza, poi importa.
+
+L'importazione accetta solo la chiave del server mostrata quando hai misurato: se il vecchio server ne
+presenta un'altra, si ferma.
+
+## La password o la chiave si usa una volta {#credentials}
+
+La password o la chiave privata che inserisci serve per questa importazione e poi viene dimenticata.
+Non finisce mai nel database del pannello, nel log dell'attività o nel **Registro attività**, e il
+server non ne tiene copia. Per importare di nuovo, inseriscila di nuovo. Il registro attività annota chi
+ha importato, da quale account, server e cartella.
+
+## Cosa cambia sul sito {#what-changes}
+
+L'importazione è la stessa di un archivio caricato: i file del vecchio sito diventano un nuovo
+rilascio, i suoi caricamenti e il suo database sostituiscono quelli del sito, gli URL vengono riscritti
+dal dominio precedente e la cache viene svuotata. Se l'importazione fallisce, il sito torna com'era.
+Lo snapshot di sicurezza resta nella scheda **Backup**: per annullare lo spostamento,
+[ripristinalo](/docs/data/restore-a-backup).
+
+I file vengono copiati prima nella cartella `tmp/` del sito, esclusa dai backup, e cancellati alla fine
+dell'attività. Sul server serve spazio libero per circa il doppio del vecchio sito: **Misura** ti avvisa
+se non c'è.
+
+## Importa un archivio caricato {#upload}
+
+Senza accesso al vecchio server, carica un `.tar.gz` del sito e un dump `.sql` via SFTP o con il file
+manager, poi compila **Archivio del sito** e **Dump del database** in **Importa un sito esistente** e fai
+clic su **Verifica e importa**.
+
+## Prossimo passo {#next}
+
+Punta il dominio su questo server e [proteggilo con un certificato](/docs/sites/domains-and-certificates).

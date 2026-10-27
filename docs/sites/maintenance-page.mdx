@@ -1,0 +1,61 @@
+---
+title: Mostra una pagina di manutenzione
+description: "Rispondi ai visitatori con una pagina 503 e un tuo messaggio mentre lavori su un sito, e continua a vedere il sito tu."
+type: how-to
+prerequisites:
+  - Un sito attivo
+  - Un account amministratore oppure operatore assegnato al sito
+version: v0.4.0
+last_verified: unverified
+sidebar_position: 12
+---
+
+Finché la pagina di manutenzione è attiva, i visitatori ricevono una pagina con il tuo titolo e il
+tuo messaggio e lo stato `503`, non il sito. I motori di ricerca leggono `503` e `Retry-After` come
+«torna più tardi». Nel frattempo non viene messo in cache nulla del sito.
+
+## Attivala {#turn-on}
+
+1. Apri il sito e scegli la scheda **Percorsi protetti**.
+2. Nel riquadro **Pagina di manutenzione** compila quello che vuoi:
+   - **Titolo**: testo semplice, fino a 100 caratteri. Vuoto mostra *In manutenzione*.
+   - **Messaggio**: testo semplice, fino a 2000 caratteri; gli a capo restano. Vuoto mostra un
+     messaggio predefinito.
+   - **Riprova tra**: quanti minuti dici ai visitatori di aspettare, da 1 a 10080. Viene inviato come
+     `Retry-After`.
+3. Premi **Attiva la manutenzione**.
+
+Titolo e messaggio sono testo: il markup e `${…}` compaiono come li scrivi e non vengono mai
+eseguiti.
+
+## Continua a vedere il sito {#allow}
+
+Alcuni visitatori vedono comunque il sito vero:
+
+- gli indirizzi in **Indirizzi che vedono il sito**: indirizzi IP o reti, uno per riga. Spunta
+  **Lascia passare il mio indirizzo** per aggiungere il tuo;
+- il server stesso;
+- ogni browser che apre l'**Indirizzo di anteprima**, mostrato nel riquadro mentre la pagina è
+  attiva. Aprirlo imposta un cookie che fa passare quel browser per otto ore. Chiunque abbia
+  l'indirizzo può fare lo stesso, quindi condividilo con attenzione.
+
+Un visitatore che [rifiuti](/docs/access/refuse-visitors) resta rifiutato.
+
+## Disattivala {#turn-off}
+
+Premi **Disattiva**. Il pannello svuota la cache di pagina del sito, che conteneva pagine di prima
+del tuo lavoro, e la riscalda di nuovo in background. Titolo e messaggio restano per la prossima
+volta.
+
+## Con cgctl {#cgctl}
+
+```bash
+cgctl maintenance <id-sito> on "Torniamo alle 18:00"
+cgctl maintenance <id-sito> off
+```
+
+Il messaggio è facoltativo; senza, resta il testo salvato.
+
+## Prossimo passo {#next}
+
+Lavori sul codice e non vuoi chiudere il sito? [Salta la cache di pagina mentre lavori](/docs/sites/development-mode).

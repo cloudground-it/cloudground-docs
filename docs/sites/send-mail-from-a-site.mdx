@@ -1,0 +1,83 @@
+---
+title: Invia la posta di un sito tramite un relay SMTP
+description: "Imposta il relay da cui passa la posta dei siti, invia una prova, dai a un sito un relay o un mittente suoi e controlla i record SPF, DKIM e DMARC."
+type: how-to
+prerequisites:
+  - Un account presso un relay SMTP, il tuo provider, Amazon SES, Postmark o il server SMTP di una casella
+  - Un account amministratore
+  - Un sito PHP, WordPress o WooCommerce
+version: v0.4.0
+last_verified: unverified
+sidebar_position: 11
+---
+
+CloudGround non ha un server di posta. `mail()` di PHP e `wp_mail()` di WordPress consegnano ogni
+messaggio al pannello, che lo invia tramite un **relay** SMTP a tua scelta. Da lì escono le conferme
+d'ordine e le reimpostazioni di password dei tuoi siti, e le [email degli avvisi](/docs/server/alerts-and-notifications#email).
+La password del relay resta nel pannello: il sito non la vede mai.
+
+## Imposta il relay del server {#server-relay}
+
+1. Apri **Impostazioni** e trova il riquadro **Email**.
+2. Compila **Server SMTP**, **Sicurezza**, **Porta**, **Nome utente** e **Password**.
+3. Compila **Indirizzo mittente**: l'indirizzo da cui partono i messaggi quando un sito non ne indica
+   uno. Quasi tutti i relay accettano solo indirizzi su un dominio che hai verificato presso di loro.
+4. Premi **Salva**.
+5. Scrivi il tuo indirizzo accanto a **Invia una prova** e premi il pulsante.
+
+**Sicurezza** è una di queste:
+
+| Scelta | Porta | Comportamento |
+| --- | --- | --- |
+| **STARTTLS** (predefinita) | 587 | La connessione parte in chiaro e viene resa sicura. Un relay che non lo offre viene rifiutato: il pannello non ripiega mai sul testo in chiaro. |
+| **TLS** | 465 | Cifrata dal primo byte. |
+| **Nessuna** | 25 | Nessuna cifratura. Il pannello rifiuta di mandare una password su questa connessione, a meno che il relay sia questo stesso server. |
+
+Lascia vuota la **Porta** per prendere quella della sicurezza scelta. Il messaggio di prova passa
+esattamente da dove passerà la posta di un sito; se il relay lo rifiuta, il pannello mostra la sua
+risposta.
+
+## Dai a un sito impostazioni proprie {#per-site}
+
+Ogni sito PHP invia tramite il relay del server. Per cambiarlo per un solo sito:
+
+1. Apri il sito e scegli la scheda **Email** (sotto **Altro**).
+2. Imposta **Indirizzo mittente**, per esempio `noreply@<il tuo dominio>`: WordPress invia allora da
+   questo indirizzo invece che dal suo predefinito. Vuoto vuol dire il mittente del relay.
+3. Per usare un altro relay solo per questo sito, attiva **Usa un relay proprio** e compila server,
+   sicurezza, porta, nome utente, password e mittente.
+4. Premi **Salva**.
+
+L'avviso in cima al riquadro dice dove va la posta: dal relay del sito, da quello del server, o da
+nessuna parte. Spegni **Invia la posta di questo sito** e `mail()` non riesce: non parte nulla.
+Solo un amministratore salva queste impostazioni; un operatore assegnato al sito può inviare la
+prova.
+
+Una **copia di staging non invia posta**, così una prova non arriva mai a un cliente vero.
+
+## Controlla SPF, DKIM e DMARC {#checklist}
+
+I destinatari si fidano di più della posta quando il dominio del mittente dice che il relay può
+inviare per lui. Il riquadro **SPF, DKIM e DMARC** cerca tre record del dominio del mittente e
+mostra ciascuno come **presente** o **mancante**:
+
+- **SPF**, un record TXT che comincia con `v=spf1`, sul dominio;
+- **DKIM**, in `<selettore>._domainkey.<dominio>`: scrivi qui sopra il **Selettore DKIM** che ti ha
+  dato il relay, salva e premi **Controlla di nuovo**;
+- **DMARC**, in `_dmarc.<dominio>`. Una policy come `p=none` è un buon inizio.
+
+Il pannello dice solo se i record ci sono. Cosa deve contenere ciascuno lo dice il provider del
+relay.
+
+## Limiti {#limits}
+
+- Un sito può inviare 200 messaggi all'ora; oltre, la sua posta non riesce finché non è passata
+  l'ora.
+- Un messaggio ha al massimo 50 destinatari e 10 MiB. L'intestazione `Bcc` viene tolta prima
+  dell'invio.
+- Quando l'invio non riesce, `mail()` restituisce falso e il motivo è nel giornale del pannello: il
+  sito, il numero di destinatari e l'esito, mai il contenuto né gli indirizzi.
+
+## Prossimo passo {#next}
+
+Fatti scrivere dal pannello quando qualcosa richiede attenzione: [ricevi gli avvisi per email](/docs/server/alerts-and-notifications#email).
