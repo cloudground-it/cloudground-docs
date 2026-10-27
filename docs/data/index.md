@@ -14,6 +14,7 @@ hide_table_of_contents: true
   <Card to="/docs/data/restore-a-backup" title="Ripristina un backup" />
   <Card to="/docs/data/run-a-restore-test" title="Esegui un ripristino di prova" />
   <Card to="/docs/data/deploy-a-release" title="Pubblica un rilascio" />
+  <Card to="/docs/data/deploy-from-git" title="Pubblica da Git a ogni push" />
   <Card to="/docs/data/roll-back-a-release" title="Torna a un rilascio precedente" />
   <Card to="/docs/data/manage-databases" title="Gestisci i database" />
   <Card to="/docs/data/use-quarry" title="Usa Quarry" />
