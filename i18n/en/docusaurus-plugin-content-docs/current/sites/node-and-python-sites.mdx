@@ -1,0 +1,117 @@
+---
+title: Run a Node.js or Python app
+description: Create a Node.js or Python site that runs your app as a managed service behind nginx, with deploys, rollbacks, environment variables, secrets, logs and health.
+type: how-to
+prerequisites:
+  - An administrator account to create the site
+  - An app that listens on the address in the PORT environment variable
+version: unreleased
+last_verified: unverified
+sidebar_position: 1.5
+---
+
+A Node.js or Python site runs your app as a service of its own, under the site's user and inside
+the site's resource limits and sandbox, the same way a PHP site's PHP runs. nginx handles HTTPS and
+proxies every request to the app over a unix socket. Deploys, rollbacks and git deploy work the way
+they do for PHP sites.
+
+## Create the site {#create}
+
+1. Go to **Sites** → **New site** and choose **Node.js** or **Python**.
+2. Enter the domain.
+3. Under **Setup**, pick the **Runtime** and, optionally, the **Start command**. If you leave the
+   start command empty:
+   - Node.js runs `node server.js`;
+   - Python runs `python -m gunicorn --bind unix:$PORT --workers 2 app:app`.
+4. Create the site.
+
+If the server doesn't have that runtime version yet, it's installed while the site is created:
+
+- **Node.js** (20, 22 or 24): the latest release of that major version is downloaded from
+  nodejs.org and checked against the SHA-256 checksums nodejs.org publishes for it. A download that
+  doesn't match is rejected.
+- **Python**: the server's own Python, with its `venv` module from Ubuntu's packages.
+
+You can also install runtimes ahead of time under **Services** → **Runtimes**.
+
+The new site serves a small starter app that shows the runtime version. Deploy your code to replace
+it.
+
+## What your app must do {#your-app}
+
+Your app must listen on the address in the `PORT` environment variable. By default that's the path
+of a unix socket, which only nginx can reach:
+
+- **Node.js**: `server.listen(process.env.PORT)` (Express: `app.listen(process.env.PORT)`).
+- **Python**: `gunicorn --bind unix:$PORT app:app`, or for an ASGI app,
+  `uvicorn --uds $PORT app:app`. Run them as `python -m gunicorn` and `python -m uvicorn` so they
+  come from the site's virtual environment.
+
+If your app can only listen on a TCP port, set **Port** on the **App** tab. The app then listens on
+127.0.0.1 and `PORT` holds the number. Any process on the server can reach a loopback port, so use
+the socket whenever you can.
+
+The app runs with `/srv/sites/<domain>/current` as its working directory. It sees its own site's
+files and nothing of the other sites.
+
+## Deploy, roll back, git deploy {#deploy}
+
+A deploy builds a release from your files as it does for any site (see
+[deploy a release](/docs/data/deploy-a-release)). Before the release can go live, the server
+installs its dependencies inside it, as the site's user:
+
+- **Node.js**: `npm ci --omit=dev` if there's a `package-lock.json`, otherwise `npm install
+  --omit=dev` if there's a `package.json`.
+- **Python**: a fresh virtual environment in `.venv`, then
+  `pip install -r requirements.txt` if the file exists.
+
+If that step fails, the deploy fails with npm's or pip's output, and the live release isn't
+changed. Promoting a release, or rolling back, restarts the app on the new release. Each release
+keeps its own dependencies, so a rollback goes back to exactly what that release ran with.
+
+Git deploy works the same way: the repository's build command runs first, then the dependency step.
+
+## Settings, variables and secrets {#settings}
+
+Open the site and go to the **App** tab.
+
+- **Runtime**, **Start command**, **Port** and **Health check path**: saving restarts the app.
+- **Variables**: plain environment variables, shown in the panel.
+- **Secrets**: stored encrypted and never shown again. The app gets them as ordinary environment
+  variables.
+
+Variable names use capital letters, digits and `_`. Names the server sets itself, such as `PORT`,
+`PATH`, `HOME` and anything starting with `CG_` or `LD_`, can't be used.
+
+On the server, the values are only in a file readable by root, which systemd reads when it starts
+the app. They're never in the unit file, the panel's answers, the audit log or the logs.
+
+## Health, restarts and logs {#health}
+
+The **App** card shows whether the service is running, since when, how many times it has been
+restarted, and the result of a health check (an HTTP request to the **Health check path** over the
+socket). If the app exits or crashes, it's started again two seconds later. **Restart** restarts it
+by hand.
+
+The app's output (standard output and standard error) goes to the site's **Logs** tab, under
+**App**.
+
+## What isn't available {#limits}
+
+- Staging copies and safe push aren't available for Node.js and Python sites yet.
+- These sites have no page cache. Your app sets its own caching headers.
+- The PHP settings don't apply.
+
+Backups cover the whole site, including each release's `node_modules` or `.venv`. A restore
+restarts the app.
+
+## Use the API {#with-the-api}
+
+- `GET /api/sites/<id>/app` and `PUT /api/sites/<id>/app`: the settings. In `secrets`, a name maps
+  to its value, `""` removes it and `••••••••` keeps it.
+- `GET /api/sites/<id>/app/status` and `POST /api/sites/<id>/app/restart`.
+- `GET /api/runtimes` and `POST /api/runtimes/install` with `{"runtime": "node", "version": "22"}`.
+
+## Next step {#next}
+
+[Deploy a release](/docs/data/deploy-a-release).

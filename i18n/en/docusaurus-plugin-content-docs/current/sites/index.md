@@ -15,6 +15,7 @@ hide_table_of_contents: true
   <Card to="/docs/sites/scheduled-tasks" title="Scheduled tasks" />
   <Card to="/docs/sites/resource-usage-and-limits" title="Site resources and limits" />
   <Card to="/docs/sites/uptime-monitoring" title="Monitor a site's uptime" />
+  <Card to="/docs/sites/node-and-python-sites" title="Run a Node.js or Python app" />
   <Card to="/docs/sites/traffic-statistics" title="See a site's traffic" />
   <Card to="/docs/sites/behind-cloudflare" title="Run a site behind Cloudflare" />
   <Card to="/docs/sites/move-a-site-from-another-host" title="Move a site from another host" />

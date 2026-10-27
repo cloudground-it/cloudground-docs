@@ -15,6 +15,7 @@ hide_table_of_contents: true
   <Card to="/docs/sites/scheduled-tasks" title="Attività pianificate" />
   <Card to="/docs/sites/resource-usage-and-limits" title="Risorse e limiti di un sito" />
   <Card to="/docs/sites/uptime-monitoring" title="Controlla che un sito risponda" />
+  <Card to="/docs/sites/node-and-python-sites" title="Fai girare un'app Node.js o Python" />
   <Card to="/docs/sites/traffic-statistics" title="Guarda il traffico di un sito" />
   <Card to="/docs/sites/behind-cloudflare" title="Un sito dietro Cloudflare" />
   <Card to="/docs/sites/move-a-site-from-another-host" title="Sposta un sito da un altro server" />
