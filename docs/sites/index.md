@@ -10,6 +10,7 @@ hide_table_of_contents: true
   <Card to="/docs/sites/create-a-site" title="Crea un sito" />
   <Card to="/docs/sites/change-site-settings" title="Cambia le impostazioni di un sito" />
   <Card to="/docs/sites/domains-and-certificates" title="Domini e certificati" />
+  <Card to="/docs/sites/redirects" title="Reindirizzamenti e host canonico" />
   <Card to="/docs/sites/edit-routing" title="Modifica il routing" />
   <Card to="/docs/sites/scheduled-tasks" title="Attività pianificate" />
   <Card to="/docs/sites/resource-usage-and-limits" title="Risorse e limiti di un sito" />
