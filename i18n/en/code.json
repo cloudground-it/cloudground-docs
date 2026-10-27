@@ -577,6 +577,9 @@
   "home.hero.docs": {
     "message": "Read the guide"
   },
+  "home.hero.demo": {
+    "message": "Try the demo"
+  },
   "home.hero.fact1": {
     "message": "Free"
   },
