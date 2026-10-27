@@ -1,0 +1,77 @@
+---
+title: Connect an AI assistant
+description: Let Claude, ChatGPT or another MCP client read and run your server from the panel's MCP server, and know what it can and can't do.
+type: how-to
+prerequisites:
+  - An administrator account, to turn the MCP server on
+  - The panel at its own domain with its certificate (Settings → Panel domain and HTTPS)
+  - Two-step verification on the account that connects the assistant
+version: unreleased
+last_verified: unverified
+sidebar_position: 4.7
+---
+
+The panel has an MCP server, so you can ask an AI assistant about your server from the web, your
+desktop or your phone: "why is shop.example.com slow?", "back up and update the plugins of my
+blog", "show me yesterday's PHP errors". The assistant acts as your account, and only within what
+you allow when you connect it. The MCP server is off until an administrator turns it on.
+
+## Turn on the MCP server {#turn-it-on}
+
+1. Open **Settings**.
+2. In the **Access** section, turn on **MCP server for AI assistants**.
+3. Press **Save**.
+
+Turning it off later disconnects every assistant at once: their tokens stop working, and each one
+has to be connected again.
+
+## Connect an assistant {#connect}
+
+1. In your assistant, add a custom connector (or MCP server) with the address
+   `https://<panel-domain>/mcp`.
+2. The assistant opens the panel's **Connect an assistant** page. Sign in if you're asked to.
+3. Check the assistant's name and the address you'll be sent back to. Allow only an assistant you
+   just set up yourself.
+4. Reading is always granted. Under **Optional: change things**, tick what it may do (**Purge the
+   cache**, **Backups**, **Releases**, **WordPress updates**, **Delete sites**) and pick the sites
+   in **On these sites**. Tick nothing to keep it read-only.
+5. Press **Allow** and confirm it's you with your password and a second factor.
+
+`<panel-domain>` is the domain the panel answers on with its own certificate. Assistants on the web
+and on phones don't accept the panel's self-signed certificate at `https://<server-ip>:8443`.
+
+## What an assistant can do {#what-it-can-do}
+
+- **Read**: your sites and their status, logs, resource use, backups, releases and WordPress
+  plugins, the server's status and alerts, as your account sees them.
+- **Change**, only where you allowed it: purge a site's cache, take a backup, update WordPress
+  behind a tested snapshot, roll back a release.
+- **Destructive actions** never run from the assistant: restoring a backup, pushing staging to
+  production and deleting a site only record a request. Open **AI assistants** from your account
+  menu, check it under **Waiting for you** and press **Confirm and run** (with your password and a
+  second factor) or **Reject**. A request you leave expires after 15 minutes.
+
+An assistant can never manage accounts, users, API tokens, the firewall, the panel's settings or
+its updates, whatever you allow.
+
+## Disconnect an assistant {#disconnect}
+
+Open **AI assistants** from your account menu and press **Revoke** next to it. An administrator sees
+and can revoke every account's assistants. Changing your password, turning off two-step
+verification, or an administrator disabling your account also disconnects your assistants.
+
+## Know the risks {#risks}
+
+- **The assistant acts as you.** Whatever you allow it, it can do without asking again, except the
+  destructive actions above. Allow writing only on the sites and areas you need.
+- **Site content is not instructions.** Logs, plugin names and other content from your sites reach
+  the assistant marked as untrusted data, but a model can still be misled by text a visitor wrote.
+  Read what it proposes before you confirm anything.
+- **Everything is in the audit log.** Each call appears in **Audit log** as
+  `you@example.com (via MCP "<assistant>")`.
+- **Tokens are short-lived.** An access token lasts an hour; the assistant renews it for up to 30
+  days, and a renewal token used twice disconnects the assistant.
+
+## Next step {#next}
+
+Protect the account that connects assistants with [two-step verification](./two-step-verification.mdx).
