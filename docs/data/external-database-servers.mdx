@@ -1,0 +1,99 @@
+---
+title: Metti i database su un server esterno
+description: "Registra un altro server MariaDB o MySQL, per esempio quello gestito di un provider, e metti lì i database di un sito, con backup e Quarry che funzionano come per ogni database."
+type: how-to
+prerequisites:
+  - Un account amministratore, per registrare un server
+  - Un server MariaDB o MySQL raggiungibile da questo server, e un account su di esso con tutti i privilegi e il grant option
+  - Un account amministratore oppure operatore assegnato al sito, per metterci un database
+version: unreleased
+last_verified: unverified
+sidebar_position: 10
+---
+
+Ogni database vive nel MariaDB di questo server, a meno che tu non dica altro. Puoi registrare altri
+server MariaDB e MySQL, e sceglierne uno quando crei un database o un utente database. I database lì
+si gestiscono come gli altri: Quarry, esportazione e importazione, backup e ripristini funzionano tutti.
+
+## Prepara il server {#prepare}
+
+Il server deve essere raggiungibile dall'indirizzo di questa macchina, sulla porta che indichi (3306
+di default): aprila nel firewall o nella lista di indirizzi consentiti del server. CloudGround ha
+bisogno di un account che possa creare database e account e concedere privilegi, quindi dagli tutti i
+privilegi con il grant option:
+
+```sql
+CREATE USER 'cloudground'@'<indirizzo di questo server>' IDENTIFIED BY '<una password lunga>' REQUIRE SSL;
+GRANT ALL PRIVILEGES ON *.* TO 'cloudground'@'<indirizzo di questo server>' WITH GRANT OPTION;
+```
+
+Sostituisci i segnaposto con l'indirizzo pubblico di questa macchina e con una tua password. Togli
+`REQUIRE SSL` solo se disattiverai il TLS in CloudGround.
+
+## Registra il server {#register}
+
+1. Apri **Impostazioni** e trova il riquadro **Server di database**.
+2. Premi **Aggiungi un server**.
+3. Compila il modulo:
+
+| Campo | Cosa scrivere |
+| --- | --- |
+| **Nome** | Da 2 a 32 lettere minuscole, cifre e trattini, a partire da una lettera. Scegli il server con questo nome. |
+| **Host**, **Porta** | Dove si trova il server. |
+| **TLS** | **Obbligatorio** (predefinito): la connessione è cifrata e il certificato del server viene controllato. **Disattivato**: niente è cifrato, e la password e i dati attraversano la rete in chiaro. |
+| **Certificato CA** | L'autorità che ha firmato il certificato del server, in formato PEM. Lascialo vuoto per fidarti delle autorità del sistema, che basta per quasi tutti i provider. |
+| **Account amministratore**, **Password dell'amministratore** | L'account che hai creato sopra. |
+
+4. Premi **Salva**.
+
+CloudGround si collega con questi dati prima di salvare qualcosa. Se la connessione fallisce, o
+l'account non può creare account e concedere privilegi, il modulo mostra il messaggio del server e
+non viene salvato nulla. La password è conservata cifrata insieme agli altri segreti del pannello e
+non viene più mostrata; lasciala vuota quando modifichi il server per mantenerla.
+
+Il riquadro elenca ogni server con il suo indirizzo, l'impostazione TLS e quanti database ci sono.
+**Prova** si ricollega e mostra la versione del server; **Modifica** cambia i dati; il cestino
+rimuove un server, cosa possibile solo quando non ci sono database né utenti.
+
+## Metti un database sul server {#create}
+
+1. Apri il sito e scegli la scheda **Database**.
+2. Premi **Aggiungi un database**, scrivi un nome e scegli il **Server**.
+3. Premi **Crea database**.
+
+Il campo **Server** compare quando c'è almeno un server registrato. **Questo server** è il valore
+predefinito. Un database resta sul server che hai scelto: non si può spostare in seguito, e il suo
+nome resta unico tra tutti i server. Il database mostra un badge con il nome del suo server.
+
+Anche un utente database sta su un solo server. In **Aggiungi un utente** scegli prima il **Server**:
+l'elenco dei privilegi propone allora solo i database di quel server. Un account su un server
+esterno è creato per qualsiasi indirizzo (`'<nome>'@'%'`), e con il TLS obbligatorio può accedere
+solo via TLS.
+
+## Collega la tua applicazione {#connect}
+
+In fondo al riquadro dei database c'è scritto dove si collega un'applicazione, per esempio *Le
+applicazioni si collegano a managed su db.example.com:3306, con TLS obbligatorio.* Metti quell'host e
+quella porta nella configurazione dell'applicazione, con nome e password dell'utente database. La
+password si vede una volta sola, quando crei l'utente.
+
+## Cosa funziona come prima {#same}
+
+- **Quarry** apre un database su un server esterno come ogni altro.
+- **Esportazione e importazione** leggono e scrivono il database sul suo server.
+- I **backup** lo esportano in rete, e il ripristino di prova del backup controlla l'export in un
+  database temporaneo su questo server. Il ripristino del database lo rimette sul suo server.
+- **Eliminare il database o l'utente** lo toglie dal suo server.
+
+La copia di staging di un sito e una migrazione usano il database **principale** del sito, che sta
+sempre su questo server, quindi non toccano mai uno esterno.
+
+## Limiti {#limits}
+
+- Il database principale di un sito WordPress, WooCommerce o Laravel sta sempre su questo server.
+- Un database non si può spostare tra server; esportalo e importalo in uno nuovo.
+- Sono supportati solo server MariaDB e MySQL.
+
+## Prossimo passo {#next}
+
+Gestisci cosa può fare ogni utente: [gestisci i database](/docs/data/manage-databases).
