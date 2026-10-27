@@ -1,0 +1,68 @@
+---
+title: Move a site from another host
+description: Pull a site and its database from its old host over SSH or SFTP, or import an archive you uploaded, behind a safety snapshot.
+type: how-to
+prerequisites:
+  - An administrator account (to pull from another host)
+  - A site on this panel to move the old site into, created with the same type
+  - SSH or SFTP access to the old host (a password or a private key)
+version: unreleased
+last_verified: unverified
+sidebar_position: 7.5
+---
+
+The panel can fetch an old site from its host by itself: you give it the SSH or SFTP account and the
+site's folder, it measures the site, copies it, and imports it into a site of this panel as a new
+release. Before it changes anything it takes a backup of the site and tests it, so the import can be
+undone.
+
+## Pull the site from its old host {#pull}
+
+1. Create the site on this panel first, with the same type (WordPress for a WordPress site).
+2. Open it and go to the **Migration** tab.
+3. Under **Pull from another host**, fill in **Old host**, **Port** and **SSH or SFTP user**, then
+   either the **Password** or the **Private key** of that account.
+4. In **Folder of the old site**, give the folder that holds the site: for WordPress, the one with
+   `wp-config.php` (`/var/www/html`, `public_html`).
+5. Under **Database**, choose:
+   - **Files only**, for a site without a database;
+   - **Export it on the old host**: the panel reads the database settings from the old
+     `wp-config.php` and runs `mysqldump` there. The account needs a shell;
+   - **Copy a dump already on the old host**: give the path of a `.sql` file there. This works with an
+     SFTP-only account.
+6. For WordPress, fill in **Previous domain** in the import form above if the domain changes.
+7. Click **Measure**. The panel connects, counts the files and their size, says whether it found
+   `wp-config.php` and whether the site fits on this server, and shows the old host's key. Nothing is
+   copied.
+8. Check the host's key if you can, then click **Pull and import**, type the site's domain and confirm.
+9. Follow the task: it copies the site, takes and tests the safety snapshot, then imports.
+
+The pull accepts only the host key shown when you measured: if the old host shows another one, it
+stops.
+
+## The password or key is used once {#credentials}
+
+The password or private key you enter is used for this pull and then forgotten. It's never stored in
+the panel's database, the task log or the **Audit log**, and the server keeps no copy of the key. To
+pull again, enter it again. The audit log records who pulled, from which account, host and folder.
+
+## What changes on the site {#what-changes}
+
+The import is the same as for an archive you upload: the old site's files become a new release, its
+uploads and database replace the site's, URLs are rewritten from the previous domain, and the cache
+is cleared. If the import fails, the site is put back as it was. The safety snapshot stays in the
+**Backups** tab: to undo the move, [restore it](/docs/data/restore-a-backup).
+
+The files are copied into the site's `tmp/` folder first, which is left out of backups, and deleted
+when the task ends. The server needs free space for about twice the old site's size; **Measure**
+tells you if it isn't there.
+
+## Import an archive you uploaded {#upload}
+
+Without access to the old host, upload a `.tar.gz` of the site and a `.sql` dump with SFTP or the
+file manager, then fill in **Site archive** and **Database dump** under **Import an existing site**
+and click **Validate and import**.
+
+## Next step {#next}
+
+Point the domain at this server and [secure it with a certificate](/docs/sites/domains-and-certificates).

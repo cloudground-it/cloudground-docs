@@ -14,5 +14,6 @@ hide_table_of_contents: true
   <Card to="/docs/sites/scheduled-tasks" title="Attività pianificate" />
   <Card to="/docs/sites/resource-usage-and-limits" title="Risorse e limiti di un sito" />
   <Card to="/docs/sites/uptime-monitoring" title="Controlla che un sito risponda" />
+  <Card to="/docs/sites/move-a-site-from-another-host" title="Sposta un sito da un altro server" />
   <Card to="/docs/sites/delete-a-site" title="Elimina un sito" />
 </Cards>
