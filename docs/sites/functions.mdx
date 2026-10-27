@@ -1,0 +1,93 @@
+---
+title: Aggiungi funzioni a un sito
+description: Fai girare piccoli gestori Node.js o Python a un indirizzo HTTPS di un sito, su richiesta o a orari pianificati, ogni esecuzione isolata con i suoi limiti di memoria e di tempo.
+type: how-to
+prerequisites:
+  - Un sito, e un account che lo può gestire
+  - Node.js o Python installato sul server (Servizi → Runtime)
+version: unreleased
+last_verified: unverified
+sidebar_position: 7.7
+---
+
+Una funzione è un piccolo pezzo di codice, come un webhook, il gestore di un modulo o un lavoro
+pianificato, che gira senza bisogno di un'intera app. Ogni funzione appartiene a un sito e risponde
+a `https://<dominio>/.functions/<nome>` e a ogni percorso sotto quell'indirizzo.
+
+Tra una richiesta e l'altra non gira niente. Ogni richiesta avvia un processo a sé, con l'utente
+del sito e dentro l'isolamento e i limiti del sito, che esce appena ha risposto. Il server fa
+rispettare a ogni esecuzione i suoi limiti di memoria e di tempo.
+
+## Crea una funzione {#create}
+
+1. Apri il sito e, nel menu **⋯** delle schede, scegli **Funzioni**.
+2. Premi **Nuova funzione**, scrivi un nome (lettere minuscole, cifre e `-`), scegli **Node.js** o
+   **Python** e premi **Crea**.
+
+La funzione nuova parte con un codice che restituisce la richiesta in JSON. Il suo indirizzo è
+sopra l'editor.
+
+Il server deve avere installata quella versione del runtime. Node.js 20, 22 e 24 e il Python del
+server si installano in **Servizi** → **Runtime**.
+
+## Scrivi il gestore {#handler}
+
+Il codice è un solo file che esporta una funzione `handler`, normale o async:
+
+```js title="Node.js — index.js"
+exports.handler = async (event) => {
+  return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: { ok: true } };
+};
+```
+
+```python title="Python — main.py"
+def handler(event):
+    return {"statusCode": 200, "body": {"ok": True}}
+```
+
+`event` contiene `method`, `path` (la parte dopo `/.functions/<nome>`), `query`, `headers` (nomi in
+minuscolo), `body` (testo, o base64 con `isBase64Encoded`) e `source` (`http`, `schedule` o
+`test`).
+
+Il gestore restituisce un oggetto con `statusCode`, `headers` e `body`, oppure qualunque altro
+valore: una stringa va come testo, il resto come JSON. Se il gestore lancia un errore, la richiesta
+riceve un 500 e l'errore finisce nell'output della funzione.
+
+È disponibile solo la libreria standard del runtime: una funzione non installa pacchetti.
+
+## Impostazioni {#settings}
+
+- **Runtime**: la versione di Node.js o Python.
+- **Memoria**: da 64 a 1024 MB (128 di norma). Un'esecuzione che ne usa di più viene fermata.
+- **Tempo massimo**: da 1 a 300 secondi (10 di norma). Un'esecuzione che dura di più viene fermata,
+  anche se è bloccata in un ciclo.
+- **Pianificazione**: cinque campi cron, per esempio `*/15 * * * *`, nel fuso orario del pannello.
+  Vuota: solo su richiesta.
+- **Variabili** e **Segreti**: variabili d'ambiente, come per un
+  [sito Node.js o Python](/docs/sites/node-and-python-sites#settings). I segreti sono conservati
+  cifrati e mai più mostrati.
+
+## Rilascia, prova, torna indietro {#deploy}
+
+**Rilascia** salva le impostazioni e, se hai cambiato il codice, ne fa un nuovo rilascio: la
+richiesta successiva usa il codice nuovo. **Torna indietro** rimette il rilascio precedente. Si
+tengono i dieci rilasci più recenti.
+
+**Prova** esegue la funzione una volta, attraverso lo stesso indirizzo, e mostra lo stato, il tempo
+impiegato e l'inizio della risposta.
+
+## Esecuzioni e output {#logs}
+
+Il riquadro **Esecuzioni** elenca le ultime richieste, dal log di accesso del sito, con origine,
+stato e durata. Un 502 è un'esecuzione andata in crash, oltre il tempo massimo o oltre la memoria.
+**Output** mostra ciò che i gestori hanno stampato e i loro errori.
+
+## Con l'API {#with-the-api}
+
+- `GET` e `POST /api/sites/<id>/functions`
+- `GET`, `PUT` e `DELETE /api/sites/<id>/functions/<nome>`
+- `POST /api/sites/<id>/functions/<nome>/rollback`, `.../invoke`, e `GET .../logs`
+
+## Prossimo passo {#next}
+
+[Fai girare un'app Node.js o Python](/docs/sites/node-and-python-sites).
