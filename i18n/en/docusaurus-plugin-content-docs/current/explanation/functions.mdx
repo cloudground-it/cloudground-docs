@@ -1,0 +1,75 @@
+---
+title: How a function runs
+description: Why a function costs nothing while idle, how nginx and systemd shield it from its callers, and what keeps it apart from the sites and from other functions.
+type: explanation
+prerequisites: []
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 9
+---
+
+A function is code that exists only while it answers. This page explains how that works, and what it
+costs you.
+
+## One process per request {#one-process-per-request}
+
+Nothing runs between requests. systemd keeps the function's socket open; when nginx brings it a
+request, systemd starts a fresh process, which reads the request, calls the handler, writes the answer
+and exits.
+
+```mermaid
+flowchart LR
+    caller["caller"] -->|"HTTPS"| nginx["nginx"]
+    nginx -->|"request, if the token and the limits allow it"| socket["function socket<br/>(systemd)"]
+    socket -->|"one connection"| proc["function process"]
+    proc -->|"answer"| nginx
+    nginx -->|"answer"| caller
+    sched["panel schedule"] -->|"scheduled run"| nginx
+```
+
+The cost is that every request loads the code from scratch. A function remembers nothing between
+calls: variables in memory, open connections and temporary files vanish with the process. Anything that
+has to last goes somewhere else, such as a database. In return an idle function takes no memory and no
+processor time, and two calls never affect each other.
+
+## What shields it from its callers {#protection}
+
+The defences sit in front of the function, in nginx, so they work before a process exists:
+
+- the token, if the function asks for one: without the right one the answer is a 401 and nothing starts;
+- the limits per client and per function, which answer 429 and 503 past their thresholds;
+- the socket takes 32 connections at a time at most, whatever happens upstream.
+
+The figures are in the table in [functions: values and limits](/docs/reference/functions#limits).
+The origin check for browsers (CORS) lives in the same place, and the preflight request doesn't ask for
+the token.
+
+## What keeps it apart from the rest {#isolation}
+
+Each function runs as a system user of its own, `cg-fn-<id>`, in a systemd sandbox: it sees its own
+code, read-only, and it doesn't see the sites, the other functions, the server's configuration or its
+logs. It has network access, like a site. It can't change its own release or the `current` link:
+root owns them.
+
+Memory and time are systemd limits on each process: past the configured memory, with no swap, or past
+the timeout, the process is stopped. All the functions together sit in one group that can't use more
+than 50% of the server's memory, the way each site has a resource group of its own. For the boundary
+between sites, see [site isolation](/docs/explanation/site-isolation).
+
+## Releases and dependencies {#releases}
+
+A release is a folder holding the code and its dependencies, which the server installs. `current` is a
+link to the live release, and every process starts from there. That's why switching releases restarts
+nothing, and why a rollback is a change of link that brings back the dependencies of the time too. An
+install that fails never leaves a half-made release: the function carries on with the previous one.
+
+## With no address, the function can't be reached {#no-address}
+
+nginx knows a function only through the functions domain or one of its own domains. A name no server
+block claims lands in the default server, which closes the connection. That is why a function with no
+address can't be reached from the Internet. **Test** and scheduled runs go through an internal socket
+that only root can open, and don't ask for the token.
+
+## Next step {#next}
+
+[Create a function](/docs/functions/create-a-function).

@@ -173,7 +173,7 @@ function Features(): ReactNode {
       text: translate({
         id: 'home.features.sites.text',
         message:
-          'WordPress, WooCommerce, PHP, Laravel, statici, proxy, app Node.js e Python e funzioni. Ognuno con il suo utente e la sua sandbox.',
+          'WordPress, WooCommerce, PHP, Laravel, statici, proxy e app Node.js e Python, più funzioni indipendenti con un indirizzo suo. Ognuno con il suo utente e la sua sandbox.',
       }),
     },
     {

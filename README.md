@@ -56,6 +56,7 @@ keeps the types apart.
 | --- | --- | --- |
 | `docs/tutorials/` | install CloudGround, the first site | tutorial |
 | `docs/sites/` | create sites, settings, domains and certificates, routing, scheduled tasks | how-to |
+| `docs/functions/` | create functions, code and dependencies, addresses, token and CORS, schedule, releases, upgrade from v0.8 | how-to |
 | `docs/data/` | cache, staging and Safe Push, backups and restore tests, releases, databases, Quarry | how-to |
 | `docs/access/` | SFTP and SSH keys, the site shell, users and roles, two-step verification, API tokens, firewall | how-to |
 | `docs/server/` | panel domain, services, logs, alerts and notifications, updates, verifying the installer, uninstall | how-to |

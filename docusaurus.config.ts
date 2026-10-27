@@ -131,6 +131,18 @@ const config: Config = {
   clientModules: ['./src/clientModules/colorModeSync.ts'],
 
   plugins: [
+    // A page that moved keeps its old address: the build writes a small page
+    // there that sends the reader on (in each language, under /en as well).
+    // Add a line when a page is renamed or removed.
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          // Functions left the sites in v0.9.0 and got a section of their own.
+          {from: '/docs/sites/functions', to: '/docs/functions'},
+        ],
+      },
+    ],
     // trailingSlash is false, so /docs is docs.html and the folder docs/ has
     // no index: GitHub Pages answers /docs/ with its 404 page. That page
     // (404.html at the root serves every locale) drops the trailing slash and

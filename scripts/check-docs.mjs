@@ -17,6 +17,7 @@ const TYPES = ['tutorial', 'how-to', 'reference', 'explanation', 'index'];
 const FOLDER_TYPE = {
   tutorials: 'tutorial',
   sites: 'how-to',
+  functions: 'how-to',
   data: 'how-to',
   access: 'how-to',
   server: 'how-to',

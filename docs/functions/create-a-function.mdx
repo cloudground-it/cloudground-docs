@@ -1,0 +1,52 @@
+---
+title: Crea una funzione
+description: Crea una funzione Node.js o Python dal pannello e provala subito, senza indirizzo e senza token.
+type: how-to
+prerequisites:
+  - Un account amministratore
+  - Il runtime che ti serve, installato sul server (Servizi → Runtime)
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 1
+---
+
+Una funzione è un piccolo programma Node.js o Python con un suo indirizzo web. Gira quando qualcuno la
+chiama o a orari pianificati, e da ferma non usa niente. Non appartiene a un sito: è del server, e sta
+sotto **Funzioni** nel menu a sinistra. Gli amministratori le cambiano, gli account di sola lettura le
+vedono.
+
+Per sapere come gira, leggi [come gira una funzione](/docs/explanation/functions).
+
+## Crea la funzione {#create}
+
+1. Se il server non ha il runtime, installalo in **Servizi** → **Runtime**: Node.js 20, 22 o 24, oppure
+   il Python del server.
+2. Apri **Funzioni** e premi **Nuova funzione**.
+3. Scrivi il **Nome**: lettere minuscole, cifre e trattini, iniziando con una lettera, al massimo 31
+   caratteri. Diventa parte dell'indirizzo. `domain` è riservato.
+4. Scegli il **Runtime** e la **Versione**. Una versione non installata è segnata *non installata*:
+   installala prima da **Runtime**.
+5. In **Codice di partenza** scegli **Gestore HTTP**, che risponde a ogni richiesta con quello che ha
+   ricevuto, oppure **Attività pianificata**, che gira a orari e per cominciare parte ogni ora.
+6. In **Chi può chiamarla** lascia **Pubblica** o scegli **Token**. Puoi cambiarlo dopo: vedi
+   [proteggi una funzione](/docs/functions/protect-a-function).
+7. Premi **Crea funzione**.
+
+Con **Token**, il pannello mostra il token una volta sola. Copialo subito e premi **L'ho copiato**.
+
+Codice, memoria, pianificazione e indirizzi si cambiano anche dopo.
+
+## Provala {#test}
+
+1. Apri la funzione e scegli la scheda **Codice**.
+2. Nel riquadro **Prova** scrivi **Metodo**, **Percorso** e **Corpo** (di norma `POST`, `/` e niente).
+3. Premi **Prova**.
+
+Il pannello mostra lo stato, il tempo impiegato e l'inizio della risposta. La prova esegue sul server
+il codice rilasciato, senza passare da un indirizzo e senza token: funziona anche se la funzione non
+ha ancora un indirizzo. Le modifiche che non hai rilasciato non contano: **Prova** usa il rilascio
+attivo.
+
+## Prossimo passo {#next}
+
+[Scrivi il codice della funzione](/docs/functions/write-the-code).

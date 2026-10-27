@@ -1,0 +1,61 @@
+---
+title: Move over from v0.8 functions
+description: What the panel does to a site's functions when you upgrade to v0.9.0, and what you change so the callers find them again.
+type: how-to
+prerequisites:
+  - A server running CloudGround v0.9.0
+  - Functions created with v0.8, inside a site
+  - An administrator account
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 8
+---
+
+In v0.8 a function belonged to a site and answered at `https://<site>/.functions/<name>`. From
+v0.9.0 functions belong to the server. The panel moves them for you; the addresses are yours to
+change.
+
+:::warning
+After the upgrade, `https://<site>/.functions/<name>` stops answering. Whatever calls your functions (a
+webhook, a form, another program) stops working until you give it the new address.
+:::
+
+## What the panel does {#what-happens}
+
+At its first start after the upgrade, the panel takes each function out of its site and makes it a
+server function, with its code, releases, variables and secrets. Its settings stay as they were, and
+its access is **Public**. The site loses the function and its address.
+
+If the name is already taken, because two sites each had a function with that name, the function
+becomes `<name>-<site id>`, cut to 31 characters.
+
+If a function can't be moved, it stays in its site, the panel shows an alert saying why, and it tries
+again at its next start.
+
+## Give the functions their new addresses {#new-addresses}
+
+1. Set the [functions domain](/docs/functions/set-the-address#functions-domain), such as
+   `fn.example.com`, or give each function a
+   [domain of its own](/docs/functions/set-the-address#own-domain).
+2. Change the address wherever the function is called from:
+
+| In v0.8 | On the functions domain | On an own domain |
+| --- | --- | --- |
+| `https://<site>/.functions/<name>` | `https://fn.example.com/<name>` | `https://api.example.com/` |
+| `https://<site>/.functions/<name>/a/b` | `https://fn.example.com/<name>/a/b` | `https://api.example.com/a/b` |
+
+In the event, `path` is the part after `/<name>` on the functions domain, as before, and the whole
+path on an own domain.
+
+## Check it {#check}
+
+1. Open **Functions**: they should all be there, with the date of their last run.
+2. For each one, press **Test** on the **Code** tab.
+3. Call the new address from whatever really uses it.
+
+If a function used to be open to everyone and you now want a token, see
+[protect a function](/docs/functions/protect-a-function).
+
+## Next step {#next}
+
+[Give the functions an address](/docs/functions/set-the-address).

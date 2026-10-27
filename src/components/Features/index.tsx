@@ -88,7 +88,6 @@ function SitesSpecimen(): ReactNode {
     'Reverse proxy',
     'Node.js',
     'Python',
-    translate({id: 'features.types.functions', message: 'Funzioni'}),
   ];
   return (
     <figure className={styles.specimen}>
@@ -370,14 +369,14 @@ function useGroups(): Group[] {
         },
         {
           id: 'functions',
-          title: translate({id: 'features.sites.functions.title', message: 'Funzioni'}),
+          title: translate({id: 'features.sites.functions.title', message: 'Funzioni indipendenti'}),
           text: translate({
             id: 'features.sites.functions.text',
             message:
-              'Piccoli handler Node.js o Python su /.functions/<nome>, o a orario. Tra una chiamata e l’altra non gira nulla, e ogni chiamata ha i suoi limiti di memoria e di tempo.',
+              'Codice Node.js o Python in più file, con le sue dipendenze, che non è di nessun sito. Un indirizzo comune o uno suo, token e CORS a scelta, un utente di sistema per funzione. Gira solo quando lo chiami o a orario.',
           }),
-          to: '/docs/sites/functions',
-          since: 'v0.8.0',
+          to: '/docs/functions',
+          since: 'v0.9.0',
         },
         {
           id: 'wpupdates',

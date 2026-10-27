@@ -1,0 +1,52 @@
+---
+title: Create a function
+description: Create a Node.js or Python function in the panel and test it straight away, with no address and no token.
+type: how-to
+prerequisites:
+  - An administrator account
+  - The runtime you need, installed on the server (Services → Runtimes)
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 1
+---
+
+A function is a small Node.js or Python program with its own web address. It runs when something
+calls it or on a schedule, and costs nothing while it sits idle. It doesn't belong to a site: it
+belongs to the server, and lives under **Functions** in the sidebar. Administrators can change
+functions, and read-only accounts can look at them.
+
+To see how a function runs, read [how a function runs](/docs/explanation/functions).
+
+## Create the function {#create}
+
+1. If the server doesn't have the runtime yet, install it under **Services** → **Runtimes**:
+   Node.js 20, 22 or 24, or the server's own Python.
+2. Open **Functions** and press **New function**.
+3. Type a **Name**: lower-case letters, digits and hyphens, starting with a letter, up to 31
+   characters. It becomes part of the address. `domain` is reserved.
+4. Pick the **Runtime** and the **Version**. A version that isn't installed is marked *not
+   installed*: install it under **Runtimes** first.
+5. Under **Starter code**, pick **HTTP handler**, which answers every request with what it received,
+   or **Scheduled job**, which runs on a schedule and starts out hourly.
+6. Under **Who can call it**, leave **Public** or pick **Token**. You can change this later: see
+   [protect a function](/docs/functions/protect-a-function).
+7. Press **Create function**.
+
+With **Token**, the panel shows the token once. Copy it now and press **I have copied it**.
+
+Code, memory, schedule and addresses can all change later.
+
+## Test it {#test}
+
+1. Open the function and go to the **Code** tab.
+2. In the **Test** box, set the **Method**, **Path** and **Body** (usually `POST`, `/` and nothing).
+3. Press **Test**.
+
+The panel shows the status, how long the run took and the start of the answer. A test runs the
+deployed code on the server directly. It doesn't go through an address and needs no token, so it works
+even before the function has an address. Changes you haven't deployed don't count: **Test** runs the
+live release.
+
+## Next step {#next}
+
+[Write the function's code](/docs/functions/write-the-code).

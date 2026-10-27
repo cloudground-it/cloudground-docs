@@ -1,0 +1,40 @@
+---
+title: Rilascia e torna indietro
+description: Metti online una modifica al codice come rilascio nuovo e rimetti quello di prima, con le sue dipendenze, se qualcosa va storto.
+type: how-to
+prerequisites:
+  - Una funzione già creata
+  - Un account amministratore
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 6
+---
+
+Ogni modifica al codice è un rilascio. La richiesta successiva usa quello nuovo: non c'è niente da
+riavviare, perché ogni esecuzione parte da zero.
+
+## Rilascia una modifica {#deploy}
+
+1. Apri la funzione e scegli la scheda **Codice**.
+2. Cambia i file. Finché non rilasci, il pannello segna **Non rilasciato**.
+3. Premi **Rilascia**.
+
+**Annulla modifiche** butta quello che hai scritto e rimette il codice del rilascio attivo.
+
+Se la funzione ha un `package.json` o un `requirements.txt`, le dipendenze si installano prima che il
+rilascio vada online. Se l'installazione fallisce, il pannello scrive *Rilascio non riuscito* con
+l'output del passo, e resta attivo il rilascio di prima.
+
+Cambiare **Impostazioni** o **Indirizzi** non crea un rilascio.
+
+## Torna a un rilascio precedente {#roll-back}
+
+1. Apri la funzione e scegli la scheda **Rilasci**. Il rilascio in uso è segnato **Attivo**.
+2. Sulla riga del rilascio che vuoi, premi **Rollback** e conferma.
+
+La chiamata successiva esegue quel codice, con le dipendenze con cui era stato rilasciato. Si tengono
+gli ultimi 10 rilasci, e sempre quello attivo: uno più vecchio non si recupera più.
+
+## Prossimo passo {#next}
+
+[Guarda le esecuzioni e il loro output](/docs/functions/read-the-runs).

@@ -1,0 +1,89 @@
+---
+title: Scrivi il codice di una funzione
+description: Organizza il codice in più file, scrivi il gestore in Node.js o Python, aggiungi le dipendenze e passa variabili e segreti.
+type: how-to
+prerequisites:
+  - Una funzione già creata
+  - Un account amministratore
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 2
+---
+
+Il codice di una funzione è un insieme di file. Uno è il file di ingresso, e contiene il gestore: la
+funzione che riceve la richiesta e restituisce la risposta.
+
+## Organizza i file {#files}
+
+Nella scheda **Codice**, **Aggiungi file** crea un file nuovo e **Rimuovi** lo toglie. Il file di
+ingresso deve restare.
+
+- Al massimo 64 file e 1 MiB in tutto, ognuno in testo UTF-8.
+- Il percorso usa lettere, cifre, punti, trattini e trattini bassi, con `/` tra le cartelle.
+- Non si caricano cartelle `node_modules/` e `.venv/`: le dipendenze si installano al rilascio.
+
+Il file di ingresso è `index.js` per Node.js e `main.py` per Python. Gli altri file li importi dal
+gestore come in ogni progetto.
+
+## Scrivi il gestore {#handler}
+
+Il gestore riceve l'evento e restituisce la risposta. Può essere normale o `async`.
+
+```js title="Node.js — index.js"
+exports.handler = async (event) => {
+  const data = event.body ? JSON.parse(event.body) : {};
+  return {
+    statusCode: 200,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ hello: data.name || "mondo", path: event.path }),
+  };
+};
+```
+
+`index.js` può anche essere un modulo ES con `export default`, o `export const handler`.
+
+```python title="Python — main.py"
+import json
+
+def handler(event):
+    data = json.loads(event["body"]) if event["body"] else {}
+    return {"statusCode": 200, "body": json.dumps({"hello": data.get("name", "mondo")})}
+```
+
+L'evento e la risposta sono descritti in [funzioni: valori e limiti](/docs/reference/functions#event).
+Se il gestore lancia un errore, la richiesta riceve un 500 e l'errore finisce in **Output**.
+
+## Aggiungi le dipendenze {#dependencies}
+
+Aggiungi un `package.json` (Node.js) o un `requirements.txt` (Python) tra i file. Al rilascio il
+server installa le dipendenze nel rilascio stesso:
+
+- **Node.js**: `npm ci --omit=dev` se c'è un `package-lock.json` (o un `npm-shrinkwrap.json`),
+  altrimenti `npm install --omit=dev`.
+- **Python**: un ambiente virtuale `.venv` nuovo, poi `pip install -r requirements.txt`.
+
+L'installazione ha al massimo 20 minuti e ha accesso alla rete. Se fallisce, il rilascio non nasce: il
+pannello mostra l'output di npm o pip e resta attivo il rilascio di prima. Ogni rilascio ha le sue
+dipendenze, quindi un [rollback](/docs/functions/deploy-and-roll-back#roll-back) torna a quelle con
+cui quel codice era stato rilasciato.
+
+## Passa variabili e segreti {#variables}
+
+1. Apri la scheda **Impostazioni**.
+2. In **Variabili** aggiungi nome e valore. Per un valore da non mostrare, usa **Segreti**.
+3. Salva.
+
+La funzione li trova nel suo ambiente: `process.env.NOME` in Node.js, `os.environ["NOME"]` in
+Python. I segreti sono conservati cifrati e il pannello non li mostra più. Variabili e segreti sono al
+massimo 100 in tutto.
+
+Salvare le impostazioni non crea un nuovo rilascio.
+
+## Leggi l'output {#output}
+
+Quello che la funzione stampa (`console.log`, `print`) e i suoi errori finiscono in **Output**, nella
+scheda **Esecuzioni**: vedi [leggi le esecuzioni](/docs/functions/read-the-runs).
+
+## Prossimo passo {#next}
+
+[Dai un indirizzo alla funzione](/docs/functions/set-the-address).

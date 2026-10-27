@@ -1,0 +1,61 @@
+---
+title: Passa dalle funzioni di v0.8
+description: Cosa fa il pannello alle funzioni di un sito quando passi a v0.9.0, e cosa cambi tu perché chi le chiama le trovi di nuovo.
+type: how-to
+prerequisites:
+  - Un server con CloudGround aggiornato a v0.9.0
+  - Funzioni create con v0.8, dentro un sito
+  - Un account amministratore
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 8
+---
+
+Con v0.8 una funzione apparteneva a un sito e rispondeva a `https://<sito>/.functions/<nome>`. Da v0.9.0
+le funzioni sono del server. Il pannello le sposta da solo; gli indirizzi, invece, li cambi tu.
+
+:::warning
+Dopo l'aggiornamento gli indirizzi `https://<sito>/.functions/<nome>` non rispondono più. Chi chiama le
+funzioni (un webhook, un modulo, un altro programma) smette di funzionare finché non gli dai l'indirizzo
+nuovo.
+:::
+
+## Cosa fa il pannello {#what-happens}
+
+Al primo avvio dopo l'aggiornamento il pannello prende ogni funzione dal suo sito e la rende una
+funzione del server, con il suo codice, i rilasci, le variabili e i segreti. Le impostazioni restano
+com'erano e l'accesso è **Pubblica**. Il sito perde la funzione e il suo indirizzo.
+
+Se il nome è già preso, perché due siti avevano una funzione con lo stesso nome, la funzione diventa
+`<nome>-<id del sito>`, tagliato a 31 caratteri.
+
+Se una funzione non si riesce a spostare, resta nel suo sito, il pannello mostra un avviso che dice
+perché, e riprova al riavvio successivo.
+
+## Dai alle funzioni un indirizzo nuovo {#new-addresses}
+
+1. Imposta il [dominio delle funzioni](/docs/functions/set-the-address#functions-domain), per esempio
+   `fn.example.com`, oppure dai a ogni funzione un
+   [dominio proprio](/docs/functions/set-the-address#own-domain).
+2. Cambia l'indirizzo in ogni punto da cui la funzione viene chiamata:
+
+| In v0.8 | Dal dominio delle funzioni | Da un dominio proprio |
+| --- | --- | --- |
+| `https://<sito>/.functions/<nome>` | `https://fn.example.com/<nome>` | `https://api.example.com/` |
+| `https://<sito>/.functions/<nome>/a/b` | `https://fn.example.com/<nome>/a/b` | `https://api.example.com/a/b` |
+
+Nell'evento, `path` è la parte dopo `/<nome>` sul dominio delle funzioni, come prima, e il percorso
+intero su un dominio proprio.
+
+## Controlla {#check}
+
+1. Apri **Funzioni**: ci devono essere tutte, con la data dell'ultima esecuzione.
+2. Per ognuna, premi **Prova** nella scheda **Codice**.
+3. Chiama l'indirizzo nuovo con quello che la usa davvero.
+
+Se prima la funzione era aperta a tutti e ora vuoi chiedere un token, vedi
+[proteggi una funzione](/docs/functions/protect-a-function).
+
+## Prossimo passo {#next}
+
+[Dai un indirizzo alle funzioni](/docs/functions/set-the-address).

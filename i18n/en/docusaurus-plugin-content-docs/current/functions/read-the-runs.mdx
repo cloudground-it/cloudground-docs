@@ -1,0 +1,42 @@
+---
+title: Read the runs
+description: See a function's latest calls with their status and duration, and read what it printed and its errors.
+type: how-to
+prerequisites:
+  - A function that has run at least once
+  - An administrator or read-only account
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 7
+---
+
+The **Runs** tab tells you what happened when the function was called, and why a call went wrong.
+
+## Look at the calls {#runs}
+
+Open the function and go to the **Runs** tab. The box lists the latest calls, newest first, with
+**When**, **Request**, **Status**, **Duration** and **Source**. The source is **Request** for a call
+to an address, **Schedule** for a scheduled run and **Test** for the **Test** button.
+
+A function that has never been called shows *No runs yet*. The **Functions** list also shows when each
+function last ran.
+
+The statuses mean this:
+
+- **200** and any other status the function picks: the function answered;
+- **500**: the handler threw, is missing, or returned something that can't be sent;
+- **502**: the run crashed, ran past its timeout or went over its memory limit;
+- **504**: the handler was only waiting when the timeout hit.
+
+The other statuses, such as 401, 404, 429 and 503, come from nginx before the function starts. They
+are in the table in [functions: values and limits](/docs/reference/functions#statuses).
+
+## Read the output {#output}
+
+Below the list, **Output** shows what the function printed (`console.log`, `print`) and its errors,
+with the stack trace of anything the handler threw. To track down a particular call, take its time
+from the list and look for it in the output.
+
+## Next step {#next}
+
+[Look up the values and limits of functions](/docs/reference/functions).

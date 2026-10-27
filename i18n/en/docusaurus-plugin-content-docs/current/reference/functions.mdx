@@ -1,0 +1,112 @@
+---
+title: "Functions: values and limits"
+description: A function's tabs and fields, the code rules, the event and the answer, the HTTP statuses and the limits, with exact values.
+type: reference
+prerequisites: []
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 8
+---
+
+Who can do what: administrators read and change functions, read-only accounts read them, and an
+operator doesn't see them. The routes are in the [API](/docs/api#functions).
+
+## Tabs and fields {#tabs}
+
+In the order the panel shows them.
+
+| Tab | Field | Values |
+| --- | --- | --- |
+| **Code** | Files | up to 64 files, 1 MiB in all; one is the entry file |
+| | **Test** | **Method** (usually `POST`), **Path** (usually `/`), **Body** (up to 128 KiB) |
+| **Addresses** | **Public addresses** | read-only: where the function answers |
+| | **Own domains** | up to 10 domain names |
+| | **Access** | **Public** (default) or **Token** |
+| | **CORS origins** | `*`, or up to 20 origins `http[s]://host[:port]` |
+| | **DNS and certificate** | read-only |
+| **Settings** | **Runtime** and version | Node.js or Python, with a version installed under **Services** → **Runtimes** |
+| | **Memory** | 64–1024 MB (default 128) |
+| | **Timeout** | 1–300 seconds (default 10) |
+| | **Schedule** | five cron fields in the panel's time zone, or empty |
+| | **Variables**, **Secrets** | 100 together at most |
+| | **Delete function** | removes the code, releases, secrets and addresses |
+| **Runs** | List and **Output** | the latest calls; what the function prints |
+| **Releases** | List | the latest 10, with **Roll back** |
+
+In the panel's **Settings**, **Functions** holds the **Functions domain**: a domain name, or empty.
+
+## Name and limits {#limits}
+
+| What | Value |
+| --- | --- |
+| Name | `^[a-z][a-z0-9-]{0,30}$`, unique on the server; `domain` is reserved |
+| Functions per server | 100 |
+| Memory per run | 64–1024 MB, with no swap |
+| Timeout | 1–300 seconds |
+| Request body | 6 MiB |
+| Dependency install | 20 minutes at most |
+| Releases kept | 10, plus the live one |
+| Per client and function | 10 requests a second with a burst of 20 (beyond that: 429), and 8 at a time |
+| Per function | 32 at a time (beyond that: 503) |
+
+Every request starts a process of its own. All functions together can use at most 50% of the server's
+memory.
+
+## The code {#code}
+
+| Rule | Value |
+| --- | --- |
+| Files | 64 at most, 1 MiB in all, UTF-8 text |
+| Path | folders and files with letters, digits, `.`, `-`, `_`; never under `node_modules/` or `.venv/` |
+| Entry, Node.js | `index.js`, a CommonJS or ES module |
+| Entry, Python | `main.py` |
+| Handler | `handler(event)`, plain or `async`; in Node.js the default export works too |
+| Dependencies, Node.js | `package.json`: `npm ci --omit=dev` with `package-lock.json` or `npm-shrinkwrap.json`, otherwise `npm install --omit=dev` |
+| Dependencies, Python | `requirements.txt`: `pip install -r` into the release's `.venv` |
+
+## The event {#event}
+
+| Field | Contents |
+| --- | --- |
+| `method` | `GET`, `POST`, … |
+| `path` | on the functions domain, the part after `/<name>` (`/` when nothing follows); on an own domain, the whole path |
+| `query` | the query string without the `?` |
+| `headers` | lower-case names; a repeated header is joined with `, ` |
+| `body` | the body as text if it is UTF-8, otherwise base64 |
+| `isBase64Encoded` | `true` when `body` is base64 |
+| `source` | `http` (a call), `test` (**Test**), `schedule` (the schedule) |
+
+## The answer {#answer}
+
+The handler returns an object or any other value.
+
+| Returns | Answer |
+| --- | --- |
+| An object with `statusCode`, `headers`, `body`, `isBase64Encoded` | the status (100 to 599, 200 by default), the headers (string values), the body as text or base64 |
+| A string | plain text |
+| Any other value | JSON |
+
+## HTTP statuses {#statuses}
+
+| Status | When |
+| --- | --- |
+| 401 | access is **Token** and there's no valid `Authorization: Bearer <token>` |
+| 404 | on the functions domain, the name isn't any function's |
+| 429 | more than 10 requests a second (burst of 20) from one client |
+| 500 | the handler threw, is missing or returned something invalid |
+| 502 | a crash, the timeout or the memory limit |
+| 503 | 8 calls already running from one client, or 32 on the function |
+| 504 | the handler was waiting when the timeout hit |
+
+## On the server {#on-the-server}
+
+| What | Where |
+| --- | --- |
+| Code | `/srv/functions/<name>/releases/<id>/`, with `current` pointing at the live release |
+| System user | `cg-fn-<id>`, no login and no home |
+| Call log | `/var/log/cloudground/functions/<name>.access.log` |
+| Output log | `/var/log/cloudground/functions/<name>.output.log` |
+
+## Next step {#next}
+
+[See how a function runs](/docs/explanation/functions).

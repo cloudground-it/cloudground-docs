@@ -19,4 +19,5 @@ hide_table_of_contents: true
   <Card to="/docs/explanation/sign-in-protection" title="La protezione dell'accesso" />
   <Card to="/docs/explanation/blocking" title="Il blocco degli indirizzi" />
   <Card to="/docs/explanation/security-scans" title="I controlli di sicurezza" />
+  <Card to="/docs/explanation/functions" title="Come gira una funzione" />
 </Cards>

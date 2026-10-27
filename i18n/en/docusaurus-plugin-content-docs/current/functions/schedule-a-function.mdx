@@ -1,0 +1,40 @@
+---
+title: Put a function on a schedule
+description: Run a function at fixed times with five cron fields, with no address and no token.
+type: how-to
+prerequisites:
+  - A function that already exists
+  - An administrator account
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 5
+---
+
+A scheduled function runs by itself, with nobody calling it: a clean-up job, a periodic report, a
+check. It doesn't need an address.
+
+## Set the times {#set}
+
+1. Open the function and go to the **Settings** tab.
+2. Under **Schedule**, type five cron fields: minute, hour, day of the month, month, day of the week.
+   For example, `*/15 * * * *` runs every 15 minutes and `30 6 * * 1-5` runs at 6:30 on weekdays.
+3. Save.
+
+Times follow the panel's time zone. Left empty, the function never runs on its own. Saving doesn't make
+a new release.
+
+Every minute the panel looks for functions that are due and starts them, each at most once a minute. In
+the event, `source` is `schedule`, and the function runs under the same memory and time limits as any
+other call.
+
+To get started, you can create the function with the **Scheduled job** starter code: it writes a line
+to the output on every run.
+
+## See whether it ran {#check}
+
+Each scheduled run shows up on the **Runs** tab with the source **Schedule**, like any other call. Its
+output is under **Output**: see [read the runs](/docs/functions/read-the-runs).
+
+## Next step {#next}
+
+[Deploy a change and roll back if you need to](/docs/functions/deploy-and-roll-back).

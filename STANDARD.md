@@ -19,7 +19,7 @@ Section landing pages use `type: index`: they introduce a section and link its p
 hold no content of their own.
 
 The sidebar keeps the types apart. Its groups are, in order: **Tutorials**, the **How-to
-guides** (split by subject: sites, data, access and security, server), **Reference** and
+guides** (split by subject: sites, functions, data, access and security, server), **Reference** and
 **Explanation**; the CLI and the API have their own reference sidebars. Each group folder has an
 `index.md` and a `_category_.json`; a page goes in the group of its type, never elsewhere.
 
@@ -27,6 +27,7 @@ guides** (split by subject: sites, data, access and security, server), **Referen
 | --- | --- | --- |
 | `tutorials/` | Tutorials | `tutorial` |
 | `sites/` | How-to · sites | `how-to` |
+| `functions/` | How-to · functions (create, code, addresses, access, schedule, releases) | `how-to` |
 | `data/` | How-to · data (cache, staging, backups, deployments, databases) | `how-to` |
 | `access/` | How-to · access and security | `how-to` |
 | `server/` | How-to · server | `how-to` |
