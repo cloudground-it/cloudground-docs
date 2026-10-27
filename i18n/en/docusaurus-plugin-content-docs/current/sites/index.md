@@ -14,6 +14,7 @@ hide_table_of_contents: true
   <Card to="/docs/sites/scheduled-tasks" title="Scheduled tasks" />
   <Card to="/docs/sites/resource-usage-and-limits" title="Site resources and limits" />
   <Card to="/docs/sites/uptime-monitoring" title="Monitor a site's uptime" />
+  <Card to="/docs/sites/move-a-site-from-another-host" title="Move a site from another host" />
   <Card to="/docs/sites/update-wordpress" title="Update WordPress with an automatic rollback" />
   <Card to="/docs/sites/clean-the-wordpress-database" title="Clean the WordPress database" />
   <Card to="/docs/sites/send-mail-from-a-site" title="Send mail from a site" />
