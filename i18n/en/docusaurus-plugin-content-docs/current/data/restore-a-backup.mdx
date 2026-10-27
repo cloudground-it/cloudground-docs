@@ -1,11 +1,11 @@
 ---
 title: Restore a backup
-description: Roll a site back to a snapshot, in full, files only or database only. The panel takes a safety snapshot first.
+description: Roll a site back to a snapshot, in full, files only, database only or just some files, or download it. The panel takes a safety snapshot first.
 type: how-to
 prerequisites:
   - A site with at least one backup
   - An administrator account, or an operator assigned to the site
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 5
 ---
@@ -46,6 +46,38 @@ The safety snapshot appears in the backup list. To undo the restore, restore tha
   before it are rolled back.
 - When the restore finishes, the site's page cache is cleared. With *Database only*, the object
   cache is flushed too, so the site doesn't serve stale data.
+
+## Restore one file or folder {#paths}
+
+To bring back only a file or a folder, without touching the rest of the site:
+
+1. Click **Restore** on the snapshot's row and choose **Files only**.
+2. Turn on **Only some files or folders**.
+3. In **Paths**, enter one path per line, from the site's folder: `shared/wp-config.php`,
+   `shared/wp-content/uploads/2026/10`. Up to 20.
+4. Click **Continue**, type the site's domain to confirm, and click **Restore**.
+
+The panel takes and tests the same safety snapshot first. Each path is put back as it is in the
+snapshot: a file replaces the current one, a folder replaces the current folder whole. Everything
+else stays as it is now. A path the snapshot doesn't hold stops the restore before anything changes.
+
+Paths start from the site's folder, not from `current`: a file of the live code is under
+`releases/<release>/`, and the uploads and `wp-config.php` of a WordPress site are under `shared/`.
+`.ssh`, `tmp` and `current` can't be restored this way.
+
+In the API, add `"paths"` to a files restore:
+`{"confirm": "<domain>", "mode": "files", "paths": ["shared/wp-config.php"]}`.
+
+## Download a backup {#download}
+
+1. Open the snapshot's **⋯** menu and choose **Download**.
+2. Pick **Everything (files and databases)**, **Files only** or **Databases only** and click
+   **Download**.
+
+The server prepares a `.tar.gz` with `files/`, the site's folder as the snapshot has it, and
+`databases/<name>.sql`, a dump of each database. Your browser then downloads it. The archive is
+deleted from the server once it's downloaded, or after a day. Each download is recorded in the
+**Audit log**. Read-only accounts can't download backups.
 
 ## Choose which databases to restore {#databases}
 

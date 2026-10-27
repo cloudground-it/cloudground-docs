@@ -1,11 +1,11 @@
 ---
 title: Recover administrator access
-description: Get back into the panel from the server if you've lost your password, or the phone you use for two-step verification.
+description: Get back into the panel from the server if you've lost your password, or every second factor (phone, passkeys and recovery codes).
 type: how-to
 prerequisites:
   - Root access to the server over SSH
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 7
 ---
 
@@ -34,17 +34,21 @@ The command generates a new 24-character password and prints it **once**, alongs
 never type it, so it never ends up in your shell history. Sign in with that password, then change it
 from **Security**.
 
-The reset ends all of the account's sessions and revokes its API tokens. If the account had two-step
-verification, it stays on, and the command reminds you of that.
+The reset ends all of the account's sessions and revokes its API tokens. If the account had turned
+password sign-in off to use only passkeys, the reset turns it back on, and says so. If the account
+has two-step verification, it stays on, and the command lists what it has (an authenticator app,
+passkeys, recovery codes).
 
-## If you've also lost your phone {#lost-device}
+## If you've also lost every second factor {#lost-device}
 
 ```bash prompt
 panel-api recover-admin --email <email> --disable-2fa
 ```
 
-This also turns off two-step verification and tells you whether it was on. Once you're signed in,
-turn it back on from **Security** with your new phone.
+This also removes every second factor of the account (the authenticator app, its passkeys and its
+recovery codes) and lists what it removed. If you still have a recovery code, you don't need this:
+sign in with it and replace the lost factor from **Security**. Once you're signed in, set up two-step
+verification again from **Security**.
 
 ## Special cases {#special-cases}
 
