@@ -1,0 +1,58 @@
+---
+title: Installa gli aggiornamenti di Ubuntu
+description: "Guarda i pacchetti in attesa sul server, prima quelli di sicurezza, installali dal pannello e accorgiti quando serve un riavvio."
+type: how-to
+prerequisites:
+  - Un account amministratore per installare gli aggiornamenti; basta un account amministratore o sola lettura per guardare
+version: v0.4.0
+last_verified: unverified
+sidebar_position: 5
+---
+
+Il pannello mostra cosa aggiornerebbe `apt` sul server, e lo installa per te. Ubuntu installa già da
+solo la maggior parte degli aggiornamenti di sicurezza ogni giorno; il pannello copre il resto e ti
+dice quando il server deve riavviarsi.
+
+## Guarda cosa è in attesa {#see}
+
+1. Apri **Servizi** nella barra laterale e trova il riquadro **Aggiornamenti di Ubuntu**.
+2. Leggi il riepilogo: quanti aggiornamenti sono in attesa e quanti di sicurezza.
+
+La tabella elenca ogni pacchetto con la versione **Installato**, la **Nuova versione** e la
+**Origine**. Gli aggiornamenti di sicurezza vengono prima e hanno il badge **sicurezza**; un
+pacchetto che verrebbe installato per la prima volta, un nuovo kernel per esempio, ha **nuovo**. Il
+riquadro dice anche quando gli elenchi dei pacchetti sono stati aggiornati l'ultima volta. Premi
+**Controlla di nuovo** per aggiornare ora gli elenchi: esegue `apt-get update` come attività.
+
+La **Dashboard** ti avvisa quando ci sono aggiornamenti di sicurezza in attesa, con un pulsante che
+apre questo riquadro.
+
+## Installali {#install}
+
+1. Nel riquadro **Aggiornamenti di Ubuntu** premi **Installa gli aggiornamenti di sicurezza** o
+   **Aggiorna tutto**.
+2. Leggi la conferma e confermala.
+
+Il pannello esegue l'aggiornamento come attività e non nomina nessun pacchetto: la lista la ricava
+da apt. L'ultima riga dell'attività dice quanti pacchetti sono stati aggiornati e se ora serve un
+riavvio.
+
+:::warning
+I servizi i cui pacchetti vengono aggiornati si riavviano, quindi i siti possono fermarsi per un
+attimo. Un file di configurazione che hai modificato mantiene la tua versione. Il pannello non
+riavvia mai il server.
+:::
+
+Un aggiornamento blocca un aggiornamento del pannello e una disinstallazione finché non finisce. Non
+fermarlo a metà: un aggiornamento interrotto lascia il gestore dei pacchetti a metà.
+
+## Riavvia quando serve {#reboot}
+
+Alcuni aggiornamenti hanno effetto solo dopo un riavvio. Quando uno lo richiede, il riquadro e la
+Dashboard dicono **Il server deve essere riavviato** e nominano i pacchetti che lo hanno chiesto.
+Scegli un momento tranquillo: i siti non rispondono mentre il server si riavvia. Riavvialo tu, per
+esempio con `reboot` via SSH.
+
+## Prossimo passo {#next}
+
+Tieni aggiornato anche il pannello: [aggiorna CloudGround](/docs/server/update-cloudground).

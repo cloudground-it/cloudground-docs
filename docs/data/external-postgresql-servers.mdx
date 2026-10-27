@@ -1,0 +1,104 @@
+---
+title: Metti i database su un server PostgreSQL
+description: "Registra un server PostgreSQL, per esempio quello gestito di un provider, e metti lì i database di un sito PHP o Laravel, scegliendo chi ne fa il backup."
+type: how-to
+prerequisites:
+  - Un account amministratore, per registrare un server
+  - Un server PostgreSQL con il TLS attivo, raggiungibile da questo server, e un ruolo su di esso che possa creare ruoli e database
+  - Un sito PHP o Laravel, e un account amministratore oppure operatore assegnato al sito
+version: unreleased
+last_verified: unverified
+sidebar_position: 11
+---
+
+Oltre ai server MariaDB e MySQL, un sito PHP o Laravel può tenere i suoi database su un server
+PostgreSQL. Si registra e si sceglie come un [server esterno](/docs/data/external-database-servers):
+questa pagina descrive solo quello che cambia per PostgreSQL.
+
+## Prepara il server {#prepare}
+
+Il server deve avere il TLS attivo (`ssl = on`) ed essere raggiungibile dall'indirizzo di questa
+macchina, sulla porta che indichi (5432 di default). CloudGround usa sempre il TLS con PostgreSQL e
+controlla il certificato del server: non esiste un'opzione per disattivarlo.
+
+Serve un ruolo che possa creare ruoli e database, non un superutente:
+
+```sql
+CREATE ROLE cloudground LOGIN PASSWORD '<una password lunga>' CREATEROLE CREATEDB;
+```
+
+Se il server limita gli accessi, permetti a quel ruolo di collegarsi da questa macchina e solo via
+TLS, per esempio nel `pg_hba.conf`:
+
+```text
+hostssl  all  cloudground  <indirizzo di questo server>/32  scram-sha-256
+```
+
+Sostituisci i segnaposto con l'indirizzo pubblico di questa macchina e con una tua password.
+
+## Registra il server {#register}
+
+1. Apri **Impostazioni** e trova il riquadro **Server di database**.
+2. Premi **Aggiungi un server** e scegli **PostgreSQL** in **Tipo**.
+3. Compila il modulo come per un [server esterno](/docs/data/external-database-servers#register). Con
+   PostgreSQL la porta passa a 5432 e il **TLS** non si sceglie: è sempre obbligatorio. Indica il
+   **Certificato CA** se il server usa un certificato che le autorità del sistema non conoscono, per
+   esempio uno tuo.
+4. Scegli i **Backup** (sotto) e premi **Salva**.
+
+Il tipo di un server non si cambia dopo la creazione. CloudGround prova la connessione prima di
+salvare: se la password è sbagliata, il certificato non è fidato o il ruolo non può creare ruoli e
+database, il modulo mostra il messaggio del server e non viene salvato nulla.
+
+## Scegli chi fa il backup {#backup}
+
+| Scelta | Cosa succede |
+| --- | --- |
+| **Il provider ne fa il backup** (predefinita) | Il backup di un sito lascia fuori i database di questo server, e così il ripristino di prova. Contano i backup del provider. |
+| **CloudGround ne fa il dump** | Il backup esporta ogni database con `pg_dump` via TLS, il ripristino di prova lo importa in un database temporaneo sullo stesso server, e il ripristino di un backup lo rimette lì. |
+
+Per il dump serve il pacchetto `postgresql-client` su **questo** server, in una versione uguale o più
+recente di quella del server PostgreSQL:
+
+```bash
+sudo apt install postgresql-client
+```
+
+Puoi cambiare la scelta in qualsiasi momento con **Modifica**: vale per i backup successivi.
+
+## Metti un database sul server {#create}
+
+Apri il sito, scheda **Database**, **Aggiungi un database**, e scegli il server: quelli PostgreSQL
+sono indicati con *(PostgreSQL)* e compaiono solo per i siti PHP e Laravel. Per un utente database
+scegli prima il **Server** e poi i privilegi, come per MariaDB.
+
+Come funzionano i permessi su PostgreSQL:
+
+- Ogni database ha un ruolo proprietario `cgo_<nome del database>`, senza accesso diretto. Non usare né
+  modificare questi ruoli.
+- Un utente con **tutti i privilegi** agisce da proprietario in quel database: le tabelle che crea
+  sono del proprietario, e ogni altro utente con tutti i privilegi le vede.
+- Un utente **in sola lettura** legge le tabelle esistenti e quelle create dopo, e non scrive nulla.
+- Un utente non può collegarsi a un database su cui non ha privilegi.
+
+Svuotare un database ricrea lo schema `public` e rimette a posto i permessi di lettura.
+
+## Collega la tua applicazione {#connect}
+
+In fondo al riquadro dei database c'è l'host e la porta del server. Nella configurazione
+dell'applicazione metti quei valori, il nome e la password dell'utente database e il TLS attivo
+(`sslmode=verify-full`, con il certificato CA se serve). La password si vede una volta sola.
+
+## Limiti {#limits}
+
+- Solo i siti **PHP** e **Laravel** possono usare un server PostgreSQL. Il database principale di un
+  sito sta sempre su questo server.
+- La console SQL, l'elenco delle tabelle e **Quarry** non sono ancora disponibili per i database
+  PostgreSQL: usa `psql` o il tuo client.
+- Esportazione, importazione, backup (se il dump è attivo) e ripristino funzionano.
+- Lo staging e le migrazioni non toccano mai un database su un server esterno.
+- Un database non si può spostare tra server; esportalo e importalo in uno nuovo.
+
+## Prossimo passo {#next}
+
+Gestisci cosa può fare ogni utente: [gestisci i database](/docs/data/manage-databases).

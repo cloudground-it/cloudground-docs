@@ -1,11 +1,11 @@
 ---
 title: Recupera l'accesso amministratore
-description: Rientra nel pannello dal server quando hai perso la password o il telefono della verifica in due passaggi.
+description: Rientra nel pannello dal server quando hai perso la password o tutti i secondi fattori (telefono, passkey e codici di recupero).
 type: how-to
 prerequisites:
   - Accesso root al server via SSH
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 7
 ---
 
@@ -34,17 +34,21 @@ Il comando genera una password nuova di 24 caratteri e la stampa **una sola volt
 all'account. Non la scrivi tu: così non finisce nella cronologia della shell. Accedi con quella
 password e cambiala da **Sicurezza**.
 
-La reimpostazione chiude tutte le sessioni dell'account e revoca i suoi token API. Se l'account
-aveva la verifica in due passaggi, resta attiva e il comando te lo ricorda.
+La reimpostazione chiude tutte le sessioni dell'account e revoca i suoi token API. Se l'account aveva
+disattivato l'accesso con password per usare solo le passkey, la reimpostazione lo riattiva e lo dice.
+Se l'account ha la verifica in due passaggi, resta attiva e il comando elenca cosa ha (un'app di
+autenticazione, passkey, codici di recupero).
 
-## Hai perso anche il telefono {#lost-device}
+## Hai perso anche tutti i secondi fattori {#lost-device}
 
 ```bash prompt
 panel-api recover-admin --email <email> --disable-2fa
 ```
 
-Spegne anche la verifica in due passaggi e dice se era attiva. Dopo l'accesso, attivala di nuovo da
-**Sicurezza** con il telefono nuovo.
+Rimuove anche tutti i secondi fattori dell'account (l'app di autenticazione, le passkey e i codici di
+recupero) ed elenca cosa ha rimosso. Se ti resta un codice di recupero non serve: accedi con quello e
+sostituisci il fattore perso da **Sicurezza**. Dopo l'accesso, configura di nuovo la verifica in due
+passaggi da **Sicurezza**.
 
 ## Casi particolari {#special-cases}
 

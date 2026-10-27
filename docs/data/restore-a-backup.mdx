@@ -1,11 +1,11 @@
 ---
 title: Ripristina un backup
-description: Riporta un sito allo stato di uno snapshot, tutto, solo i file o solo il database, con uno snapshot di sicurezza preso prima.
+description: Riporta un sito allo stato di uno snapshot, tutto, solo i file, solo il database o solo alcuni file, oppure scaricalo, con uno snapshot di sicurezza preso prima.
 type: how-to
 prerequisites:
   - Un sito con almeno un backup
   - Un account amministratore oppure operatore assegnato al sito
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 5
 ---
@@ -47,6 +47,38 @@ quello.
   quelli ripristinati prima tornano com'erano.
 - Alla fine la cache di pagina del sito viene svuotata. Con *Solo il database*, anche la object
   cache viene svuotata, così il sito non serve dati vecchi.
+
+## Ripristina un file o una cartella {#paths}
+
+Per riportare indietro solo un file o una cartella, senza toccare il resto del sito:
+
+1. Fai clic su **Ripristina** sulla riga dello snapshot e scegli **Solo i file**.
+2. Accendi **Solo alcuni file o cartelle**.
+3. In **Percorsi** scrivi un percorso per riga, dalla cartella del sito: `shared/wp-config.php`,
+   `shared/wp-content/uploads/2026/10`. Fino a 20.
+4. Fai clic su **Continua**, scrivi il dominio del sito per confermare e fai clic su **Ripristina**.
+
+Il pannello fa e verifica prima lo stesso snapshot di sicurezza. Ogni percorso torna com'è nello
+snapshot: un file sostituisce quello attuale, una cartella sostituisce per intero quella attuale. Tutto
+il resto resta com'è ora. Un percorso che lo snapshot non contiene ferma il ripristino prima che cambi
+qualcosa.
+
+I percorsi partono dalla cartella del sito, non da `current`: un file del codice pubblicato sta in
+`releases/<rilascio>/`, mentre i caricamenti e `wp-config.php` di un sito WordPress stanno in
+`shared/`. `.ssh`, `tmp` e `current` non si ripristinano così.
+
+Nell'API, aggiungi `"paths"` a un ripristino dei file:
+`{"confirm": "<dominio>", "mode": "files", "paths": ["shared/wp-config.php"]}`.
+
+## Scarica un backup {#download}
+
+1. Apri il menu **⋯** dello snapshot e scegli **Scarica**.
+2. Scegli **Tutto (file e database)**, **Solo i file** o **Solo i database** e fai clic su **Scarica**.
+
+Il server prepara un `.tar.gz` con `files/`, la cartella del sito com'è nello snapshot, e
+`databases/<nome>.sql`, il dump di ogni database. Poi il browser lo scarica. L'archivio viene
+cancellato dal server appena scaricato, o dopo un giorno. Ogni download finisce nel **Registro
+attività**. Gli account in sola lettura non possono scaricare i backup.
 
 ## Quali database {#databases}
 

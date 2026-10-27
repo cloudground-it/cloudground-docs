@@ -5,7 +5,7 @@ type: how-to
 prerequisites:
   - A panel account to view alerts
   - An administrator account to set up the webhook
-version: v0.3.0
+version: v0.4.0
 last_verified: unverified
 sidebar_position: 4
 ---
@@ -113,6 +113,26 @@ untranslated.
 | `cloudground.at` | When the alert happened, in RFC 3339 format: when the failed task started, when the site stopped responding, when the certificate expires. Can be missing. |
 
 {/* TODO(verify): the body a real webhook receives, and an example `at` in its exact format. */}
+
+## Receive alerts by email {#email}
+
+*New in v0.4.0.* Email is a second channel, next to the webhook.
+
+1. Set the server's [mail relay](/docs/sites/send-mail-from-a-site#server-relay) in **Settings**,
+   in the **Mail** card.
+2. In the same card, type up to 10 addresses under **Alert emails**, separated by commas or spaces.
+3. Click **Save**.
+
+Alerts are emailed as well as sent to the webhook, if you have one. On each round the panel sends
+**one message** with all the alerts it is about to notify: the subject is the alert's line when there
+is only one, otherwise "3 CloudGround alerts" (for three); the body has one line per alert. The text is in the
+administrators' language.
+
+An alert counts as notified only once **every** configured channel has delivered it. If one channel
+fails, the alert goes out again on the next round on every channel: nobody misses it, at the cost of
+a repeat on the channel that worked.
+
+{/* TODO(verify): the alert email as a real relay delivers it, its subject and text. */}
 
 ## Next step {#next}
 

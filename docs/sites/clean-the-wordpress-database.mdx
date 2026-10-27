@@ -1,0 +1,70 @@
+---
+title: Pulisci il database di WordPress ogni settimana
+description: "Elimina una volta a settimana i transient scaduti e le vecchie revisioni degli articoli, dopo una simulazione e uno snapshot verificato, e misura quanto pesano le opzioni in autoload."
+type: how-to
+prerequisites:
+  - Un sito WordPress o WooCommerce
+  - Un account amministratore oppure operatore assegnato al sito
+  - Un repository di backup impostato in Impostazioni
+version: v0.4.0
+last_verified: unverified
+sidebar_position: 10
+---
+
+Il database di WordPress accumula cose che nessuno usa: transient scaduti e una revisione di un
+articolo a ogni salvataggio. La pulizia settimanale le toglie e lascia stare il resto. È
+disattivata di default.
+
+## Cosa fa {#what}
+
+- Elimina i **transient scaduti**.
+- Riduce le revisioni in modo che ogni articolo conservi solo le **N** più recenti, un numero da 1 a
+  100 (5 finché non lo cambi).
+- Misura le **opzioni in autoload**, quelle che WordPress carica a ogni richiesta, ed elenca le più
+  grosse. Non le modifica.
+
+## Guarda prima di pulire {#dry-run}
+
+1. Apri il sito e scegli la scheda **WordPress**.
+2. Nel riquadro **Pulizia del database** premi **Simulazione**.
+
+Il riquadro elenca cosa eliminerebbe una pulizia: i transient scaduti, le revisioni oltre le N più
+recenti di ogni articolo, e il numero e la dimensione delle opzioni in autoload. Non cambia nulla.
+
+## Attivala {#turn-on}
+
+1. Nello stesso riquadro imposta **Revisioni conservate per articolo** e premi **Salva**.
+2. Attiva **Pulisci ogni settimana**.
+
+Il pannello rifiuta l'attivazione se non c'è un repository di backup
+([Collega un repository di backup](/docs/data/connect-a-backup-repository)): la prima pulizia di un
+sito crea uno snapshot. L'attivazione non pulisce subito. Ogni sito ha una fascia propria nella
+settimana; il riquadro mostra la **Prossima pulizia**, e l'**Ultima pulizia** quando c'è.
+
+Per pulire subito, premi **Pulisci ora**.
+
+## La prima pulizia {#first-run}
+
+Prima di eliminare qualcosa per la prima volta, il pannello crea uno snapshot e
+[lo ripristina per prova](/docs/data/run-a-restore-test). Se la prova fallisce, la pulizia si ferma
+e non viene eliminato nulla. Le pulizie successive saltano lo snapshot. Ogni esecuzione comincia
+con una simulazione, che finisce nel registro dell'attività.
+
+## Leggi il risultato {#log}
+
+Ogni pulizia aggiunge i suoi conteggi al registro di pulizia del sito: apri la scheda **Log** del
+sito e scegli **Pulizia**. Una pulizia che fallisce genera un
+[avviso](/docs/server/alerts-and-notifications) come ogni altra attività.
+
+## Con cgctl {#cgctl}
+
+```bash
+cgctl cleanup <id-sito> on 5      # ogni settimana, 5 revisioni per articolo (il numero è facoltativo)
+cgctl cleanup <id-sito> preview   # la simulazione
+cgctl --wait cleanup <id-sito> run
+cgctl cleanup <id-sito> off
+```
+
+## Prossimo passo {#next}
+
+Affianca la pulizia agli aggiornamenti: [aggiorna WordPress con rollback automatico](/docs/sites/update-wordpress).

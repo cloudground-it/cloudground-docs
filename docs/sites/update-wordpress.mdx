@@ -1,0 +1,84 @@
+---
+title: Aggiorna WordPress con rollback automatico
+description: "Aggiorna core, plugin e temi dopo uno snapshot verificato, a mano o con una pianificazione, e lascia che il pannello annulli un aggiornamento che rompe il sito."
+type: how-to
+prerequisites:
+  - Un sito WordPress o WooCommerce
+  - Un account amministratore oppure operatore assegnato al sito
+  - Un repository di backup impostato in Impostazioni, per lo snapshot
+version: v0.4.0
+last_verified: unverified
+sidebar_position: 9
+---
+
+Un aggiornamento che rompeva il sito lo lasciava rotto finché qualcuno non ripristinava un backup.
+Ora ogni aggiornamento parte da uno snapshot, e il pannello lo ripristina da solo quando il sito
+smette di rispondere come prima.
+
+## Aggiorna ora {#update-now}
+
+1. Apri il sito e scegli la scheda **WordPress**.
+2. Nel riquadro **Aggiornamenti** premi **Core**, **Plugin** o **Aggiorna tutto**.
+
+Il pannello esegue questi passi in una sola attività:
+
+1. Misura il sito attivo: la home page, una richiesta senza cache e `/wp-login.php`.
+2. Crea uno snapshot e **lo ripristina per prova**. Se la prova fallisce, l'aggiornamento non
+   parte e il sito resta intatto.
+3. Esegue l'aggiornamento, poi svuota la cache di pagina.
+4. Misura di nuovo il sito e confronta: una pagina il cui stato abituale è cambiato, o il cui tasso
+   di errori è salito, conta come rotta. La velocità non viene giudicata, perché PHP si è appena
+   ricaricato e la cache è fredda.
+5. Se il sito supera il controllo, l'aggiornamento resta e la cache viene riscaldata in background.
+6. Se il sito è rotto, o il controllo non può girare, il pannello ripristina lo snapshot sul sito e
+   fa fallire l'attività con i motivi. Il fallimento genera un [avviso](/docs/server/alerts-and-notifications).
+
+Il registro dell'attività riporta ogni misurazione. Il [ripristino di prova](/docs/data/run-a-restore-test)
+dello snapshot è parte del passo 2: uno snapshot che non si può ripristinare non arriva mai
+all'aggiornamento.
+
+:::warning
+Il rollback riporta il database allo snapshot. Quello che il sito ha salvato durante
+l'aggiornamento, al massimo qualche minuto, si perde: per esempio un ordine arrivato in quel
+tempo.
+:::
+
+## Aggiorna senza snapshot {#no-snapshot}
+
+Senza un repository di backup, il riquadro **Aggiornamenti** lo dice e il pulsante diventa
+**Aggiorna senza snapshot**. Conferma per andare avanti. Il pannello controlla comunque il sito
+dopo, ma se l'aggiornamento lo rompe non viene annullato nulla: il sito resta com'è stato lasciato
+dall'aggiornamento e l'attività fallisce dicendo che non c'era uno snapshot a cui tornare. Per avere
+il rollback automatico collega prima un repository
+([Collega un repository di backup](/docs/data/connect-a-backup-repository)).
+
+## Aggiorna con una pianificazione {#schedule}
+
+1. Nella scheda **WordPress** apri il riquadro **Aggiornamenti automatici**.
+2. Scegli la **Frequenza**: **Disattivato**, **Ogni giorno** o **Ogni settimana**.
+3. Scegli l'**Orario** (nel fuso del server, indicato sotto il campo), oppure qualsiasi ora: allora
+   l'aggiornamento parte un giorno o una settimana dopo il precedente.
+4. Scegli **Cosa aggiornare**: **Tutto**, **WordPress core**, **Plugin** o **Temi**.
+5. Premi **Salva**.
+
+Un aggiornamento pianificato fa gli stessi passi di uno manuale e richiede sempre il repository di
+backup: senza, la pianificazione non si può attivare. Se un'esecuzione fallisce, il pannello riprova
+alla fascia successiva, e il fallimento compare come un avviso per sito. Un'esecuzione per plugin o
+temi non fa nulla quando nessuno ha aggiornamenti in attesa. Una copia di staging non ha una
+pianificazione propria.
+
+## Con l'API {#api}
+
+```bash
+curl -X POST https://<pannello>/api/sites/<id-sito>/wp/update \
+  -H "Authorization: Bearer <token>" -H "Content-Type: application/json" \
+  -d '{"what": "all"}'
+```
+
+`what` è `core`, `plugins`, `themes` o `all`. Senza repository di backup la chiamata è rifiutata con
+`412`, a meno che il corpo dica anche `"without_snapshot": true`. La risposta nomina un'attività:
+leggila con `cgctl task <id-attività>`, o seguila nell'elenco delle attività del pannello.
+
+## Prossimo passo {#next}
+
+Tieni leggero anche il database: [puliscilo ogni settimana](/docs/sites/clean-the-wordpress-database).
