@@ -2,7 +2,8 @@ import React, {type ReactNode} from 'react';
 import Link from '@docusaurus/Link';
 import Translate, {translate} from '@docusaurus/Translate';
 import LogoMark from '@site/src/components/LogoMark';
-import {DOCS_REPO, ISSUES_URL, RELEASE, RELEASE_URL, REPO} from '@site/src/data/site';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import {DOCS_REPO, ISSUES_URL, RELEASE, RELEASE_URL, REPO, featuresPath} from '@site/src/data/site';
 
 type FooterLink = {to?: string; href?: string; label: ReactNode};
 
@@ -31,6 +32,7 @@ function Column({title, links}: {title: ReactNode; links: FooterLink[]}): ReactN
 }
 
 function Footer(): ReactNode {
+  const {i18n} = useDocusaurusContext();
   return (
     <footer className="cg-footer">
       <div className="cg-footer__top">
@@ -60,7 +62,7 @@ function Footer(): ReactNode {
           <Column
             title={<Translate id="cg.footer.product">Prodotto</Translate>}
             links={[
-              {to: '/#funzioni', label: <Translate id="cg.footer.features">Funzioni</Translate>},
+              {to: featuresPath(i18n.currentLocale), label: <Translate id="cg.footer.allFeatures">Funzionalità</Translate>},
               {to: '/#misure', label: <Translate id="cg.footer.measures">Misure</Translate>},
               {to: '/#installa', label: <Translate id="cg.footer.install">Installazione</Translate>},
             ]}

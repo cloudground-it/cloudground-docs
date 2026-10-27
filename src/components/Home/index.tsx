@@ -7,7 +7,8 @@ import Terminal from './Terminal';
 import useAnchor from './useAnchor';
 import useHomeMotion from './useHomeMotion';
 import Icon from '@site/src/components/Icon';
-import {BENCH_METHOD_URL, BENCH_URL, REPO} from '@site/src/data/site';
+import {BENCH_METHOD_URL, BENCH_URL, REPO, featuresPath} from '@site/src/data/site';
+import {MEASURES, formatRps, type MeasureKey} from '@site/src/data/bench';
 import styles from './Home.module.css';
 
 /**
@@ -148,67 +149,75 @@ function SectionHead({
 
 function Features(): ReactNode {
   const id = useAnchor('funzioni');
+  const {i18n} = useDocusaurusContext();
+  const page = featuresPath(i18n.currentLocale);
+  // One card per group of the features page, each leading to its section.
   const features = [
     {
+      anchor: 'speed',
       tag: translate({id: 'home.features.1.tag', message: 'Velocità'}),
       title: translate({id: 'home.features.1.title', message: 'Cache di pagina mirata'}),
       text: translate({
-        id: 'home.features.1.text',
+        id: 'home.features.speed.text',
         message:
-          'nginx serve le pagine senza toccare PHP. Quando cambi un articolo o un prezzo, si svuotano solo le pagine che lo mostrano.',
+          'nginx serve le pagine senza toccare PHP e svuota solo quelle che cambiano. PHP, OPcache e MariaDB sono regolati sulla macchina.',
       }),
     },
     {
-      tag: translate({id: 'home.features.2.tag', message: 'Isolamento'}),
-      title: translate({id: 'home.features.2.title', message: 'Un PHP per ogni sito'}),
+      anchor: 'sites',
+      tag: translate({id: 'home.features.sites.tag', message: 'Siti e app'}),
+      title: translate({id: 'home.features.sites.title', message: 'Da WordPress a Node.js'}),
       text: translate({
-        id: 'home.features.2.text',
-        message: 'Utente di sistema, PHP e database separati. Un sito compromesso non vede gli altri.',
+        id: 'home.features.sites.text',
+        message:
+          'WordPress, WooCommerce, PHP, Laravel, statici, proxy, app Node.js e Python e funzioni. Ognuno con il suo utente e la sua sandbox.',
       }),
     },
     {
-      tag: translate({id: 'home.features.3.tag', message: 'Backup'}),
-      title: translate({id: 'home.features.3.title', message: 'Ripristino già provato'}),
-      text: translate({
-        id: 'home.features.3.text',
-        message: 'Ogni copia va cifrata dove scegli tu e viene ripristinata per prova subito dopo.',
-      }),
-    },
-    {
-      tag: translate({id: 'home.features.4.tag', message: 'Staging'}),
+      anchor: 'deploys',
+      tag: translate({id: 'home.features.deploys.tag', message: 'Rilasci'}),
       title: translate({id: 'home.features.4.title', message: 'Prova prima, misura poi'}),
       text: translate({
-        id: 'home.features.4.text',
-        message: 'Una copia protetta da password. Un rilascio più lento della produzione viene fermato.',
+        id: 'home.features.deploys.text',
+        message:
+          'Staging, Safe Push che ferma un rilascio più lento, deploy da Git a ogni push e il rilascio di prima sempre a un passo.',
       }),
     },
     {
+      anchor: 'data',
+      tag: translate({id: 'home.features.data.tag', message: 'Dati'}),
+      title: translate({id: 'home.features.3.title', message: 'Ripristino già provato'}),
+      text: translate({
+        id: 'home.features.data.text',
+        message:
+          'Backup cifrati su S3, B2, SFTP o in locale, ripristinati per prova. Riprendi un file, un database o tutto il sito.',
+      }),
+    },
+    {
+      anchor: 'security',
       tag: translate({id: 'home.features.security.tag', message: 'Sicurezza'}),
-      title: translate({id: 'home.features.security.title', message: 'Vulnerabilità e malware'}),
+      title: translate({id: 'home.features.security.title2', message: 'Ogni sito per conto suo'}),
       text: translate({
-        id: 'home.features.security.text',
-        message: 'Plugin con falle note segnalati, file sospetti trovati, 2FA per wp-admin e blocchi per paese.',
+        id: 'home.features.security.text2',
+        message: 'Isolamento per sito, firewall e blocchi, vulnerabilità e malware, passkey, ruoli e registro di audit.',
       }),
     },
     {
-      tag: 'HTTPS',
-      title: translate({id: 'home.features.5.title', message: 'Certificati che si rinnovano'}),
-      text: translate({id: 'home.features.5.text', message: 'Let’s Encrypt, wildcard compresi, o i tuoi certificati.'}),
-    },
-    {
-      tag: 'Database',
-      title: translate({id: 'home.features.7.title', message: 'Il database, dentro il pannello'}),
+      anchor: 'visibility',
+      tag: translate({id: 'home.features.visibility.tag', message: 'Visibilità'}),
+      title: translate({id: 'home.features.visibility.title', message: 'Traffico senza cookie'}),
       text: translate({
-        id: 'home.features.7.text',
-        message: 'Tabelle, dati e SQL con i permessi del solo sito, senza strumenti esterni.',
+        id: 'home.features.visibility.text',
+        message: 'Statistiche dai log del server, uptime, avvisi per email o webhook, log da scaricare.',
       }),
     },
     {
+      anchor: 'access',
       tag: translate({id: 'home.features.8.tag', message: 'Accesso'}),
-      title: translate({id: 'home.features.8.title', message: 'Ruoli e due fattori'}),
+      title: translate({id: 'home.features.access.title', message: 'cgctl, API e assistenti AI'}),
       text: translate({
-        id: 'home.features.8.text',
-        message: 'Amministratori, operatori sui loro siti, sola lettura. 2FA obbligatoria se vuoi.',
+        id: 'home.features.access.text',
+        message: 'Tutto anche da terminale o via API. Un server MCP per gli assistenti AI, spento finché non lo accendi.',
       }),
     },
   ];
@@ -231,22 +240,41 @@ function Features(): ReactNode {
           </Translate>
         }
         intro={
-          <Translate id="home.features.intro">
-            Otto cose che di solito si configurano a mano, una sera alla volta. Qui sono accese dal primo sito.
+          <Translate id="home.features.intro2">
+            Quello che di solito si configura a mano, una sera alla volta, è acceso dal primo sito. In sette aree.
           </Translate>
         }
       />
       <ul className={styles.cards}>
         {features.map((f, i) => (
-          <li key={f.title} className={styles.card}>
-            <div className={styles.cardTop}>
-              <Label>{f.tag}</Label>
-              <span className={`${styles.label} ${styles.cardNum}`}>{String(i + 1).padStart(2, '0')}</span>
-            </div>
-            <h3>{f.title}</h3>
-            <p>{f.text}</p>
+          <li key={f.anchor}>
+            <Link to={`${page}#${f.anchor}`} className={styles.card}>
+              <span className={styles.cardTop}>
+                <Label>{f.tag}</Label>
+                <span className={`${styles.label} ${styles.cardNum}`}>{String(i + 1).padStart(2, '0')}</span>
+              </span>
+              <h3>{f.title}</h3>
+              <p>{f.text}</p>
+            </Link>
           </li>
         ))}
+        <li>
+          <Link to={page} className={`${styles.card} ${styles.cardAll}`}>
+            <Label>
+              <Translate id="home.features.all.tag">Tutto il resto</Translate>
+            </Label>
+            <h3>
+              <Translate id="home.features.all.title">Tutte le funzionalità</Translate>
+            </h3>
+            <p>
+              <Translate id="home.features.all.text">Ogni funzione in due righe, con la sua guida.</Translate>
+            </p>
+            <span className={styles.cardMore}>
+              <Translate id="home.features.all.cta">Vedi tutto</Translate>
+              <Icon name="arrow-right" size={20} />
+            </span>
+          </Link>
+        </li>
       </ul>
     </section>
   );
@@ -313,30 +341,11 @@ function Ownership(): ReactNode {
   );
 }
 
-/**
- * The numbers are the means of bench/phase-10-fresh.md, section "The release
- * candidate on the purged box" (v0.1.0, three runs each). Change them only
- * together with that file; never type a number here that is not in it.
- */
-const MEASURES: {key: 'cachedMany' | 'cachedOne' | 'static' | 'browsers' | 'uncached'; rps: number; reference?: boolean}[] = [
-  {key: 'cachedMany', rps: 9710},
-  {key: 'cachedOne', rps: 6347},
-  {key: 'static', rps: 15478},
-  {key: 'browsers', rps: 9641},
-  {key: 'uncached', rps: 6.82, reference: true},
-];
-
 function Measures(): ReactNode {
   const id = useAnchor('misure');
   const {i18n} = useDocusaurusContext();
-  const number = (n: number) =>
-    new Intl.NumberFormat(i18n.currentLocale, {
-      maximumFractionDigits: n < 100 ? 2 : 0,
-      // Italian leaves four-digit numbers ungrouped by default; the column
-      // reads better when 9.710 and 15.478 look alike.
-      useGrouping: 'always',
-    } as unknown as Intl.NumberFormatOptions).format(n);
-  const labels: Record<(typeof MEASURES)[number]['key'], [string, string]> = {
+  const number = (n: number) => formatRps(n, i18n.currentLocale);
+  const labels: Record<MeasureKey, [string, string]> = {
     cachedMany: [
       translate({id: 'home.measures.cached', message: 'Pagina in cache'}),
       translate({id: 'home.measures.cachedMany.note', message: '500 connessioni'}),

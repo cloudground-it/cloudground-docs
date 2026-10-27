@@ -19,3 +19,15 @@ export const INSTALL_COMMAND = 'curl -fsSL https://get.cloudground.it | sudo bas
  */
 export const BENCH_URL = `${REPO}/blob/main/bench/phase-10-fresh.md`;
 export const BENCH_METHOD_URL = `${REPO}/blob/main/bench/README.md`;
+
+/** The clickable demo of the panel, published with each stable release. */
+export const DEMO_URL = 'https://get.cloudground.it/demo/';
+
+/**
+ * The features page lives at a different path in each language. The navbar
+ * item points at the Italian one and NavbarNavLink swaps it; the other path
+ * of each language is a redirect (src/pages/features.tsx, funzionalita.tsx),
+ * so the language switch lands on the right page.
+ */
+export const FEATURES_PATH: Record<string, string> = {it: '/funzionalita', en: '/features'};
+export const featuresPath = (locale: string): string => FEATURES_PATH[locale] ?? FEATURES_PATH.it!;

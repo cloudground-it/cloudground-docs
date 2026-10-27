@@ -3,6 +3,10 @@
     "message": "CloudGround",
     "description": "The title in the navbar"
   },
+  "item.label.Funzionalità": {
+    "message": "Features",
+    "description": "Navbar item with label Funzionalità"
+  },
   "item.label.Guida": {
     "message": "Guide",
     "description": "Navbar item with label Guida"

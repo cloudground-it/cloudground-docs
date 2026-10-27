@@ -14,6 +14,7 @@ on GitHub Pages at **https://cloudground.it**:
 | Address | What | Source |
 | --- | --- | --- |
 | `/` (`/en/`) | the home: what CloudGround is, its measurements, the install command | `src/pages/index.tsx`, `src/components/Home/` |
+| `/funzionalita` (`/en/features`) | everything CloudGround does, by group, each feature linked to its guide | `src/pages/funzionalita.tsx`, `src/pages/features.tsx`, `src/components/Features/` |
 | `/docs` (`/en/docs`) | the user documentation: install it, run sites on it, look after the server | `docs/`, `i18n/en/docusaurus-plugin-content-docs/` |
 | `/privacy` (`/en/privacy`) | what the site collects (nothing) | `src/pages/privacy.mdx`, `i18n/en/docusaurus-plugin-content-pages/` |
 
