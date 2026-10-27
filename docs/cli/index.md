@@ -42,6 +42,9 @@ interi positivi.
 | `cgctl cert issue <id-sito>` | `POST /api/sites/<id>/certificate` | Chiede il certificato del sito. |
 | `cgctl purge <id-sito> [url ...]` | `POST /api/sites/<id>/purge` | Svuota la cache di pagina: solo gli URL dati, o tutto il sito senza URL. |
 | `cgctl warm <id-sito>` | `POST /api/sites/<id>/warm` | Riscalda la cache del sito. |
+| `cgctl cleanup <id-sito> on [revisioni]\|off\|preview\|run` | `PUT /api/sites/<id>/wp/cleanup`, `POST …/cleanup/preview`, `…/cleanup/run` | La [pulizia settimanale](/docs/sites/clean-the-wordpress-database) di un sito WordPress: attivala (con quante revisioni per articolo restano, da 1 a 100) o spegnila, fai la simulazione, o pulisci subito. |
+| `cgctl maintenance <id-sito> <on\|off> [messaggio]` | `PUT /api/sites/<id>/maintenance` | Attiva o spegne la [pagina di manutenzione](/docs/sites/maintenance-page), con il testo se lo dai. |
+| `cgctl devmode <id-sito> <15\|30\|60\|off>` | `PUT /api/sites/<id>/dev-mode` | Salta la cache di pagina per 15, 30 o 60 minuti ([modalità sviluppo](/docs/sites/development-mode)), o la termina subito. |
 
 Per esempio, un sito WordPress:
 

@@ -41,6 +41,9 @@ Options can go anywhere on the command line. Arguments that are IDs must be posi
 | `cgctl cert issue <site-id>` | `POST /api/sites/<id>/certificate` | Requests the site's certificate. |
 | `cgctl purge <site-id> [url ...]` | `POST /api/sites/<id>/purge` | Purges the page cache: just the given URLs, or the whole site if you pass none. |
 | `cgctl warm <site-id>` | `POST /api/sites/<id>/warm` | Warms the site's cache. |
+| `cgctl cleanup <site-id> on [revisions]\|off\|preview\|run` | `PUT /api/sites/<id>/wp/cleanup`, `POST …/cleanup/preview`, `…/cleanup/run` | The [weekly cleanup](/docs/sites/clean-the-wordpress-database) of a WordPress site: turn it on (with how many revisions of each post stay, 1 to 100) or off, run the dry run, or clean now. |
+| `cgctl maintenance <site-id> <on\|off> [message]` | `PUT /api/sites/<id>/maintenance` | Turns the [maintenance page](/docs/sites/maintenance-page) on or off, with its text if you give one. |
+| `cgctl devmode <site-id> <15\|30\|60\|off>` | `PUT /api/sites/<id>/dev-mode` | Bypasses the page cache for 15, 30 or 60 minutes ([development mode](/docs/sites/development-mode)), or ends it now. |
 
 For example, to create a WordPress site:
 

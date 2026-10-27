@@ -1,11 +1,11 @@
 ---
 title: Avvisi e notifiche
-description: Leggi e archivia gli avvisi del pannello, e ricevili in una chat con un webhook.
+description: Leggi e archivia gli avvisi del pannello, e ricevili in una chat con un webhook o per email.
 type: how-to
 prerequisites:
   - Un account nel pannello per leggere gli avvisi
   - Un account amministratore per configurare il webhook
-version: v0.3.0
+version: v0.4.0
 last_verified: unverified
 sidebar_position: 4
 ---
@@ -112,6 +112,27 @@ nessuna lingua.
 | `cloudground.at` | Il momento dell'avviso, in formato RFC 3339: quando è partita l'attività fallita, quando il sito ha smesso di rispondere, quando scade il certificato. Può mancare. |
 
 {/* TODO(verify): il corpo ricevuto da un webhook vero, e un `at` di esempio con il formato esatto. */}
+
+## Ricevi gli avvisi per email {#email}
+
+*Da v0.4.0.* L'email è un secondo canale, accanto al webhook.
+
+1. Imposta il [relay di posta](/docs/sites/send-mail-from-a-site#server-relay) del server, in
+   **Impostazioni**, riquadro **Email**.
+2. Nello stesso riquadro scrivi fino a 10 indirizzi in **Email degli avvisi**, separati da virgole o
+   spazi.
+3. Premi **Salva**.
+
+Gli avvisi arrivano per email oltre che al webhook, se c'è. A ogni giro il pannello manda **un solo
+messaggio** con tutti gli avvisi che sta per notificare: l'oggetto è la riga dell'avviso, se ce n'è
+uno solo, altrimenti «3 avvisi di CloudGround» (se sono tre); il corpo ha una riga per avviso. Il testo è nella
+lingua degli amministratori.
+
+Un avviso conta come notificato solo quando **ogni** canale configurato lo ha consegnato. Se un
+canale fallisce, al giro dopo l'avviso riparte su tutti i canali: nessuno lo perde, al prezzo di una
+ripetizione sul canale che aveva funzionato.
+
+{/* TODO(verify): l'email di avviso ricevuta da un relay vero, il suo oggetto e il testo. */}
 
 ## Prossimo passo {#next}
 
