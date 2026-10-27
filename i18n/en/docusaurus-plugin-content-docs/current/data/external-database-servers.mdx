@@ -1,0 +1,97 @@
+---
+title: Put databases on an external server
+description: Register another MariaDB or MySQL server, such as a provider's managed one, and put a site's databases on it, with backups and Quarry working as for any database.
+type: how-to
+prerequisites:
+  - An administrator account, to register a server
+  - A MariaDB or MySQL server this server can reach, and an account on it with all privileges and the grant option
+  - An administrator account, or an operator assigned to the site, to put a database on it
+version: unreleased
+last_verified: unverified
+sidebar_position: 10
+---
+
+Every database lives in the MariaDB on this server unless you say otherwise. You can register other
+MariaDB and MySQL servers, and pick one when you create a database or a database user. The databases
+there are managed like any other: Quarry, export and import, backups and restores all work.
+
+## Prepare the server {#prepare}
+
+The server has to be reachable from this machine's address, on the port you give (3306 by default):
+open it in the server's own firewall or allow-list. CloudGround needs one account there that can create
+databases and accounts and grant privileges, so give it all privileges with the grant option:
+
+```sql
+CREATE USER 'cloudground'@'<this server's address>' IDENTIFIED BY '<a long password>' REQUIRE SSL;
+GRANT ALL PRIVILEGES ON *.* TO 'cloudground'@'<this server's address>' WITH GRANT OPTION;
+```
+
+Replace the placeholders with this machine's public address and your own password. Leave out
+`REQUIRE SSL` only if you will turn TLS off in CloudGround.
+
+## Register the server {#register}
+
+1. Open **Settings** and find the **Database servers** card.
+2. Click **Add a server**.
+3. Fill in the form:
+
+| Field | What to enter |
+| --- | --- |
+| **Name** | 2 to 32 lowercase letters, digits and hyphens, starting with a letter. You pick the server by this name. |
+| **Host**, **Port** | Where the server is. |
+| **TLS** | **Required** (the default): the connection is encrypted and the server's certificate is checked. **Off**: nothing is encrypted, and the password and the data cross the network in clear. |
+| **CA certificate** | The certificate authority that signed the server's certificate, as PEM. Leave it empty to trust the system's authorities, which is enough for most providers. |
+| **Administrator account**, **Administrator password** | The account you made above. |
+
+4. Click **Save**.
+
+CloudGround connects with these details before it stores anything. If the connection fails, or the
+account cannot create accounts and grant privileges, the form shows the server's own message and
+nothing is saved. The password is stored sealed with the panel's other secrets and is never shown
+again; leave it empty when you edit the server to keep it.
+
+The card lists each server with its address, its TLS setting and how many databases are on it.
+**Test** connects again and shows the server's version; **Edit** changes the details; the trash button
+removes a server, which you can do only when no database or user is on it.
+
+## Put a database on it {#create}
+
+1. Open the site and go to the **Database** tab.
+2. Click **Add a database**, type a name and choose the **Server**.
+3. Click **Create database**.
+
+The **Server** field appears once at least one server is registered. **This server** is the default.
+A database stays on the server you chose: it cannot be moved later, and its name stays unique across
+all servers. The database shows a badge with its server's name.
+
+A database user is on one server too. In **Add a user**, choose the **Server** first: the privileges
+list then offers only the databases on that server. An account on an external server is made for any
+address (`'<name>'@'%'`), and when TLS is required it may sign in only over TLS.
+
+## Connect your application {#connect}
+
+The foot of the **Databases** card says where an application connects, for example
+*Applications connect to managed at db.example.com:3306, with TLS required.* Put that host and port in
+the application's configuration, with the database user's name and password. The password is shown
+once, when the user is created.
+
+## What works as before {#same}
+
+- **Quarry** opens a database on an external server like any other.
+- **Export and import** read and write the database on its server.
+- **Backups** dump it over the network, and the backup's restore test checks the dump in a scratch
+  database on this server. A restore of the database puts it back on its own server.
+- **Deleting the database or the user** removes it from its server.
+
+A site's staging copy and a migration use the site's **primary** database, which is always on this
+server, so they never touch an external one.
+
+## Limits {#limits}
+
+- The primary database of a WordPress, WooCommerce or Laravel site is always on this server.
+- A database cannot be moved between servers; export it and import it into a new one.
+- Only MariaDB and MySQL servers are supported.
+
+## Next step {#next}
+
+Manage what each user can do: [manage databases](/docs/data/manage-databases).
