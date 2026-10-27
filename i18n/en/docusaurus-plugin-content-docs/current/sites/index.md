@@ -10,6 +10,7 @@ hide_table_of_contents: true
   <Card to="/docs/sites/create-a-site" title="Create a site" />
   <Card to="/docs/sites/change-site-settings" title="Change a site's settings" />
   <Card to="/docs/sites/domains-and-certificates" title="Domains and certificates" />
+  <Card to="/docs/sites/redirects" title="Redirects and canonical host" />
   <Card to="/docs/sites/edit-routing" title="Edit the routing" />
   <Card to="/docs/sites/scheduled-tasks" title="Scheduled tasks" />
   <Card to="/docs/sites/resource-usage-and-limits" title="Site resources and limits" />

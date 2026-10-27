@@ -1,0 +1,89 @@
+---
+title: Redirects and canonical host
+description: Send a page or a path somewhere else, and choose whether the site lives with or without www, without writing nginx configuration.
+type: how-to
+prerequisites:
+  - An active site, not a staging copy
+  - An administrator account, or an operator assigned to the site
+  - For www: an administrator, who adds the alias
+version: unreleased
+last_verified: unverified
+sidebar_position: 3.5
+---
+
+Every site has a **Redirects** tab (under **More**). A redirect is live as soon as you save it, with
+nothing to restart, and is never cached: nginx decides it before it looks at the page cache.
+
+## Pick one name: with or without www {#canonical}
+
+A site answers on its domain and its aliases, and search engines count them as different sites. Choose
+the name visitors should end up on:
+
+1. Open the site and its **Redirects** tab.
+2. Under **Canonical host**, choose the **Canonical name**.
+3. Click **Save**.
+
+Every other name of the site sends the visitor to the canonical name with a 301 redirect, keeping the
+path and query (`https://www.example.com/a/b?c=d` becomes `https://example.com/a/b?c=d`). It works on
+port 80 too, in one step. Choose **None** to serve each name as it is again.
+
+The site has to answer on the other name too, or there is nothing to redirect. If the panel says the site
+does not answer on the name with or without www yet, an administrator clicks **Also serve
+www.example.com**: the name is added as an alias and the Let's Encrypt certificate is issued again, so it
+covers both names (as in [domains and certificates](/docs/sites/domains-and-certificates)). With a custom
+certificate the panel warns that it may not cover the new name.
+
+While a name is canonical, its alias cannot be removed from the site: change the canonical name first.
+
+:::warning
+On WordPress the canonical name must be the same as the **Site Address** in WordPress's own settings. If
+WordPress wants `www` and you choose the bare name here, each sends visitors to the other and the browser
+goes round in circles.
+:::
+
+## Redirect a page or a path {#rules}
+
+1. On the **Redirects** tab, click **Add a redirect**.
+2. Choose what it applies to, type the **Old path** and where it goes, and choose the status.
+3. Click **Save**.
+
+| Field | What to enter |
+| --- | --- |
+| **Applies to** | **This path only**: exactly that path (`/shop` is neither `/shop/` nor `/shop/cart`). **This path and everything under it**: `/blog` also sends `/blog/2024/a-post` to `/news/2024/a-post`, but not `/blogger`. |
+| **Old path** | A path of the site, with the leading slash: `/old-page`. Letters, digits and `. _ ~ - / + , : ! ( ) = *` only. A prefix is not the root and has no trailing slash. |
+| **Goes to** | A path of the site (`/new-page`) or a full address (`https://example.org/page`). |
+| **Status** | **301, permanent** for a page that has moved for good: search engines move to the new address. **302, temporary** for a move that will be undone. |
+
+The visitor's query string is kept: `/old-page?utm=1` goes to `/new-page?utm=1`. An exact redirect may give
+its own query in **Goes to** (`/store/?from=old`), which then replaces the visitor's. A prefix's **Goes
+to** has no query.
+
+A rule applies before anything else on the site, even a file that exists under that name or the routing
+configuration. The panel refuses what it cannot write safely: spaces and special characters, an address
+starting with `//`, a redirect to itself, two rules for one path and more than 200 rules. If the site's
+routing configuration already has a `location` for the same path, saving names it: remove it there.
+
+Every change empties the site's page cache and fills it again: a page the redirect was hiding does not
+come back from the cache when you remove it.
+
+## From the command line {#cli}
+
+```bash
+cgctl redirects <site-id>
+cgctl redirects <site-id> canonical www.example.com
+cgctl redirects <site-id> canonical off
+cgctl redirects <site-id> rules '[{"match":"prefix","from":"/blog","to":"/news","status":301}]'
+```
+
+`rules` replaces the whole list.
+
+## What is not there {#limits}
+
+- A staging copy has no redirects: its names are not the original's.
+- No regular expressions and no accented characters in paths: only those listed above.
+- The cost on cached traffic is one comparison on the name and one path lookup, done before the cache;
+  it has not been measured with `bench/`.
+
+## Next step {#next}
+
+How the certificate covers several names: [domains and certificates](/docs/sites/domains-and-certificates).

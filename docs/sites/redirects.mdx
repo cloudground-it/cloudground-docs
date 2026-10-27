@@ -1,0 +1,91 @@
+---
+title: Reindirizzamenti e host canonico
+description: Manda una pagina o un percorso altrove e scegli se il sito vive con o senza www, senza scrivere configurazione nginx.
+type: how-to
+prerequisites:
+  - Un sito attivo, non una copia di staging
+  - Un account amministratore oppure operatore assegnato al sito
+  - Per il www: un amministratore, che aggiunge l'alias
+version: unreleased
+last_verified: unverified
+sidebar_position: 3.5
+---
+
+Ogni sito ha la scheda **Reindirizzamenti** (sotto **Altro**). Un reindirizzamento è attivo appena lo
+salvi, senza riavviare nulla, e non viene mai messo in cache: nginx lo decide prima di guardare la cache
+delle pagine.
+
+## Scegli un solo nome: con o senza www {#canonical}
+
+Un sito risponde al suo dominio e ai suoi alias, e i motori di ricerca li contano come siti diversi. Scegli
+il nome su cui devono arrivare i visitatori:
+
+1. Apri il sito e la scheda **Reindirizzamenti**.
+2. In **Host canonico**, scegli il **Nome canonico**.
+3. Premi **Salva**.
+
+Ogni altro nome del sito manda il visitatore al nome canonico con un reindirizzamento 301, mantenendo
+percorso e query (`https://www.esempio.it/a/b?c=d` diventa `https://esempio.it/a/b?c=d`). Vale anche sulla
+porta 80, in un solo passaggio. Scegli **Nessuno** per tornare a servire ogni nome com'è.
+
+Il sito deve rispondere anche sull'altro nome, altrimenti non c'è nulla da reindirizzare. Se il pannello
+dice che il sito non risponde ancora sul nome con o senza www, un amministratore preme **Servi anche
+www.esempio.it**: il nome è aggiunto come alias e il certificato Let's Encrypt viene emesso di nuovo, così
+copre entrambi i nomi (come in [domini e certificati](/docs/sites/domains-and-certificates)). Con un
+certificato personalizzato il pannello avvisa che potrebbe non coprire il nuovo nome.
+
+Finché un nome è canonico, il suo alias non si può togliere dal sito: cambia prima il nome canonico.
+
+:::warning
+Su WordPress il nome canonico deve essere lo stesso dell'**Indirizzo del sito** nelle impostazioni di
+WordPress. Se WordPress vuole `www` e qui scegli il nome senza, ciascuno rimanda all'altro e il browser
+gira in tondo.
+:::
+
+## Reindirizza una pagina o un percorso {#rules}
+
+1. Nella scheda **Reindirizzamenti**, premi **Aggiungi un reindirizzamento**.
+2. Scegli a cosa si applica, scrivi il **Vecchio percorso** e dove va, e scegli lo stato.
+3. Premi **Salva**.
+
+| Campo | Cosa scrivere |
+| --- | --- |
+| **Si applica a** | **Solo questo percorso**: esattamente quel percorso (`/shop` non è `/shop/` né `/shop/cart`). **Questo percorso e tutto ciò che sta sotto**: `/blog` manda anche `/blog/2024/articolo` a `/novita/2024/articolo`, ma non `/blogger`. |
+| **Vecchio percorso** | Un percorso del sito, con la barra iniziale: `/vecchia-pagina`. Solo lettere, cifre e `. _ ~ - / + , : ! ( ) = *`. Un prefisso non è la radice e non finisce con una barra. |
+| **Va a** | Un percorso del sito (`/nuova-pagina`) oppure un indirizzo completo (`https://esempio.org/pagina`). |
+| **Stato** | **301, permanente** per una pagina spostata per sempre: i motori di ricerca passano al nuovo indirizzo. **302, temporaneo** per uno spostamento che sarà annullato. |
+
+La query string del visitatore si mantiene: `/vecchia-pagina?utm=1` va a `/nuova-pagina?utm=1`. Un
+reindirizzamento esatto può indicare la propria query nel campo **Va a** (`/negozio/?da=vecchio`), e in quel
+caso sostituisce quella del visitatore. Il campo **Va a** di un prefisso non ha query.
+
+Una regola vale prima di qualunque altra cosa del sito, anche di un file che esiste con quel nome o della
+configurazione di routing. Il pannello rifiuta ciò che non può scrivere in modo sicuro: spazi e caratteri
+speciali, un indirizzo che inizia con `//`, un reindirizzamento verso se stesso, due regole per lo stesso
+percorso e più di 200 regole. Se la configurazione di routing del sito ha già una `location` con lo stesso
+percorso, il salvataggio dice quale: toglila da lì.
+
+Ogni modifica svuota la cache delle pagine del sito e la riempie di nuovo: una pagina che il reindirizzamento
+nascondeva non torna dalla cache quando lo togli.
+
+## Dalla riga di comando {#cli}
+
+```bash
+cgctl redirects <id-del-sito>
+cgctl redirects <id-del-sito> canonical www.esempio.it
+cgctl redirects <id-del-sito> canonical off
+cgctl redirects <id-del-sito> rules '[{"match":"prefix","from":"/blog","to":"/novita","status":301}]'
+```
+
+`rules` sostituisce l'intera lista.
+
+## Cosa non c'è {#limits}
+
+- Una copia di staging non ha reindirizzamenti: i suoi nomi non sono quelli dell'originale.
+- Niente espressioni regolari e niente caratteri accentati nei percorsi: solo quelli elencati sopra.
+- Il costo sul traffico in cache è quello di un confronto sul nome e di una ricerca di percorso, fatti
+  prima della cache; non è stato misurato con `bench/`.
+
+## Prossimo passo {#next}
+
+Come si ottiene il certificato per più nomi: [domini e certificati](/docs/sites/domains-and-certificates).
