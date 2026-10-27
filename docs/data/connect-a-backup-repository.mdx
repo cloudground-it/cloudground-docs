@@ -5,7 +5,7 @@ type: how-to
 prerequisites:
   - Un account amministratore
   - Uno spazio di archiviazione fuori da questo server (un bucket di object storage, un server SFTP o un server REST per restic)
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 3
 ---
@@ -49,13 +49,17 @@ Se perdi il server, perdi anche i backup. Per backup davvero fuori dal server sc
 
 :::
 
-- **SFTP** (avanzato, `sftp:<utente>@<host>:/<percorso>`): restic si collega con `ssh` come root, con
-  la chiave e i `known_hosts` di root (`/root/.ssh/`). Prima di salvare, metti la chiave pubblica di
-  root sul server remoto e collegati una volta a mano da root, per accettarne la chiave host: senza, la
-  prova fallisce con `Host key verification failed`.
-- **Backblaze B2**: la destinazione usa l'API compatibile S3 di B2. Un indirizzo `b2:` scritto come
-  avanzato non funziona: il pannello passa a restic solo le chiavi S3, e la prova fallisce con
-  `Account ID ($B2_ACCOUNT_ID) is empty`.
+- **SFTP** (avanzato, `sftp:<utente>@<host>:/<percorso>`, oppure
+  `sftp://<utente>@<host>:<porta>//<percorso>` per un'altra porta): il pannello accede con una chiave
+  sua. In **La chiave SSH del pannello** fai clic su **Crea una chiave**, copia la chiave pubblica e
+  aggiungila a `~/.ssh/authorized_keys` di quell'account sul server SFTP, poi salva. La chiave privata
+  è salvata cifrata e non viene mai mostrata. La chiave host del server viene registrata la prima
+  volta, quando le impostazioni vengono salvate e provate, e controllata ogni volta dopo. **Crea una
+  nuova chiave** la sostituisce: i backup non raggiungono più il server finché non aggiungi la nuova.
+- **Backblaze B2**: la destinazione **Backblaze B2** usa l'API compatibile S3 di B2. Per usare l'API
+  di B2, scegli **Altro repository restic (avanzato)** con `b2:<bucket>:<percorso>` e compila **ID
+  della chiave B2** e **Chiave applicativa B2** con una chiave applicativa limitata a quel bucket.
+  Entrambe sono salvate cifrate.
 
 ## Imposta la password del repository {#password}
 

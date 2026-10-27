@@ -1,0 +1,78 @@
+---
+title: Update WordPress with an automatic rollback
+description: Update core, plugins and themes behind a tested snapshot, by hand or on a schedule, and let the panel undo an update that breaks the site.
+type: how-to
+prerequisites:
+  - A WordPress or WooCommerce site
+  - An administrator account, or an operator assigned to the site
+  - A backup repository set in Settings, for the snapshot
+version: v0.4.0
+last_verified: unverified
+sidebar_position: 9
+---
+
+An update that breaks a site used to stay broken until someone restored a backup. Now every update
+starts from a snapshot, and the panel restores it by itself when the site stops answering as it did.
+
+## Update now {#update-now}
+
+1. Open the site and go to the **WordPress** tab.
+2. In the **Updates** card, click **Core**, **Plugins** or **Update all**.
+
+The panel then runs these steps as one task:
+
+1. It measures the live site: the home page, an uncached request and `/wp-login.php`.
+2. It takes a snapshot and **restores it as a test**. If the test fails, the update does not start
+   and the site is untouched.
+3. It runs the update, then empties the page cache.
+4. It measures the site again and compares: a page whose usual status changed, or whose error rate
+   rose, counts as broken. Speed is not judged, because PHP has just reloaded and the cache is cold.
+5. If the site passes, the update stays and the cache is warmed in the background.
+6. If the site is broken, or the check cannot run, the panel restores the snapshot over the site and
+   fails the task with the reasons. The failure raises an [alert](/docs/server/alerts-and-notifications).
+
+The task's log has each measurement. A [restore test](/docs/data/run-a-restore-test) of the
+snapshot is part of step 2, so a snapshot that cannot be restored never gets as far as the update.
+
+:::warning
+A rollback brings the database back to the snapshot. Whatever the site saved during the update, a
+few minutes at most, is lost: an order placed in that time, for example.
+:::
+
+## Update without a snapshot {#no-snapshot}
+
+With no backup repository set, the **Updates** card says so and the button reads **Update without a
+snapshot**. Confirm to go on. The panel still checks the site afterwards, but if the update breaks
+it, nothing is undone: the site stays as the update left it and the task fails saying that there
+was no snapshot to go back to. To get the automatic rollback, connect a repository first
+([Connect a backup repository](/docs/data/connect-a-backup-repository)).
+
+## Update on a schedule {#schedule}
+
+1. In the **WordPress** tab, open the **Automatic updates** card.
+2. Choose **Frequency**: **Off**, **Every day** or **Every week**.
+3. Choose the **Time** (in the server's time zone, shown under the field), or any time: then the
+   update runs a day or a week after the previous one.
+4. Choose **What to update**: **Everything**, **WordPress core**, **Plugins** or **Themes**.
+5. Click **Save**.
+
+A scheduled update does the same steps as a manual one, and it always needs the backup repository:
+the schedule cannot be turned on without one. When a scheduled run fails, the panel tries again at
+the next slot, and the failure shows as one alert per site. A run for plugins or themes does nothing
+when none has an update waiting. A staging copy has no schedule of its own.
+
+## With the API {#api}
+
+```bash
+curl -X POST https://<panel>/api/sites/<site-id>/wp/update \
+  -H "Authorization: Bearer <token>" -H "Content-Type: application/json" \
+  -d '{"what": "all"}'
+```
+
+`what` is `core`, `plugins`, `themes` or `all`. Without a backup repository the call is refused with
+`412`, unless the body also says `"without_snapshot": true`. The answer names a task: read it with
+`cgctl task <task-id>`, or watch it in the panel's task list.
+
+## Next step {#next}
+
+Keep the database light too: [clean it every week](/docs/sites/clean-the-wordpress-database).

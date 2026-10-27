@@ -1,0 +1,72 @@
+---
+title: Passkey
+description: Accedi al pannello con impronta, volto o PIN del dispositivo, dopo la password o al suo posto.
+type: how-to
+prerequisites:
+  - Un account nel pannello
+  - Il pannello aperto dal suo dominio in HTTPS (vedi Metti in sicurezza il pannello)
+  - Un dispositivo o un browser che supporta le passkey, o una chiave di sicurezza
+version: unreleased
+last_verified: unverified
+sidebar_position: 4.5
+---
+
+Una passkey ti fa entrare con impronta, volto o PIN del dispositivo. Appartiene al dominio del
+pannello, quindi un sito che lo imita non può chiedertela: non si può rubare con il phishing. Usala
+come secondo fattore dopo la password o da sola.
+
+:::note
+Le passkey funzionano solo aprendo il pannello dal suo dominio in HTTPS, non da
+`https://<ip-del-server>:8443`: i browser non offrono passkey a un indirizzo IP. Dai prima un dominio
+al pannello, da **Impostazioni** → **Dominio e HTTPS del pannello**.
+:::
+
+## Aggiungi una passkey {#add-a-passkey}
+
+1. Apri **Sicurezza** dal menu del tuo account.
+2. Nella sezione **Passkey**, controlla il **Nome** proposto (il browser e il sistema che stai
+   usando) e premi **Aggiungi una passkey**.
+3. Conferma che sei tu: la password, più un codice, una passkey o un codice di recupero se hai già
+   un secondo fattore.
+4. Segui la richiesta del browser: impronta, volto, PIN del dispositivo o chiave di sicurezza.
+
+La passkey compare nell'elenco. Se è il tuo primo secondo fattore, il pannello mostra anche i tuoi
+dieci [codici di recupero](./two-step-verification.mdx#recovery-codes): salvali. Aggiungere una
+passkey chiude le tue altre sessioni. Puoi averne fino a 20, una per dispositivo: una passkey
+sincronizzata dal gestore di password del telefono o del browser è segnata come **sincronizzata**.
+
+## Accedi con password e passkey {#second-factor}
+
+Dopo email e password, premi **Usa una passkey** e conferma sul dispositivo.
+
+## Accedi con la sola passkey {#passkey-only}
+
+Nella pagina di accesso, premi **Accedi con una passkey** e scegli il tuo account nella richiesta del
+browser. Niente email né password: la passkey verifica sul dispositivo che sei tu (impronta, volto o
+PIN), due fattori in uno.
+
+## Accedi solo con le passkey {#turn-off-password}
+
+Quando hai una passkey, puoi impedire alla password di farti entrare, così una password rubata non
+apre niente:
+
+1. Nella sezione **Passkey**, accanto ad **Accesso con password**, premi **Disattiva**.
+2. Conferma con una passkey che verifichi che sei tu.
+
+Da quel momento l'accesso con la password viene rifiutato e funzionano solo le passkey. Tieni più di
+una passkey. Per riammettere la password, premi **Attiva** e conferma con una passkey. Un
+amministratore che reimposta la tua password riattiva anche l'accesso con password.
+
+## Rimuovi una passkey {#remove}
+
+1. Nella sezione **Passkey**, premi **Rimuovi** accanto alla passkey e conferma.
+2. Conferma che sei tu.
+
+Il pannello chiude le tue altre sessioni. Non puoi rimuovere l'ultima passkey mentre l'accesso con
+password è disattivato. Se era il tuo ultimo secondo fattore, se ne vanno anche i codici di recupero
+e i token API.
+
+## Prossimo passo {#next}
+
+Decidi chi deve usare un secondo fattore:
+[rendi obbligatoria la verifica in due passaggi](./two-step-verification.mdx#require-it).

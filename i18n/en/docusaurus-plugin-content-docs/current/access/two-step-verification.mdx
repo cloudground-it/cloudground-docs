@@ -1,74 +1,99 @@
 ---
 title: Two-step verification
-description: Add a second factor from an authenticator app to your account, move it to a new app, or turn it off.
+description: Protect your account with a second factor after your password, keep recovery codes for when it is not at hand, and require it on the panel.
 type: how-to
 prerequisites:
   - An account on the panel
-  - An authenticator app on your phone (6-digit TOTP codes)
-version: a7d92ba
-last_verified: 2026-10-10
+  - An authenticator app on your phone (6-digit TOTP codes), a passkey, or both
+version: unreleased
+last_verified: unverified
 sidebar_position: 4
 ---
 
-With two-step verification on, the panel asks for a 6-digit code from your authenticator app after
-your password. The panel has root access to the server, so turn this on for every administrator
-account.
+With two-step verification on, the panel asks for a second factor after your password: a 6-digit
+code from your authenticator app, or one of your [passkeys](./passkeys.mdx). The panel has root
+access to the server, so turn it on for every administrator account.
 
-## Turn on two-step verification {#turn-it-on}
+## Turn it on with an authenticator app {#turn-it-on}
 
 1. Open **Security** from your account menu.
-2. In the **Two-step verification** section, enter your password in **Confirm with your password**.
-3. Press **Set up 2FA**.
+2. In the **Two-step verification** section, press **Set up 2FA**.
+3. Enter your password and press **Confirm**.
 4. Scan the QR code with your authenticator app.
-5. Enter the **6-digit code** shown in the app and press **Verify and enable**.
+5. Enter the **6-digit code** the app shows and press **Verify and enable**.
 
-If the code doesn't match, check that your phone's clock is correct. Once verification is on, the
-panel signs out your other sessions. The session you used to turn it on stays open.
+If the code doesn't match, check that your phone's clock is right. Once verification is on, the
+panel signs out your other sessions; the one you used stays open. A passkey works as a second
+factor too: see [Add a passkey](./passkeys.mdx#add-a-passkey).
 
-## Sign in with a code {#sign-in}
+## Save your recovery codes {#recovery-codes}
 
-After your email and password, the panel asks for the **6-digit code**. Each code works only once. If
-you've just used one, wait for the next. After 10 wrong codes within an hour, the panel stops checking
-codes for that account until the hour is up. See
-[two-step codes](/docs/explanation/sign-in-protection#two-step-codes).
+The first time you turn on a second factor, the panel shows ten **recovery codes**, once. Each one
+signs you in a single time in place of your code or passkey. Press **Download** or copy them, keep
+them somewhere safe away from this device, then press **I saved them**.
+
+To get a new set, press **Make new codes** in the **Recovery codes** section and confirm it's you.
+The old codes stop working. The section shows how many codes you have left.
+
+## Sign in {#sign-in}
+
+After your email and password, the panel asks for your second factor:
+
+- the **6-digit code** from your app. Each code works once: if you've just used one, wait for the
+  next;
+- **Use a passkey**, when your account has one and you opened the panel at its domain name;
+- **Use a recovery code**, when your phone and passkeys aren't at hand.
+
+After 10 wrong codes within an hour, the panel stops checking codes for that account until the hour
+is up. See [two-step codes](/docs/explanation/sign-in-protection#two-step-codes).
+
+## Confirm a change {#confirm}
+
+Changing how your account signs in (setting up or replacing the app, turning it off, adding or
+removing a passkey, making new recovery codes) opens a **confirm it's you** window: your password,
+then a code, a passkey or a recovery code. Someone who gets hold of an open session can't swap your
+factors without them.
 
 ## Switch to a new authenticator app {#replace-the-app}
 
-To move to a different phone:
-
-1. In **Security**, enter your password in **Confirm with your password** and a **Current code** from
-   the old app.
-2. Press **Replace the authenticator app** and scan the new QR code.
-3. Confirm with a code from the new app and press **Verify and enable**.
+1. In **Security**, press **Replace the authenticator app**.
+2. Confirm with your password and a code from the old app. If the old phone is gone, choose **Use a
+   recovery code** instead.
+3. Scan the new QR code, enter a code from the new app and press **Verify and enable**.
 
 The old app keeps working until you confirm. Starting a replacement never turns verification off.
 
-## Turn off two-step verification {#turn-it-off}
+## Turn it off {#turn-it-off}
 
-1. In **Security**, enter your password in **To turn it off, enter your password** and a
-   **Current code**.
-2. Press **Disable 2FA** and confirm.
+1. In **Security**, press **Disable 2FA** and confirm.
+2. Enter your password and a current code, then press **Disable 2FA**.
 
-Turning off verification signs out your other sessions and **revokes your API tokens**.
+Turning off the app signs out your other sessions and **revokes your API tokens**. If you have no
+passkey left, your recovery codes go too.
 
-## Require it for all administrators {#require-it}
+## Require it on the panel {#require-it}
 
-An administrator can make two-step verification mandatory:
+An administrator decides who must use two-step verification:
 
 1. Open **Settings**.
-2. In the **Access** section, turn on **Require 2FA for administrators**.
+2. In the **Access** section, under **Require two-step verification**, pick **Not required**, **For
+   administrators** or **For every account**.
 3. Press **Save**.
 
-From then on, an administrator without two-step verification can only see their own **Security**
-page until they set it up. Nobody gets locked out. The same applies to that administrator's API
-tokens. Operators and read-only accounts don't have to set it up.
+An account that must have it and doesn't is sent to its **Security** page right after the password,
+and sees nothing else until it sets up an app or a passkey. Nobody gets locked out. Its API tokens
+are held back the same way.
 
-## If you lose your phone {#lost-device}
+## If you lose every factor {#lost-device}
 
-Without the app, you can't turn off verification from the panel. On the server, as root, run
-`panel-api recover-admin --email <your-email> --disable-2fa`. See
-[Recover administrator access](./recover-admin-access.mdx).
+Sign in with a recovery code and replace the app or the passkey. Without codes:
+
+- an administrator can reset your two-step verification from **Users** (see
+  [Reset someone's two-step verification](./users-and-roles.mdx#reset-two-step));
+- for an administrator account, on the server, as root, run
+  `panel-api recover-admin --email <your-email> --disable-2fa`. See
+  [Recover administrator access](./recover-admin-access.mdx).
 
 ## Next step {#next}
 
-For scripts, create an [API token and use cgctl](./api-tokens-and-cgctl.mdx).
+Add a [passkey](./passkeys.mdx): it can't be phished, and it can sign you in on its own.
