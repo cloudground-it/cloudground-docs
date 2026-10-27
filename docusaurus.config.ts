@@ -120,7 +120,8 @@ const config: Config = {
         sitemap: {
           lastmod: null,
           // The search results page is nobody's document.
-          ignorePatterns: ['/search', '/en/search'],
+          // The features page's other-language paths are only redirects.
+          ignorePatterns: ['/search', '/en/search', '/features', '/en/funzionalita'],
         },
       } satisfies Preset.Options,
     ],
@@ -215,6 +216,8 @@ const config: Config = {
       // No logo here: the bar, the drawer and the footer draw the mark inline
       // (src/components/LogoMark).
       items: [
+        // The English path is /features: NavbarNavLink swaps it per language.
+        {to: '/funzionalita', position: 'left', label: 'Funzionalità'},
         {type: 'docSidebar', sidebarId: 'guide', position: 'left', label: 'Guida'},
         {type: 'docSidebar', sidebarId: 'cli', position: 'left', label: 'CLI'},
         {type: 'docSidebar', sidebarId: 'api', position: 'left', label: 'API'},

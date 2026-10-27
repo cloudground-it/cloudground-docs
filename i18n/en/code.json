@@ -655,74 +655,23 @@
   "home.features.titleAccent": {
     "message": "tutorial"
   },
-  "home.features.intro": {
-    "message": "Eight things you would normally wire up by hand, one late night at a time. Here they are on from your first site."
-  },
   "home.features.1.tag": {
     "message": "Speed"
   },
   "home.features.1.title": {
     "message": "A page cache that purges precisely"
   },
-  "home.features.1.text": {
-    "message": "nginx serves pages without waking PHP. Change a post or a price and only the pages that show it are purged."
-  },
-  "home.features.2.tag": {
-    "message": "Isolation"
-  },
-  "home.features.2.title": {
-    "message": "One PHP per site"
-  },
-  "home.features.2.text": {
-    "message": "Its own system user, PHP and database. A compromised site can’t see its neighbours."
-  },
-  "home.features.3.tag": {
-    "message": "Backups"
-  },
   "home.features.3.title": {
     "message": "Restores, rehearsed"
-  },
-  "home.features.3.text": {
-    "message": "Every backup is encrypted, stored wherever you choose and restored as a test straight after."
-  },
-  "home.features.4.tag": {
-    "message": "Staging"
   },
   "home.features.4.title": {
     "message": "Staging with a stopwatch"
   },
-  "home.features.4.text": {
-    "message": "A password-protected copy of the site. A release slower than production doesn’t ship."
-  },
   "home.features.security.tag": {
     "message": "Security"
   },
-  "home.features.security.title": {
-    "message": "Known holes and malware"
-  },
-  "home.features.security.text": {
-    "message": "Plugins with known flaws get flagged and suspicious files get found. Plus 2FA for wp-admin and blocking by country."
-  },
-  "home.features.5.title": {
-    "message": "Certificates that renew themselves"
-  },
-  "home.features.5.text": {
-    "message": "Let’s Encrypt, wildcards included, or bring your own."
-  },
-  "home.features.7.title": {
-    "message": "The database, right in the panel"
-  },
-  "home.features.7.text": {
-    "message": "Tables, rows and SQL, with that site’s permissions and nothing more. No extra tools."
-  },
   "home.features.8.tag": {
     "message": "Access"
-  },
-  "home.features.8.title": {
-    "message": "Roles and two-factor"
-  },
-  "home.features.8.text": {
-    "message": "Admins, operators limited to their own sites, read-only users. Make 2FA mandatory if you like."
   },
   "home.own.kicker": {
     "message": "02 / Ownership"
@@ -835,13 +784,628 @@
   "home.closing.github": {
     "message": "Read the code on GitHub"
   },
-  "cg.footer.features": {
-    "message": "Features"
-  },
   "cg.colorMode.dark": {
     "message": "Dark mode"
   },
   "cg.drawer.language": {
     "message": "Language"
+  },
+  "features.moved": {
+    "message": "The features are over here"
+  },
+  "features.meta.title": {
+    "message": "Features — CloudGround"
+  },
+  "features.meta.description": {
+    "message": "Everything CloudGround does on your Ubuntu server: speed, sites and apps, deploys, data, security, visibility and access, each with the guide that shows you how."
+  },
+  "features.bench.cachedMany": {
+    "message": "Cached page, 500 connections"
+  },
+  "features.bench.cachedOne": {
+    "message": "Cached page, 1 connection"
+  },
+  "features.bench.static": {
+    "message": "1 KB static file"
+  },
+  "features.bench.browsers": {
+    "message": "Browser-like traffic"
+  },
+  "features.bench.uncached": {
+    "message": "No cache: PHP and the database"
+  },
+  "features.bench.caption": {
+    "message": "Requests per second, mean of three runs"
+  },
+  "features.bench.note": {
+    "message": "2 vCPU VPS, Ubuntu 26.04, a WooCommerce shop, release v0.1.0."
+  },
+  "features.bench.data": {
+    "message": "The data and the method"
+  },
+  "features.types.static": {
+    "message": "Static"
+  },
+  "features.types.functions": {
+    "message": "Functions"
+  },
+  "features.types.caption": {
+    "message": "Site types"
+  },
+  "features.flow.staging": {
+    "message": "the copy where you try your changes"
+  },
+  "features.flow.guard": {
+    "message": "measures staging against production"
+  },
+  "features.flow.snapshotName": {
+    "message": "Snapshot"
+  },
+  "features.flow.snapshot": {
+    "message": "of production, verified before anything changes"
+  },
+  "features.flow.liveName": {
+    "message": "Production"
+  },
+  "features.flow.live": {
+    "message": "the new release goes live"
+  },
+  "features.flow.caption": {
+    "message": "A Safe Push, in order"
+  },
+  "features.record.caption": {
+    "message": "Every backup"
+  },
+  "features.record.copy": {
+    "message": "Copy"
+  },
+  "features.record.copyText": {
+    "message": "encrypted, stored where you choose"
+  },
+  "features.record.test": {
+    "message": "Restore test"
+  },
+  "features.record.restore": {
+    "message": "Restore"
+  },
+  "features.record.restoreText": {
+    "message": "one file, one database or the whole site"
+  },
+  "features.iso.user": {
+    "message": "Unix user"
+  },
+  "features.iso.sandbox": {
+    "message": "systemd sandbox"
+  },
+  "features.iso.shm": {
+    "message": "/dev/shm and IPC"
+  },
+  "features.iso.db": {
+    "message": "Database and database user"
+  },
+  "features.iso.caption": {
+    "message": "Separate for every site"
+  },
+  "features.facts.cookies": {
+    "message": "Cookies for the stats"
+  },
+  "features.facts.addresses": {
+    "message": "Addresses stored"
+  },
+  "features.facts.history": {
+    "message": "Traffic history"
+  },
+  "features.facts.days": {
+    "message": "90 days"
+  },
+  "features.facts.uptime": {
+    "message": "Uptime check"
+  },
+  "features.facts.minute": {
+    "message": "every minute"
+  },
+  "features.facts.caption": {
+    "message": "On your server, nowhere else"
+  },
+  "features.cli.caption": {
+    "message": "The same moves, from a terminal"
+  },
+  "features.speed.name": {
+    "message": "Speed"
+  },
+  "features.speed.blurb": {
+    "message": "Cache, tuning, measurements"
+  },
+  "features.speed.titleA": {
+    "message": "Fast"
+  },
+  "features.speed.titleB": {
+    "message": "out of the box."
+  },
+  "features.speed.intro": {
+    "message": "Every site starts with its own page cache, on a server tuned to the machine it runs on. The figures come from a 2 vCPU VPS, not from a brochure."
+  },
+  "features.speed.cache.title": {
+    "message": "Page cache"
+  },
+  "features.speed.cache.text": {
+    "message": "nginx serves pages from the cache without waking PHP, compresses them once and keeps serving them while they refresh."
+  },
+  "features.speed.purge.title": {
+    "message": "Precise purges"
+  },
+  "features.speed.purge.text": {
+    "message": "Change a post or a price and the WordPress connector purges only the pages that show it. One URL or the whole site, when you need to."
+  },
+  "features.speed.tuning.title": {
+    "message": "Tuned to the machine"
+  },
+  "features.speed.tuning.text": {
+    "message": "PHP, OPcache and MariaDB are sized from the server’s memory and CPU count, with PHP’s JIT switched on."
+  },
+  "features.speed.devmode.title": {
+    "message": "Development mode"
+  },
+  "features.speed.devmode.text": {
+    "message": "While you work, the page cache steps aside for 15, 30 or 60 minutes, then switches itself back on."
+  },
+  "features.speed.resources.title": {
+    "message": "Resources per site"
+  },
+  "features.speed.resources.text": {
+    "message": "CPU, memory, tasks and disk for every site, with 24-hour and 30-day history, and limits that apply without a restart."
+  },
+  "features.sites.name": {
+    "message": "Sites and apps"
+  },
+  "features.sites.blurb": {
+    "message": "WordPress, PHP, Node.js, Python, functions"
+  },
+  "features.sites.titleA": {
+    "message": "More than"
+  },
+  "features.sites.intro": {
+    "message": "WordPress is at home here, and so are PHP, Laravel, static sites, reverse proxies and Node.js or Python apps. Each one runs under its own user, in its own sandbox."
+  },
+  "features.sites.types.title": {
+    "message": "Six kinds of site"
+  },
+  "features.sites.types.text": {
+    "message": "WordPress, WooCommerce, PHP, Laravel, static and reverse proxy, each with its own Unix user, PHP-FPM master and systemd sandbox."
+  },
+  "features.sites.wizard.title": {
+    "message": "A site in five steps"
+  },
+  "features.sites.wizard.text": {
+    "message": "A wizard creates the site, checks that the domain’s DNS points at the server and hands you a summary to keep."
+  },
+  "features.sites.apps.title": {
+    "message": "Node.js and Python apps"
+  },
+  "features.sites.apps.text": {
+    "message": "Node.js 20, 22 or 24, checked against its published checksums, or the server’s Python in a virtual environment per site. The app runs as a service of the site’s own user, behind nginx."
+  },
+  "features.sites.functions.title": {
+    "message": "Functions"
+  },
+  "features.sites.functions.text": {
+    "message": "Small Node.js or Python handlers at /.functions/<name>, or on a schedule. Nothing runs between calls, and every call gets its own memory and time limits."
+  },
+  "features.sites.wpupdates.title": {
+    "message": "WordPress updates"
+  },
+  "features.sites.wpupdates.text": {
+    "message": "From the buttons or on a schedule, behind a tested snapshot. The site is measured before and after, and restored on its own if the update breaks it."
+  },
+  "features.sites.domains.title": {
+    "message": "Domains and certificates"
+  },
+  "features.sites.domains.text": {
+    "message": "Aliases, plus Let’s Encrypt certificates, wildcards included, or your own."
+  },
+  "features.sites.redirects.title": {
+    "message": "Redirects"
+  },
+  "features.sites.redirects.text": {
+    "message": "One canonical name, with or without www, and up to 200 exact or prefix 301/302 redirects. They’re answered before the page cache."
+  },
+  "features.sites.mail.title": {
+    "message": "Mail from your sites"
+  },
+  "features.sites.mail.text": {
+    "message": "mail() and wp_mail go out through an SMTP relay, server-wide or per site, with a test send and an SPF, DKIM and DMARC checklist."
+  },
+  "features.sites.maintenance.title": {
+    "message": "Maintenance page"
+  },
+  "features.sites.maintenance.text": {
+    "message": "Visitors get a 503 with your title and message, while listed addresses and a preview link still see the site."
+  },
+  "features.deploys.name": {
+    "message": "Deploys"
+  },
+  "features.deploys.blurb": {
+    "message": "Staging, Safe Push, Git, rollback"
+  },
+  "features.deploys.titleA": {
+    "message": "Try it,"
+  },
+  "features.deploys.titleB": {
+    "message": "then ship it."
+  },
+  "features.deploys.intro": {
+    "message": "Code lives in releases. A new one goes live only once it’s ready, and the previous one is always a step away."
+  },
+  "features.deploys.releases.title": {
+    "message": "Releases"
+  },
+  "features.deploys.releases.text": {
+    "message": "Every deploy builds a release of its own and puts it live. Apps install their dependencies per release, and a failed install leaves the live one live."
+  },
+  "features.deploys.staging.text": {
+    "message": "A copy of the site to try your changes on. It sends no email."
+  },
+  "features.deploys.safepush.text": {
+    "message": "Promotes your changes only when Performance Guard’s measurements hold up, after taking a safety snapshot of production."
+  },
+  "features.deploys.git.title": {
+    "message": "Deploy from Git"
+  },
+  "features.deploys.git.text": {
+    "message": "A per-site webhook for GitHub, GitLab, Gitea and Forgejo builds a release from a branch on every push. For private repositories, the panel makes a deploy key."
+  },
+  "features.deploys.rollback.text": {
+    "message": "Go back to an earlier release. For Node.js and Python apps, exactly what that release installed comes back with it."
+  },
+  "features.data.name": {
+    "message": "Data"
+  },
+  "features.data.blurb": {
+    "message": "Backups, restores, databases, migrations"
+  },
+  "features.data.titleA": {
+    "message": "Backups"
+  },
+  "features.data.titleB": {
+    "message": "that restore."
+  },
+  "features.data.intro": {
+    "message": "A backup is only as good as its restore. Every one here is restored as a test, and you can take back just the part you need."
+  },
+  "features.data.backups.title": {
+    "message": "Verified backups"
+  },
+  "features.data.backups.text": {
+    "message": "Encrypted with restic at the hour you pick, then restored as a test to prove they really come back."
+  },
+  "features.data.destinations.title": {
+    "message": "Where they go"
+  },
+  "features.data.destinations.text": {
+    "message": "S3-compatible storage, Backblaze B2, SFTP or a folder on the server. For SFTP, the panel makes the key."
+  },
+  "features.data.restore.title": {
+    "message": "Restore just what you need"
+  },
+  "features.data.restore.text": {
+    "message": "The whole site, only the files, some of its databases, or a single file or folder, always behind a tested safety snapshot."
+  },
+  "features.data.download.title": {
+    "message": "Download a backup"
+  },
+  "features.data.download.text": {
+    "message": "Streamed as an archive, for administrators and for operators on their own sites. Every download lands in the audit log."
+  },
+  "features.data.external.title": {
+    "message": "External database servers"
+  },
+  "features.data.external.text": {
+    "message": "Register a MariaDB/MySQL or PostgreSQL server and create a site’s databases there. Backups, restores and exports follow them."
+  },
+  "features.data.quarry.text": {
+    "message": "The database tool at /quarry: browse, edit, search, import and export. Simulate runs a write inside a transaction that is always rolled back."
+  },
+  "features.data.move.title": {
+    "message": "Move a site from another host"
+  },
+  "features.data.move.text": {
+    "message": "Give the old server’s SSH or SFTP access and look at a dry run first. CloudGround then copies the files and the database behind a safety snapshot, and keeps the password nowhere."
+  },
+  "features.data.cleanup.title": {
+    "message": "WordPress database cleanup"
+  },
+  "features.data.cleanup.text": {
+    "message": "Weekly, if you turn it on: expired transients go, and each post keeps its last N revisions."
+  },
+  "features.security.name": {
+    "message": "Security"
+  },
+  "features.security.blurb": {
+    "message": "Isolation, firewall, scans, sign-in"
+  },
+  "features.security.titleA": {
+    "message": "Every site"
+  },
+  "features.security.titleB": {
+    "message": "on its own."
+  },
+  "features.security.intro": {
+    "message": "A compromised site can’t see its neighbours, password guessers get blocked at the firewall, and known holes get flagged."
+  },
+  "features.security.isolation.title": {
+    "message": "Per-site isolation"
+  },
+  "features.security.isolation.text": {
+    "message": "Its own system user, PHP-FPM and systemd sandbox, with a private /dev/shm and IPC namespace. A compromised site can’t see the others."
+  },
+  "features.security.firewall.text": {
+    "message": "The panel shows you the rules before it turns the firewall on, and keeps the real SSH port, the web ports and its own port open."
+  },
+  "features.security.blocklist.title": {
+    "message": "Block list"
+  },
+  "features.security.blocklist.text": {
+    "message": "Addresses that keep failing to sign in to the panel, SSH, wp-login or xmlrpc are blocked at the firewall for a while. Addresses on the allowlist never are."
+  },
+  "features.security.refuse.title": {
+    "message": "Per-site blocking"
+  },
+  "features.security.refuse.text": {
+    "message": "Turn a site’s visitors away by address or network, user agent or country."
+  },
+  "features.security.hardening.title": {
+    "message": "WordPress hardening and 2FA"
+  },
+  "features.security.hardening.text": {
+    "message": "One-click hardening, each item separate and reversible, plus two-factor sign-in for WordPress accounts."
+  },
+  "features.security.vulns.title": {
+    "message": "Known vulnerabilities"
+  },
+  "features.security.vulns.text": {
+    "message": "WordPress core, plugins and themes are checked against a public database. You see which versions have known issues and which version fixes them."
+  },
+  "features.security.malware.title": {
+    "message": "Malware scan"
+  },
+  "features.security.malware.text": {
+    "message": "Turn it on and ClamAV checks a site’s files on a schedule or on demand, quarantines what it flags and raises an alert."
+  },
+  "features.security.passkeys.title": {
+    "message": "Passkeys and recovery codes"
+  },
+  "features.security.passkeys.text": {
+    "message": "Sign in with a fingerprint, your face or a PIN. Ten single-use codes for the day you lose your phone, and two-step verification required if you say so."
+  },
+  "features.security.roles.title": {
+    "message": "Roles"
+  },
+  "features.security.roles.text": {
+    "message": "Administrator, operator on the sites you assign, read-only."
+  },
+  "features.security.audit.title": {
+    "message": "Audit log"
+  },
+  "features.security.audit.text": {
+    "message": "Changes are recorded in the audit log, along with every log and backup download."
+  },
+  "features.security.protect.title": {
+    "message": "Password-protected paths"
+  },
+  "features.security.protect.text": {
+    "message": "Put a username and password in front of any path on a site."
+  },
+  "features.security.ubuntu.title": {
+    "message": "Ubuntu updates"
+  },
+  "features.security.ubuntu.text": {
+    "message": "Pending packages, security ones first, installed all at once or security only. Plus a notice when the server needs a reboot."
+  },
+  "features.visibility.name": {
+    "message": "Visibility"
+  },
+  "features.visibility.blurb": {
+    "message": "Traffic, logs, uptime, alerts"
+  },
+  "features.visibility.titleA": {
+    "message": "Know what’s"
+  },
+  "features.visibility.titleB": {
+    "message": "going on."
+  },
+  "features.visibility.intro": {
+    "message": "Traffic, logs and site health stay on your server. When something breaks, the panel is the one that tells you."
+  },
+  "features.visibility.traffic.title": {
+    "message": "Traffic statistics"
+  },
+  "features.visibility.traffic.text": {
+    "message": "Requests, page views, visitors, bots, status codes and cache hits, read from the site’s own logs on the server. No cookies, and no addresses stored."
+  },
+  "features.visibility.logs.title": {
+    "message": "Logs and downloads"
+  },
+  "features.visibility.logs.text": {
+    "message": "Server and site logs in the panel. Download a site’s full logs, rotated ones included, from the panel or with cgctl logs."
+  },
+  "features.visibility.uptime.text": {
+    "message": "Switch it on and the server checks the site every minute, then alerts you after two failures in a row."
+  },
+  "features.visibility.alerts.title": {
+    "message": "Alerts by email and webhook"
+  },
+  "features.visibility.alerts.text": {
+    "message": "Sites over their limits, sites that stop answering, suspicious files: the alert reaches you by email or webhook, with every operation named in plain words."
+  },
+  "features.visibility.cloudflare.title": {
+    "message": "Behind Cloudflare"
+  },
+  "features.visibility.cloudflare.text": {
+    "message": "The panel sees the visitor’s real address, the block list still applies, and a purge from the panel clears Cloudflare’s cache too."
+  },
+  "features.access.name": {
+    "message": "Access and automation"
+  },
+  "features.access.blurb": {
+    "message": "cgctl, the API, AI assistants"
+  },
+  "features.access.titleA": {
+    "message": "No browser"
+  },
+  "features.access.titleB": {
+    "message": "required."
+  },
+  "features.access.intro": {
+    "message": "Anything you do in the panel you can also do from a terminal or over the API. An AI assistant can join in, but only after you switch it on."
+  },
+  "features.access.cgctl.text": {
+    "message": "The panel’s command line: sites, backups, releases, logs, blocking and more, on the server or from another machine."
+  },
+  "features.access.tokens.title": {
+    "message": "API tokens"
+  },
+  "features.access.tokens.text": {
+    "message": "One token per script, revoked the moment you no longer need it."
+  },
+  "features.access.api.title": {
+    "message": "HTTP API"
+  },
+  "features.access.api.text": {
+    "message": "The HTTP API that cgctl talks to, documented for anyone writing their own tools."
+  },
+  "features.access.mcp.title": {
+    "message": "MCP server for AI assistants"
+  },
+  "features.access.mcp.text": {
+    "message": "Off until you turn it on. Then Claude, ChatGPT and other MCP clients can manage the server over OAuth: you approve each connection with your password and a second factor, and destructive actions wait for you to confirm them in the panel."
+  },
+  "features.access.sftp.title": {
+    "message": "SFTP and the site shell"
+  },
+  "features.access.sftp.text": {
+    "message": "SFTP accounts per site, keys only if you like, and a shell that runs as the site’s own user."
+  },
+  "features.access.update.title": {
+    "message": "CloudGround updates"
+  },
+  "features.access.update.text": {
+    "message": "Signed releases, from the panel or with cgctl update. If the new release doesn’t come up, the panel rolls itself back."
+  },
+  "features.hero.title1": {
+    "message": "Everything"
+  },
+  "features.hero.title2": {
+    "message": "it"
+  },
+  "features.hero.titleAccent": {
+    "message": "does."
+  },
+  "features.hero.lede": {
+    "message": "One control panel for one Ubuntu server, sorted by the seven things that matter once the server is yours. Every feature gets two plain lines and a link to the guide that shows you how."
+  },
+  "features.hero.demo": {
+    "message": "Try the demo"
+  },
+  "features.hero.install": {
+    "message": "Install it"
+  },
+  "features.hero.demoNote": {
+    "message": "The demo runs in your browser on sample data. Nothing you do there leaves the page."
+  },
+  "features.hero.release": {
+    "message": "Up to date with release {release}"
+  },
+  "features.hero.languages": {
+    "message": "Interface in five languages"
+  },
+  "features.index.label": {
+    "message": "The seven areas"
+  },
+  "features.subnav.label": {
+    "message": "Feature areas"
+  },
+  "features.guide": {
+    "message": "Guide"
+  },
+  "features.since": {
+    "message": "since {version}"
+  },
+  "features.closing.title1": {
+    "message": "See it"
+  },
+  "features.closing.titleAccent": {
+    "message": "up close."
+  },
+  "features.closing.text": {
+    "message": "The demo is the real panel with sample data. When you’re ready, installing it takes one command."
+  },
+  "features.closing.demo": {
+    "message": "Open the demo"
+  },
+  "features.closing.install": {
+    "message": "The install command"
+  },
+  "home.features.speed.text": {
+    "message": "nginx serves pages without waking PHP and purges only the ones that change. PHP, OPcache and MariaDB are tuned to the machine."
+  },
+  "home.features.sites.tag": {
+    "message": "Sites and apps"
+  },
+  "home.features.sites.title": {
+    "message": "From WordPress to Node.js"
+  },
+  "home.features.sites.text": {
+    "message": "WordPress, WooCommerce, PHP, Laravel, static sites, proxies, Node.js and Python apps, and functions. Each under its own user, in its own sandbox."
+  },
+  "home.features.deploys.tag": {
+    "message": "Deploys"
+  },
+  "home.features.deploys.text": {
+    "message": "Staging, Safe Push that holds back a slower release, deploys from Git on every push, and the previous release always one step away."
+  },
+  "home.features.data.tag": {
+    "message": "Data"
+  },
+  "home.features.data.text": {
+    "message": "Encrypted backups to S3, B2, SFTP or a local folder, each one restored as a test. Take back one file, one database or the whole site."
+  },
+  "home.features.security.title2": {
+    "message": "Every site on its own"
+  },
+  "home.features.security.text2": {
+    "message": "Per-site isolation, a firewall and block lists, vulnerability and malware scans, passkeys, roles and an audit log."
+  },
+  "home.features.visibility.tag": {
+    "message": "Visibility"
+  },
+  "home.features.visibility.title": {
+    "message": "Traffic stats, no cookies"
+  },
+  "home.features.visibility.text": {
+    "message": "Statistics from the server’s own logs, uptime checks, alerts by email or webhook, logs you can download."
+  },
+  "home.features.access.title": {
+    "message": "cgctl, the API and AI assistants"
+  },
+  "home.features.access.text": {
+    "message": "Everything works from a terminal or over the API too. An MCP server for AI assistants stays off until you turn it on."
+  },
+  "home.features.intro2": {
+    "message": "The things you would normally wire up by hand, one late night at a time, are on from your first site. Seven areas of them."
+  },
+  "home.features.all.tag": {
+    "message": "And the rest"
+  },
+  "home.features.all.title": {
+    "message": "Every feature"
+  },
+  "home.features.all.text": {
+    "message": "Each one in two lines, with the guide that shows you how."
+  },
+  "home.features.all.cta": {
+    "message": "See them all"
+  },
+  "cg.footer.allFeatures": {
+    "message": "Features"
   }
 }
