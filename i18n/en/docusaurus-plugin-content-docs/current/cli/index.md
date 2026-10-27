@@ -84,6 +84,7 @@ cgctl --wait sites create shop.example.com laravel \
 | `cgctl safe-push <site-id> [path ...]` | `POST /api/sites/<id>/safe-push` | Ships staging to production with Safe Push. The `path` arguments are the URL paths Performance Guard measures (for example `/` and `/shop/`). |
 | `cgctl deploy <site-id> <folder>` | `POST /api/sites/<id>/deployments` | Deploys a release from a folder inside the site (`source_dir`). |
 | `cgctl rollback <site-id>` | `POST /api/sites/<id>/rollback` | Rolls back to the previous release. |
+| `cgctl git-deploy <site-id> [on <repository> [branch] [build-command]\|off\|run\|secret\|key]` | `GET` or `PUT /api/sites/<id>/git-deploy`, `POST …/git-deploy/run`, `…/secret`, `…/key` | Deploys from Git on every push (see [Deploy from Git](/docs/data/deploy-from-git)). Without a verb it shows the settings, the webhook path, the secret, the deploy key and the deliveries; `run` deploys the branch now; `secret` makes a new secret and URL; `key` a new deploy key. |
 
 ### Backups and databases {#backups-and-database}
 

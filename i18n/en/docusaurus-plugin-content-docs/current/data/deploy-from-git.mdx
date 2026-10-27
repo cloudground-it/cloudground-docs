@@ -1,0 +1,123 @@
+---
+title: Deploy from Git on every push
+description: Connect a branch of your repository to a site, so each push builds a release, puts it live and can be rolled back like any other.
+type: how-to
+prerequisites:
+  - An active site
+  - An administrator account, or an operator assigned to the site
+  - A repository on GitHub, GitLab or Gitea where you can add a webhook
+version: unreleased
+last_verified: unverified
+sidebar_position: 8
+---
+
+A push to the branch you choose builds a new release from your repository and activates it. The
+release is an ordinary one: it appears in the **Releases** tab and you can
+[roll it back](/docs/data/roll-back-a-release) in one click. For a one-off release from a folder,
+see [Deploy a release](/docs/data/deploy-a-release).
+
+## Turn it on {#turn-on}
+
+1. Open the site and go to the **Releases** tab.
+2. In the **Deploy from Git** card, fill in **Repository** and **Branch** (default `main`).
+3. Optionally fill in **Build command (optional)**, for example `npm ci && npm run build`.
+4. Click **Turn on**.
+
+**Repository** is one of:
+
+| Form | Example | Notes |
+| --- | --- | --- |
+| HTTPS | `https://github.com/acme/shop.git` | Public repositories only. No user or password in the address. |
+| SSH | `ssh://git@gitlab.com/acme/shop.git` | Uses the deploy key. |
+| SSH, scp form | `git@github.com:acme/shop.git` | Uses the deploy key. |
+| A folder of the site | `file:///srv/sites/<domain>/tmp/shop.git` | A repository inside the site's own folder. Any other local path is refused. |
+
+Turning it on the first time makes three things, shown in the card: the **Webhook URL**, the
+**Secret** and the **Deploy key**.
+
+## Add the webhook in your repository {#webhook}
+
+Create a webhook for push events, with the **Webhook URL** from the card. Send it as JSON
+(`application/json`), not as a form.
+
+| Forge | Where | Secret field |
+| --- | --- | --- |
+| GitHub | Settings → Webhooks → Add webhook | **Secret** |
+| GitLab | Settings → Webhooks | **Secret token** |
+| Gitea | Settings → Webhooks → Add webhook | **Secret** |
+
+Use the card's **Secret** in that field. The panel checks every request against it and answers `401`
+to anything else, whether the URL is wrong, the hook is off or the signature does not match. Click
+the eye button to show the secret and the copy button to copy it.
+
+Send a test delivery. The panel answers a ping with `pong`, and it appears under **Recent
+deliveries**.
+
+## Read a private repository {#deploy-key}
+
+For a private repository, add the card's **Deploy key** to it as a read-only deploy key. It is an
+ed25519 public key. The private half stays in the panel, sealed with the panel's other secrets, and
+is never shown. A public repository does not need the key.
+
+The first time the panel connects to a server over SSH it records that server's host key, and it
+refuses the connection if the key changes later.
+
+## What a push does {#push}
+
+1. The panel checks the signature. Only a **push to the configured branch** goes on: a ping is
+   answered, and other branches, tags, deleted branches and other events are ignored and listed as
+   such.
+2. The panel fetches the branch and exports its files. No `.git` folder goes into the release.
+3. If you set a **Build command (optional)**, it runs in the exported folder.
+4. The files become a release, which is activated like any other.
+
+Steps 2 and 3 run **as the site's user**, inside the site's resource limits, with the same
+confinement as the site's cron jobs: the site sees only its own folder. Nothing is run as root.
+
+If the fetch or the build fails, the release is not created, the deployment is marked *failed* and
+**the live release stays live**. The task's log has the last part of the output.
+
+Deploys of one site run one at a time. If a push arrives while a deploy runs, it waits. If more
+pushes arrive while one waits, they join it: the waiting deploy fetches the branch as it is when it
+starts, so it already holds their changes.
+
+## See what happened {#deliveries}
+
+**Recent deliveries** lists the last 30: when, which forge, the branch, the commit, what the panel
+did with it and, for a deploy, the release and its status. A request that failed the signature check
+is not listed.
+
+Click **Deploy now** to deploy the branch's current tip without a push.
+
+## Replace the secret or the key {#rotate}
+
+- **New secret and URL** makes a new secret and a new webhook URL. The old URL stops working at
+  once, so update the webhook in your repository.
+- **New deploy key** makes a new key. Replace the old one in your repository.
+
+Turning the card off keeps the URL, the secret and the key; a hook that is off answers `401`.
+
+## With cgctl {#cgctl}
+
+```bash
+cgctl git-deploy <site-id> on https://github.com/acme/shop.git main "npm ci && npm run build"
+cgctl git-deploy <site-id>          # settings, webhook path, secret, deploy key, deliveries
+cgctl --wait git-deploy <site-id> run
+cgctl git-deploy <site-id> secret
+cgctl git-deploy <site-id> key
+cgctl git-deploy <site-id> off
+```
+
+`<site-id>` is the site's number. The webhook path is `/hooks/git/<id>`: put the panel's address in
+front of it.
+
+## Limits {#limits}
+
+- Submodules and Git LFS files are not fetched.
+- A signature carries no timestamp, so someone who captured a delivery could send it again. The
+  effect is one more deploy of the branch's tip.
+- The panel limits requests from one address: after 20 failed requests in a minute it answers `429`.
+
+## Next step {#next}
+
+If a release misbehaves, [roll it back](/docs/data/roll-back-a-release).
