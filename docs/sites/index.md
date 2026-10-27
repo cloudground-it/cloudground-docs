@@ -15,5 +15,6 @@ hide_table_of_contents: true
   <Card to="/docs/sites/resource-usage-and-limits" title="Risorse e limiti di un sito" />
   <Card to="/docs/sites/uptime-monitoring" title="Controlla che un sito risponda" />
   <Card to="/docs/sites/node-and-python-sites" title="Fai girare un'app Node.js o Python" />
+  <Card to="/docs/sites/functions" title="Aggiungi funzioni a un sito" />
   <Card to="/docs/sites/delete-a-site" title="Elimina un sito" />
 </Cards>
