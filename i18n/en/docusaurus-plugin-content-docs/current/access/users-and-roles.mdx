@@ -4,8 +4,8 @@ description: Add the people who use the panel, choose their role and assign site
 type: how-to
 prerequisites:
   - An administrator account, signed in to the panel in a browser session
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 3
 ---
 
@@ -48,13 +48,21 @@ their sessions end and their API tokens are revoked. Turn the switch off to re-e
 ## Reset another user's password {#reset-a-password}
 
 From the **Actions** menu, choose **Reset password**, enter the new password and press
-**Reset password**. That account's sessions and API tokens are closed. To change your own password,
-use **Security** instead.
+**Reset password**. That account's sessions and API tokens are closed, and its password sign-in is
+turned back on if it was off. To change your own password, use **Security** instead.
+
+## Reset someone's two-step verification {#reset-two-step}
+
+When someone has lost their phone, their passkeys and their recovery codes, choose **Reset two-step
+verification** from the **Actions** menu and confirm. Their authenticator app, passkeys and recovery
+codes are removed, and they're signed out everywhere. They sign in with their password alone and set
+up a second factor again (straight away, if the panel requires it). You can't reset your own: use
+**Security**, or [recover administrator access](./recover-admin-access.mdx) from the server.
 
 ## Delete a user {#delete-a-user}
 
 From the **Actions** menu, choose **Delete** and confirm. The account's sessions, tokens, site
-assignments and two-step verification are deleted with it.
+assignments, two-step verification, passkeys and recovery codes are deleted with it.
 
 ## Restrictions {#limits}
 
