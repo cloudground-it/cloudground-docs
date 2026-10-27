@@ -5,8 +5,9 @@ type: how-to
 prerequisites:
   - Per i log del server, un account amministratore o in sola lettura
   - Per i log di un sito, un account che vede quel sito
+  - Per scaricare i log interi di un sito, un account amministratore o operatore assegnato al sito
 version: a7d92ba
-last_verified: 2026-10-10
+last_verified: unverified
 sidebar_position: 3
 ---
 
@@ -41,6 +42,34 @@ le ultime 200 righe. Sul disco sono in `/var/log/cloudground/<dominio>/`:
 
 Un file che non esiste ancora appare come *(log is empty or not created yet)*.
 
+## Scarica i log interi di un sito {#download}
+
+Il pannello mostra solo le ultime righe. Per l'intero file, apri la scheda **Log** del sito e guarda il
+riquadro **Scarica i log**: elenca i log di accesso e di errore, quello attuale (`access.log`,
+`error.log`) e quelli ruotati (`access.log.1`, `access.log.2.gz`, …), con dimensione e data dell'ultima
+scrittura. Premi **Scarica** accanto al file che ti serve.
+
+- I log ruotati più vecchi di un giorno sono compressi (`.gz`): si scaricano così come sono e si
+  aprono con `gunzip` o `zcat`. Ne restano 14 giorni.
+- Il log attuale viene inviato com'è in quel momento, mentre nginx continua a scriverci: la dimensione
+  mostrata è solo orientativa, e se una rotazione lo svuota durante il download il file finisce lì. I
+  log ruotati non cambiano.
+- Il riquadro c'è solo per gli amministratori e per gli operatori assegnati al sito, non per gli account
+  in sola lettura. Ogni download è registrato nel registro di audit (`site.logs.download`).
+- Si scaricano solo i log di accesso e di errore del sito: non `php-error.log`, né altri file della
+  cartella.
+
+Dalla riga di comando:
+
+```bash prompt
+cgctl logs <id-del-sito>
+cgctl logs <id-del-sito> access.log.2.gz
+cgctl logs <id-del-sito> error.log -        # sullo standard output
+```
+
+Il secondo comando scrive `access.log.2.gz` nella cartella corrente (o nel file indicato come terzo
+argomento) e non sovrascrive un file che esiste. Funziona con file di qualsiasi dimensione.
+
 ## Dal server {#on-the-server}
 
 Come root, i log nel journal si leggono con `journalctl`:
@@ -54,7 +83,8 @@ journalctl -u cloudground-api -u cloudground-agent -n 100
 `GET /api/logs?source=<sorgente>&lines=<n>` legge un log del server; `source` è `nginx-access`,
 `nginx-error`, `php-error`, `mariadb`, `api` o `agent`, e `lines` va da 1 a 2000 (200 se manca).
 `GET /api/sites/<id>/logs?source=<tipo>` legge un log del sito; `source` è `access`, `error` o `php`.
-Una riga più lunga di 8 KiB viene tagliata.
+Una riga più lunga di 8 KiB viene tagliata. `GET /api/sites/<id>/logs/files` elenca i log scaricabili e
+`GET /api/sites/<id>/logs/download?file=<nome>` scarica un file intero, per gli account che gestiscono il sito.
 
 ## Prossimo passo {#next}
 

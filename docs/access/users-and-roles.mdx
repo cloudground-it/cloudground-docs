@@ -4,8 +4,8 @@ description: Aggiungi le persone che usano il pannello, scegli il loro ruolo e a
 type: how-to
 prerequisites:
   - Un account amministratore, con accesso tramite sessione nel pannello
-version: a7d92ba
-last_verified: 2026-10-10
+version: unreleased
+last_verified: unverified
 sidebar_position: 3
 ---
 
@@ -48,13 +48,22 @@ riattivarla.
 ## Reimposta la password di un altro {#reset-a-password}
 
 Dal menu **Azioni** scegli **Reimposta password**, scrivi la nuova password e premi **Reimposta
-password**. Le sessioni e i token API di quell'account si chiudono. La tua password la cambi da
-**Sicurezza**, non da qui.
+password**. Le sessioni e i token API di quell'account si chiudono, e l'accesso con password si
+riattiva se era disattivato. La tua password la cambi da **Sicurezza**, non da qui.
+
+## Reimposta la verifica in due passaggi di un utente {#reset-two-step}
+
+Quando qualcuno ha perso telefono, passkey e codici di recupero, scegli **Reimposta la verifica in due
+passaggi** dal menu **Azioni** e conferma. App di autenticazione, passkey e codici di recupero
+vengono rimossi e tutte le sue sessioni si chiudono. La persona accede con la sola password e
+configura di nuovo un secondo fattore (subito, se il pannello lo richiede). La tua non puoi
+reimpostarla da qui: usa **Sicurezza**, o
+[recupera l'accesso amministratore](./recover-admin-access.mdx) dal server.
 
 ## Elimina un utente {#delete-a-user}
 
 Dal menu **Azioni** scegli **Elimina** e conferma. Con l'account se ne vanno le sue sessioni, i suoi
-token, le assegnazioni dei siti e la verifica in due passaggi.
+token, le assegnazioni dei siti, la verifica in due passaggi, le passkey e i codici di recupero.
 
 ## Cosa il pannello non permette {#limits}
 

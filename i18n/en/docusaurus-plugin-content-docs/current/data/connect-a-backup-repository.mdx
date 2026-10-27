@@ -5,7 +5,7 @@ type: how-to
 prerequisites:
   - An administrator account
   - Storage outside this server (an object storage bucket, an SFTP server, or a restic REST server)
-version: v0.2.0
+version: unreleased
 last_verified: unverified
 sidebar_position: 3
 ---
@@ -50,13 +50,16 @@ If you lose the server, you lose the backups with it. For real off-site backups,
 
 :::
 
-- **SFTP** (advanced, `sftp:<user>@<host>:/<path>`): restic connects over `ssh` as root, using
-  root's key and `known_hosts` (`/root/.ssh/`). Before you save, add root's public key to the remote
-  server and connect once by hand as root to accept its host key. Otherwise the test fails with
-  `Host key verification failed`.
-- **Backblaze B2**: this destination uses B2's S3-compatible API. A `b2:` address entered as an
-  advanced repository won't work. The panel only passes S3 keys to restic, so the test fails with
-  `Account ID ($B2_ACCOUNT_ID) is empty`.
+- **SFTP** (advanced, `sftp:<user>@<host>:/<path>`, or `sftp://<user>@<host>:<port>//<path>` for
+  another port): the panel signs in with a key of its own. Under **The panel's SSH key**, click
+  **Make a key**, copy the public key and add it to `~/.ssh/authorized_keys` of that account on the
+  SFTP server, then save. The private key is stored encrypted and never shown. The server's host key
+  is recorded the first time, when the settings are saved and tested, and checked every time after.
+  **Make a new key** replaces the key: backups stop reaching the server until you add the new one.
+- **Backblaze B2**: the **Backblaze B2** destination uses B2's S3-compatible API. To use B2's own API
+  instead, choose **Other restic repository (advanced)** with `b2:<bucket>:<path>` and fill in **B2
+  key ID** and **B2 application key** with an application key limited to that bucket. Both are
+  stored encrypted.
 
 ## Set the repository password {#password}
 

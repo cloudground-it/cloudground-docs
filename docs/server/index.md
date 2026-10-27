@@ -11,6 +11,8 @@ hide_table_of_contents: true
   <Card to="/docs/server/services" title="Gestisci i servizi" />
   <Card to="/docs/server/logs" title="Leggi i log" />
   <Card to="/docs/server/alerts-and-notifications" title="Avvisi e notifiche" />
+  <Card to="/docs/server/ubuntu-updates" title="Installa gli aggiornamenti di Ubuntu" />
+  <Card to="/docs/server/whats-new" title="Vedi cosa è cambiato" />
   <Card to="/docs/server/update-cloudground" title="Aggiorna CloudGround" />
   <Card to="/docs/server/verify-the-installer" title="Verifica l'installer" />
   <Card to="/docs/server/uninstall-cloudground" title="Disinstalla CloudGround" />

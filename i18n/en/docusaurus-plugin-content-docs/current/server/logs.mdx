@@ -5,8 +5,9 @@ type: how-to
 prerequisites:
   - For server logs, an administrator or read-only account
   - For a site's logs, an account that can see that site
+  - To download a site's whole logs, an administrator or an operator assigned to the site
 version: a7d92ba
-last_verified: 2026-10-10
+last_verified: unverified
 sidebar_position: 3
 ---
 
@@ -41,6 +42,34 @@ showing the last 200 lines. On disk, they live in `/var/log/cloudground/<domain>
 
 A log that doesn't exist yet shows *(log is empty or not created yet)*.
 
+## Download a site's whole logs {#download}
+
+The panel shows only the last lines. For the whole file, open the site's **Logs** tab and look at the
+**Download the logs** card: it lists the access and error logs, the current ones (`access.log`,
+`error.log`) and the rotated ones (`access.log.1`, `access.log.2.gz`, …), with their size and when they
+were last written. Click **Download** next to the file you need.
+
+- Rotated logs older than a day are compressed (`.gz`): they download as they are and open with
+  `gunzip` or `zcat`. Fourteen days are kept.
+- The current log is sent as it is at that moment, while nginx goes on writing to it: the size shown is
+  only a hint, and if a rotation empties it during the download the file ends there. Rotated logs do
+  not change.
+- The card is there only for administrators and for operators assigned to the site, not for read-only
+  accounts. Every download is recorded in the audit log (`site.logs.download`).
+- Only the site's access and error logs can be downloaded: not `php-error.log`, nor any other file in
+  the folder.
+
+From the command line:
+
+```bash prompt
+cgctl logs <site-id>
+cgctl logs <site-id> access.log.2.gz
+cgctl logs <site-id> error.log -        # to standard output
+```
+
+The second command writes `access.log.2.gz` in the current folder (or to the file given as the third
+argument) and does not overwrite a file that exists. It works for files of any size.
+
 ## On the server {#on-the-server}
 
 As root, read the journal logs with `journalctl`:
@@ -54,7 +83,9 @@ journalctl -u cloudground-api -u cloudground-agent -n 100
 `GET /api/logs?source=<source>&lines=<n>` returns a server log. `source` is `nginx-access`,
 `nginx-error`, `php-error`, `mariadb`, `api` or `agent`, and `lines` is 1 to 2000 (200 by default).
 `GET /api/sites/<id>/logs?source=<kind>` returns a site log, where `source` is `access`, `error` or
-`php`. Lines longer than 8 KiB are truncated.
+`php`. Lines longer than 8 KiB are truncated. `GET /api/sites/<id>/logs/files` lists the logs that can be
+downloaded and `GET /api/sites/<id>/logs/download?file=<name>` downloads a whole file, for accounts that
+manage the site.
 
 ## Next step {#next}
 

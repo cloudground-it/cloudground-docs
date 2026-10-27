@@ -1,0 +1,125 @@
+---
+title: Pubblica da Git a ogni push
+description: "Collega un branch del tuo repository a un sito: ogni push crea un rilascio, lo rende attivo e si può annullare come qualsiasi altro."
+type: how-to
+prerequisites:
+  - Un sito attivo
+  - Un account amministratore oppure operatore assegnato al sito
+  - Un repository su GitHub, GitLab o Gitea in cui puoi aggiungere un webhook
+version: unreleased
+last_verified: unverified
+sidebar_position: 8
+---
+
+Un push sul branch che scegli crea un nuovo rilascio dal tuo repository e lo attiva. Il rilascio è
+uno qualunque: compare nella scheda **Rilasci** e puoi
+[tornare indietro](/docs/data/roll-back-a-release) con un clic. Per un rilascio una tantum da una
+cartella vedi [Pubblica un rilascio](/docs/data/deploy-a-release).
+
+## Attivalo {#turn-on}
+
+1. Apri il sito e scegli la scheda **Rilasci**.
+2. Nel riquadro **Pubblica da Git** compila **Repository** e **Branch** (predefinito `main`).
+3. Se vuoi, compila **Comando di build (facoltativo)**, per esempio `npm ci && npm run build`.
+4. Premi **Attivare**.
+
+**Repository** è una di queste forme:
+
+| Forma | Esempio | Note |
+| --- | --- | --- |
+| HTTPS | `https://github.com/acme/shop.git` | Solo repository pubblici. Nessun utente o password nell'indirizzo. |
+| SSH | `ssh://git@gitlab.com/acme/shop.git` | Usa la chiave di deploy. |
+| SSH, forma scp | `git@github.com:acme/shop.git` | Usa la chiave di deploy. |
+| Una cartella del sito | `file:///srv/sites/<dominio>/tmp/shop.git` | Un repository dentro la cartella del sito. Ogni altro percorso locale è rifiutato. |
+
+La prima volta, l'attivazione crea tre cose, mostrate nel riquadro: l'**URL del webhook**, il
+**Segreto** e la **Chiave di deploy**.
+
+## Aggiungi il webhook al repository {#webhook}
+
+Crea un webhook per gli eventi push con l'**URL del webhook** del riquadro. Mandalo come JSON
+(`application/json`), non come modulo.
+
+| Servizio | Dove | Campo del segreto |
+| --- | --- | --- |
+| GitHub | Settings → Webhooks → Add webhook | **Secret** |
+| GitLab | Settings → Webhooks | **Secret token** |
+| Gitea | Settings → Webhooks → Add webhook | **Secret** |
+
+Metti il **Segreto** del riquadro in quel campo. Il pannello controlla ogni richiesta con il
+segreto e risponde `401` a tutto il resto, che l'URL sia sbagliato, il webhook spento o la firma
+diversa. Il pulsante con l'occhio mostra il segreto, quello con le due schede lo copia.
+
+Manda una consegna di prova. Il pannello risponde `pong` a un ping, e la consegna compare in
+**Consegne recenti**.
+
+## Leggi un repository privato {#deploy-key}
+
+Per un repository privato, aggiungi al repository la **Chiave di deploy** del riquadro, come chiave
+di deploy in sola lettura. È una chiave pubblica ed25519. La metà privata resta nel pannello, cifrata
+come gli altri segreti, e non viene mai mostrata. Un repository pubblico non ne ha bisogno.
+
+La prima volta che il pannello si collega a un server via SSH ne registra la chiave host, e rifiuta
+la connessione se in seguito cambia.
+
+## Cosa fa un push {#push}
+
+1. Il pannello controlla la firma. Va avanti solo un **push sul branch configurato**: un ping riceve
+   risposta, mentre altri branch, tag, branch eliminati e altri eventi vengono ignorati e
+   elencati come tali.
+2. Il pannello scarica il branch ed esporta i file. Nel rilascio non finisce nessuna cartella `.git`.
+3. Se hai impostato un **Comando di build (facoltativo)**, gira nella cartella esportata.
+4. I file diventano un rilascio, che viene attivato come ogni altro.
+
+I passi 2 e 3 girano **come utente del sito**, entro i limiti di risorse del sito, con lo stesso
+isolamento dei cron del sito: il sito vede solo la propria cartella. Niente gira come root.
+
+Se il download o la build falliscono, il rilascio non viene creato, la pubblicazione risulta
+*non riuscita* e **il rilascio attivo resta attivo**. Il registro dell'attività ha la parte finale
+dell'output.
+
+Le pubblicazioni di un sito girano una alla volta. Se arriva un push mentre una gira, aspetta. Se
+ne arrivano altri mentre una aspetta, si uniscono a quella: la pubblicazione in attesa scarica il
+branch com'è quando parte, quindi contiene già le loro modifiche.
+
+## Guarda cos'è successo {#deliveries}
+
+**Consegne recenti** elenca le ultime 30: quando, da quale servizio, il branch, il commit, cosa ne
+ha fatto il pannello e, per una pubblicazione, il rilascio e il suo stato. Una richiesta che non
+supera il controllo della firma non compare.
+
+Premi **Pubblica ora** per pubblicare l'ultimo commit del branch senza un push.
+
+## Cambia il segreto o la chiave {#rotate}
+
+- **Nuovo segreto e URL** crea un nuovo segreto e un nuovo URL del webhook. Il vecchio URL smette
+  di funzionare subito: aggiorna il webhook nel repository.
+- **Nuova chiave di deploy** crea una nuova chiave. Sostituisci la vecchia nel repository.
+
+Spegnere il riquadro conserva URL, segreto e chiave; un webhook spento risponde `401`.
+
+## Con cgctl {#cgctl}
+
+```bash
+cgctl git-deploy <id-sito> on https://github.com/acme/shop.git main "npm ci && npm run build"
+cgctl git-deploy <id-sito>          # impostazioni, percorso del webhook, segreto, chiave, consegne
+cgctl --wait git-deploy <id-sito> run
+cgctl git-deploy <id-sito> secret
+cgctl git-deploy <id-sito> key
+cgctl git-deploy <id-sito> off
+```
+
+`<id-sito>` è il numero del sito. Il percorso del webhook è `/hooks/git/<id>`: davanti ci va
+l'indirizzo del pannello.
+
+## Limiti {#limits}
+
+- I submodule e i file Git LFS non vengono scaricati.
+- Una firma non ha un'ora, quindi chi intercettasse una consegna potrebbe rimandarla. L'effetto è
+  una pubblicazione in più dell'ultimo commit del branch.
+- Il pannello limita le richieste da uno stesso indirizzo: dopo 20 richieste fallite in un minuto
+  risponde `429`.
+
+## Prossimo passo {#next}
+
+Se un rilascio non va, [torna indietro](/docs/data/roll-back-a-release).

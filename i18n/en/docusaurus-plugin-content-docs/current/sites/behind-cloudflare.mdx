@@ -1,0 +1,92 @@
+---
+title: Run a site behind Cloudflare
+description: See visitors' real addresses on a site proxied by Cloudflare, and have every purge empty Cloudflare's cache of the site too.
+type: how-to
+prerequisites:
+  - A site whose domain is proxied by Cloudflare (the orange cloud in Cloudflare's DNS settings)
+  - An administrator account, or an operator account assigned to the site
+  - For the CDN purge, an administrator to save a Cloudflare token in Settings
+version: v0.7.0
+last_verified: unverified
+sidebar_position: 7.5
+---
+
+When a site is proxied by Cloudflare, every request reaches the server from one of Cloudflare's
+addresses. Without help, the site's logs, the [block list](/docs/access/block-addresses) and the
+[visitors a site refuses](/docs/access/refuse-visitors) all see Cloudflare instead of the visitor.
+The site's page cache also isn't the only one: Cloudflare may keep its own copy of the pages.
+
+The **Cloudflare** card fixes both. It's on the site's **Cache** tab.
+
+## See visitors' real addresses {#real-addresses}
+
+1. Open the site and go to the **Cache** tab.
+2. In the **Cloudflare** card, turn on **Real visitor addresses**.
+3. Press **Save**.
+
+From then on, nginx takes the visitor's address from the `CF-Connecting-IP` header that Cloudflare
+adds. It trusts that header only on requests that come from Cloudflare's own addresses. A request
+sent straight to the server keeps its own address, whatever headers it carries, so nobody can pick
+the address they're logged, rate limited or blocked under.
+
+The card shows where the list of Cloudflare's addresses comes from. CloudGround ships with the list
+Cloudflare publishes, and while a site has this setting on, the panel downloads it again every day
+from Cloudflare's API. A list that contains anything other than public networks is rejected and the
+previous one stays in use.
+
+Turn this on only for a site that is actually proxied. On a site that isn't, it changes nothing,
+because no request comes from Cloudflare.
+
+### What changes for the block list {#block-list}
+
+The server blocks addresses in the firewall, but on a proxied site the firewall only sees Cloudflare.
+For sites with real visitor addresses on, nginx also refuses the blocked addresses, with a 403 before
+the page cache is read.
+
+Cloudflare's own addresses are never blocked, and failed sign-ins from them don't count. Blocking
+one would cut off every visitor Cloudflare sends through it, on every site.
+
+## Purge Cloudflare's cache too {#cdn-purge}
+
+First, an administrator creates the token:
+
+1. In Cloudflare's dashboard, go to **My Profile** → **API Tokens** and create a custom token with
+   only the **Zone** → **Cache Purge** permission, for the site's zone.
+2. In the panel, open **Settings**, enter the token in **Cloudflare purge token** in the
+   **Certificates** card, and press **Save**.
+
+This token is separate from the DNS token used for wildcard certificates. With only the Cache Purge
+permission, a leaked token can empty caches and nothing else. The panel stores it encrypted and
+sends it only to `api.cloudflare.com`.
+
+Then, for each site:
+
+1. Copy the **Zone ID** from the domain's **Overview** page in Cloudflare's dashboard.
+2. In the site's **Cloudflare** card, paste it into **Zone ID** and press **Save**.
+
+The card shows **Purges reach Cloudflare** once both the zone and the token are set.
+
+From then on, every purge also empties Cloudflare's cache of the site:
+
+- **Purge everything** purges the site's domain and aliases at Cloudflare, not the whole zone,
+  which may serve other sites.
+- **Purge** on a single URL, and the purges the WordPress connector sends when content changes,
+  purge the same URLs at Cloudflare. URLs on other domains are skipped.
+
+If Cloudflare rejects the request, the server's cache is still emptied and the panel says so:
+**Cloudflare's cache was not emptied**, followed by Cloudflare's reason. Connector purges reach
+Cloudflare in the background, so WordPress never waits for them.
+
+## Use the API {#with-the-api}
+
+- `GET /api/sites/<id>/cloudflare` returns `real_ip`, `zone_id`, `purge_ready` and
+  `ranges_updated_at` (missing while the shipped list is in use).
+- `PUT /api/sites/<id>/cloudflare` with `{"real_ip": true, "zone_id": "<32 hex digits>"}` changes
+  them. A field you leave out keeps its value, and `"zone_id": ""` removes the zone.
+- `POST /api/sites/<id>/purge` returns `cdn` (`purged` or `failed`, with `cdn_error`) for a site
+  with a zone.
+- The token is the `cloudflare_purge_token` setting (`PUT /api/settings`).
+
+## Next step {#next}
+
+[Block the addresses that fail to sign in](/docs/access/block-addresses).

@@ -1,74 +1,102 @@
 ---
 title: Verifica in due passaggi
-description: Aggiungi al tuo account un secondo fattore da un'app di autenticazione, sostituisci l'app o spegni la verifica.
+description: Proteggi il tuo account con un secondo fattore dopo la password, tieni i codici di recupero per quando non l'hai a portata di mano e rendila obbligatoria nel pannello.
 type: how-to
 prerequisites:
   - Un account nel pannello
-  - Un'app di autenticazione sul telefono (codici a 6 cifre, standard TOTP)
-version: a7d92ba
-last_verified: 2026-10-10
+  - Un'app di autenticazione sul telefono (codici a 6 cifre, standard TOTP), una passkey, o entrambe
+version: unreleased
+last_verified: unverified
 sidebar_position: 4
 ---
 
-Con la verifica in due passaggi l'accesso chiede, dopo la password, un codice a 6 cifre dell'app di
-autenticazione. Il pannello ha accesso root al server: attivala su ogni account amministratore.
+Con la verifica in due passaggi l'accesso chiede, dopo la password, un secondo fattore: un codice a
+6 cifre dell'app di autenticazione o una delle tue [passkey](./passkeys.mdx). Il pannello ha accesso
+root al server: attivala su ogni account amministratore.
 
-## Attiva la verifica {#turn-it-on}
+## Attivala con un'app di autenticazione {#turn-it-on}
 
 1. Apri **Sicurezza** dal menu del tuo account.
-2. Nella sezione **Verifica in due passaggi**, scrivi la password in **Conferma con la password**.
-3. Premi **Configura la 2FA**.
+2. Nella sezione **Verifica in due passaggi**, premi **Configura la 2FA**.
+3. Scrivi la password e premi **Conferma**.
 4. Inquadra il codice QR con l'app di autenticazione.
 5. Scrivi il **Codice a 6 cifre** che l'app mostra e premi **Verifica e attiva**.
 
 Se il codice non corrisponde, controlla che l'orologio del telefono sia esatto. Quando la verifica si
-attiva, il pannello chiude le tue altre sessioni; quella da cui l'hai attivata resta aperta.
+attiva, il pannello chiude le tue altre sessioni; quella da cui l'hai attivata resta aperta. Anche
+una passkey vale come secondo fattore: vedi [aggiungi una passkey](./passkeys.mdx#add-a-passkey).
 
-## Accedi con il codice {#sign-in}
+## Salva i codici di recupero {#recovery-codes}
 
-Dopo email e password, il pannello chiede il **Codice a 6 cifre**. Ogni codice vale una volta sola:
-se l'hai appena usato, aspetta quello successivo. Dopo 10 codici sbagliati in un'ora il pannello non
-ne controlla altri per quell'account fino allo scadere dell'ora: vedi
+La prima volta che attivi un secondo fattore, il pannello mostra dieci **codici di recupero**, una
+volta sola. Ognuno ti fa entrare una volta al posto del codice o della passkey. Premi **Scarica** o
+copiali, conservali in un posto sicuro lontano da questo dispositivo, poi premi **Li ho salvati**.
+
+Per averne di nuovi, premi **Genera nuovi codici** nella sezione **Codici di recupero** e conferma
+che sei tu. I codici vecchi smettono di funzionare. La sezione mostra quanti codici ti restano.
+
+## Accedi {#sign-in}
+
+Dopo email e password, il pannello chiede il secondo fattore:
+
+- il **Codice a 6 cifre** dell'app. Ogni codice vale una volta sola: se l'hai appena usato, aspetta
+  quello successivo;
+- **Usa una passkey**, se il tuo account ne ha una e hai aperto il pannello dal suo dominio;
+- **Usa un codice di recupero**, se non hai a portata di mano né il telefono né le passkey.
+
+Dopo 10 codici sbagliati in un'ora il pannello non ne controlla altri per quell'account fino allo
+scadere dell'ora: vedi
 [i codici della verifica in due passaggi](/docs/explanation/sign-in-protection#two-step-codes).
+
+## Conferma una modifica {#confirm}
+
+Cambiare il modo in cui il tuo account accede (configurare o sostituire l'app, disattivarla,
+aggiungere o rimuovere una passkey, generare nuovi codici di recupero) apre una finestra di conferma:
+la password, poi un codice, una passkey o un codice di recupero. Chi si impossessa di una sessione
+aperta non può cambiare i tuoi fattori senza di loro.
 
 ## Sostituisci l'app di autenticazione {#replace-the-app}
 
-Per passare a un altro telefono:
-
-1. In **Sicurezza**, scrivi la password in **Conferma con la password** e un **Codice attuale**
-   dell'app vecchia.
-2. Premi **Sostituisci l'app di autenticazione** e inquadra il nuovo codice QR.
-3. Conferma con un codice della nuova app e premi **Verifica e attiva**.
+1. In **Sicurezza**, premi **Sostituisci l'app di autenticazione**.
+2. Conferma con la password e un codice dell'app vecchia. Se il telefono vecchio non c'è più,
+   scegli **Usa un codice di recupero**.
+3. Inquadra il nuovo codice QR, scrivi un codice della nuova app e premi **Verifica e attiva**.
 
 Fino alla conferma l'app vecchia continua a funzionare: iniziare una sostituzione non spegne mai la
 verifica.
 
-## Spegni la verifica {#turn-it-off}
+## Disattivala {#turn-it-off}
 
-1. In **Sicurezza**, scrivi la password in **Per disattivarla, inserisci la password** e un **Codice
-   attuale**.
-2. Premi **Disattiva 2FA** e conferma.
+1. In **Sicurezza**, premi **Disattiva 2FA** e conferma.
+2. Scrivi la password e un codice attuale, poi premi **Disattiva 2FA**.
 
-Spegnere la verifica chiude le tue altre sessioni e **revoca i tuoi token API**.
+Disattivare l'app chiude le tue altre sessioni e **revoca i tuoi token API**. Se non ti resta
+nessuna passkey, spariscono anche i codici di recupero.
 
-## Richiedila a tutti gli amministratori {#require-it}
+## Rendila obbligatoria nel pannello {#require-it}
 
-Un amministratore può renderla obbligatoria:
+Un amministratore decide chi deve usare la verifica in due passaggi:
 
 1. Apri **Impostazioni**.
-2. Nella sezione **Accesso**, accendi **Richiedi la 2FA agli amministratori**.
+2. Nella sezione **Accesso**, sotto **Richiedi la verifica in due passaggi**, scegli **Non
+   richiesta**, **Per gli amministratori** o **Per tutti gli account**.
 3. Premi **Salva**.
 
-Un amministratore senza verifica vede allora solo la propria pagina **Sicurezza** finché non la
-attiva: nessuno resta chiuso fuori. Vale anche per i token API di quell'amministratore. Operatori e
-account in sola lettura non sono obbligati.
+Un account che deve averla e non ce l'ha viene mandato alla sua pagina **Sicurezza** subito dopo la
+password e non vede altro finché non configura un'app o una passkey: nessuno resta chiuso fuori. I
+suoi token API restano bloccati allo stesso modo.
 
-## Se perdi il telefono {#lost-device}
+## Se perdi tutti i fattori {#lost-device}
 
-Senza l'app non puoi spegnere la verifica dal pannello. Dal server, come root, usa
-`panel-api recover-admin --email <tua-email> --disable-2fa`: vedi
-[recupera l'accesso amministratore](./recover-admin-access.mdx).
+Accedi con un codice di recupero e sostituisci l'app o la passkey. Senza codici:
+
+- un amministratore può reimpostare la tua verifica da **Utenti** (vedi
+  [reimposta la verifica in due passaggi di un utente](./users-and-roles.mdx#reset-two-step));
+- per un account amministratore, dal server, come root, usa
+  `panel-api recover-admin --email <tua-email> --disable-2fa`: vedi
+  [recupera l'accesso amministratore](./recover-admin-access.mdx).
 
 ## Prossimo passo {#next}
 
-Per gli script, crea un [token API e usa cgctl](./api-tokens-and-cgctl.mdx).
+Aggiungi una [passkey](./passkeys.mdx): non si può rubare con il phishing e può farti entrare da
+sola.

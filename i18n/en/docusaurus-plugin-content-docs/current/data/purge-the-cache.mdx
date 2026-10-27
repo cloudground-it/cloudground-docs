@@ -5,8 +5,8 @@ type: how-to
 prerequisites:
   - A site with the page cache on
   - An administrator account, or an operator of the site
-version: a7d92ba
-last_verified: 2026-10-10
+version: v0.7.0
+last_verified: unverified
 sidebar_position: 1
 ---
 
@@ -60,6 +60,12 @@ curl -sI https://<domain>/blog/post/ | grep -i x-cloudground-cache
 ```
 
 Right after the purge the header reads `MISS`. The next request reads `HIT`.
+
+## A site behind Cloudflare {#cloudflare}
+
+If the site is proxied by Cloudflare, Cloudflare may keep its own copy of the pages. Once you've set
+the site's Zone ID and a Cloudflare purge token, every purge above empties that copy too. See
+[run a site behind Cloudflare](/docs/sites/behind-cloudflare#cdn-purge).
 
 ## Next step {#next}
 
