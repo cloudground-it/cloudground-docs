@@ -34,8 +34,7 @@ sicurezza preso all'inizio del ripristino.
 5. Premi **Continua**, scrivi il dominio del sito per confermare e premi **Ripristina**.
 6. Segui l'attività *Ripristino avviato* fino alla fine.
 
-Lo snapshot di sicurezza compare nell'elenco dei backup: se ti serve tornare indietro, ripristina
-quello.
+Lo snapshot di sicurezza compare nell'elenco dei backup. Per annullare il ripristino, ripristina quello.
 
 ## Cosa cambia sul sito {#what-changes}
 
@@ -76,15 +75,14 @@ Nell'API, aggiungi `"paths"` a un ripristino dei file:
 2. Scegli **Tutto (file e database)**, **Solo i file** o **Solo i database** e fai clic su **Scarica**.
 
 Il server prepara un `.tar.gz` con `files/`, la cartella del sito com'è nello snapshot, e
-`databases/<nome>.sql`, il dump di ogni database. Poi il browser lo scarica. L'archivio viene
+`databases/<nome>.sql`, il dump di ogni database, e il browser lo scarica. L'archivio viene
 cancellato dal server appena scaricato, o dopo un giorno. Ogni download finisce nel **Registro
 attività**. Gli account in sola lettura non possono scaricare i backup.
 
 ## Quali database {#databases}
 
-*Da v0.2.0.* Con *Tutto* e *Solo il database* scegli quali database del backup ripristinare. La
-finestra del ripristino elenca, in **Database da ripristinare**, i database che lo snapshot contiene,
-tutti selezionati.
+*Da v0.2.0.* Con *Tutto* e *Solo il database* scegli quali database del backup ripristinare. In **Database da ripristinare** la
+finestra elenca i database dello snapshot, tutti selezionati.
 
 - Lasciali tutti selezionati per ripristinarli tutti.
 - Togli la selezione a quelli da non toccare: vengono sostituiti solo i database selezionati, gli
@@ -129,5 +127,5 @@ database da ripristinare; vale anche la forma `--database=<nome>`, in qualsiasi 
 
 ## Prossimo passo {#next}
 
-Per capire perché un backup che conta si può sempre ripristinare, leggi
+Perché un backup che conta si può sempre ripristinare è spiegato in
 [Backup e ripristini di prova](/docs/explanation/backups-and-restore-tests).

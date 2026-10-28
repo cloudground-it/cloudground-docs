@@ -11,7 +11,7 @@ sidebar_position: 3
 ---
 
 Tutti i siti salvano i loro backup in un unico repository restic. I dati vengono cifrati sul
-server, con la password del repository, prima di partire. Imposti entrambi nelle **Impostazioni**, nel
+server, con la password del repository, prima di partire. Imposti entrambi in **Impostazioni**, nel
 riquadro **Backup off-site (restic)**.
 
 ## Scegli la destinazione {#destination}
@@ -45,7 +45,7 @@ SFTP o REST, credenziali nell'indirizzo, un altro percorso) compare come **Altro
 
 :::warning[Una cartella su questo server non è un backup off-site]
 
-Se perdi il server, perdi anche i backup. Per backup davvero fuori dal server scegli un object storage.
+Se perdi il server, perdi anche i backup. Per un backup fuori dal server scegli un object storage.
 
 :::
 
@@ -63,8 +63,8 @@ Se perdi il server, perdi anche i backup. Per backup davvero fuori dal server sc
 
 ## Imposta la password del repository {#password}
 
-La password del repository cifra ogni snapshot. Senza di essa nessun backup si può ripristinare,
-nemmeno dal pannello: conservane una copia fuori da questo server.
+La password del repository cifra ogni snapshot. Senza di essa nessun backup si ripristina,
+nemmeno dal pannello. Conservane una copia fuori da questo server.
 
 1. Accanto a **Password del repository**, premi **Genera**. Il pannello crea una password di 32
    caratteri e la mostra.
@@ -73,14 +73,12 @@ nemmeno dal pannello: conservane una copia fuori da questo server.
 3. Conservala fuori da questo server.
 
 Puoi scrivere una tua password invece di generarla. Una volta salvata, la password non viene più
-mostrata, e **Genera** non compare più: il campo dice che è **Impostata**. Cambiala solo per un
+mostrata, **Genera** sparisce e il campo dice **Impostata**. Cambiala solo per un
 repository nuovo e vuoto: gli snapshot già presenti si aprono solo con quella vecchia.
 
 ## Salva le impostazioni {#save}
 
-Premi **Salva**.
-
-Quando cambi il repository o la password, il pannello prova la coppia prima di salvarla. Se il
+Premi **Salva**. Quando cambi il repository o la password, il pannello prova la coppia prima di salvarla. Se il
 repository non esiste ancora, lo crea. Se esiste con un'altra password, il pannello rifiuta di
 salvare: i backup già presenti diventerebbero illeggibili.
 
@@ -95,7 +93,7 @@ che aveva salvato in chiaro.
 
 ## Prova la connessione {#test}
 
-Premi **Prova la connessione**. Si collega con le impostazioni salvate, quindi è disponibile solo
+Premi **Prova la connessione**. Usa le impostazioni salvate, quindi è disponibile solo
 quando non resta nulla da salvare (*Salva prima: il test legge le impostazioni salvate*). Se il
 repository risponde, il pannello mostra *Repository raggiungibile* e il numero di snapshot che
 contiene.

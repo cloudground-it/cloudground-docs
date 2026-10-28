@@ -11,8 +11,8 @@ sidebar_position: 6
 ---
 
 Tutti i processi di un sito (il suo PHP, le attività pianificate, wp-cli e la shell) girano nella sua
-slice di systemd, `cg-site-<id>.slice`. La scheda **Risorse** mostra quanto usano, e ti lascia
-limitare quanto possono prendere agli altri siti dello stesso server.
+slice di systemd, `cg-site-<id>.slice`. La scheda **Risorse** mostra quanto usano e ti lascia
+limitare quanto possono togliere agli altri siti dello stesso server.
 
 ## Guarda cosa usa il sito {#see-the-usage}
 
@@ -35,7 +35,7 @@ Ogni account che vede il sito vede la scheda.
 
 ## Limita le risorse del sito {#set-the-limits}
 
-Serve un account amministratore: i limiti decidono quanto un sito può togliere a tutti gli altri.
+Serve un account amministratore.
 
 1. Nella scheda **Risorse**, riquadro **Limiti**, scrivi:
    - **Limite di memoria**, in MB;
@@ -53,7 +53,7 @@ Serve un account amministratore: i limiti decidono quanto un sito può togliere 
 
 Il kernel applica i limiti al solo sito. Vicino al limite di memoria (nove decimi) il sito viene
 rallentato; al limite, uno dei suoi processi viene terminato, mai quello di un altro sito, e il PHP del
-sito continua a servire. Il nuovo limite vale subito, senza riavviare niente.
+sito continua a servire. Il nuovo limite vale subito, senza riavvii.
 
 Il disco non ha un limite: puoi solo ricevere un avviso (vedi sotto).
 
@@ -71,7 +71,7 @@ Il disco non ha un limite: puoi solo ricevere un avviso (vedi sotto).
 | **Disco** | nessun avviso (0 nel campo) | l'ultima misura del disco è alla soglia o sopra |
 
 Un picco breve non genera un avviso. L'avviso è di tipo **Risorse**: compare nel pannello **Avvisi** e
-va al webhook degli avvisi come gli altri (vedi [avvisi e notifiche](/docs/server/alerts-and-notifications)).
+va al webhook degli avvisi come gli altri (vedi [Avvisi e notifiche](/docs/server/alerts-and-notifications)).
 Cambiare le soglie non tocca la configurazione del sito.
 
 ## Con l'API {#with-the-api}
@@ -94,4 +94,4 @@ richiesta riceve **403**. `usage_alerts` si sostituisce per intero. Ogni campo �
 
 ## Prossimo passo {#next}
 
-[Controlla che il sito risponda](/docs/sites/uptime-monitoring) dall'esterno.
+[Controlla dall'esterno che il sito risponda](/docs/sites/uptime-monitoring).

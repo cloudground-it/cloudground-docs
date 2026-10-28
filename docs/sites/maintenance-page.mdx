@@ -12,12 +12,12 @@ sidebar_position: 12
 
 Finché la pagina di manutenzione è attiva, i visitatori ricevono una pagina con il tuo titolo e il
 tuo messaggio e lo stato `503`, non il sito. I motori di ricerca leggono `503` e `Retry-After` come
-«torna più tardi». Nel frattempo non viene messo in cache nulla del sito.
+«torna più tardi». Nulla del sito viene messo in cache.
 
 ## Attivala {#turn-on}
 
 1. Apri il sito e scegli la scheda **Percorsi protetti**.
-2. Nel riquadro **Pagina di manutenzione** compila quello che vuoi:
+2. Nel riquadro **Pagina di manutenzione** compila:
    - **Titolo**: testo semplice, fino a 100 caratteri. Vuoto mostra *In manutenzione*.
    - **Messaggio**: testo semplice, fino a 2000 caratteri; gli a capo restano. Vuoto mostra un
      messaggio predefinito.
@@ -25,8 +25,7 @@ tuo messaggio e lo stato `503`, non il sito. I motori di ricerca leggono `503` e
      `Retry-After`.
 3. Premi **Attiva la manutenzione**.
 
-Titolo e messaggio sono testo: il markup e `${…}` compaiono come li scrivi e non vengono mai
-eseguiti.
+Titolo e messaggio sono testo: markup e `${…}` compaiono come li scrivi e non vengono eseguiti.
 
 ## Continua a vedere il sito {#allow}
 
@@ -37,7 +36,7 @@ Alcuni visitatori vedono comunque il sito vero:
 - il server stesso;
 - ogni browser che apre l'**Indirizzo di anteprima**, mostrato nel riquadro mentre la pagina è
   attiva. Aprirlo imposta un cookie che fa passare quel browser per otto ore. Chiunque abbia
-  l'indirizzo può fare lo stesso, quindi condividilo con attenzione.
+  l'indirizzo può fare lo stesso.
 
 Un visitatore che [rifiuti](/docs/access/refuse-visitors) resta rifiutato.
 
@@ -58,4 +57,4 @@ Il messaggio è facoltativo; senza, resta il testo salvato.
 
 ## Prossimo passo {#next}
 
-Lavori sul codice e non vuoi chiudere il sito? [Salta la cache di pagina mentre lavori](/docs/sites/development-mode).
+Per lavorare sul codice senza chiudere il sito: [Salta la cache di pagina mentre lavori](/docs/sites/development-mode).

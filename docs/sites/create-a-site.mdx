@@ -10,8 +10,8 @@ last_verified: unverified
 sidebar_position: 1
 ---
 
-Un sito nuovo nasce con il suo utente di sistema, la sua cartella, il suo vhost e, tranne i siti
-statici e reverse proxy, il suo PHP. I siti WordPress, WooCommerce e Laravel ricevono anche il loro
+Un sito nuovo ha un utente di sistema, una cartella, un vhost e, tranne i siti
+statici e reverse proxy, un PHP suo. I siti WordPress, WooCommerce e Laravel ricevono anche un
 database. Solo un amministratore può creare un sito.
 
 ## Dal pannello {#from-the-panel}
@@ -19,7 +19,7 @@ database. Solo un amministratore può creare un sito.
 1. Apri **Siti** e scegli **Nuovo sito**.
 2. In **Dominio** scrivi il nome del sito, per esempio `example.com`. Il pannello lo porta in
    minuscolo.
-3. In **Tipo** scegli il tipo di sito. Le differenze sono nel [riferimento dei tipi di sito](/docs/reference/site-types).
+3. In **Tipo** scegli il tipo di sito. Le differenze sono in [Tipi di sito](/docs/reference/site-types).
 4. In **PHP** lascia **Versione predefinita** o scegli una delle versioni installate sul server. Il
    campo non c'è per i siti statici e reverse proxy.
 5. In **Profilo prestazioni** lascia **Consigliato** o scegli **Bilanciato**, **E-commerce** o
@@ -27,8 +27,7 @@ database. Solo un amministratore può creare un sito.
 6. Compila i campi del tipo che hai scelto:
    - **WordPress** e **WooCommerce**, in **Amministratore di WordPress**: **Titolo del sito**
      (facoltativo; vuoto, vale il dominio), **Email amministratore**, **Utente amministratore** e
-     **Password amministratore**, di almeno 12 caratteri (**Genera** ne crea una). Sono le
-     credenziali per entrare in WordPress.
+     **Password amministratore**, di almeno 12 caratteri (**Genera** ne crea una). Servono per entrare in WordPress.
    - **Reverse proxy**: **URL upstream**, per esempio `http://127.0.0.1:3000`. Deve essere un URL
      `http` o `https`, senza credenziali, query o frammento.
 7. Compila la parte **Database** (sotto).
@@ -38,10 +37,9 @@ database. Solo un amministratore può creare un sito.
 
 La parte **Database** dipende dal tipo:
 
-- **WordPress**, **WooCommerce** e **Laravel** hanno sempre un database: la loro configurazione lo
-  usa.
+- **WordPress**, **WooCommerce** e **Laravel** hanno sempre un database.
 - **PHP** e **Statico**: attiva **Crea anche un database** per avere un database MariaDB e un utente
-  con tutti i privilegi su di esso. Se resta spento, il sito parte senza; puoi aggiungerne uno dopo
+  con tutti i privilegi su di esso. Se resta spento, il sito parte senza database; puoi aggiungerne uno dopo
   dalla [scheda Database](/docs/data/manage-databases).
 - **Reverse proxy**: nessun database.
 
@@ -50,7 +48,7 @@ Quando il sito ne riceve uno, compila:
 1. **Nome del database** e **Utente del database**. Il pannello propone un nome dal dominio
    (`blog.example.com` dà `blog_example`) e lo usa per entrambi, finché non li cambi.
 2. **Password del database**. Il pannello la riempie con una password generata; tienila, premi
-   **Genera** per averne un'altra, oppure scrivi la tua. **Mostra** la fa vedere.
+   **Genera** per averne un'altra, o scrivi la tua. **Mostra** la fa vedere.
 
 I nomi e la password seguono le [regole dei database](/docs/reference/database-names-and-passwords): per
 esempio, un nome già usato su questo server, o una password con `'`, `"` o `\`, viene rifiutato sotto
@@ -59,7 +57,7 @@ il suo campo.
 ## Il riepilogo {#summary}
 
 Dopo **Crea sito**, la finestra diventa il riepilogo del sito. In alto compaiono i passi della
-creazione mentre girano: *fatto*, *in corso* o *non riuscito*. Sotto, tutto quello che serve per usare
+creazione mentre girano: *fatto*, *in corso* o *non riuscito*. Sotto, i dati per usare
 il sito:
 
 | Parte | Righe |
@@ -78,9 +76,9 @@ Prima di chiuderlo, premi **Scarica come .txt** o **Copia**. Se la perdi, impost
 :::
 
 - **Scarica come .txt** salva tutto il riepilogo come `<dominio>-cloudground.txt`. Il file contiene
-  password: tienilo in un posto sicuro ed eliminalo dopo averle salvate altrove.
+  password: eliminalo dopo averle salvate altrove.
 - **Copia** copia lo stesso testo negli appunti.
-- **Chiudi** senza nessuno dei due chiede prima *Chiudere senza salvare?*; anche lasciare o ricaricare
+- **Chiudi** senza nessuno dei due chiede prima *Chiudere senza salvare?*. Anche lasciare o ricaricare
   la pagina chiede conferma.
 - **Apri il sito** va alla pagina del sito.
 
@@ -95,7 +93,7 @@ finché non ne emetti uno dalla scheda **SSL**.
 
 ## SFTP parte spento {#sftp}
 
-L'accesso SFTP di un sito nuovo è spento: nessuno può entrare in SFTP finché non lo attivi, con una
+L'accesso SFTP di un sito nuovo è spento: finché non lo attivi, con una
 sua password, dalla scheda **SFTP / SSH** del sito. Vedi [SFTP e chiavi SSH](/docs/access/sftp-and-ssh-keys).
 
 ## Con cgctl {#with-cgctl}
@@ -175,4 +173,4 @@ cgctl --wait sites create app.example.com proxy '{"proxy_upstream":"http://127.0
 
 ## Prossimo passo {#next}
 
-[Dai al sito un certificato e i suoi alias](./domains-and-certificates.mdx).
+[Dai al sito un certificato e degli alias](./domains-and-certificates.mdx).

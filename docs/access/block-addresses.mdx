@@ -12,8 +12,7 @@ sidebar_position: 6.5
 
 Chi prova password a raffica su SSH, su `wp-login.php`, su `xmlrpc.php` o sul pannello viene bloccato per un
 po': i suoi pacchetti vengono scartati su ogni porta del server. La pagina **Blocchi**, nel gruppo
-**Server**, mostra gli indirizzi bloccati e quelli sempre consentiti, e ne cambia le impostazioni. Come
-funziona dentro lo spiega [il blocco degli indirizzi](/docs/explanation/blocking).
+**Server**, mostra gli indirizzi bloccati e quelli sempre consentiti, e ne cambia le impostazioni. Il funzionamento è in [il blocco degli indirizzi](/docs/explanation/blocking).
 
 ## Il blocco automatico {#automatic-blocking}
 
@@ -44,7 +43,7 @@ Cloudflare fa passare da lì). Per un sito dietro Cloudflare, vedi
 
 ## Consenti sempre il tuo indirizzo {#allow-yours}
 
-Fallo prima di tutto: qualche password sbagliata di troppo non deve chiuderti fuori.
+Fallo per primo, così qualche password sbagliata non ti chiude fuori.
 
 1. Apri **Blocchi**. In alto la pagina mostra **Il tuo indirizzo**.
 2. Nel riquadro **Sempre consentiti** premi **Consentilo sempre**, oppure scrivi un **Indirizzo o rete**
@@ -74,7 +73,7 @@ cgctl blocklist unblock <indirizzo>
 ```
 
 `<indirizzo>` è il tuo indirizzo. Sul server `cgctl` parla con il socket dell'API, che non ha un
-indirizzo da bloccare, quindi il comando funziona anche quando sei bloccato dal pannello e da SSH.
+indirizzo da bloccare: il comando funziona anche se sei bloccato dal pannello e da SSH.
 
 ## Con cgctl o l'API {#with-cgctl-or-the-api}
 

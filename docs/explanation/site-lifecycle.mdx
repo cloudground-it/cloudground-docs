@@ -9,8 +9,8 @@ sidebar_position: 4
 ---
 
 Un sito vive in due posti. Il pannello tiene il **record**: il dominio, il tipo e le impostazioni che vuoi.
-Il server tiene **quello che gira**: l'utente di sistema, i file, il PHP, il vhost. Il ciclo di vita è il
-modo in cui i due restano d'accordo, anche quando qualcosa si interrompe a metà.
+Il server tiene **quello che gira**: l'utente di sistema, i file, il PHP, il vhost. Il ciclo di vita tiene i due
+allineati, anche quando qualcosa si interrompe a metà.
 
 ## Gli stati {#the-states}
 
@@ -35,14 +35,13 @@ stateDiagram-v2
 **In creazione.** Il pannello salva il record e mette in coda l'attività **Creazione sito**. Il server
 crea, in ordine: l'utente, la cartella, il database, il primo rilascio con l'applicazione, il vhost e il
 PHP, e per WordPress il cron. Ogni passo ha il suo contrario. Se un passo fallisce, il server disfa quelli
-già fatti in ordine inverso, e il pannello toglie il record: non resta niente a metà.
+già fatti in ordine inverso, e il pannello toglie il record.
 
-**Errore, invece di sparire.** Se il pannello non riceve risposta, perché il server non risponde o
-l'attività scade, non sa cosa è stato creato. Il sito potrebbe esistere e servire pagine. Il pannello
-allora tiene il record nello stato **errore**: se lo togliesse, resterebbe un sito che nessuna pagina
+**Errore, invece di sparire.** Se il server non risponde o l'attività scade, il pannello non sa cosa è stato creato.
+Il sito potrebbe esistere e servire pagine. Il pannello tiene quindi il record in stato **errore**: se lo togliesse, resterebbe un sito che nessuna pagina
 mostra e il cui dominio non si potrebbe più creare. Un'eliminazione pulisce tutto.
 
-**Attivo.** Il sito risponde. Le modifiche passano tutte dalla configurazione desiderata (sotto).
+**Attivo.** Il sito risponde. Le modifiche passano dalla configurazione desiderata (sotto).
 
 **In eliminazione.** Il server toglie prima il routing, così il sito smette di rispondere, poi i processi,
 il PHP, le attività pianificate, il database, i certificati, l'utente e infine i file. Ogni passo toglie
@@ -70,7 +69,7 @@ flowchart LR
 ```
 
 - Ogni modifica è un'attività con la serratura del sito: due modifiche dello stesso sito non si
-  sovrappongono mai, e ogni attività rilegge il sito com'è al momento in cui parte.
+  sovrappongono, e ogni attività rilegge il sito com'è al momento in cui parte.
 - Se il server non riesce ad applicarla, il pannello rimette i valori di prima, ma solo dei campi che una
   modifica successiva non ha già cambiato.
 - Il server non riscrive un file che non è cambiato e non ricarica nginx se nessun file di nginx è

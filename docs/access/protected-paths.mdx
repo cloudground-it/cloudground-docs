@@ -10,8 +10,8 @@ last_verified: unverified
 sidebar_position: 2.5
 ---
 
-Un percorso protetto chiede un nome utente e una password prima di servire qualsiasi cosa: il browser
-mostra la sua finestra di accesso, e senza le credenziali giuste la risposta è **401**. Ogni percorso
+Un percorso protetto chiede nome utente e password prima di servire qualsiasi cosa: il browser
+mostra la sua finestra di accesso e, senza le credenziali giuste, la risposta è **401**. Ogni percorso
 ha le sue credenziali e copre tutto ciò che contiene.
 
 Le copie di staging non hanno questa scheda: chiedono già la loro password su tutto il sito.
@@ -47,7 +47,7 @@ Le regole:
   plugin lo chiamano dalle pagine pubbliche.
 
 Il pannello conserva solo l'hash bcrypt della password, in un file leggibile solo da root e da nginx.
-La password non si rilegge: né il pannello né l'API la mostrano, e nemmeno il suo hash.
+La password non si rilegge: né il pannello né l'API mostrano la password o il suo hash.
 
 ## Cambia le credenziali o togli la protezione {#change-or-remove}
 

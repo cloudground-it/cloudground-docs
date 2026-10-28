@@ -24,8 +24,7 @@ v0.2.0, a password was always required.
 3. If the site doesn't have an SSH key yet, paste the key you'll sign in with into **Public key**.
 4. Press **Enable with keys only**.
 
-With keys only, there is no password at all. The server doesn't even ask for one, so there's nothing
-to guess. To add more keys, see [Add an SSH key](#add-a-key).
+With keys only, there is no password to guess. To add more keys, see [Add an SSH key](#add-a-key).
 
 ### Enable SFTP with a password {#enable-with-a-password}
 
@@ -35,7 +34,7 @@ to guess. To add more keys, see [Add an SSH key](#add-a-key).
 
 :::caution[Passwords can be guessed]
 
-SFTP usernames follow the pattern `cg-site-<id>`, so they're easy to guess. For now, the only
+SFTP usernames follow the pattern `cg-site-<id>`, so they are easy to guess. For now, the only
 protection against repeated wrong passwords is the SSH server's own per-connection limit. CloudGround
 doesn't yet block an address that keeps failing. Use a long, random password, or use keys only.
 
@@ -44,8 +43,8 @@ doesn't yet block an address that keeps failing. Use a long, random password, or
 To switch an account from one method to the other, select it and press **Switch to keys only** or
 **Switch to a password**.
 
-The **Connection details** box shows everything your client needs: **Host**, **Port**, **Username**,
-**Folder** and a ready-to-copy **Command**:
+The **Connection details** box shows **Host**, **Port**, **Username**,
+**Folder** and a **Command** to copy:
 
 ```bash
 sftp cg-site-<id>@<host>
@@ -57,8 +56,6 @@ the command also includes `-P <port>`. Inside the session, the site's folder is 
 To change the password for password sign-in, enter a new one and press **Change password**.
 
 ## Add an SSH key {#add-a-key}
-
-Keys are the recommended option for developers, since there's no password to share.
 
 1. In the **SSH keys** section, paste a single line into **Public key**, in the format
    `<type> <base64> [comment]`.

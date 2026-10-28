@@ -9,9 +9,9 @@ sidebar_position: 10
 ---
 
 Anyone who can reach the panel's address can try to sign in. CloudGround does not lock an account
-after a set number of wrong passwords. A lockout would let anyone who knows your email address
-keep you out of your own panel just by typing bad passwords. Instead, CloudGround slows guessing
-down, and it slows down **the network the guesses come from**, not the account.
+after a set number of wrong passwords: anyone who knows your email address
+could keep you out of your own panel just by typing bad passwords. CloudGround slows guessing
+down instead, and it slows down **the network the guesses come from**, not the account.
 
 ## The short version {#plain-words}
 
@@ -20,7 +20,7 @@ down, and it slows down **the network the guesses come from**, not the account.
 - Sending attempts in parallel does not help. Each one waits its turn behind the previous attempt
   from the same network. An attempt that would have to wait more than a minute is rejected
   immediately, so a failing network gets roughly one guess per minute against an account.
-- The real user, signing in from somewhere else, waits at most 2 seconds and is never rejected
+- The real user, signing in from another network, waits at most 2 seconds and is never rejected
   because of someone else's attempts.
 - The account is never locked, and the correct password always works. *Since v0.3.0.* The server
   can block an address that keeps failing for a while, on every port: see [Address
@@ -31,7 +31,7 @@ down, and it slows down **the network the guesses come from**, not the account.
 A *network* is either one IPv4 address or one IPv6 /64. A single host or customer usually gets a
 whole /64, so counting each IPv6 address separately would give an attacker billions of fresh
 starts. Each IPv6 address also counts toward its /48, so hopping between /64s in the same
-allocation does not help either.
+allocation does not help.
 
 ## The panel {#panel}
 
@@ -51,12 +51,11 @@ are counted twice: once for the attempt's own network (and its /48), and once ac
   failures on record and four attempts sent at once, they start after 1, 3, 7 and 15 seconds. If
   an attempt's wait would exceed **60 seconds**, it is rejected immediately with *too many attempts
   for this account at once — wait a moment and try again*. That rejection does not count as a
-  failure and holds no resources.
+  failure.
 - *Global delay.* Failures from all networks combined add at most **2 seconds**, and never cause a
   rejection.
 
-An attempt waits for whichever delay is longer. While waiting, it holds nothing except the request
-itself.
+An attempt waits for whichever delay is longer.
 
 *Since v0.2.0.* Even the longest wait, up to 60 seconds, runs to completion, and the attempt then
 gets its normal response: signed in or *invalid credentials*. If the client disconnects first (the
@@ -82,8 +81,8 @@ for that account until an hour has passed since the first of the ten: *too many 
 codes for this account — try again in an hour*. A correct code does not reset the count. The tenth
 wrong code is recorded in the **Audit log** as `login.2fa_brute`.
 
-Hitting this cap requires the password first, so it means someone has your password. If it is you
-(a phone with the wrong time, or a lost phone), wait out the hour. Alternatively, as root on the
+Reaching this cap requires the password, so someone has your password. If it is you
+(a phone with the wrong time, or a lost phone), wait out the hour, or, as root on the
 server, reset the password and turn off two-step verification with `panel-api recover-admin --email
 <email> --disable-2fa` (see [Recover administrator access](/docs/access/recover-admin-access)),
 then enroll again. If it is not you, change your password right away.
@@ -102,23 +101,22 @@ Signing in to Quarry as a database user follows the same rules, with different n
 - every rejection, whatever the cause, returns the same *Wrong database user or password.* and
   takes at least 300 milliseconds, so response time does not reveal whether a user exists.
 
-This matters even more than in the panel. Database user names such as `site_<id>` are easy to
+The risk is higher than in the panel. Database user names such as `site_<id>` are easy to
 guess, and the site itself connects to MariaDB as that user. A lockout would let a stranger take
-the site offline. So the delay applies only to Quarry sign-ins, and MariaDB's own limit on wrong
+the site offline. The delay therefore applies only to Quarry sign-ins, and MariaDB's own limit on wrong
 passwords, which would lock the user, stays off. The site never notices.
 
 ## Trade-offs {#trade-offs}
 
 - Guesses spread across many networks are each slowed only by their own network's failures. Their
   combined rate is about one per minute per network (and per /48) against one account, further
-  limited by how many password checks the server runs concurrently. A long, unique password is
-  still the real defence, together with two-step verification for the panel.
+  limited by how many password checks the server runs concurrently. The real defence is a long, unique password,
+  plus two-step verification for the panel.
 - Behind a single address or a single IPv6 /48, such as a shared office connection, an attacker
   and the real user share the same network delay.
-- Every rejected sign-in is recorded in the **Audit log** with its address. Check there when
-  someone keeps trying.
+- Every rejected sign-in is recorded in the **Audit log** with its address.
 
 ## Next step {#next}
 
-Add a second factor to your panel account with [two-step
+Add a second factor to your panel account: [Two-step
 verification](/docs/access/two-step-verification).

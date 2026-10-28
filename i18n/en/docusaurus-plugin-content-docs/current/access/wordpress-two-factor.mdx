@@ -13,9 +13,8 @@ sidebar_position: 6.9
 
 WordPress administrator accounts are a site's most attacked accounts, and wp-admin accepts a password
 on its own. With two-factor sign-in, WordPress asks for a 6-digit code from an authenticator app after
-the correct password. This is separate from the panel's
-[two-step verification](/docs/access/two-step-verification): it protects the WordPress site's own
-accounts.
+the correct password. It covers the WordPress site's own accounts and is separate from the panel's
+[two-step verification](/docs/access/two-step-verification).
 
 ## Choose a mode {#choose-the-mode}
 
@@ -40,8 +39,7 @@ mode is set in the site's PHP configuration, so the site's own `wp-config.php` c
    code), then enter the code the app shows.
 3. Save the 10 **recovery codes**. They're shown only once, and each one works only once.
 
-In required mode, anyone who doesn't have an app set up yet does it at their next sign-in. To stop a
-stolen password from being enough to register an attacker's app, setup also requires a code sent to
+In required mode, anyone who doesn't have an app set up yet does it at their next sign-in. So that a stolen password can't register an attacker's app, setup also requires a code sent to
 the account's email address.
 
 ## If you lose your phone {#lost-phone}

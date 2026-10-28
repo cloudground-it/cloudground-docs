@@ -12,7 +12,7 @@ sidebar_position: 3.5
 ---
 
 Ogni sito ha la scheda **Reindirizzamenti** (sotto **Altro**). Un reindirizzamento è attivo appena lo
-salvi, senza riavviare nulla, e non viene mai messo in cache: nginx lo decide prima di guardare la cache
+salvi, senza riavviare nulla, e non viene messo in cache: nginx lo decide prima di guardare la cache
 delle pagine.
 
 ## Scegli un solo nome: con o senza www {#canonical}
@@ -31,7 +31,7 @@ porta 80, in un solo passaggio. Scegli **Nessuno** per tornare a servire ogni no
 Il sito deve rispondere anche sull'altro nome, altrimenti non c'è nulla da reindirizzare. Se il pannello
 dice che il sito non risponde ancora sul nome con o senza www, un amministratore preme **Servi anche
 www.esempio.it**: il nome è aggiunto come alias e il certificato Let's Encrypt viene emesso di nuovo, così
-copre entrambi i nomi (come in [domini e certificati](/docs/sites/domains-and-certificates)). Con un
+copre entrambi i nomi (come in [Domini e certificati](/docs/sites/domains-and-certificates)). Con un
 certificato personalizzato il pannello avvisa che potrebbe non coprire il nuovo nome.
 
 Finché un nome è canonico, il suo alias non si può togliere dal sito: cambia prima il nome canonico.
@@ -65,8 +65,8 @@ speciali, un indirizzo che inizia con `//`, un reindirizzamento verso se stesso,
 percorso e più di 200 regole. Se la configurazione di routing del sito ha già una `location` con lo stesso
 percorso, il salvataggio dice quale: toglila da lì.
 
-Ogni modifica svuota la cache delle pagine del sito e la riempie di nuovo: una pagina che il reindirizzamento
-nascondeva non torna dalla cache quando lo togli.
+Ogni modifica svuota la cache delle pagine del sito e la riempie di nuovo, quindi una pagina nascosta dal reindirizzamento
+non torna dalla cache quando lo togli.
 
 ## Dalla riga di comando {#cli}
 
@@ -84,8 +84,8 @@ cgctl redirects <id-del-sito> rules '[{"match":"prefix","from":"/blog","to":"/no
 - Una copia di staging non ha reindirizzamenti: i suoi nomi non sono quelli dell'originale.
 - Niente espressioni regolari e niente caratteri accentati nei percorsi: solo quelli elencati sopra.
 - Il costo sul traffico in cache è quello di un confronto sul nome e di una ricerca di percorso, fatti
-  prima della cache; non è stato misurato con `bench/`.
+  prima della cache. Non è stato misurato con `bench/`.
 
 ## Prossimo passo {#next}
 
-Come si ottiene il certificato per più nomi: [domini e certificati](/docs/sites/domains-and-certificates).
+Il certificato per più nomi: [Domini e certificati](/docs/sites/domains-and-certificates).

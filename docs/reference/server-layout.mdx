@@ -8,7 +8,7 @@ last_verified: unverified
 sidebar_position: 5
 ---
 
-I valori sono quelli di un'installazione fatta con l'installer. `<id>` è il numero del sito nel
+Valori di un'installazione fatta con l'installer. `<id>` è il numero del sito nel
 pannello, `<dominio>` il suo dominio.
 
 ## Porte {#ports}
@@ -24,7 +24,7 @@ pannello, `<dominio>` il suo dominio.
 | 9080/tcp | panel-api | solo `127.0.0.1` | il connettore WordPress: svuotamento della cache e controllo di salute |
 
 L'installer non accende mai il firewall. Se è già attivo, apre le porte su cui ascolta sshd, 80, 443,
-443/udp e 8443 (vedi [firewall](/docs/access/firewall)). Dal pannello non puoi chiudere le porte di SSH, 80,
+443/udp e 8443 (vedi [Firewall](/docs/access/firewall)). Dal pannello non puoi chiudere le porte di SSH, 80,
 443 e 8443.
 
 Il pannello non ha una porta TCP sua: nginx gli parla sul socket `/run/cloudground/api.sock`.
@@ -148,4 +148,4 @@ l'agent possa partire.
 
 ## Prossimo passo {#next}
 
-Per capire come questi pezzi lavorano insieme, leggi l'[architettura](/docs/explanation/architecture).
+Come questi pezzi lavorano insieme: [Architettura](/docs/explanation/architecture).

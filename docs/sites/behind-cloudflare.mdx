@@ -12,11 +12,11 @@ sidebar_position: 7.5
 ---
 
 Quando un sito passa dal proxy di Cloudflare, ogni richiesta arriva al server da un indirizzo di
-Cloudflare. Così i log del sito, la [lista dei blocchi](/docs/access/block-addresses) e i
-[visitatori rifiutati dal sito](/docs/access/refuse-visitors) vedono Cloudflare e non il visitatore.
-E la cache di pagina del sito non è l'unica: Cloudflare può tenere una sua copia delle pagine.
+Cloudflare. I log del sito, la [lista dei blocchi](/docs/access/block-addresses) e i
+[visitatori rifiutati dal sito](/docs/access/refuse-visitors) vedono quindi Cloudflare e non il visitatore.
+Inoltre Cloudflare può tenere una sua copia delle pagine, oltre alla cache di pagina del sito.
 
-Il riquadro **Cloudflare**, nella scheda **Cache** del sito, risolve tutte e due le cose.
+Il riquadro **Cloudflare**, nella scheda **Cache** del sito, gestisce entrambe le cose.
 
 ## Vedi gli indirizzi veri dei visitatori {#real-addresses}
 
@@ -27,14 +27,14 @@ Il riquadro **Cloudflare**, nella scheda **Cache** del sito, risolve tutte e due
 Da quel momento nginx prende l'indirizzo del visitatore dall'intestazione `CF-Connecting-IP` che
 aggiunge Cloudflare, e le crede solo per le richieste che arrivano dagli indirizzi di Cloudflare.
 Una richiesta mandata direttamente al server tiene il proprio indirizzo, qualunque intestazione
-porti: nessuno può scegliere l'indirizzo con cui viene registrato, limitato o bloccato.
+porti, quindi nessuno può scegliere l'indirizzo con cui viene registrato, limitato o bloccato.
 
 Il riquadro dice da dove viene l'elenco degli indirizzi di Cloudflare. CloudGround include l'elenco
 che Cloudflare pubblica e, finché un sito ha questa impostazione attiva, il pannello lo scarica di
 nuovo ogni giorno dall'API di Cloudflare. Un elenco che contiene qualcosa che non sia una rete
 pubblica viene scartato, e resta in uso quello di prima.
 
-Attivala solo per un sito che passa davvero da Cloudflare. Su un sito che non ci passa non cambia
+Attivala solo per un sito che passa da Cloudflare: su un sito che non ci passa non cambia
 nulla, perché nessuna richiesta arriva da Cloudflare.
 
 ### Cosa cambia per la lista dei blocchi {#block-list}
@@ -57,7 +57,7 @@ Prima un amministratore crea il token:
    nel riquadro **Certificati** e premi **Salva**.
 
 Questo token è separato da quello DNS dei certificati wildcard. Con il solo permesso Cache Purge, un
-token finito in mani sbagliate può svuotare cache e nient'altro. Il pannello lo conserva cifrato e
+token finito in mani sbagliate può solo svuotare la cache. Il pannello lo conserva cifrato e
 lo manda solo a `api.cloudflare.com`.
 
 Poi, per ogni sito:
@@ -77,7 +77,7 @@ Da quel momento ogni svuotamento svuota anche la cache di Cloudflare per il sito
 
 Se Cloudflare rifiuta la richiesta, la cache del server viene svuotata lo stesso e il pannello lo
 dice: **La cache di Cloudflare non è stata svuotata**, seguito dal motivo dato da Cloudflare. Gli
-svuotamenti del connettore arrivano a Cloudflare in background, così WordPress non li aspetta mai.
+svuotamenti del connettore arrivano a Cloudflare in background, quindi WordPress non li aspetta.
 
 ## Con l'API {#with-the-api}
 

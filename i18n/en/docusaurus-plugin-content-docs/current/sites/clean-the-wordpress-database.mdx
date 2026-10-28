@@ -11,7 +11,7 @@ last_verified: unverified
 sidebar_position: 10
 ---
 
-A WordPress database collects things nobody needs: transients that expired, and a revision of a post
+A WordPress database collects expired transients and a revision of a post
 for every save. The weekly cleanup removes them and leaves the rest alone. It is off by default.
 
 ## What it does {#what}
@@ -35,8 +35,8 @@ N of each post, and the number and size of the autoloaded options. Nothing chang
 1. In the same card, set **Revisions kept per post** and click **Save**.
 2. Turn on **Clean every week**.
 
-The panel refuses to turn it on when no backup repository is set
-([Connect a backup repository](/docs/data/connect-a-backup-repository)): the first cleanup of a site
+Without a backup repository the panel refuses to turn it on
+([Connect a backup repository](/docs/data/connect-a-backup-repository)), because the first cleanup of a site
 takes a snapshot. Turning it on does not clean at once. Each site has a slot of its own in the week;
 the card shows the **Next cleanup**, and the **Last cleanup** once there is one.
 
@@ -66,4 +66,4 @@ cgctl cleanup <site-id> off
 
 ## Next step {#next}
 
-Put the cleanup next to the updates: [update WordPress with an automatic rollback](/docs/sites/update-wordpress).
+Goes well with the cleanup: [Update WordPress with an automatic rollback](/docs/sites/update-wordpress).

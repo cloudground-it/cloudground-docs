@@ -50,7 +50,7 @@ e l'agent continuano. All'avvio l'agent ferma le unità rimaste da una sua esecu
 
 L'unità `cloudground-agent.service` ha un limite di memoria suo: oltre 768 MB il kernel la rallenta e
 oltre 1 GB ferma il processo che ha ecceduto. Le unità temporanee compaiono in `systemctl list-units
-'cg-helper-*'` solo mentre lavorano. Perché stanno fuori dall'unità dell'agent lo spiega
+'cg-helper-*'` solo mentre lavorano. Perché stanno fuori dall'unità dell'agent è spiegato in
 [l'architettura](/docs/explanation/architecture#the-agent).
 
 ## Riavvia un servizio {#restart}
@@ -59,8 +59,7 @@ oltre 1 GB ferma il processo che ha ecceduto. Le unità temporanee compaiono in 
 2. Premi **Riavvia** sulla riga del servizio.
 3. Conferma.
 
-Il riavvio interrompe per qualche secondo le richieste in corso. Il pannello aspetta che il sistema
-abbia finito, al massimo 3 minuti: MariaDB può essere lento a ripartire.
+Il riavvio interrompe per qualche secondo le richieste in corso. Il pannello aspetta il sistema per al massimo 3 minuti: MariaDB può essere lento a ripartire.
 
 Un servizio **disattivato** non ha il pulsante **Riavvia**: è spento di proposito (Redis, su un server
 aggiornato) e un riavvio lo accenderebbe. Anche la riga **PHP dei siti** non ha **Riavvia**.
@@ -74,4 +73,4 @@ lui. Ogni riavvio finisce nel **Registro attività**.
 
 ## Prossimo passo {#next}
 
-Quando un servizio si ferma, il motivo è nei [log](./logs.mdx).
+Il motivo di un arresto è nei [log](./logs.mdx).

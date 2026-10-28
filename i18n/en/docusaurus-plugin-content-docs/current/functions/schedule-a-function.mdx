@@ -10,7 +10,7 @@ last_verified: unverified
 sidebar_position: 5
 ---
 
-A scheduled function runs by itself, with nobody calling it: a clean-up job, a periodic report, a
+A scheduled function runs by itself, with no calls: a clean-up, a periodic report, a
 check. It doesn't need an address.
 
 ## Set the times {#set}
@@ -27,7 +27,7 @@ Every minute the panel looks for functions that are due and starts them, each at
 the event, `source` is `schedule`, and the function runs under the same memory and time limits as any
 other call.
 
-To get started, you can create the function with the **Scheduled job** starter code: it writes a line
+The **Scheduled job** starter code writes a line
 to the output on every run.
 
 ## See whether it ran {#check}
@@ -37,4 +37,4 @@ output is under **Output**: see [read the runs](/docs/functions/read-the-runs).
 
 ## Next step {#next}
 
-[Deploy a change and roll back if you need to](/docs/functions/deploy-and-roll-back).
+[Deploy a change or roll back](/docs/functions/deploy-and-roll-back).

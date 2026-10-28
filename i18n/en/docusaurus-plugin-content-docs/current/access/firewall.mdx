@@ -15,10 +15,9 @@ rules as the system reports them. Administrators can add and remove rules. Read-
 only view them.
 
 The installer never turns on the firewall. Many servers already sit behind their provider's firewall,
-and a script that enables ufw can lock you out, for example when SSH runs on a non-standard port. The
-decision is yours. Since v0.2.0, you can make it from the panel with a single button. On a freshly
+and a script that enables ufw can lock you out, for example when SSH runs on a non-standard port. Since v0.2.0 you turn it on from the panel with a button. On a freshly
 created cloud server, ufw is usually installed but off, and the page shows **inactive**. While it's
-inactive, rules are saved but have no effect. The page lists them with the note
+inactive, rules are saved but have no effect, and the page says so:
 *The firewall is inactive: these rules are stored, and apply only once it is enabled.*
 
 *Since v0.3.0.* Addresses that fail to sign in too many times are blocked through a separate
@@ -66,8 +65,7 @@ sshd -T | grep '^port '
 ufw allow 22/tcp && ufw allow 80/tcp && ufw allow 443/tcp && ufw allow 8443/tcp && ufw allow 443/udp && ufw enable
 ```
 
-The first line shows which ports SSH uses. If it's anything other than just 22, substitute your
-ports.
+The first line shows which ports SSH uses. If it isn't only 22, use your ports.
 
 :::danger[Allow the SSH port first]
 
@@ -75,8 +73,6 @@ Running `ufw enable` without a rule for SSH's port drops your connection and blo
 connection to the server.
 
 :::
-
-Once the firewall is active, the page shows **active** and the saved rules take effect.
 
 ## Open a port {#allow-a-port}
 
@@ -102,7 +98,7 @@ and leaves the port's other rules alone.
 
 ## Ports that always stay open {#essential-ports}
 
-The panel rejects any rule that would lock you or your sites out:
+The panel rejects every rule that would lock you or your sites out:
 
 - the ports SSH listens on (usually 22)
 - 80 and 443, used by the sites

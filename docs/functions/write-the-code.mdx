@@ -10,7 +10,7 @@ last_verified: unverified
 sidebar_position: 2
 ---
 
-Il codice di una funzione è un insieme di file. Uno è il file di ingresso, e contiene il gestore: la
+Il codice di una funzione è un insieme di file. Quello di ingresso contiene il gestore, la
 funzione che riceve la richiesta e restituisce la risposta.
 
 ## Organizza i file {#files}
@@ -22,7 +22,7 @@ ingresso deve restare.
 - Il percorso usa lettere, cifre, punti, trattini e trattini bassi, con `/` tra le cartelle.
 - Non si caricano cartelle `node_modules/` e `.venv/`: le dipendenze si installano al rilascio.
 
-Il file di ingresso è `index.js` per Node.js e `main.py` per Python. Gli altri file li importi dal
+Il file di ingresso è `index.js` per Node.js e `main.py` per Python. Gli altri file si importano dal
 gestore come in ogni progetto.
 
 ## Scrivi il gestore {#handler}
@@ -77,7 +77,7 @@ La funzione li trova nel suo ambiente: `process.env.NOME` in Node.js, `os.enviro
 Python. I segreti sono conservati cifrati e il pannello non li mostra più. Variabili e segreti sono al
 massimo 100 in tutto.
 
-Salvare le impostazioni non crea un nuovo rilascio.
+Salvare le impostazioni non crea un rilascio.
 
 ## Leggi l'output {#output}
 

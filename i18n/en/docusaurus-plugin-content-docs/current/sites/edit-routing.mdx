@@ -10,7 +10,7 @@ sidebar_position: 4
 ---
 
 The routing is the set of `location` blocks that decides what handles each URL on the site: a front
-controller, client-side routes for an SPA, real 404 pages, a proxied `/api`, redirects. It's the only
+controller, client-side routes for an SPA, real 404 pages, a proxied `/api`, redirects. It is the only
 part of the vhost you can edit. The panel keeps control of TLS, certificates, logs, limits, the page
 cache and its bypass rules, security headers and the PHP-FPM connection.
 
@@ -34,7 +34,7 @@ site type.
 1. Write your blocks in the editor.
 2. Choose **Save**.
 
-The panel first checks the blocks against its rules. It then writes the vhost and runs an nginx
+The panel checks the blocks against its rules, writes the vhost and runs an nginx
 configuration test (`nginx -t`). If nginx accepts the configuration, the panel reloads nginx and shows
 **Routing saved and live**. If nginx rejects it, the panel restores the previous files and shows the
 error with the line number in your block. The site keeps running on its previous routing.
@@ -59,10 +59,9 @@ site type.
 
 ## What the panel rejects {#what-the-panel-refuses}
 
-Your blocks can only serve the site itself. The panel rejects the following and tells you which line
-is the problem:
+Your blocks can only serve the site itself. The panel rejects the following and names the line:
 
-- Directives that aren't on its allowlist. These include `include`, logging, TLS, caching, scripting
+- Directives that aren't on its allowlist, including `include`, logging, TLS, caching, scripting
   modules, `fastcgi_pass` and every `*_pass` directive except `proxy_pass`.
 - `root` and `alias` pointing outside `<site folder>/current` or `<site folder>/releases/<name>`, or
   at a hidden folder such as `.git`.

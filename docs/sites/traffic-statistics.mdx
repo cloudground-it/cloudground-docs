@@ -10,7 +10,7 @@ sidebar_position: 7.6
 ---
 
 Ogni sito ha le sue statistiche di visita, calcolate sul server dal log di accesso di nginx. Alle
-pagine non si aggiunge nulla: niente script, niente cookie, nessun servizio esterno. Gli indirizzi
+pagine non si aggiunge nulla: né script, né cookie, né servizi esterni. Gli indirizzi
 dei visitatori non vengono conservati.
 
 ## Apri le statistiche {#open}
@@ -41,14 +41,14 @@ ore. **Pagine più viste** elenca i 20 percorsi più visti. **Non trovate** elen
 risposto 404: link rotti, o scanner che cercano file.
 
 I giorni sono giorni UTC. Le richieste del pannello stesso, come il controllo della disponibilità e
-il riscaldamento della cache, non contano affatto.
+il riscaldamento della cache, non contano.
 
 ## Privacy {#privacy}
 
 L'agente legge il log e conserva solo i totali di ogni giorno. Per contare i visitatori distinti
 tiene, per ogni giorno, un piccolo riassunto fatto con un hash di indirizzo e browser mescolato a un
 valore casuale. Riassunto e valore casuale vengono cancellati dopo due giorni, e resta solo il
-numero. Il pannello non riceve mai un indirizzo e niente viene mandato altrove.
+numero. Il pannello non riceve indirizzi e nulla viene mandato altrove.
 
 I log di accesso restano come sono e ruotano come prima (14 giorni conservati). Le statistiche
 tengono 90 giorni di totali.
@@ -60,4 +60,4 @@ tengono 90 giorni di totali.
 
 ## Prossimo passo {#next}
 
-[Controlla che un sito risponda](/docs/sites/uptime-monitoring).
+[Controlla la disponibilità](/docs/sites/uptime-monitoring).

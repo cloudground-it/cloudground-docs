@@ -11,9 +11,8 @@ last_verified: unverified
 sidebar_position: 4.7
 ---
 
-The panel has an MCP server, so you can ask an AI assistant about your server from the web, your
-desktop or your phone: "why is shop.example.com slow?", "back up and update the plugins of my
-blog", "show me yesterday's PHP errors". The assistant acts as your account, and only within what
+The panel has an MCP server. From an AI assistant on the web, desktop or phone, you can ask about your server: "why is shop.example.com slow?", "back up and update the plugins of my
+blog", "show me yesterday's PHP errors". The assistant acts as your account, within what
 you allow when you connect it. The MCP server is off until an administrator turns it on.
 
 ## Turn on the MCP server {#turn-it-on}
@@ -51,7 +50,7 @@ and on phones don't accept the panel's self-signed certificate at `https://<serv
   menu, check it under **Waiting for you** and press **Confirm and run** (with your password and a
   second factor) or **Reject**. A request you leave expires after 15 minutes.
 
-An assistant can never manage accounts, users, API tokens, the firewall, the panel's settings or
+An assistant can't manage accounts, users, API tokens, the firewall, the panel's settings or
 its updates, whatever you allow.
 
 ## Disconnect an assistant {#disconnect}
@@ -63,9 +62,9 @@ verification, or an administrator disabling your account also disconnects your a
 ## Know the risks {#risks}
 
 - **The assistant acts as you.** Whatever you allow it, it can do without asking again, except the
-  destructive actions above. Allow writing only on the sites and areas you need.
+  destructive actions above. Allow changes only where you need them.
 - **Site content is not instructions.** Logs, plugin names and other content from your sites reach
-  the assistant marked as untrusted data, but a model can still be misled by text a visitor wrote.
+  the assistant marked as untrusted data, but a model can be misled by text a visitor wrote.
   Read what it proposes before you confirm anything.
 - **Everything is in the audit log.** Each call appears in **Audit log** as
   `you@example.com (via MCP "<assistant>")`.

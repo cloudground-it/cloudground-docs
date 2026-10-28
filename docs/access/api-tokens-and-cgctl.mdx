@@ -15,15 +15,15 @@ gli script usa un **token API**: una credenziale `cgt_…` che agisce come l'amm
 creata, senza password e senza codice a ogni chiamata.
 
 Un token può fare tutto quello che fa il suo proprietario, tranne gestire account, utenti, token e
-la shell dei siti: per quelle operazioni serve una sessione con password. Così un token rubato non
-può crearne un altro né creare un amministratore.
+la shell dei siti: per quelle operazioni serve una sessione con password. Un token rubato non
+può quindi crearne un altro né creare un amministratore.
 
 ## Crea un token {#create-a-token}
 
-I token si creano accedendo con la password, perché un token non può crearne altri.
+Crea i token da una sessione con password: un token non può crearne altri.
 
 1. Nel pannello apri **Sicurezza** (il menu del tuo account), riquadro **Token API**.
-2. Scrivi il **Nome**, un'etichetta da 1 a 64 caratteri per riconoscere il token nell'elenco.
+2. Scrivi il **Nome**, da 1 a 64 caratteri: è l'etichetta del token nell'elenco.
 3. In **Scadenza** scegli **30 giorni**, **90 giorni**, **365 giorni** o **non scade**.
 4. Premi **Crea token**.
 
@@ -70,7 +70,7 @@ cgctl sites list
 ```
 
 cgctl verifica il certificato. Sull'indirizzo `https://<ip>:8443`, che ha un certificato
-autofirmato, serve `CLOUDGROUND_INSECURE=1`: meglio [dare un dominio al
+autofirmato, serve `CLOUDGROUND_INSECURE=1`. Meglio [dare un dominio al
 pannello](/docs/server/panel-domain). `http://` è accettato solo verso un indirizzo locale del computer.
 
 ## Aspetta la fine di un'attività {#wait}

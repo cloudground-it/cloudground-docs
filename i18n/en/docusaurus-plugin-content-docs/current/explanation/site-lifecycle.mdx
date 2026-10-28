@@ -10,7 +10,7 @@ sidebar_position: 4
 
 Every site exists in two places. The panel holds the **record**: the domain, the type and the
 settings you asked for. The server holds **what actually runs**: the system user, the files, PHP
-and the vhost. The lifecycle is how the two stay in agreement, even when something stops partway
+and the vhost. The lifecycle keeps the two in agreement, even when something stops partway
 through.
 
 ## States {#the-states}
@@ -36,12 +36,10 @@ stateDiagram-v2
 **Provisioning.** The panel saves the record and queues a **Site creation** task. The server
 creates, in order: the user, the directory, the database, the first release with the application,
 the vhost and PHP, and for WordPress, the cron job. Every step has a matching undo. If a step
-fails, the server undoes the completed steps in reverse order and the panel deletes the record, so
-nothing is left half-built.
+fails, the server undoes the completed steps in reverse order and the panel deletes the record.
 
-**Error instead of disappearing.** If the panel gets no response, because the server is not
-answering or the task times out, it cannot know what was created. The site might exist and be
-serving pages. So the panel keeps the record in the **error** state. Deleting the record would
+**Error instead of disappearing.** If the server does not answer or the task times out, the panel cannot know what was created.
+The site might exist and be serving pages. The panel therefore keeps the record in the **error** state. Deleting the record would
 leave a site that no page in the panel shows, and whose domain could never be created again. A
 deletion cleans everything up.
 
@@ -72,7 +70,7 @@ flowchart LR
     event -->|Keep| keep["current file becomes<br/>the expected version"]
 ```
 
-- Every change is a task that holds the site's lock. Two changes to the same site never overlap,
+- Every change is a task that holds the site's lock. Two changes to the same site do not overlap,
   and each task re-reads the site as it is when the task starts.
 - If the server cannot apply a change, the panel restores the previous values, but only for fields
   that no later change has already overwritten.
@@ -85,8 +83,8 @@ flowchart LR
 Every file the server writes for a site (the vhost, the cache zone, the PHP configuration and
 service, the staging password, the WordPress connector) is recorded with its SHA-256 hash. Every 5
 minutes, the panel compares those hashes against the files on disk. A file changed outside the
-panel appears on the dashboard under **Configuration changed outside the panel**. The panel never
-overwrites anything on its own. An administrator picks one of:
+panel appears on the dashboard under **Configuration changed outside the panel**. The panel does not
+overwrite anything on its own. An administrator picks one of:
 
 - **Restore**: the server rewrites the site's configuration to match the record;
 - **Keep**: the file's current content becomes the expected version.
@@ -96,4 +94,4 @@ number of sites changes, because the memory available for PHP workers is divided
 
 ## Next step {#next}
 
-[Site isolation](./site-isolation.mdx) explains what keeps one site separate from the others.
+[Site isolation](./site-isolation.mdx): what keeps one site separate from the others.

@@ -8,9 +8,9 @@ last_verified: unverified
 sidebar_position: 3
 ---
 
-A page served from the cache never touches PHP: nginx reads it straight from disk. This page
-traces a request to a PHP site (WordPress, WooCommerce, PHP, Laravel) and shows where it can stop
-along the way. For exact values, see the [cache reference](/docs/reference/cache-behaviour).
+A page served from the cache never touches PHP: nginx reads it straight from disk. Here you follow
+a request to a PHP site (WordPress, WooCommerce, PHP, Laravel) to the point where it stops.
+Exact values are in the [cache reference](/docs/reference/cache-behaviour).
 
 ## Request flow {#diagram}
 
@@ -42,11 +42,11 @@ flowchart TD
 
 ## Before the cache {#before-the-cache}
 
-*Since v0.2.0.* Two checks run before anything else:
+*Since v0.2.0.* Two checks run first:
 
 - **Protected paths.** If the site requires a username and password on a path, nginx checks them
-  at the level of the site's whole server block, before it decides where to route the request. So
-  the check applies to static files, the cache and PHP alike, and a cached page on a protected path
+  at the level of the site's server block, before it decides where to route the request. The
+  check therefore applies to static files, the cache and PHP alike, and a cached page on a protected path
   is never served without the password. See [Protected paths](/docs/access/protected-paths).
 - **Leftover files.** Backup copies, SQL dumps and archives at the top level of the public
   directory return **404**. The full list is in [Site
@@ -60,7 +60,7 @@ cache is on, every response from PHP carries an `X-CloudGround-Cache` header wit
 nginx assigned to the request: `HIT`, `MISS`, `BYPASS`, `EXPIRED`, `STALE`, `UPDATING` or
 `REVALIDATED`.
 
-Three mechanisms keep the load on PHP down:
+Three mechanisms reduce the load on PHP:
 
 - **Request coalescing.** If a hundred visitors request the same expired page at the same moment,
   only one request reaches PHP. The rest wait up to 5 seconds for its response.
@@ -68,8 +68,8 @@ Three mechanisms keep the load on PHP down:
   nginx regenerates it in the background. The same happens when PHP returns an error or does not
   respond.
 - **Tracking parameters.** A URL whose only parameters are things like `utm_*`, `fbclid` or `gclid`
-  shares a cache entry with the same page without them. A marketing campaign does not send every
-  click through to PHP.
+  shares a cache entry with the same page without them, so a campaign does not send every
+  click to PHP.
 
 ## When the cache is bypassed {#bypass}
 
@@ -78,7 +78,7 @@ parameters, a session cookie (the sign-in cookie for WordPress, the cart for Woo
 path such as `/wp-admin` or `/checkout`. A request with an `Authorization` header always bypasses
 the cache.
 
-One rule applies to every type and matters most: **a response that sets a cookie is never
+One rule applies to every type: **a response that sets a cookie is never
 cached.** A page generated for a visitor with a session is never served to anyone else.
 
 ## PHP {#php}
@@ -89,10 +89,10 @@ this site's data:
 - **OPcache** keeps compiled PHP code in memory. It checks for changed files at most every 60
   seconds, so after a release the panel reloads PHP to make the new code take effect at once.
 - **Object cache** (WordPress, if you enable it) stores the results of repeated queries in APCu.
-  It speeds up wp-admin, the cart and every page the page cache cannot serve.
+  It speeds up wp-admin, the cart and the pages the page cache cannot serve.
 - **MariaDB** runs on the same server, tuned to its memory and CPU count.
 
-PHP compresses its own response, so the cache stores the page already compressed and serves it
+PHP compresses its response, so the cache stores the page already compressed and serves it
 without compressing it again.
 
 ## Other site types {#other-types}
@@ -102,4 +102,4 @@ request to its upstream. Neither type has a page cache.
 
 ## Next step {#next}
 
-To remove one page or a whole site from the cache, see [Purge the cache](/docs/data/purge-the-cache).
+To remove one page or a whole site from the cache, read [Purge the cache](/docs/data/purge-the-cache).

@@ -21,7 +21,7 @@ inside the site's folder, with the same sandboxing as the site's PHP.
 4. Optionally, use **Description** to note what the task does.
 5. Choose **Add**.
 
-The task runs with `PATH` set to `/usr/local/bin:/usr/bin:/bin`. That means `php` resolves to
+The task runs with `PATH` set to `/usr/local/bin:/usr/bin:/bin`, so `php` resolves to
 `/usr/bin/php`, the server's default CLI, which isn't necessarily the site's PHP version. If the site
 uses a different version, call it explicitly, for example `php8.4 current/artisan schedule:run`.
 
@@ -50,7 +50,7 @@ another run.
 ## Pause, edit or remove a task {#pause-edit-remove}
 
 - Turn off the **Run on schedule** switch to pause the task. It stays in the list but stops running.
-- **Edit task** (the pencil icon) loads the task back into the form. Choose **Save** when you're done.
+- **Edit task** (the pencil icon) loads the task back into the form. Choose **Save**.
 - **Remove** (the bin icon) deletes the task after you confirm.
 
 With cgctl, you can run a task by its ID: `cgctl cron run <id>`.
@@ -64,4 +64,4 @@ words and a short fingerprint, for example `php … (3 words, sha256:1a2b3c4d)`.
 
 ## Next step {#next}
 
-[Delete a site you no longer need](./delete-a-site.mdx).
+[Delete a site](./delete-a-site.mdx).

@@ -18,8 +18,7 @@ administrators can create sites.
 
 1. Open **Sites** and choose **New site**.
 2. In **Domain**, enter the site's domain, such as `example.com`. The panel converts it to lowercase.
-3. In **Type**, choose the kind of site. The [site types reference](/docs/reference/site-types)
-   explains how they differ.
+3. In **Type**, choose the kind of site. The differences are in [Site types](/docs/reference/site-types).
 4. In **PHP**, keep **Default version** or choose another version installed on the server. Static and
    reverse proxy sites don't have this field.
 5. In **Performance profile**, keep **Recommended** or choose **Balanced**, **Commerce** or
@@ -27,7 +26,7 @@ administrators can create sites.
 6. Fill in the fields for the type you chose:
    - **WordPress** and **WooCommerce**, under **WordPress administrator**: **Site title** (optional;
      defaults to the domain), **Admin email**, **Admin username** and **Admin password**, which needs
-     at least 12 characters (press **Generate** to create one). You use these to sign in to WordPress.
+     at least 12 characters (press **Generate** to create one). They are the WordPress sign-in.
    - **Reverse proxy**: **Upstream URL**, such as `http://127.0.0.1:3000`. It must be an `http` or
      `https` URL without credentials, a query string or a fragment.
 7. Fill in the **Database** section (see below).
@@ -37,10 +36,9 @@ administrators can create sites.
 
 What the **Database** section offers depends on the site type:
 
-- **WordPress**, **WooCommerce** and **Laravel** always get a database, because their configuration
-  depends on it.
+- **WordPress**, **WooCommerce** and **Laravel** always get a database.
 - **PHP** and **Static**: turn on **Create a database too** to get a MariaDB database plus a user with
-  full privileges on it. If you leave it off, the site starts without one. You can add one later from
+  full privileges on it. If you leave it off, the site starts without a database. You can add one later from
   the [Database tab](/docs/data/manage-databases).
 - **Reverse proxy**: no database.
 
@@ -58,8 +56,8 @@ contains `'`, `"` or `\`, and shows the error under the field.
 ## Save the summary {#summary}
 
 After you press **Create site**, the dialog turns into a summary of the site. The top lists each
-creation step as it runs, marked *done*, *in progress* or *failed*. Below that is everything you need
-to start using the site:
+creation step as it runs, marked *done*, *in progress* or *failed*. Below that are the details for using
+the site:
 
 | Section | Rows |
 | --- | --- |
@@ -77,7 +75,7 @@ lose the password, set a new one from the [Database tab](/docs/data/manage-datab
 :::
 
 - **Download as .txt** saves the full summary as `<domain>-cloudground.txt`. The file contains
-  passwords, so keep it somewhere safe and delete it once you've stored them elsewhere.
+  passwords: delete it once you have stored them elsewhere.
 - **Copy** puts the same text on your clipboard.
 - **Close** asks *Close without saving?* if you haven't used either option. Leaving or reloading the
   page asks too.
@@ -94,7 +92,7 @@ certificate from the **SSL** tab, the site serves the server's self-signed fallb
 
 ## SFTP is off by default {#sftp}
 
-SFTP access starts out disabled on a new site. Nobody can connect over SFTP until you enable it, with
+SFTP access is disabled on a new site until you enable it, with
 its own password, from the site's **SFTP / SSH** tab. See [SFTP and SSH keys](/docs/access/sftp-and-ssh-keys).
 
 ## Create a site with cgctl {#with-cgctl}
@@ -154,7 +152,7 @@ The database password is shown only now: keep it safe. A new one can be set from
 ```
 
 When you connect through the server's local socket, the panel link is just a path. Over `https://`
-it's a full URL. For a reverse proxy site:
+it is a full URL. For a reverse proxy site:
 
 ```bash
 cgctl --wait sites create app.example.com proxy '{"proxy_upstream":"http://127.0.0.1:3000"}'

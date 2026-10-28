@@ -11,16 +11,16 @@ last_verified: unverified
 sidebar_position: 3
 ---
 
-A site responds to its domain and to any aliases you add. You set the domain when you create the site
-and can't change it later. Aliases you can add or remove at any time. The certificate covers both the
+A site responds to its domain and its aliases. You set the domain when you create the site
+and can't change it later; aliases can be added or removed at any time. The certificate covers the
 domain and the aliases.
 
 ## Set the Let's Encrypt email {#set-the-acme-email}
 
-You only do this once per server:
+Once per server:
 
 1. Open **Settings**.
-2. Under **Certificates**, enter the **Let's Encrypt email**. It's used for the account registration
+2. Under **Certificates**, enter the **Let's Encrypt email**. It is used for the account registration
    and for expiry notices.
 3. Save.
 
@@ -44,14 +44,14 @@ certificates automatically when 30 days are left. If a renewal fails, the box sh
 
 {/* TODO(verify): issuing a wildcard certificate through Cloudflare DNS. Not verified on 2026-10-10: the test server has no Cloudflare token or zone; only checked that without a token the request answers 412 `set cloudflare_api_token in settings first`. */}
 
-A wildcard certificate covers `<domain>` and `*.<domain>`. It's validated through Cloudflare DNS
+A wildcard certificate covers `<domain>` and `*.<domain>`. It is validated through Cloudflare DNS
 instead of the test file.
 
 1. In **Settings**, under **Certificates**, enter the **Cloudflare API token**. The token needs the
    Zone:DNS:Edit permission.
 2. On the site's **SSL** tab, choose **Wildcard**.
 
-A wildcard certificate doesn't include the aliases. It covers only the domain and its subdomains.
+A wildcard certificate doesn't include the aliases: it covers only the domain and its subdomains.
 
 ## Install your own certificate {#your-own-certificate}
 
@@ -84,7 +84,7 @@ curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
 - Each alias must be a plain hostname, different from the site's domain. You can have up to 50.
 - A name can belong to only one site. An alias already used by another site is rejected with `400`
   (`alias … is already used by …`) and nothing changes.
-- If the site has a Let's Encrypt certificate, the panel automatically reissues it to include the new
+- If the site has a Let's Encrypt certificate, the panel reissues it to include the new
   names. If the reissue fails, the site keeps serving the previous certificate.
 - If the site has a custom certificate, the panel warns you that it might not cover the new aliases.
   Install one that does. If you choose **Back to Let's Encrypt** instead, the site goes back to its
@@ -93,4 +93,4 @@ curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
 
 ## Next step {#next}
 
-[Control what serves each URL on the site](./edit-routing.mdx).
+[Decide what serves each URL of the site](./edit-routing.mdx).

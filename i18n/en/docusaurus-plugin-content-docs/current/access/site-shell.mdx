@@ -12,22 +12,19 @@ sidebar_position: 2
 ---
 
 The site shell is `bash`, running in the site's folder as the site's user. It includes `wp`,
-`composer`, `git` and `php`, plus `node` if the server has it installed. Files you create get the
-correct owner right away. The shell runs in the same sandbox, with the same CPU and memory limits, as
+`composer`, `git` and `php`, plus `node` if the server has it installed. The shell runs in the same sandbox, with the same CPU and memory limits, as
 the site's PHP. Other sites and the server's configuration aren't visible, and there's no `sudo`.
 
 :::warning[A shell key gives full control of the site]
 
 The shell runs any command as the site's user. Anyone with a **Shell** key can read and change the
-site's files and its database credentials. Only give shell keys to people you'd trust with those
-files.
+site's files and its database credentials. Only give shell keys to people you'd trust with those files.
 
 :::
 
 ## Turn on the shell {#turn-on-the-shell}
 
-Only an administrator can turn it on, and only from a browser session in the panel. An API token
-isn't enough.
+Only an administrator can turn it on, and only from a browser session in the panel, not with an API token.
 
 1. Open the site and go to the **SFTP / SSH** tab.
 2. Make sure **SFTP access** is on. The shell only accepts sign-ins while it is.
@@ -54,8 +51,8 @@ ssh cg-shell-<id>@<host>
 ```
 
 If SSH runs on a port other than 22, the command includes `-p <port>`. An interactive session starts
-in the site's `current` folder if it exists, or in the site's folder otherwise. You can also run a
-single command, which starts in the site's folder: `ssh cg-shell-<id>@<host> wp --version`.
+in the site's `current` folder if it exists, or in the site's folder otherwise. A single
+command starts in the site's folder: `ssh cg-shell-<id>@<host> wp --version`.
 
 The shell accepts keys only, never a password. Each site can have at most 8 sessions open at once.
 Anything a session starts, including `nohup` processes, ends when the session ends.

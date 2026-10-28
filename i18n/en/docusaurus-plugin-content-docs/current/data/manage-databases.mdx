@@ -10,8 +10,8 @@ sidebar_position: 9
 ---
 
 A site can have any number of MariaDB databases and database users, including none. Each user signs
-in with its own password and can reach only the databases you grant it, with either full or
-read-only access. You manage both in the site's **Database** tab.
+in with its own password and reaches only the databases you grant it, with full or
+read-only access. Both are managed in the site's **Database** tab.
 
 ## What a new site comes with {#defaults}
 
@@ -22,8 +22,7 @@ read-only access. You manage both in the site's **Database** tab.
 | Reverse proxy | none |
 
 The primary database and primary user are marked with a **Primary** badge. You can't delete them
-while the site exists, and the primary user always keeps all privileges on the primary database. Add
-more databases and users whenever the site needs them.
+while the site exists, and the primary user always keeps all privileges on the primary database.
 
 ## View databases and users {#look}
 
@@ -42,7 +41,7 @@ Read-only accounts can see both sections and open Quarry, but can't change anyth
    [naming rules](/docs/reference/database-names-and-passwords#names) apply.
 3. Click **Create database**.
 
-A task creates the database (*Creating the database …*). It starts empty, and no user can reach it
+A task creates the database (*Creating the database …*). It starts empty and no user can reach it
 until you grant access. See [change a user's privileges](#privileges).
 
 ## Add a database user {#add-a-user}
@@ -136,4 +135,4 @@ Deleting, changing privileges and resetting passwords are available through the 
 
 ## Next step {#next}
 
-[Use Quarry](/docs/data/use-quarry) to browse and edit tables.
+Browse and edit tables with [Quarry](/docs/data/use-quarry).

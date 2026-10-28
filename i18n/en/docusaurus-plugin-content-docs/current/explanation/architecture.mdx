@@ -61,10 +61,10 @@ where it keeps `state.db`, the database that holds accounts, sites, tasks and th
 Secrets in the database are encrypted with a key stored in `secret.key`.
 
 The panel does not listen on a public TCP port. systemd passes it the Unix socket
-`/run/cloudground/api.sock`, and only nginx can open that socket. This makes the proxy the API's
-only client, and the proxy decides which client address a request came from. The WordPress
-connector on each site uses a second listener: plain HTTP, bound to `127.0.0.1:9080` only, and
-limited to two calls: cache purge and health check.
+`/run/cloudground/api.sock`, and only nginx can open that socket. The proxy is therefore the API's
+only client, and it tells the API which client address a request came from. The WordPress
+connector on each site uses a second listener: plain HTTP on `127.0.0.1:9080` only, with two
+calls: cache purge and health check.
 
 Every long-running operation (creating a site, taking a backup, deploying a release) becomes a
 **task** in a queue stored in the database. Tasks survive a panel restart, and the browser shows
@@ -84,13 +84,13 @@ launches inherits the same sandbox. It talks to the system through typed adapter
 D-Bus, nginx with `nginx -t` before every reload, restic through its exit codes. It always builds
 argument lists, never shell strings, and never puts a secret on a command line.
 
-*Since v0.3.0.* The agent's unit has a memory limit (768 MB soft threshold, 1 GB hard cap). This is
-a second guard, on top of the caps on output from the programs it runs. Heavy tools (`restic`,
+*Since v0.3.0.* The agent's unit has a memory limit (768 MB soft threshold, 1 GB hard cap). It is
+a second guard, on top of the caps on the output of the programs it runs. Heavy tools (`restic`,
 `mariadb-dump`, the `mariadb` client and `certbot`) do not run in the agent's process group. If
-they did, a large backup would hit the agent's limit and get cut off. Instead, each one gets its
+they did, a large backup would hit the agent's limit and get cut off. Each one instead gets its
 own transient unit in `cg-helper.slice`, with the same sandbox as the agent. Its environment,
 including restic's secrets, is passed on standard input, never on the command line or in unit
-properties. If a backup runs out of memory, only the backup fails and the agent keeps running. At
+properties. If a backup runs out of memory, only the backup fails. At
 startup the agent also checks that the system packages the release needs are installed (see
 [Update CloudGround](/docs/server/update-cloudground#packages)).
 
@@ -100,7 +100,7 @@ Each site has its own system user `cg-site-<id>` and its own directory under
 `/srv/sites/<domain>`. Sites that run PHP also get their own PHP-FPM process, with a private
 OPcache and APCu. All of a site's processes (PHP, scheduled tasks, wp-cli, the shell) run in the
 same systemd slice and the same sandbox, which hides other sites and the server configuration.
-[Site isolation](./site-isolation.mdx) explains how this works.
+The mechanism is in [Site isolation](./site-isolation.mdx).
 
 ## Design rationale {#why}
 

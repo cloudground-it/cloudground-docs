@@ -10,8 +10,7 @@ last_verified: unverified
 sidebar_position: 6
 ---
 
-Every change to the code is a release. The next request uses the new one: there's nothing to restart,
-because every run starts from scratch.
+Every change to the code is a release. The next request uses the new one. There's nothing to restart: every run starts from scratch.
 
 ## Deploy a change {#deploy}
 
@@ -19,7 +18,7 @@ because every run starts from scratch.
 2. Edit the files. Until you deploy, the panel marks the code **Not deployed**.
 3. Press **Deploy**.
 
-**Discard changes** throws away what you typed and puts back the code of the live release.
+**Discard changes** discards what you typed and puts back the code of the live release.
 
 If the function has a `package.json` or a `requirements.txt`, its dependencies are installed before
 the release goes live. If the install fails, the panel says *Deploy failed* with the output of that

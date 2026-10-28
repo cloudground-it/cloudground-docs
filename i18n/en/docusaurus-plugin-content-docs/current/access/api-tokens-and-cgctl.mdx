@@ -15,15 +15,15 @@ scripts, it authenticates with an **API token**: a `cgt_…` credential that act
 who created it, so you don't need a password or a code on every call.
 
 A token can do anything its owner can, except manage accounts, users, tokens and the site shell.
-Those actions need a browser session signed in with a password. That way, a stolen token can't create
+Those actions need a browser session signed in with a password. So a stolen token can't create
 another token or a new administrator.
 
 ## Create a token {#create-a-token}
 
-You create tokens while signed in with your password, since a token can't create other tokens.
+Create tokens from a session signed in with your password: a token can't create other tokens.
 
 1. In the panel, open **Security** from your account menu and find the **API tokens** card.
-2. Enter a **Name**, a label of 1 to 64 characters that helps you recognize the token in the list.
+2. Enter a **Name**, 1 to 64 characters, the token's label in the list.
 3. In **Expires**, choose **30 days**, **90 days**, **365 days** or **never expires**.
 4. Press **Create token**.
 
@@ -71,7 +71,7 @@ cgctl sites list
 ```
 
 cgctl verifies the certificate. The `https://<ip>:8443` address uses a self-signed certificate, so
-there it needs `CLOUDGROUND_INSECURE=1`. A better option is to
+there it needs `CLOUDGROUND_INSECURE=1`. Better to
 [give the panel a domain](/docs/server/panel-domain). cgctl only accepts `http://` for an address on
 the local machine.
 

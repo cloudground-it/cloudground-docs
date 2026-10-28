@@ -11,14 +11,14 @@ last_verified: 2026-10-10
 sidebar_position: 7
 ---
 
-A site's code lives in releases, and a release never changes once it's created. A deploy has two
-steps: **create** a release from a folder, then **activate** it. To ship changes from staging, use
-[Safe Push](/docs/data/staging-and-safe-push) instead; to deploy on every push to a repository, use
+A site's code lives in releases, and a release doesn't change after it's created. A deploy has two
+steps: **create** a release from a folder, then **activate** it. To ship changes from staging, see
+[Safe Push](/docs/data/staging-and-safe-push). To deploy on every push to a repository, see
 [Deploy from Git](/docs/data/deploy-from-git).
 
 ## Prepare the code {#prepare}
 
-Put the code in a folder inside the site folder, `/srv/sites/<domain>`. The easiest option is a
+Put the code in a folder inside the site folder, `/srv/sites/<domain>`. The simplest way is a
 checkout in `~/src`, which exists while the [site shell](/docs/access/site-shell) is on:
 
 ```bash

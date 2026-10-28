@@ -8,10 +8,9 @@ last_verified: unverified
 sidebar_position: 9
 ---
 
-Quarry is CloudGround's database manager. It ships with the panel and is served on the panel's
-address at `/quarry`, but it is a separate service with separate sessions. A panel session or an
-API token cannot reach any Quarry route, and a Quarry session cannot reach any panel route. For
-step-by-step instructions, see [Use Quarry](/docs/data/use-quarry).
+Quarry is CloudGround's database manager. It is served on the panel's
+address at `/quarry`, but it is a separate service. A panel session or an
+API token cannot reach any Quarry route, and a Quarry session cannot reach any panel route. Steps are in [Use Quarry](/docs/data/use-quarry).
 
 ## Two ways to sign in {#two-ways-in}
 
@@ -29,15 +28,15 @@ and browsers never send that part to a server or include it in a `Referer`. The 
 lasts as long as the panel session behind it, and on every request it checks that your account
 still has access to the site. Its statements run as a throwaway database account with privileges
 on that one database only. For a read-only panel account, that throwaway account can only read: it
-sees the tables and their structure, and nothing else. API tokens cannot open Quarry. Only a panel
-session signed in from a browser can.
+sees the tables and their structure, and nothing else. API tokens cannot open Quarry. It needs a panel
+session signed in from a browser.
 
-**As a database user.** People without a panel account, such as a developer or an agency, can sign
+**As a database user.** People without a panel account (a developer, an agency) can sign
 in with the name and password of a database user the panel created. The agent connects to MariaDB
 as that user over the server's local socket, and checks that the server authenticated it as
 exactly that user. It never signs in as `root` (which needs no password over the socket on this
 server) or as any of the server's own accounts. The password stays encrypted in the agent's memory
-for the life of the session. It is never written to disk, to the panel database or to a log.
+for the life of the session and is never written to disk, to the panel database or to a log.
 
 ## MariaDB enforces the limits {#mariadb-decides}
 
@@ -45,9 +44,9 @@ Quarry does not parse your SQL to guess what it is allowed to do. Every statemen
 account that MariaDB itself restricts. The throwaway account has privileges on one database, and a
 read-only one gets only `SELECT, SHOW VIEW`. A database user who signs in has exactly the
 privileges you granted it in the **Database** tab. If the account is not allowed to make a write,
-the write fails with the server's own error. This is why you can give the same Quarry to someone
-you trust with a single table and to an administrator: the boundary is the set of privileges, and
-the database server enforces it, not the UI.
+the write fails with the server's own error. The same Quarry therefore suits someone
+with a single table and an administrator: the boundary is the set of privileges, enforced by
+the database server.
 
 Each request opens its own connection and closes it when done. Nothing carries over between
 requests: no transaction, no `LOCK TABLES`, no session variable.
@@ -84,21 +83,21 @@ keep that promise:
   identifier could pass as a string. Quarry checks every statement under each interpretation, and
   refuses sessions with those modes.
 
-The site keeps serving traffic from the same tables while a simulation runs. So a simulation waits
+The site keeps serving traffic from the same tables while a simulation runs. A simulation waits
 at most 5 seconds for a row the site has locked (the server default is 50), and the whole run is
 capped at 60 seconds. While it waits, it holds the rows it has already locked, and the site would
 be stuck waiting on them.
 
-A rolled-back write can still leave one trace: an `AUTO_INCREMENT` counter, or a sequence that a
+A rolled-back write still leaves one trace: an `AUTO_INCREMENT` counter, or a sequence that a
 column takes its default from, may have advanced. The rows themselves are unchanged.
 
 ## Imports without a rollback point {#import}
 
 When you open Quarry from the panel, a `.sql` import first backs up the database and restores it
 if the import fails. Taking and restoring that copy needs privileges a database user may not have.
-So when a database user signs in directly, imports have no rollback point. They run as that user,
+When a database user signs in directly, imports therefore have no rollback point. They run as that user,
 one statement at a time. If a statement fails, the import stops there, and everything that ran
-before it stays. The message tells you this.
+before it stays. The message says so.
 
 ## Files {#files}
 
@@ -117,5 +116,5 @@ sign-ins are logged too.
 
 ## Next step {#next}
 
-To see how repeated wrong passwords are slowed down without locking anyone out, read [Sign-in
+How repeated wrong passwords are slowed down without locking anyone out: [Sign-in
 protection](/docs/explanation/sign-in-protection).

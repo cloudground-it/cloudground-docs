@@ -11,8 +11,7 @@ sidebar_position: 10
 ---
 
 Quarry è il gestore di database di CloudGround. Gira sull'indirizzo del pannello, in `/quarry`, come
-servizio a sé: lo apri dal pannello, oppure accedi con nome e password di un utente database. Per
-capire come funzionano i due ingressi e i suoi limiti, leggi [Come funziona Quarry](/docs/explanation/quarry).
+servizio a sé. Lo apri dal pannello, oppure accedi con nome e password di un utente database. I due ingressi e i limiti sono in [Come funziona Quarry](/docs/explanation/quarry).
 
 ## Aprilo dal pannello {#from-the-panel}
 
@@ -46,7 +45,7 @@ Cosa puoi fare dipende dal tuo ruolo nel pannello:
   dell'utente. Una scrittura di un utente in sola lettura fallisce con l'errore del server,
   `ERROR 1142 … command denied`.
 - Ogni rifiuto dice *Utente database o password errati.*, qualunque sia il motivo. Le password
-  sbagliate rallentano i tentativi successivi dalla stessa rete; non bloccano mai l'utente. Da una
+  sbagliate rallentano i tentativi successivi dalla stessa rete, ma non bloccano l'utente. Da una
   rete che continua a sbagliare, un tentativo può essere rifiutato con *too many attempts for this
   database user at once*: aspetta e riprova. Vedi
   [la protezione dell'accesso](/docs/explanation/sign-in-protection#quarry).
@@ -141,7 +140,7 @@ Quarry risponde **Non simulata**, con il motivo, quando l'istruzione:
 
 L'intera simulazione ha 60 secondi, e aspetta al massimo 5 secondi una riga bloccata dal sito in
 produzione. Dopo, un contatore `AUTO_INCREMENT` può essere andato avanti, come dopo qualsiasi
-scrittura annullata. Il perché di questi rifiuti: [Simula](/docs/explanation/quarry#simulate).
+scrittura annullata. Il motivo dei rifiuti è in [Simula](/docs/explanation/quarry#simulate).
 
 ## Esporta {#export}
 
@@ -196,4 +195,4 @@ di nuovo.
 
 ## Prossimo passo {#next}
 
-Per capire i due ingressi e cosa protegge Simula, leggi [Come funziona Quarry](/docs/explanation/quarry).
+I due ingressi e cosa protegge Simula sono spiegati in [Come funziona Quarry](/docs/explanation/quarry).

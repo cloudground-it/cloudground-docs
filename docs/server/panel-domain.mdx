@@ -13,7 +13,7 @@ sidebar_position: 1
 
 Il pannello risponde sempre su `https://<ip-del-server>:8443`, con un certificato autofirmato. Con
 un dominio risponde anche su `https://<dominio>`, con un certificato valido. L'indirizzo per IP
-resta: se il dominio smette di funzionare, il pannello è ancora raggiungibile.
+resta attivo: se il dominio smette di funzionare, il pannello è ancora raggiungibile.
 
 ## Imposta l'email per Let's Encrypt {#set-the-email}
 
@@ -36,7 +36,7 @@ dominio arrivi a questo server e chiede il certificato. Quando l'attività finis
 
 Apri `https://<dominio>` e accedi.
 
-Con l'API, la stessa richiesta è `POST /api/panel/certificate` con `{"domain": "<dominio>"}`.
+Con l'API: `POST /api/panel/certificate` con `{"domain": "<dominio>"}`.
 
 ## Sposta il pannello su un altro dominio {#move-the-panel}
 
@@ -75,5 +75,5 @@ per togliere la regola.
 
 ## Prossimo passo {#next}
 
-Il pannello è raggiungibile in HTTPS. Per tenerlo aggiornato, segui
+Per aggiornare il pannello, segui
 [aggiorna CloudGround](./update-cloudground.mdx).

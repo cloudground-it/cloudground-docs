@@ -10,14 +10,11 @@ last_verified: unverified
 sidebar_position: 6
 ---
 
-La pagina **Firewall**, nel gruppo **Server**, mostra se il firewall è attivo e le sue regole, così
-come le riporta il sistema. Gli amministratori aggiungono e rimuovono regole; gli account in sola
-lettura le vedono soltanto.
+La pagina **Firewall**, nel gruppo **Server**, mostra se il firewall è attivo e le sue regole, come le riporta il sistema. Gli amministratori aggiungono e rimuovono regole; gli account in sola lettura le vedono.
 
 L'installer non accende mai il firewall: molti server stanno già dietro il firewall del loro provider,
-e uno script che accende ufw può chiuderti fuori, per esempio quando SSH ascolta su un'altra porta. La
-scelta resta tua: dalla v0.2.0 la fai dal pannello, con un pulsante. Su un server cloud appena creato ufw
-di solito è installato ma spento, e la pagina dice **inattivo**. Finché è inattivo le regole vengono salvate ma non hanno effetto: la pagina le mostra con
+e uno script che accende ufw può chiuderti fuori, per esempio quando SSH ascolta su un'altra porta. Dalla v0.2.0 lo accendi dal pannello, con un pulsante. Su un server cloud appena creato ufw
+di solito è installato ma spento, e la pagina dice **inattivo**. Finché è inattivo le regole vengono salvate ma non hanno effetto, e la pagina lo segnala:
 *Il firewall non è attivo: queste regole sono salvate e si applicano solo quando viene attivato.*
 
 *Da v0.3.0.* Gli indirizzi che sbagliano troppo l'accesso li blocca una tabella a parte, `inet cloudground`
@@ -64,7 +61,7 @@ sshd -T | grep '^port '
 ufw allow 22/tcp && ufw allow 80/tcp && ufw allow 443/tcp && ufw allow 8443/tcp && ufw allow 443/udp && ufw enable
 ```
 
-La prima riga mostra le porte di SSH: se non è solo la 22, metti le tue al suo posto.
+La prima riga mostra le porte di SSH. Se non è solo la 22, metti le tue al suo posto.
 
 :::danger[Prima la porta di SSH]
 
@@ -72,8 +69,6 @@ La prima riga mostra le porte di SSH: se non è solo la 22, metti le tue al suo 
 successivo al server.
 
 :::
-
-Quando il firewall è attivo, la pagina dice **attivo** e le regole salvate valgono.
 
 ## Apri una porta {#allow-a-port}
 
@@ -99,13 +94,13 @@ blocco con quella forma esatta, e non tocca le altre regole della porta.
 
 ## Le porte che restano aperte {#essential-ports}
 
-Il pannello rifiuta qualsiasi regola che chiuderebbe fuori te o i siti:
+Il pannello rifiuta ogni regola che chiuderebbe fuori te o i siti:
 
 - le porte su cui ascolta SSH (di solito 22);
 - 80 e 443, dei siti;
 - 8443, del pannello.
 
-Per queste porte non puoi rimuovere la regola né bloccarle per tutti. Puoi invece bloccarle per un
+Per queste porte non puoi rimuovere la regola né bloccarle per tutti. Puoi bloccarle per un
 solo indirizzo, o aggiungere regole di consenso.
 
 :::warning[Un blocco su queste porte non si toglie dal pannello]

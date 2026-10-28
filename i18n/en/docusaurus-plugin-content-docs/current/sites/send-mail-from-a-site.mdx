@@ -14,7 +14,7 @@ sidebar_position: 11
 CloudGround runs no mail server. PHP's `mail()` and WordPress's `wp_mail()` hand each message to the
 panel, which sends it through an SMTP **relay** you choose. Order confirmations and password resets
 from your sites leave through it, and so do the [alert emails](/docs/server/alerts-and-notifications#email).
-The relay's password stays in the panel: the site never sees it.
+The relay's password stays in the panel and the site does not see it.
 
 ## Set the server's relay {#server-relay}
 
@@ -33,8 +33,8 @@ The relay's password stays in the panel: the site never sees it.
 | **TLS** | 465 | Encrypted from the first byte. |
 | **None** | 25 | No encryption. The panel refuses to send a password over it, unless the relay is this server itself. |
 
-Leave **Port** empty to take the port of the chosen security. The test message goes through exactly
-what a site's mail will use; if the relay refuses it, the panel shows the relay's answer.
+Leave **Port** empty to take the port of the chosen security. The test message takes the same
+path as a site's mail; if the relay refuses it, the panel shows the relay's answer.
 
 ## Give a site its own settings {#per-site}
 
@@ -48,14 +48,14 @@ Every PHP site sends through the server's relay. To change that for one site:
 4. Click **Save**.
 
 The banner at the top of the card says where the mail goes: through the site's relay, through the
-server's, or nowhere. Turn off **Send mail from this site** and `mail()` fails: nothing is sent.
+server's, or nowhere. If you turn off **Send mail from this site**, `mail()` fails and nothing is sent.
 Only an administrator can save these settings; an operator assigned to the site can send the test.
 
 A **staging copy sends no mail**, so a test never reaches a real customer.
 
 ## Check SPF, DKIM and DMARC {#checklist}
 
-Receivers trust mail more when the sender's domain says that the relay may send for it. The
+Receivers trust mail more when the sender's domain says the relay may send for it. The
 **SPF, DKIM and DMARC** card looks up three records of the sender's domain and shows each as
 **found** or **missing**:
 
@@ -64,7 +64,7 @@ Receivers trust mail more when the sender's domain says that the relay may send 
   above, save, and click **Check again**;
 - **DMARC**, at `_dmarc.<domain>`. A policy such as `p=none` is a good start.
 
-The panel only says whether the records are there. Your relay's provider says what each must say.
+The panel only says whether the records are there. Your relay's provider tells you what each must contain.
 
 ## Limits {#limits}
 
@@ -75,4 +75,4 @@ The panel only says whether the records are there. Your relay's provider says wh
 
 ## Next step {#next}
 
-Have the panel email you when something needs attention: [receive alerts by email](/docs/server/alerts-and-notifications#email).
+[Receive alerts by email](/docs/server/alerts-and-notifications#email).

@@ -9,8 +9,8 @@ last_verified: unverified
 sidebar_position: 1
 ---
 
-`cgctl` is a thin command-line client for the panel's API, built for scripting. Each command maps to
-a single API request, and the API's JSON response is printed, indented, to standard output. To get
+`cgctl` is the command-line client for the panel's API, for scripting. Each command is a
+single API request, and the JSON response is printed, indented, to standard output. To get
 started, see [API tokens and cgctl](/docs/access/api-tokens-and-cgctl).
 
 ## Syntax {#syntax}
@@ -45,7 +45,7 @@ Options can go anywhere on the command line. Arguments that are IDs must be posi
 | `cgctl maintenance <site-id> <on\|off> [message]` | `PUT /api/sites/<id>/maintenance` | Turns the [maintenance page](/docs/sites/maintenance-page) on or off, with its text if you give one. |
 | `cgctl devmode <site-id> <15\|30\|60\|off>` | `PUT /api/sites/<id>/dev-mode` | Bypasses the page cache for 15, 30 or 60 minutes ([development mode](/docs/sites/development-mode)), or ends it now. |
 
-For example, to create a WordPress site:
+To create a WordPress site:
 
 ```bash
 cgctl --wait sites create example.com wordpress \
@@ -122,7 +122,7 @@ cgctl --wait sites create shop.example.com laravel \
 | `cgctl protect add <site-id> <path> <username>` | `POST /api/sites/<id>/protected-paths` | Protects `<path>` with a username and password, or changes its credentials. The password is read as one line from standard input (up to 4 KiB; empty is a usage error), never from an argument. Prints the site's protected paths. |
 | `cgctl protect remove <site-id> <path>` | `DELETE /api/sites/<id>/protected-paths` | Removes protection from `<path>`. The path goes in the request body, not the URL. |
 
-For example, with the password in a file:
+With the password in a file:
 
 ```bash
 cgctl protect add 3 /wp-admin editor < password.txt
@@ -243,4 +243,4 @@ retrying. A 401, 403 or 404 response ends the wait as a failure. If the response
 
 ## Next step {#next}
 
-For anything cgctl doesn't cover, call the [API](/docs/api) directly.
+For anything cgctl doesn't cover, use the [API](/docs/api).

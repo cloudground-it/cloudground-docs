@@ -13,8 +13,7 @@ sidebar_position: 6.9
 
 Gli amministratori di WordPress sono gli account più attaccati di un sito, e wp-admin accetta la sola
 password. Con l'accesso a due fattori, dopo la password giusta WordPress chiede un codice a 6 cifre
-dell'app. Non è la [verifica in due passaggi](/docs/access/two-step-verification) del pannello: è quella
-degli account del sito WordPress.
+dell'app. Vale per gli account del sito WordPress, ed è separato dalla [verifica in due passaggi](/docs/access/two-step-verification) del pannello.
 
 ## Scegli la modalità {#choose-the-mode}
 
@@ -40,8 +39,7 @@ del sito non può spegnere.
    il codice che l'app mostra.
 3. Conserva i 10 **codici di recupero** che compaiono una sola volta: ognuno vale una volta sola.
 
-Con la modalità obbligatoria, chi non ha ancora un'app la configura al prossimo accesso. Per evitare
-che una password rubata basti a configurare l'app di chi attacca, serve anche un codice inviato per
+Con la modalità obbligatoria, chi non ha ancora un'app la configura al prossimo accesso. Perché una password rubata non basti a configurare l'app di chi attacca, serve anche un codice inviato per
 email all'account.
 
 ## Se perdi il telefono {#lost-phone}
@@ -57,7 +55,7 @@ email all'account.
 Un accesso aperto ammette 5 tentativi. Dal quinto codice sbagliato di un account, l'account aspetta 60
 secondi, e l'attesa raddoppia a ogni errore fino a un'ora: in quel tempo non viene controllato nessun
 codice, nemmeno quello giusto. Un codice sbagliato conta anche per [il blocco degli
-indirizzi](/docs/access/block-addresses). Un codice non vale due volte.
+indirizzi](/docs/access/block-addresses). Un codice vale una volta sola.
 
 ## Prossimo passo {#next}
 

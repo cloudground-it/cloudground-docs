@@ -11,8 +11,7 @@ last_verified: unverified
 sidebar_position: 9
 ---
 
-An update that breaks a site used to stay broken until someone restored a backup. Now every update
-starts from a snapshot, and the panel restores it by itself when the site stops answering as it did.
+Every update starts from a snapshot, and the panel restores it when the site stops answering as it did.
 
 ## Update now {#update-now}
 
@@ -32,11 +31,11 @@ The panel then runs these steps as one task:
    fails the task with the reasons. The failure raises an [alert](/docs/server/alerts-and-notifications).
 
 The task's log has each measurement. A [restore test](/docs/data/run-a-restore-test) of the
-snapshot is part of step 2, so a snapshot that cannot be restored never gets as far as the update.
+snapshot is part of step 2, so a snapshot that cannot be restored blocks the update.
 
 :::warning
-A rollback brings the database back to the snapshot. Whatever the site saved during the update, a
-few minutes at most, is lost: an order placed in that time, for example.
+A rollback brings the database back to the snapshot. Whatever the site saved during the update (a
+few minutes at most, for example an order) is lost.
 :::
 
 ## Update without a snapshot {#no-snapshot}
@@ -44,7 +43,7 @@ few minutes at most, is lost: an order placed in that time, for example.
 With no backup repository set, the **Updates** card says so and the button reads **Update without a
 snapshot**. Confirm to go on. The panel still checks the site afterwards, but if the update breaks
 it, nothing is undone: the site stays as the update left it and the task fails saying that there
-was no snapshot to go back to. To get the automatic rollback, connect a repository first
+was no snapshot to go back to. For the automatic rollback, connect a repository first
 ([Connect a backup repository](/docs/data/connect-a-backup-repository)).
 
 ## Update on a schedule {#schedule}
@@ -75,4 +74,4 @@ curl -X POST https://<panel>/api/sites/<site-id>/wp/update \
 
 ## Next step {#next}
 
-Keep the database light too: [clean it every week](/docs/sites/clean-the-wordpress-database).
+[Clean the database every week](/docs/sites/clean-the-wordpress-database).

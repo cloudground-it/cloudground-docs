@@ -12,8 +12,7 @@ sidebar_position: 11
 ---
 
 Oltre ai server MariaDB e MySQL, un sito PHP o Laravel può tenere i suoi database su un server
-PostgreSQL. Si registra e si sceglie come un [server esterno](/docs/data/external-database-servers):
-questa pagina descrive solo quello che cambia per PostgreSQL.
+PostgreSQL. Si registra e si sceglie come un [server esterno](/docs/data/external-database-servers). Questa pagina riporta solo le differenze per PostgreSQL.
 
 ## Prepara il server {#prepare}
 
@@ -34,7 +33,7 @@ TLS, per esempio nel `pg_hba.conf`:
 hostssl  all  cloudground  <indirizzo di questo server>/32  scram-sha-256
 ```
 
-Sostituisci i segnaposto con l'indirizzo pubblico di questa macchina e con una tua password.
+Sostituisci i segnaposto con l'indirizzo pubblico di questa macchina e una tua password.
 
 ## Registra il server {#register}
 
@@ -64,7 +63,7 @@ recente di quella del server PostgreSQL:
 sudo apt install postgresql-client
 ```
 
-Puoi cambiare la scelta in qualsiasi momento con **Modifica**: vale per i backup successivi.
+Con **Modifica** puoi cambiare la scelta: vale per i backup successivi.
 
 ## Metti un database sul server {#create}
 
@@ -101,4 +100,4 @@ dell'applicazione metti quei valori, il nome e la password dell'utente database 
 
 ## Prossimo passo {#next}
 
-Gestisci cosa può fare ogni utente: [gestisci i database](/docs/data/manage-databases).
+Per i privilegi degli utenti, vedi [gestisci i database](/docs/data/manage-databases).

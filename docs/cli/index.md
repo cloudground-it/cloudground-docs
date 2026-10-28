@@ -9,8 +9,8 @@ last_verified: unverified
 sidebar_position: 1
 ---
 
-`cgctl` è un client leggero dell'API del pannello, pensato per gli script. Ogni comando diventa una
-sola richiesta all'API; la risposta JSON dell'API esce, indentata, sullo standard output. Per
+`cgctl` è il client a riga di comando dell'API del pannello, per gli script. Ogni comando è una
+sola richiesta all'API, e la risposta JSON esce, indentata, sullo standard output. Per
 iniziare vedi [token API e cgctl](/docs/access/api-tokens-and-cgctl).
 
 ## Sintassi {#syntax}
@@ -46,7 +46,7 @@ interi positivi.
 | `cgctl maintenance <id-sito> <on\|off> [messaggio]` | `PUT /api/sites/<id>/maintenance` | Attiva o spegne la [pagina di manutenzione](/docs/sites/maintenance-page), con il testo se lo dai. |
 | `cgctl devmode <id-sito> <15\|30\|60\|off>` | `PUT /api/sites/<id>/dev-mode` | Salta la cache di pagina per 15, 30 o 60 minuti ([modalità sviluppo](/docs/sites/development-mode)), o la termina subito. |
 
-Per esempio, un sito WordPress:
+Un sito WordPress:
 
 ```bash
 cgctl --wait sites create example.com wordpress \
@@ -123,7 +123,7 @@ cgctl --wait sites create shop.example.com laravel \
 | `cgctl protect add <id-sito> <percorso> <utente>` | `POST /api/sites/<id>/protected-paths` | Protegge `<percorso>` con un nome utente e una password, o ne cambia le credenziali. La password è una riga dello standard input (al massimo 4 KiB; vuota è un errore d'uso), mai un argomento. Stampa i percorsi protetti del sito. |
 | `cgctl protect remove <id-sito> <percorso>` | `DELETE /api/sites/<id>/protected-paths` | Toglie la protezione a `<percorso>`. Il percorso va nel corpo della richiesta, non nell'URL. |
 
-Per esempio, con la password in un file:
+Con la password in un file:
 
 ```bash
 cgctl protect add 3 /wp-admin editor < password.txt
@@ -232,7 +232,7 @@ finale: `succeeded` è un successo; `failed`, `cancelled` o qualsiasi stato dive
 
 Se il pannello non risponde mentre cgctl aspetta (per esempio perché si sta riavviando), cgctl
 riprova; le risposte 401, 403 e 404 terminano l'attesa con un fallimento. Senza un'attività nella
-risposta, `--wait` non cambia nulla.
+risposta, `--wait` non ha effetto.
 
 ## Codici di uscita {#exit-codes}
 
@@ -245,4 +245,4 @@ risposta, `--wait` non cambia nulla.
 
 ## Prossimo passo {#next}
 
-Per le operazioni che cgctl non copre, usa direttamente l'[API](/docs/api).
+Per le operazioni che cgctl non copre, usa l'[API](/docs/api).

@@ -10,7 +10,7 @@ sidebar_position: 9
 ---
 
 Un sito ha zero o più database MariaDB e zero o più utenti database. Ogni utente accede con la sua
-password e raggiunge solo i database che gli assegni, con tutti i privilegi o in sola lettura. Gestisci
+password e raggiunge solo i database che gli assegni, con tutti i privilegi o in sola lettura. Si gestiscono
 entrambi dalla scheda **Database** del sito.
 
 ## Con cosa parte un sito nuovo {#defaults}
@@ -23,7 +23,6 @@ entrambi dalla scheda **Database** del sito.
 
 Il database principale e l'utente principale hanno il badge **Principale**. Non si possono eliminare
 finché il sito esiste, e l'utente principale tiene sempre tutti i privilegi sul database principale.
-Aggiungi altri database e utenti quando il sito ne ha bisogno.
 
 ## Guarda i database {#look}
 
@@ -42,14 +41,14 @@ Gli account in sola lettura vedono entrambe le sezioni e possono aprire Quarry, 
    [regole dei nomi](/docs/reference/database-names-and-passwords#names).
 3. Premi **Crea database**.
 
-Il database viene creato da un'attività (*Creazione del database …*). È vuoto, e nessun utente lo
-raggiunge finché non gli dai accesso: vedi [cambia i privilegi di un utente](#privileges).
+Un'attività crea il database (*Creazione del database …*). È vuoto e nessun utente lo
+raggiunge finché non dai accesso: vedi [cambia i privilegi di un utente](#privileges).
 
 ## Aggiungi un utente database {#add-a-user}
 
 1. In **Utenti database**, premi **Aggiungi utente**.
 2. In **Utente**, scrivi il nome, per esempio `reporting`. Valgono le stesse regole dei database.
-3. Lascia vuota la **Password** per farne generare una robusta, oppure scrivi la tua: vedi le
+3. Lascia vuota la **Password** per generarne una robusta, oppure scrivi la tua: vedi le
    [regole delle password](/docs/reference/database-names-and-passwords#passwords).
 4. In **Privilegi**, scegli per ogni database **Nessuno**, **Sola lettura** o **Tutti i privilegi**.
 5. Premi **Crea utente**.
@@ -139,4 +138,4 @@ Eliminazione, privilegi e reimpostazione della password sono route dell'[API](/d
 
 ## Prossimo passo {#next}
 
-[Usa Quarry](/docs/data/use-quarry) per sfogliare e modificare le tabelle.
+Sfoglia e modifica le tabelle con [Quarry](/docs/data/use-quarry).

@@ -75,14 +75,14 @@ In the API, add `"paths"` to a files restore:
    **Download**.
 
 The server prepares a `.tar.gz` with `files/`, the site's folder as the snapshot has it, and
-`databases/<name>.sql`, a dump of each database. Your browser then downloads it. The archive is
+`databases/<name>.sql`, a dump of each database, and your browser downloads it. The archive is
 deleted from the server once it's downloaded, or after a day. Each download is recorded in the
 **Audit log**. Read-only accounts can't download backups.
 
 ## Choose which databases to restore {#databases}
 
-*Since v0.2.0.* With *Everything* and *Database only*, you pick which databases from the backup to
-restore. **Databases to restore** in the restore dialog lists every database in the snapshot, all
+*Since v0.2.0.* With *Everything* and *Database only* you pick which databases to
+restore. **Databases to restore** in the dialog lists every database in the snapshot, all
 checked.
 
 - Leave them all checked to restore them all.
@@ -94,7 +94,7 @@ checked.
 Backups taken before v0.2.0 don't record their databases. For those, the dialog lists the site's
 current databases, and the restore brings back the ones the snapshot actually contains.
 
-A few more rules:
+More rules:
 
 - If the backup holds a database the site no longer has, it's skipped and the task names it. To
   restore it, recreate it with the same name in the [Database tab](/docs/data/manage-databases), then
@@ -128,5 +128,5 @@ every database is restored.
 
 ## Next step {#next}
 
-To learn why a backup that counts can always be restored, read
+Why a backup that counts can always be restored is explained in
 [Backups and restore tests](/docs/explanation/backups-and-restore-tests).

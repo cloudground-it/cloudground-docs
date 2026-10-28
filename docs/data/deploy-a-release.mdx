@@ -11,15 +11,15 @@ last_verified: 2026-10-10
 sidebar_position: 7
 ---
 
-Il codice di un sito vive in rilasci che non cambiano più dopo essere stati creati. Pubblicare è
-fatto di due passi: **creare** il rilascio da una cartella, poi **attivarlo**. Per pubblicare
-dallo staging usa invece [Safe Push](/docs/data/staging-and-safe-push); per pubblicare a ogni push su un
-repository usa [Pubblica da Git](/docs/data/deploy-from-git).
+Il codice di un sito vive in rilasci che non cambiano dopo la creazione. Pubblicare ha
+due passi: **creare** il rilascio da una cartella, poi **attivarlo**. Per pubblicare
+dallo staging c'è invece [Safe Push](/docs/data/staging-and-safe-push); per pubblicare a ogni push su un
+repository c'è [Pubblica da Git](/docs/data/deploy-from-git).
 
 ## Prepara il codice {#prepare}
 
 Metti il codice in una cartella dentro la cartella del sito, `/srv/sites/<dominio>`. Il modo più
-semplice è un checkout in `~/src`, che esiste quando la [shell del sito](/docs/access/site-shell) è
+comodo è un checkout in `~/src`, che esiste quando la [shell del sito](/docs/access/site-shell) è
 attiva:
 
 ```bash
@@ -79,4 +79,4 @@ possono più attivare.
 
 ## Prossimo passo {#next}
 
-[Torna a un rilascio precedente](/docs/data/roll-back-a-release) se il nuovo non va.
+Se il nuovo non va, [torna a un rilascio precedente](/docs/data/roll-back-a-release).

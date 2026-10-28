@@ -11,8 +11,7 @@ last_verified: unverified
 sidebar_position: 9
 ---
 
-Un aggiornamento che rompeva il sito lo lasciava rotto finché qualcuno non ripristinava un backup.
-Ora ogni aggiornamento parte da uno snapshot, e il pannello lo ripristina da solo quando il sito
+Ogni aggiornamento parte da uno snapshot, e il pannello lo ripristina quando il sito
 smette di rispondere come prima.
 
 ## Aggiorna ora {#update-now}
@@ -34,13 +33,12 @@ Il pannello esegue questi passi in una sola attività:
    fa fallire l'attività con i motivi. Il fallimento genera un [avviso](/docs/server/alerts-and-notifications).
 
 Il registro dell'attività riporta ogni misurazione. Il [ripristino di prova](/docs/data/run-a-restore-test)
-dello snapshot è parte del passo 2: uno snapshot che non si può ripristinare non arriva mai
-all'aggiornamento.
+dello snapshot è parte del passo 2: uno snapshot che non si può ripristinare blocca
+l'aggiornamento.
 
 :::warning
 Il rollback riporta il database allo snapshot. Quello che il sito ha salvato durante
-l'aggiornamento, al massimo qualche minuto, si perde: per esempio un ordine arrivato in quel
-tempo.
+l'aggiornamento (al massimo qualche minuto, per esempio un ordine) si perde.
 :::
 
 ## Aggiorna senza snapshot {#no-snapshot}
@@ -48,8 +46,7 @@ tempo.
 Senza un repository di backup, il riquadro **Aggiornamenti** lo dice e il pulsante diventa
 **Aggiorna senza snapshot**. Conferma per andare avanti. Il pannello controlla comunque il sito
 dopo, ma se l'aggiornamento lo rompe non viene annullato nulla: il sito resta com'è stato lasciato
-dall'aggiornamento e l'attività fallisce dicendo che non c'era uno snapshot a cui tornare. Per avere
-il rollback automatico collega prima un repository
+dall'aggiornamento e l'attività fallisce dicendo che non c'era uno snapshot a cui tornare. Per il rollback automatico collega prima un repository
 ([Collega un repository di backup](/docs/data/connect-a-backup-repository)).
 
 ## Aggiorna con una pianificazione {#schedule}
@@ -81,4 +78,4 @@ leggila con `cgctl task <id-attività>`, o seguila nell'elenco delle attività d
 
 ## Prossimo passo {#next}
 
-Tieni leggero anche il database: [puliscilo ogni settimana](/docs/sites/clean-the-wordpress-database).
+[Pulisci il database ogni settimana](/docs/sites/clean-the-wordpress-database).

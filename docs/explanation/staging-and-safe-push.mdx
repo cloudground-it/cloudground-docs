@@ -8,19 +8,19 @@ last_verified: unverified
 sidebar_position: 6
 ---
 
-Lo staging serve a provare una modifica su una copia della produzione. Safe Push la pubblica solo
-se non rende il sito più lento, più pesante o rotto. Performance Guard è la parte che misura.
+Lo staging è una copia della produzione su cui provare una modifica. Safe Push la pubblica solo
+se non rende il sito più lento, più pesante o rotto. Performance Guard misura.
 
 ## Lo staging è un sito vero {#a-real-site}
 
-La copia di staging è un sito come gli altri: ha il suo utente di sistema, la sua cartella, il
-suo database, il suo pool PHP e il suo vhost, su `staging.<dominio>`. Quando la crei, il
+La copia di staging è un sito come gli altri: ha utente di sistema, cartella,
+database, pool PHP e vhost propri, su `staging.<dominio>`. Quando la crei, il
 pannello:
 
 - copia il rilascio attivo e i file caricati della produzione, senza seguire collegamenti, così la
   copia non può arrivare ai file della produzione;
 - copia il database principale della produzione in quello dello staging. Gli altri database del sito
-  non vengono copiati: non sono quelli che la sua configurazione (`wp-config.php`) usa, e una copia
+  non vengono copiati: `wp-config.php` non li usa, e una copia
   che nulla nello staging usa raddoppierebbe solo i dati. Restano solo della produzione;
 - su WordPress, mette nella configurazione il database dello staging, `WP_ENVIRONMENT_TYPE` =
   `staging`, un token del pannello diverso da quello della produzione e nuove chiavi di sessione:
@@ -37,7 +37,7 @@ entrambi i casi `wp-config.php` e i file caricati restano quelli della produzion
 che arriva dallo staging non ne porta le credenziali.
 
 **Le tabelle.** Il database principale si pubblica a parte, tabella per tabella, da quello dello
-staging a quello della produzione; gli altri database non c'entrano. Alcune tabelle non si
+staging a quello della produzione; gli altri database restano fuori. Alcune tabelle non si
 pubblicano mai, perché in produzione contengono dati vivi che lo staging ha in una versione
 vecchia:
 
@@ -69,8 +69,8 @@ flowchart TD
 ## Come misura Performance Guard {#how-guard-measures}
 
 Due siti sullo stesso server non rispondono mai con gli stessi tempi: un backup, un cron o un
-vicino rumoroso cambiano tutto da un minuto all'altro. Performance Guard toglie quel rumore con
-tre scelte.
+vicino rumoroso li cambiano da un minuto all'altro. Performance Guard toglie quel rumore in
+tre modi.
 
 **Misure a coppie.** Per ogni pagina fa 200 giri. In ogni giro chiede la pagina a staging e
 produzione, in un ordine casuale. Quello che succede sul server cade su entrambe le metà dello
@@ -98,9 +98,9 @@ sono meno di 20 coppie misurabili, è **non concludente**. Safe Push pubblica co
 *attenzione* o *non concludente* solo se la richiesta lo forza; con *bloccato* mai.
 
 La soglia è 10% perché staging e produzione sono siti diversi, con database e cache propri, e lo
-stesso codice può differire di qualche punto. I 200 giri servono a vedere comunque un
-peggioramento del 30%: nelle prove di taratura, quasi sempre bloccato, mentre due versioni uguali
-non vengono bloccate. Il prezzo è il tempo: 2 × 200 rendering per pagina, circa 30 secondi per una pagina che PHP
+stesso codice può differire di qualche punto. I 200 giri bastano a vedere un
+peggioramento del 30%: nelle prove di taratura era quasi sempre bloccato, mentre due versioni uguali
+non venivano bloccate. Il costo è il tempo: 2 × 200 rendering per pagina, circa 30 secondi per una pagina che PHP
 genera in 60 ms e circa due minuti a 300 ms.
 
 ## Il controllo dopo la promozione {#after-promotion}

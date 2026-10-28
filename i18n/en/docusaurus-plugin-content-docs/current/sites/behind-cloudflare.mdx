@@ -12,11 +12,11 @@ sidebar_position: 7.5
 ---
 
 When a site is proxied by Cloudflare, every request reaches the server from one of Cloudflare's
-addresses. Without help, the site's logs, the [block list](/docs/access/block-addresses) and the
-[visitors a site refuses](/docs/access/refuse-visitors) all see Cloudflare instead of the visitor.
-The site's page cache also isn't the only one: Cloudflare may keep its own copy of the pages.
+addresses. The site's logs, the [block list](/docs/access/block-addresses) and the
+[visitors a site refuses](/docs/access/refuse-visitors) therefore see Cloudflare instead of the visitor.
+Cloudflare may also keep its own copy of the pages, besides the site's page cache.
 
-The **Cloudflare** card fixes both. It's on the site's **Cache** tab.
+The **Cloudflare** card on the site's **Cache** tab handles both.
 
 ## See visitors' real addresses {#real-addresses}
 
@@ -27,14 +27,14 @@ The **Cloudflare** card fixes both. It's on the site's **Cache** tab.
 From then on, nginx takes the visitor's address from the `CF-Connecting-IP` header that Cloudflare
 adds. It trusts that header only on requests that come from Cloudflare's own addresses. A request
 sent straight to the server keeps its own address, whatever headers it carries, so nobody can pick
-the address they're logged, rate limited or blocked under.
+the address they are logged, rate limited or blocked under.
 
 The card shows where the list of Cloudflare's addresses comes from. CloudGround ships with the list
 Cloudflare publishes, and while a site has this setting on, the panel downloads it again every day
 from Cloudflare's API. A list that contains anything other than public networks is rejected and the
 previous one stays in use.
 
-Turn this on only for a site that is actually proxied. On a site that isn't, it changes nothing,
+Turn this on only for a proxied site: on a site that isn't proxied it changes nothing,
 because no request comes from Cloudflare.
 
 ### What changes for the block list {#block-list}
@@ -56,7 +56,7 @@ First, an administrator creates the token:
    **Certificates** card, and press **Save**.
 
 This token is separate from the DNS token used for wildcard certificates. With only the Cache Purge
-permission, a leaked token can empty caches and nothing else. The panel stores it encrypted and
+permission, a leaked token can only purge caches. The panel stores it encrypted and
 sends it only to `api.cloudflare.com`.
 
 Then, for each site:
@@ -75,7 +75,7 @@ From then on, every purge also empties Cloudflare's cache of the site:
 
 If Cloudflare rejects the request, the server's cache is still emptied and the panel says so:
 **Cloudflare's cache was not emptied**, followed by Cloudflare's reason. Connector purges reach
-Cloudflare in the background, so WordPress never waits for them.
+Cloudflare in the background, so WordPress does not wait for them.
 
 ## Use the API {#with-the-api}
 

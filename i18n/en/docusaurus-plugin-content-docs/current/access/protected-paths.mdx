@@ -10,8 +10,8 @@ last_verified: unverified
 sidebar_position: 2.5
 ---
 
-A protected path requires a username and password before anything is served. The browser shows its
-own sign-in prompt, and without the right credentials the response is **401**. Each path has its own
+A protected path asks for a username and password before anything is served. The browser shows its
+own sign-in prompt and, without the right credentials, the response is **401**. Each path has its own
 credentials and covers everything beneath it.
 
 Staging copies don't have this tab, because they already ask for a password on the whole site.
@@ -47,7 +47,7 @@ Rules:
   and plugins call it from public pages.
 
 The panel only stores a bcrypt hash of the password, in a file that only root and nginx can read.
-There's no way to read the password back: neither the panel nor the API shows it or its hash.
+The password can't be read back: neither the panel nor the API shows it or its hash.
 
 ## Change credentials or remove protection {#change-or-remove}
 

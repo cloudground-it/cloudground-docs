@@ -61,9 +61,9 @@ capability e in una sandbox di systemd che gli lascia scrivere solo `/var/lib/cl
 database sono cifrati con una chiave in `secret.key`.
 
 Non ascolta su una porta TCP pubblica. systemd gli passa il socket Unix `/run/cloudground/api.sock`,
-che solo nginx può aprire: così l'unico client dell'API è il proxy, ed è lui a dire da quale
+che solo nginx può aprire. L'unico client dell'API è quindi il proxy, e lui dice da quale
 indirizzo arriva la richiesta. Il connettore WordPress dei siti usa un secondo ascolto, in chiaro
-e solo su `127.0.0.1:9080`, che risponde a due sole chiamate: lo svuotamento della cache e il
+e solo su `127.0.0.1:9080`, che accetta due chiamate: lo svuotamento della cache e il
 controllo di salute.
 
 Ogni operazione lunga (creare un sito, un backup, un rilascio) diventa un'**attività** in una coda
@@ -79,18 +79,18 @@ connessione solo se:
 - il processo dall'altra parte è root o l'utente del pannello, come dice il kernel;
 - la richiesta porta il token condiviso di `/etc/cloudground/agent.token`.
 
-Anche l'agent gira in una sandbox: può scrivere solo nei percorsi che il suo lavoro richiede, e ogni
+Anche l'agent gira in una sandbox: scrive solo nei percorsi che gli servono, e ogni
 programma che lancia la eredita. Parla con il sistema attraverso adattatori tipizzati: systemd via
 D-Bus, nginx con `nginx -t` prima di ogni ricarica, restic con i suoi codici di uscita. Costruisce
-sempre liste di argomenti, mai stringhe di shell, e non passa mai segreti sulla riga di comando.
+liste di argomenti, mai stringhe di shell, e non passa segreti sulla riga di comando.
 
 *Da v0.3.0.* L'unità dell'agent ha un limite di memoria (768 MB di soglia, 1 GB di tetto), come seconda
-guardia oltre ai limiti sull'output dei programmi che lancia. Gli strumenti pesanti, cioè `restic`,
-`mariadb-dump`, il client `mariadb` e `certbot`, non girano nel suo gruppo di processi: se ci
+guardia oltre ai limiti sull'output dei programmi che lancia. Gli strumenti pesanti (`restic`,
+`mariadb-dump`, il client `mariadb` e `certbot`) non girano nel suo gruppo di processi: se ci
 girassero, un backup grande verrebbe tagliato dal limite dell'agent. Ognuno ha una unità temporanea
-sua in `cg-helper.slice`, con la stessa sandbox dell'agent. Il suo ambiente, i segreti di restic
-compresi, passa dall'ingresso standard, mai dalla riga di comando né dalle proprietà dell'unità. Un
-backup che esaurisce la memoria fallisce da solo e l'agent resta in piedi. L'avvio dell'agent controlla
+in `cg-helper.slice`, con la stessa sandbox dell'agent. Il suo ambiente, i segreti di restic
+compresi, passa dall'ingresso standard, mai dalla riga di comando né dalle proprietà dell'unità. Se
+un backup esaurisce la memoria, fallisce solo il backup. L'avvio dell'agent controlla
 anche che i pacchetti di sistema richiesti dalla release siano installati (vedi [aggiorna
 CloudGround](/docs/server/update-cloudground#packages)).
 
@@ -99,8 +99,8 @@ CloudGround](/docs/server/update-cloudground#packages)).
 Ogni sito ha il suo utente di sistema `cg-site-<id>`, la sua cartella sotto `/srv/sites/<dominio>`
 e, se esegue PHP, il suo processo PHP-FPM con OPcache e APCu propri. Tutti i processi del sito
 (PHP, attività pianificate, wp-cli, la shell) girano nella stessa slice di systemd e nella stessa
-sandbox, che nasconde gli altri siti e la configurazione del server. Come funziona questa
-separazione lo spiega [l'isolamento dei siti](./site-isolation.mdx).
+sandbox, che nasconde gli altri siti e la configurazione del server. Il funzionamento è in
+[L'isolamento dei siti](./site-isolation.mdx).
 
 ## Perché è fatto così {#why}
 
@@ -109,7 +109,7 @@ separazione lo spiega [l'isolamento dei siti](./site-isolation.mdx).
 - **Un sito non vede gli altri.** Cache di PHP, file e processi sono per sito, quindi un plugin
   compromesso resta nel suo sito.
 - **Il server resta coerente.** L'agent controlla la configurazione prima di caricarla e la
-  rimette com'era se nginx la rifiuta. Ogni cinque minuti il pannello confronta i file che gestisce
+  ripristina se nginx la rifiuta. Ogni cinque minuti il pannello confronta i file che gestisce
   con quelli scritti e segnala le modifiche esterne nella dashboard.
 
 ## Prossimo passo {#next}

@@ -11,9 +11,8 @@ last_verified: unverified
 sidebar_position: 10
 ---
 
-Il database di WordPress accumula cose che nessuno usa: transient scaduti e una revisione di un
-articolo a ogni salvataggio. La pulizia settimanale le toglie e lascia stare il resto. È
-disattivata di default.
+Il database di WordPress accumula transient scaduti e una revisione per ogni salvataggio di un
+articolo. La pulizia settimanale li toglie e non tocca il resto. È disattivata di default.
 
 ## Cosa fa {#what}
 
@@ -36,8 +35,8 @@ recenti di ogni articolo, e il numero e la dimensione delle opzioni in autoload.
 1. Nello stesso riquadro imposta **Revisioni conservate per articolo** e premi **Salva**.
 2. Attiva **Pulisci ogni settimana**.
 
-Il pannello rifiuta l'attivazione se non c'è un repository di backup
-([Collega un repository di backup](/docs/data/connect-a-backup-repository)): la prima pulizia di un
+Senza un repository di backup il pannello rifiuta l'attivazione
+([Collega un repository di backup](/docs/data/connect-a-backup-repository)), perché la prima pulizia di un
 sito crea uno snapshot. L'attivazione non pulisce subito. Ogni sito ha una fascia propria nella
 settimana; il riquadro mostra la **Prossima pulizia**, e l'**Ultima pulizia** quando c'è.
 
@@ -67,4 +66,4 @@ cgctl cleanup <id-sito> off
 
 ## Prossimo passo {#next}
 
-Affianca la pulizia agli aggiornamenti: [aggiorna WordPress con rollback automatico](/docs/sites/update-wordpress).
+Insieme alla pulizia: [Aggiorna WordPress con rollback automatico](/docs/sites/update-wordpress).

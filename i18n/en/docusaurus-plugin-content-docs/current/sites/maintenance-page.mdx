@@ -11,12 +11,12 @@ sidebar_position: 12
 ---
 
 While the maintenance page is on, visitors get a page with your title and message and a `503` status,
-not the site. Search engines read the `503` and `Retry-After` as "come back later". Nothing of the site is cached meanwhile.
+not the site. Search engines read the `503` and `Retry-After` as "come back later". Nothing of the site is cached.
 
 ## Turn it on {#turn-on}
 
 1. Open the site and go to the **Protected paths** tab.
-2. In the **Maintenance page** card, fill in what you want:
+2. In the **Maintenance page** card, fill in:
    - **Title**: plain text, up to 100 characters. Empty shows *Down for maintenance*.
    - **Message**: plain text, up to 2000 characters; line breaks are kept. Empty shows a default
      message.
@@ -24,7 +24,7 @@ not the site. Search engines read the `503` and `Retry-After` as "come back late
      `Retry-After`.
 3. Click **Turn maintenance on**.
 
-The title and the message are text: markup and `${…}` show as typed and are never run.
+The title and the message are text: markup and `${…}` show as typed and are not run.
 
 ## Keep seeing the site {#allow}
 
@@ -35,7 +35,7 @@ Some visitors still get the real site:
 - this server itself;
 - any browser that opens the **Preview address**, shown in the card while the page is on. Opening it
   sets a cookie that lets that browser through for eight hours. Anyone who holds the address can do
-  the same, so share it with care.
+  the same.
 
 A visitor you [refuse](/docs/access/refuse-visitors) is still refused.
 
@@ -55,4 +55,4 @@ The message is optional; without it the saved text stays.
 
 ## Next step {#next}
 
-Working on code rather than closing the site? [Bypass the page cache while you work](/docs/sites/development-mode).
+To work on code without closing the site: [Bypass the page cache while you work](/docs/sites/development-mode).

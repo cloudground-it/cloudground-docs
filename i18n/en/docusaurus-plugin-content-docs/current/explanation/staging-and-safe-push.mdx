@@ -8,9 +8,8 @@ last_verified: unverified
 sidebar_position: 6
 ---
 
-Staging is where you try out a change on a copy of production. Safe Push publishes that change
-only if it does not make the site slower, heavier or broken. Performance Guard is the part that
-does the measuring.
+Staging is a copy of production where you try a change. Safe Push publishes the change
+only if it does not make the site slower, heavier or broken. Performance Guard does the measuring.
 
 ## Staging is a real site {#a-real-site}
 
@@ -20,7 +19,7 @@ pool and vhost, at `staging.<domain>`. When you create it, the panel:
 - copies production's live release and uploaded files without following symlinks, so the copy
   cannot reach production's files;
 - copies production's primary database into staging's. The site's other databases are not copied.
-  The site's configuration (`wp-config.php`) does not use them, and a copy nothing in staging uses
+  `wp-config.php` does not use them, and a copy nothing in staging uses
   would only double the data. They stay with production only;
 - on WordPress, points the configuration at staging's database and sets `WP_ENVIRONMENT_TYPE` =
   `staging`, a panel token different from production's, and fresh session keys. Someone who gets
@@ -37,7 +36,7 @@ the uploaded files stay production's. A release that comes from staging never ca
 credentials.
 
 **Tables.** The primary database is published separately, table by table, from staging's database
-into production's. Other databases are not involved. Some tables are never published, because in
+into production's. Other databases stay out. Some tables are never published, because in
 production they hold live data that staging only has an old copy of:
 
 - WordPress users (`*_users`, `*_usermeta`);
@@ -68,7 +67,7 @@ flowchart TD
 ## How Performance Guard measures {#how-guard-measures}
 
 Two sites on the same server never respond in exactly the same time. A backup, a cron job or a
-noisy neighbour can change everything from one minute to the next. Performance Guard filters out
+noisy neighbour can change them from one minute to the next. Performance Guard filters out
 that noise in three ways.
 
 **Paired measurements.** It runs 200 rounds per page. Each round requests the page from staging
@@ -98,18 +97,18 @@ publishes.
 
 The threshold is 10% because staging and production are different sites, each with its own
 database and caches, and the same code can differ by a few percent between them. The 200 rounds
-are there so a 30% regression is still caught: in calibration runs it was almost always blocked,
-while two identical versions were not. The cost is time. Each page needs 2 × 200 renders, which
+are enough to catch a 30% regression: in calibration runs it was almost always blocked,
+while two identical versions were not. The cost is time: each page needs 2 × 200 renders, which
 takes about 30 seconds for a page PHP renders in 60 ms, and about two minutes at 300 ms.
 
 ## The post-promotion check {#after-promotion}
 
 Right after the new release goes live, the cache is empty and PHP has just reloaded, so timings
-are not comparable and are not judged. Instead, Performance Guard sends production 20 requests per
+are not comparable and are not judged. Performance Guard sends production 20 requests per
 page and checks only status codes and errors. If any page returns a different status than before,
 or more errors, the panel rolls back to the previous release and marks the new one as regressed,
-so it can never go live again by mistake.
+so it cannot go live again by mistake.
 
 ## Next step {#next}
 
-For the steps in the panel, see [Staging and Safe Push](/docs/data/staging-and-safe-push).
+The steps in the panel are in [Staging and Safe Push](/docs/data/staging-and-safe-push).
