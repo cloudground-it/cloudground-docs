@@ -265,7 +265,7 @@ function useGroups(): Group[] {
       intro: translate({
         id: 'features.speed.intro',
         message:
-          'Ogni sito nasce con la sua cache di pagina, su un server regolato sulla macchina. I numeri vengono da un VPS da 2 vCPU, non da una promessa.',
+          'Ogni sito ha la sua cache di pagina, su un server regolato sulla macchina. I numeri sono misurati su un VPS da 2 vCPU.',
       }),
       specimen: <SpeedSpecimen />,
       items: [
@@ -331,7 +331,7 @@ function useGroups(): Group[] {
       intro: translate({
         id: 'features.sites.intro',
         message:
-          'WordPress è di casa, e accanto girano PHP, Laravel, siti statici, proxy e app Node.js e Python. Ognuno con il suo utente e la sua sandbox.',
+          'Oltre a WordPress girano PHP, Laravel, siti statici, proxy e app Node.js e Python. Ognuno con il suo utente e la sua sandbox.',
       }),
       specimen: <SitesSpecimen />,
       items: [
@@ -507,7 +507,7 @@ function useGroups(): Group[] {
       intro: translate({
         id: 'features.data.intro',
         message:
-          'Un backup vale quanto il suo ripristino. Qui ogni copia viene ripristinata per prova, e puoi riprendere solo la parte che ti serve.',
+          'Ogni backup viene ripristinato per prova. Puoi riprendere solo la parte che ti serve.',
       }),
       specimen: <DataSpecimen />,
       items: [
@@ -517,7 +517,7 @@ function useGroups(): Group[] {
           text: translate({
             id: 'features.data.backups.text',
             message:
-              'Copie cifrate con restic, all’ora che scegli, seguite da un ripristino di prova che dimostra che tornano davvero.',
+              'Copie cifrate con restic, all’ora che scegli, poi ripristinate per prova.',
           }),
           to: '/docs/data/back-up-a-site',
         },
@@ -749,7 +749,7 @@ function useGroups(): Group[] {
       intro: translate({
         id: 'features.visibility.intro',
         message:
-          'Il traffico, i log e lo stato dei siti restano sul tuo server. Quando qualcosa si rompe, è il pannello a dirtelo.',
+          'Traffico, log e stato dei siti restano sul tuo server. Se qualcosa si rompe, il pannello ti avvisa.',
       }),
       specimen: <VisibilitySpecimen />,
       items: [
@@ -817,7 +817,7 @@ function useGroups(): Group[] {
       intro: translate({
         id: 'features.access.intro',
         message:
-          'Quello che fai nel pannello lo fai anche da terminale o via API. Un assistente AI può farlo solo dopo che lo hai acceso tu.',
+          'Tutto quello che fai nel pannello lo fai anche da terminale o via API. Un assistente AI può farlo solo dopo che lo hai acceso tu.',
       }),
       specimen: <AccessSpecimen />,
       items: [
@@ -836,7 +836,7 @@ function useGroups(): Group[] {
           title: translate({id: 'features.access.tokens.title', message: 'Token API'}),
           text: translate({
             id: 'features.access.tokens.text',
-            message: 'Un token per ogni script, da revocare quando non serve più.',
+            message: 'Un token per ogni script. Revocalo quando non serve più.',
           }),
           to: '/docs/access/api-tokens-and-cgctl',
         },
@@ -900,8 +900,7 @@ function Hero({groups}: {groups: Group[]}): ReactNode {
         </h1>
         <p className={styles.lede}>
           <Translate id="features.hero.lede">
-            Un pannello per un server Ubuntu, diviso nelle sette cose che contano quando il server è tuo. Per ogni
-            funzione, due righe e la guida che spiega come usarla.
+            Un pannello per un server Ubuntu, in sette aree. Ogni funzione ha due righe e il link alla sua guida.
           </Translate>
         </p>
         <div className={home.actions}>
@@ -915,7 +914,7 @@ function Hero({groups}: {groups: Group[]}): ReactNode {
         </div>
         <p className={styles.heroNote}>
           <Translate id="features.hero.demoNote">
-            La demo gira nel tuo browser con dati di esempio: niente di quello che fai lascia la pagina.
+            La demo gira nel tuo browser su dati di esempio. Niente lascia la pagina.
           </Translate>
         </p>
         <ul className={home.facts}>
@@ -1028,7 +1027,7 @@ function Closing(): ReactNode {
       <div className={styles.closingSide}>
         <p className={styles.closingText}>
           <Translate id="features.closing.text">
-            La demo è il pannello vero con dati di esempio. Quando sei pronto, l’installazione è un comando.
+            La demo è il pannello vero con dati di esempio. L’installazione è un comando.
           </Translate>
         </p>
         <div className={home.actions}>
