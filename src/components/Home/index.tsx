@@ -57,8 +57,7 @@ function Hero(): ReactNode {
         </h1>
         <p className={styles.lede} data-intro>
           <Translate id="home.hero.lede">
-            Un comando installa il pannello sul tuo server Ubuntu. Ogni sito nasce con la sua cache, il suo PHP, il suo
-            certificato e backup che vengono ripristinati per prova dopo ogni copia.
+            Un comando installa il pannello sul tuo server Ubuntu. Ogni sito ha cache, PHP e certificato propri, e ogni backup viene ripristinato per prova.
           </Translate>
         </p>
         <div className={styles.actions} data-intro>
@@ -244,7 +243,7 @@ function Features(): ReactNode {
         }
         intro={
           <Translate id="home.features.intro2">
-            Quello che di solito si configura a mano, una sera alla volta, è acceso dal primo sito. In sette aree.
+            Quello che di solito si configura a mano è già attivo dal primo sito. Sette aree.
           </Translate>
         }
       />
@@ -270,7 +269,7 @@ function Features(): ReactNode {
               <Translate id="home.features.all.title">Tutte le funzionalità</Translate>
             </h3>
             <p>
-              <Translate id="home.features.all.text">Ogni funzione in due righe, con la sua guida.</Translate>
+              <Translate id="home.features.all.text">Ogni funzione in due righe, con il link alla guida.</Translate>
             </p>
             <span className={styles.cardMore}>
               <Translate id="home.features.all.cta">Vedi tutto</Translate>

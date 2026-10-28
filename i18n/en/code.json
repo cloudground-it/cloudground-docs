@@ -440,10 +440,10 @@
     "message": "CloudGround — The hosting panel you run on your own Ubuntu server"
   },
   "home.meta.description": {
-    "message": "One command puts the panel on your Ubuntu server. Every site gets its own cache, its own PHP and its own certificate, plus backups that are restored as a test after every run."
+    "message": "One command installs the panel on your Ubuntu server. Each site has its own cache, PHP and certificate, and every backup is restored as a test."
   },
   "home.hero.lede": {
-    "message": "One command puts the panel on your Ubuntu server. Every site gets its own cache, its own PHP and its own certificate, plus backups that are restored as a test after every run."
+    "message": "One command installs the panel on your Ubuntu server. Each site has its own cache, PHP and certificate, and every backup is restored as a test."
   },
   "home.measures.cached": {
     "message": "Cached page"
@@ -638,7 +638,7 @@
     "message": "Struggling"
   },
   "home.scope.note": {
-    "message": "A sketch, not a benchmark. The real numbers are in {link}."
+    "message": "Illustration only. The real numbers are in {link}."
   },
   "home.scope.noteLink": {
     "message": "the measurements"
@@ -797,7 +797,7 @@
     "message": "Features — CloudGround"
   },
   "features.meta.description": {
-    "message": "Everything CloudGround does on your Ubuntu server: speed, sites and apps, deploys, data, security, visibility and access, each with the guide that shows you how."
+    "message": "Everything CloudGround does on your Ubuntu server: speed, sites and apps, deploys, data, security, visibility and access, each linked to its guide."
   },
   "features.bench.cachedMany": {
     "message": "Cached page, 500 connections"
@@ -920,7 +920,7 @@
     "message": "out of the box."
   },
   "features.speed.intro": {
-    "message": "Every site starts with its own page cache, on a server tuned to the machine it runs on. The figures come from a 2 vCPU VPS, not from a brochure."
+    "message": "Every site has its own page cache, on a server tuned to the machine. The figures are measured on a 2 vCPU VPS."
   },
   "features.speed.cache.title": {
     "message": "Page cache"
@@ -962,7 +962,7 @@
     "message": "More than"
   },
   "features.sites.intro": {
-    "message": "WordPress is at home here, and so are PHP, Laravel, static sites, reverse proxies and Node.js or Python apps. Each one runs under its own user, in its own sandbox."
+    "message": "Besides WordPress, you can run PHP, Laravel, static sites, reverse proxies and Node.js or Python apps. Each has its own user and sandbox."
   },
   "features.sites.types.title": {
     "message": "Six kinds of site"
@@ -1067,13 +1067,13 @@
     "message": "that restore."
   },
   "features.data.intro": {
-    "message": "A backup is only as good as its restore. Every one here is restored as a test, and you can take back just the part you need."
+    "message": "Every backup is restored as a test. You can take back just the part you need."
   },
   "features.data.backups.title": {
     "message": "Verified backups"
   },
   "features.data.backups.text": {
-    "message": "Encrypted with restic at the hour you pick, then restored as a test to prove they really come back."
+    "message": "Encrypted with restic at the hour you pick, then restored as a test."
   },
   "features.data.destinations.title": {
     "message": "Where they go"
@@ -1211,7 +1211,7 @@
     "message": "going on."
   },
   "features.visibility.intro": {
-    "message": "Traffic, logs and site health stay on your server. When something breaks, the panel is the one that tells you."
+    "message": "Traffic, logs and site health stay on your server. If something breaks, the panel alerts you."
   },
   "features.visibility.traffic.title": {
     "message": "Traffic statistics"
@@ -1253,7 +1253,7 @@
     "message": "required."
   },
   "features.access.intro": {
-    "message": "Anything you do in the panel you can also do from a terminal or over the API. An AI assistant can join in, but only after you switch it on."
+    "message": "Everything in the panel also works from a terminal or over the API. An AI assistant can do it only after you switch it on."
   },
   "features.access.cgctl.text": {
     "message": "The panel’s command line: sites, backups, releases, logs, blocking and more, on the server or from another machine."
@@ -1262,7 +1262,7 @@
     "message": "API tokens"
   },
   "features.access.tokens.text": {
-    "message": "One token per script, revoked the moment you no longer need it."
+    "message": "One token per script. Revoke it when you no longer need it."
   },
   "features.access.api.title": {
     "message": "HTTP API"
@@ -1298,7 +1298,7 @@
     "message": "does."
   },
   "features.hero.lede": {
-    "message": "One control panel for one Ubuntu server, sorted by the seven things that matter once the server is yours. Every feature gets two plain lines and a link to the guide that shows you how."
+    "message": "One control panel for one Ubuntu server, in seven areas. Each feature gets two lines and a link to its guide."
   },
   "features.hero.demo": {
     "message": "Try the demo"
@@ -1307,7 +1307,7 @@
     "message": "Install it"
   },
   "features.hero.demoNote": {
-    "message": "The demo runs in your browser on sample data. Nothing you do there leaves the page."
+    "message": "The demo runs in your browser on sample data. Nothing leaves the page."
   },
   "features.hero.release": {
     "message": "Up to date with release {release}"
@@ -1334,7 +1334,7 @@
     "message": "up close."
   },
   "features.closing.text": {
-    "message": "The demo is the real panel with sample data. When you’re ready, installing it takes one command."
+    "message": "The demo is the real panel with sample data. Installing it takes one command."
   },
   "features.closing.demo": {
     "message": "Open the demo"
@@ -1388,7 +1388,7 @@
     "message": "Everything works from a terminal or over the API too. An MCP server for AI assistants stays off until you turn it on."
   },
   "home.features.intro2": {
-    "message": "The things you would normally wire up by hand, one late night at a time, are on from your first site. Seven areas of them."
+    "message": "What you would normally set up by hand is on from your first site. Seven areas."
   },
   "home.features.all.tag": {
     "message": "And the rest"
@@ -1397,7 +1397,7 @@
     "message": "Every feature"
   },
   "home.features.all.text": {
-    "message": "Each one in two lines, with the guide that shows you how."
+    "message": "Each one in two lines, with a link to its guide."
   },
   "home.features.all.cta": {
     "message": "See them all"

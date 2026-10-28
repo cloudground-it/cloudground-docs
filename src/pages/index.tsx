@@ -13,7 +13,7 @@ export default function HomePage(): ReactNode {
   const description = translate({
     id: 'home.meta.description',
     message:
-      'Un comando installa il pannello sul tuo server. Ogni sito nasce con la sua cache, il suo PHP, il suo certificato e backup che vengono ripristinati per prova dopo ogni copia.',
+      'Un comando installa il pannello sul tuo server. Ogni sito ha cache, PHP e certificato propri, e ogni backup viene ripristinato per prova.',
   });
   const home = `${siteConfig.url}${useBaseUrl('/')}`;
   // Structured data declares only what the page shows: the name, what it

@@ -114,7 +114,7 @@ export default function CacheScope(): ReactNode {
               </a>
             ),
           }}>
-          {'Illustrazione, non una misura. I numeri veri sono nelle {link}.'}
+          {'Solo un’illustrazione. I numeri veri sono nelle {link}.'}
         </Translate>
       </p>
     </div>
