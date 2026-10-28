@@ -1,0 +1,65 @@
+---
+title: Proteggi una funzione
+description: Chiedi un token a chi chiama la funzione, rinnovalo quando serve e decidi quali siti possono chiamarla da un browser.
+type: how-to
+prerequisites:
+  - Una funzione con un indirizzo
+  - Un account amministratore
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 4
+---
+
+Una funzione nasce **Pubblica**: chiunque abbia l'indirizzo può chiamarla. Con un **Token** la chiama solo
+chi lo conosce. In **Origini CORS** scegli i siti che possono chiamarla da un browser.
+
+## Chiedi un token {#token}
+
+1. Apri la funzione e scegli la scheda **Indirizzi**.
+2. In **Accesso** scegli **Token** e salva.
+3. Copia subito il token che il pannello mostra e premi **L'ho copiato**. Non lo vedrai più.
+
+Chi chiama la funzione lo manda nell'header `Authorization`:
+
+```bash
+curl https://fn.example.com/contact-form \
+  -H 'Authorization: Bearer <token>' \
+  -d '{"name": "Anna"}'
+```
+
+`<token>` è il token copiato, che inizia con `cgf_`. nginx lo controlla prima che la funzione parta:
+senza il token giusto la risposta è 401 e la funzione non gira. **Prova** e le esecuzioni
+pianificate non ne hanno bisogno.
+
+Per tornare a una funzione aperta a tutti, scegli di nuovo **Pubblica** e salva.
+
+## Rinnova il token {#renew}
+
+Se perdi il token o pensi che sia trapelato:
+
+1. Nella scheda **Indirizzi**, in **Accesso**, premi **Genera nuovo token** e conferma.
+2. Copia il token nuovo.
+
+Il vecchio smette di funzionare dalla richiesta successiva. Se la funzione era **Pubblica**, passa a
+**Token**. Dai subito il token nuovo a chi la chiama.
+
+## Scegli chi può chiamarla da un browser {#cors}
+
+Una pagina web può chiamare la funzione solo se la funzione risponde con gli header CORS giusti.
+
+1. Nella scheda **Indirizzi**, in **Accesso**, scrivi in **Origini CORS** un'origine per riga:
+   `*` per qualunque sito, oppure origini come `https://www.example.com` (schema, nome ed
+   eventualmente porta, senza percorso). Al massimo 20.
+2. Salva.
+
+Vuoto, nessun header CORS. Il controllo preliminare del browser (`OPTIONS`) lo risponde nginx
+senza token e senza far partire la funzione.
+
+:::warning
+Un token scritto in una pagina web lo legge chiunque la apra. Per le chiamate dal browser usa una
+funzione **Pubblica** e fai nel codice i controlli che servono.
+:::
+
+## Prossimo passo {#next}
+
+[Fai girare la funzione a orari pianificati](/docs/functions/schedule-a-function).

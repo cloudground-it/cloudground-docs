@@ -105,6 +105,30 @@ repository del prodotto.
 
 Gli avvisi del tipo `vulnerability` e `malware` compaiono nell'elenco degli avvisi come gli altri.
 
+## Funzioni {#functions}
+
+*Da v0.9.0.* Le funzioni sono del server, non di un sito. Per i valori vedi
+[funzioni: valori e limiti](/docs/reference/functions); l'elenco completo è nel file `docs/api.md` del
+repository del prodotto.
+
+| Rotta | Ruolo | Cosa fa |
+| --- | --- | --- |
+| `GET /api/functions` | tutto il server | Le funzioni per nome (`id`, `name`, `runtime`, `version`, `memory_mb`, `timeout_sec`, `schedule`, `env`, `secrets`, `auth`, `cors_origins`, `domains`, `release`, `urls`, `has_token`, `last`) e `domain`, il dominio delle funzioni. |
+| `POST /api/functions` | amministratore | Crea una funzione: `name` e `runtime` obbligatori; poi `version`, `memory_mb`, `timeout_sec`, `schedule`, `auth`, `cors_origins`, `env`, `secrets`, `files` o `code`, `template` (`http` o `scheduled`). Risponde **201**; con `auth` `token` porta `token`. |
+| `GET /api/functions/<nome>` | tutto il server | La funzione con `entry`, `files` (il codice attivo) e `releases`. |
+| `PUT /api/functions/<nome>` | amministratore | Cambia uno o più campi. `files` o `code` fanno un rilascio nuovo; un segreto `""` si toglie, `••••••••` si tiene. |
+| `DELETE /api/functions/<nome>` | amministratore | Elimina la funzione (**204**). |
+| `POST /api/functions/<nome>/rollback` | amministratore | Torna al rilascio di prima, o a quello in `{"release"}`. |
+| `POST /api/functions/<nome>/invoke` | amministratore | La prova: `{"method", "path", "body"}`; risponde `{status, ms, body, error}`. |
+| `GET /api/functions/<nome>/logs` | tutto il server | `invocations` e `output`. |
+| `POST /api/functions/<nome>/token` | amministratore | Un token nuovo, e il vecchio non vale più; l'accesso diventa `token`. |
+| `PUT /api/functions/<nome>/domains` | amministratore | `{"domains": [...]}`: i domini propri, fino a 10. |
+| `GET /api/functions/<nome>/domains/status` | tutto il server | DNS e certificato dei domini propri. |
+| `GET /api/functions/domain/status`, `PUT /api/functions/domain` | tutto il server, amministratore | Il dominio delle funzioni, con DNS e certificato, e come cambiarlo (`{"domain"}`, vuoto per toglierlo). |
+
+Un nome già usato dà **409**; un runtime non installato sul server dà **412**; `domain` non si può usare
+come nome.
+
 ## Errori {#errors}
 
 Ogni errore ha il corpo `{"error": "<messaggio>"}`.

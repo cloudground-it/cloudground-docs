@@ -826,9 +826,6 @@
   "features.types.static": {
     "message": "Static"
   },
-  "features.types.functions": {
-    "message": "Functions"
-  },
   "features.types.caption": {
     "message": "Site types"
   },
@@ -986,10 +983,10 @@
     "message": "Node.js 20, 22 or 24, checked against its published checksums, or the server’s Python in a virtual environment per site. The app runs as a service of the site’s own user, behind nginx."
   },
   "features.sites.functions.title": {
-    "message": "Functions"
+    "message": "Standalone functions"
   },
   "features.sites.functions.text": {
-    "message": "Small Node.js or Python handlers at /.functions/<name>, or on a schedule. Nothing runs between calls, and every call gets its own memory and time limits."
+    "message": "Node.js or Python code in several files, with its own dependencies, that belongs to no site. A shared address or one of its own, an optional token and CORS, a system user per function. It runs only when it’s called or scheduled."
   },
   "features.sites.wpupdates.title": {
     "message": "WordPress updates"
@@ -1355,7 +1352,7 @@
     "message": "From WordPress to Node.js"
   },
   "home.features.sites.text": {
-    "message": "WordPress, WooCommerce, PHP, Laravel, static sites, proxies, Node.js and Python apps, and functions. Each under its own user, in its own sandbox."
+    "message": "WordPress, WooCommerce, PHP, Laravel, static sites, proxies and Node.js and Python apps, plus standalone functions with an address of their own. Each under its own user, in its own sandbox."
   },
   "home.features.deploys.tag": {
     "message": "Deploys"

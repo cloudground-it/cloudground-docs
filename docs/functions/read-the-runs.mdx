@@ -1,0 +1,44 @@
+---
+title: Leggi le esecuzioni
+description: Guarda le ultime chiamate di una funzione, con stato e durata, e leggi quello che ha stampato e gli errori.
+type: how-to
+prerequisites:
+  - Una funzione che ha girato almeno una volta
+  - Un account amministratore o di sola lettura
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 7
+---
+
+La scheda **Esecuzioni** dice cosa è successo quando la funzione è stata chiamata, e perché una
+chiamata è andata male.
+
+## Guarda le chiamate {#runs}
+
+Apri la funzione e scegli la scheda **Esecuzioni**. Il riquadro elenca le ultime chiamate, dalla più
+recente, con **Quando**, **Richiesta**, **Stato**, **Durata** e **Origine**: **Richiesta** per una
+chiamata dall'indirizzo, **Pianificazione** per un'esecuzione a orari, **Prova** per il pulsante
+**Prova**.
+
+Una funzione mai chiamata mostra *Ancora nessuna esecuzione*. Anche l'elenco delle funzioni dice
+quando ognuna ha girato l'ultima volta.
+
+Gli stati hanno questo significato:
+
+- **200** e gli altri stati che la funzione sceglie: la funzione ha risposto;
+- **500**: il gestore ha lanciato un errore, non c'è, o ha risposto qualcosa che non si capisce;
+- **502**: l'esecuzione è andata in crash, oltre il tempo massimo o oltre la memoria;
+- **504**: il gestore stava solo aspettando quando è scaduto il tempo massimo.
+
+Gli altri stati, come 401, 404, 429 e 503, li dà nginx prima che la funzione parta: sono nella tabella
+di [funzioni: valori e limiti](/docs/reference/functions#statuses).
+
+## Leggi l'output {#output}
+
+Sotto l'elenco, **Output** mostra quello che la funzione ha stampato (`console.log`, `print`) e i suoi
+errori, con la traccia di quelli lanciati dal gestore. Per cercare una chiamata precisa, guarda l'ora
+nell'elenco e poi nell'output.
+
+## Prossimo passo {#next}
+
+[Ripassa i valori e i limiti delle funzioni](/docs/reference/functions).

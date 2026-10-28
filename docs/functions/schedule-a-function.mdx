@@ -1,0 +1,41 @@
+---
+title: Pianifica una funzione
+description: Fai girare una funzione a orari fissi con cinque campi cron, senza indirizzo e senza token.
+type: how-to
+prerequisites:
+  - Una funzione già creata
+  - Un account amministratore
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 5
+---
+
+Una funzione pianificata gira da sola, senza che nessuno la chiami: un lavoro di pulizia, un invio
+periodico, un controllo. Non ha bisogno di un indirizzo.
+
+## Imposta gli orari {#set}
+
+1. Apri la funzione e scegli la scheda **Impostazioni**.
+2. In **Pianificazione** scrivi cinque campi cron: minuto, ora, giorno del mese, mese, giorno della
+   settimana. Per esempio `*/15 * * * *` gira ogni quarto d'ora e `30 6 * * 1-5` alle 6:30 dal
+   lunedì al venerdì.
+3. Salva.
+
+Gli orari seguono il fuso orario del pannello. Vuoto, la funzione non gira mai da sola. Salvare non
+crea un nuovo rilascio.
+
+Il pannello controlla ogni minuto quali funzioni sono in orario e le avvia, al massimo una volta al
+minuto ciascuna. Nell'evento, `source` vale `schedule`, e la funzione gira con gli stessi limiti di
+memoria e di tempo di una chiamata normale.
+
+Per cominciare puoi creare la funzione con il codice **Attività pianificata**: scrive una riga
+nell'output a ogni esecuzione.
+
+## Guarda se è girata {#check}
+
+Ogni esecuzione pianificata compare nella scheda **Esecuzioni**, con origine **Pianificazione**, come
+una chiamata. Il suo output è in **Output**: vedi [leggi le esecuzioni](/docs/functions/read-the-runs).
+
+## Prossimo passo {#next}
+
+[Rilascia una modifica e torna indietro se serve](/docs/functions/deploy-and-roll-back).

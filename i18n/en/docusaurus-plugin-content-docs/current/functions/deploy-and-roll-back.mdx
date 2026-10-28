@@ -1,0 +1,40 @@
+---
+title: Deploy and roll back
+description: Put a change to the code live as a new release, and bring back the previous one, with its dependencies, if something goes wrong.
+type: how-to
+prerequisites:
+  - A function that already exists
+  - An administrator account
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 6
+---
+
+Every change to the code is a release. The next request uses the new one: there's nothing to restart,
+because every run starts from scratch.
+
+## Deploy a change {#deploy}
+
+1. Open the function and go to the **Code** tab.
+2. Edit the files. Until you deploy, the panel marks the code **Not deployed**.
+3. Press **Deploy**.
+
+**Discard changes** throws away what you typed and puts back the code of the live release.
+
+If the function has a `package.json` or a `requirements.txt`, its dependencies are installed before
+the release goes live. If the install fails, the panel says *Deploy failed* with the output of that
+step, and the previous release stays live.
+
+Changing **Settings** or **Addresses** doesn't make a release.
+
+## Roll back {#roll-back}
+
+1. Open the function and go to the **Releases** tab. The release in use is marked **Live**.
+2. On the row of the release you want, press **Roll back** and confirm.
+
+The next call runs that code, with the dependencies it was deployed with. The latest 10 releases are
+kept, along with the live one: an older release can't be recovered.
+
+## Next step {#next}
+
+[See the runs and their output](/docs/functions/read-the-runs).

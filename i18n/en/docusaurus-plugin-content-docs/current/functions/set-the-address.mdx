@@ -1,0 +1,64 @@
+---
+title: Give a function an address
+description: Set the functions domain, or give a function a domain of its own, point DNS at the server and let the panel get the certificate.
+type: how-to
+prerequisites:
+  - An administrator account
+  - A domain name whose DNS A or AAAA records point at the server
+  - The Let's Encrypt email set under Settings → Certificates
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 3
+---
+
+A function with no address can't be reached from the Internet. It still runs from **Test** and on its
+schedule. To give it an address you have two options, and you can use both:
+
+- the **functions domain**, one for the whole server: every function answers at
+  `https://<domain>/<name>`;
+- a **domain of its own** for one function, which answers at `/` with the whole path.
+
+## Set the functions domain {#functions-domain}
+
+1. Create `A` and `AAAA` records in DNS for a name you'll use only for functions, such as
+   `fn.example.com`, pointing at the server.
+2. Open **Settings**, go to **Functions** and type the name under **Functions domain**.
+3. Save.
+
+Every function now answers at `https://fn.example.com/<name>` and at every path beneath it. In the
+event, `path` is the part after `/<name>` (`/` when nothing follows). A name that no function uses
+answers 404. The domain has one Let's Encrypt certificate that covers every function.
+
+To remove it, clear the field and save: the functions lose their shared address and the panel deletes
+the certificate.
+
+If the Let's Encrypt email is missing, the panel says so and doesn't issue the certificate. Set it
+under **Settings** → **Certificates**, then save the domain again.
+
+While there is no domain, the **Functions** list shows a notice with **Set the domain** that brings you
+here.
+
+## Give a function a domain of its own {#own-domain}
+
+1. Create `A` and `AAAA` records for the name, such as `api.example.com`.
+2. Open the function and go to the **Addresses** tab.
+3. Under **Own domains**, press **Add domain** and type the name. You can add up to 10.
+4. Save.
+
+Each domain answers only for that function, at `/` and at every path beneath it: in the event, `path`
+is the whole path. All of a function's domains share one certificate. The panel refuses a name that a
+site, an alias, another function, the functions domain or the panel already uses.
+
+## Check DNS and the certificate {#check}
+
+On the **Addresses** tab, **Public addresses** lists where the function answers. **DNS and certificate**
+tells you who issued the certificate and until when it is valid. While DNS doesn't point at the
+server, or the Let's Encrypt email is missing, there's no certificate. The panel asks for one when you
+save a domain and the email is there, and renews it by itself after that.
+
+If you save domains before setting the email, they answer with a temporary certificate: set the
+email and save the domains again.
+
+## Next step {#next}
+
+[Decide who can call the function](/docs/functions/protect-a-function).

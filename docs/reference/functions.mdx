@@ -1,0 +1,112 @@
+---
+title: "Funzioni: valori e limiti"
+description: Le schede e i campi di una funzione, le regole del codice, l'evento e la risposta, gli stati HTTP e i limiti, con i valori esatti.
+type: reference
+prerequisites: []
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 8
+---
+
+Chi può fare cosa: gli amministratori leggono e cambiano le funzioni, gli account di sola lettura le
+leggono, un operatore non le vede. Le rotte sono nell'[API](/docs/api#functions).
+
+## Schede e campi {#tabs}
+
+Nell'ordine in cui le mostra il pannello.
+
+| Scheda | Campo | Valori |
+| --- | --- | --- |
+| **Codice** | File | fino a 64 file, 1 MiB in tutto; uno è il file di ingresso |
+| | **Prova** | **Metodo** (di norma `POST`), **Percorso** (di norma `/`), **Corpo** (al massimo 128 KiB) |
+| **Indirizzi** | **Indirizzi pubblici** | sola lettura: dove risponde la funzione |
+| | **Domini propri** | fino a 10 nomi di dominio |
+| | **Accesso** | **Pubblica** (predefinito) o **Token** |
+| | **Origini CORS** | `*`, oppure fino a 20 origini `http[s]://nome[:porta]` |
+| | **DNS e certificato** | sola lettura |
+| **Impostazioni** | **Runtime** e versione | Node.js o Python, con una versione installata in **Servizi** → **Runtime** |
+| | **Memoria** | 64–1024 MB (predefinito 128) |
+| | **Tempo massimo** | 1–300 secondi (predefinito 10) |
+| | **Pianificazione** | cinque campi cron nel fuso orario del pannello, o vuoto |
+| | **Variabili**, **Segreti** | al massimo 100 in tutto |
+| | **Elimina funzione** | toglie codice, rilasci, segreti e indirizzi |
+| **Esecuzioni** | Elenco e **Output** | le ultime chiamate; quello che la funzione stampa |
+| **Rilasci** | Elenco | gli ultimi 10, con **Rollback** |
+
+In **Impostazioni** del pannello, **Funzioni** ha **Dominio delle funzioni**: un nome di dominio, o vuoto.
+
+## Nome e limiti {#limits}
+
+| Cosa | Valore |
+| --- | --- |
+| Nome | `^[a-z][a-z0-9-]{0,30}$`, unico sul server; `domain` è riservato |
+| Funzioni per server | 100 |
+| Memoria per esecuzione | 64–1024 MB, senza swap |
+| Tempo massimo | 1–300 secondi |
+| Corpo di una richiesta | 6 MiB |
+| Installazione delle dipendenze | 20 minuti al massimo |
+| Rilasci conservati | 10, più quello attivo |
+| Per client e per funzione | 10 richieste al secondo, con raffica di 20 (oltre: 429), e 8 alla volta |
+| Per funzione | 32 alla volta (oltre: 503) |
+
+Ogni richiesta avvia un processo suo. Tutte le funzioni insieme possono usare al massimo il 50% della
+memoria del server.
+
+## Il codice {#code}
+
+| Regola | Valore |
+| --- | --- |
+| File | al massimo 64, 1 MiB in tutto, testo UTF-8 |
+| Percorso | cartelle e file con lettere, cifre, `.`, `-`, `_`; mai sotto `node_modules/` o `.venv/` |
+| Ingresso, Node.js | `index.js`, modulo CommonJS o ES |
+| Ingresso, Python | `main.py` |
+| Gestore | `handler(event)`, normale o `async`; in Node.js anche l'export predefinito |
+| Dipendenze, Node.js | `package.json`: `npm ci --omit=dev` con `package-lock.json` o `npm-shrinkwrap.json`, altrimenti `npm install --omit=dev` |
+| Dipendenze, Python | `requirements.txt`: `pip install -r` in un `.venv` del rilascio |
+
+## L'evento {#event}
+
+| Campo | Contenuto |
+| --- | --- |
+| `method` | `GET`, `POST`, … |
+| `path` | sul dominio delle funzioni, la parte dopo `/<nome>` (`/` se non c'è altro); su un dominio proprio, il percorso intero |
+| `query` | la query string senza il `?` |
+| `headers` | nomi in minuscolo; un header ripetuto è unito con `, ` |
+| `body` | il corpo, in testo se è UTF-8, altrimenti in base64 |
+| `isBase64Encoded` | `true` se `body` è in base64 |
+| `source` | `http` (una chiamata), `test` (**Prova**), `schedule` (pianificazione) |
+
+## La risposta {#answer}
+
+Il gestore restituisce un oggetto o un valore qualunque.
+
+| Restituisce | Risposta |
+| --- | --- |
+| Un oggetto con `statusCode`, `headers`, `body`, `isBase64Encoded` | lo stato (da 100 a 599, di norma 200), gli header (valori in testo), il corpo in testo o in base64 |
+| Una stringa | testo semplice |
+| Qualunque altro valore | JSON |
+
+## Stati HTTP {#statuses}
+
+| Stato | Quando |
+| --- | --- |
+| 401 | l'accesso è **Token** e manca `Authorization: Bearer <token>` valido |
+| 404 | sul dominio delle funzioni, il nome non è di nessuna funzione |
+| 429 | più di 10 richieste al secondo (raffica di 20) dallo stesso client |
+| 500 | il gestore ha lanciato un errore, manca o ha risposto qualcosa di non valido |
+| 502 | crash, tempo massimo o limite di memoria |
+| 503 | già 8 chiamate in corso dallo stesso client, o 32 sulla funzione |
+| 504 | il gestore aspettava quando è scaduto il tempo massimo |
+
+## Sul server {#on-the-server}
+
+| Cosa | Dove |
+| --- | --- |
+| Codice | `/srv/functions/<nome>/releases/<id>/`, con `current` che punta al rilascio attivo |
+| Utente di sistema | `cg-fn-<id>`, senza accesso e senza home |
+| Log delle chiamate | `/var/log/cloudground/functions/<nome>.access.log` |
+| Log dell'output | `/var/log/cloudground/functions/<nome>.output.log` |
+
+## Prossimo passo {#next}
+
+[Capisci come gira una funzione](/docs/explanation/functions).

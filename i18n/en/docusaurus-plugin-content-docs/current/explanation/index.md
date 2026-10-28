@@ -19,4 +19,5 @@ hide_table_of_contents: true
   <Card to="/docs/explanation/sign-in-protection" title="Sign-in protection" />
   <Card to="/docs/explanation/blocking" title="Address blocking" />
   <Card to="/docs/explanation/security-scans" title="Security checks" />
+  <Card to="/docs/explanation/functions" title="How a function runs" />
 </Cards>

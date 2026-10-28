@@ -1,0 +1,65 @@
+---
+title: Protect a function
+description: Ask callers for a token, renew it when you need to and choose which websites may call the function from a browser.
+type: how-to
+prerequisites:
+  - A function with an address
+  - An administrator account
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 4
+---
+
+A function starts out **Public**: anyone with the address can call it. With a **Token**, only callers
+who know it get through. Under **CORS origins** you choose which websites may call it from a browser.
+
+## Ask for a token {#token}
+
+1. Open the function and go to the **Addresses** tab.
+2. Under **Access**, pick **Token** and save.
+3. Copy the token the panel shows and press **I have copied it**. You won't see it again.
+
+Callers send it in the `Authorization` header:
+
+```bash
+curl https://fn.example.com/contact-form \
+  -H 'Authorization: Bearer <token>' \
+  -d '{"name": "Anna"}'
+```
+
+`<token>` is the token you copied, which starts with `cgf_`. nginx checks it before the function
+starts: without the right token the answer is a 401 and the function doesn't run. **Test** and
+scheduled runs don't need one.
+
+To open the function to everyone again, pick **Public** and save.
+
+## Renew the token {#renew}
+
+If you lose the token or think it has leaked:
+
+1. On the **Addresses** tab, under **Access**, press **Generate new token** and confirm.
+2. Copy the new token.
+
+The old token stops working from the next request. If the function was **Public**, it switches to
+**Token**. Hand the new token to your callers right away.
+
+## Choose who can call it from a browser {#cors}
+
+A web page can call the function only if the function answers with the right CORS headers.
+
+1. On the **Addresses** tab, under **Access**, type one origin per line in **CORS origins**: `*` for
+   any site, or origins such as `https://www.example.com` (scheme, host and optionally a port, no
+   path). Up to 20.
+2. Save.
+
+Left empty, the function sends no CORS headers. nginx answers the browser's preflight request
+(`OPTIONS`) itself, with no token and without starting the function.
+
+:::warning
+A token written into a web page can be read by anyone who opens the page. For calls from a browser, use
+a **Public** function and do the checks you need in the code.
+:::
+
+## Next step {#next}
+
+[Run the function on a schedule](/docs/functions/schedule-a-function).

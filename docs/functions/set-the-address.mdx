@@ -1,0 +1,63 @@
+---
+title: Dai un indirizzo a una funzione
+description: Imposta il dominio delle funzioni o dai a una funzione un dominio suo, punta il DNS sul server e lascia che il pannello ottenga il certificato.
+type: how-to
+prerequisites:
+  - Un account amministratore
+  - Un nome di dominio i cui record DNS A o AAAA puntano al server
+  - L'email per Let's Encrypt impostata in Impostazioni → Certificati
+version: v0.9.0
+last_verified: unverified
+sidebar_position: 3
+---
+
+Una funzione senza indirizzo non si raggiunge da Internet: gira solo da **Prova** e a orari
+pianificati. Per darle un indirizzo hai due strade, e puoi usarle insieme:
+
+- il **dominio delle funzioni**, uno per tutto il server: ogni funzione risponde a
+  `https://<dominio>/<nome>`;
+- un **dominio proprio** per una funzione: risponde a `/`, con tutto il percorso.
+
+## Imposta il dominio delle funzioni {#functions-domain}
+
+1. Crea nel DNS i record `A` e `AAAA` di un nome usato solo per le funzioni, per esempio
+   `fn.example.com`, che puntano al server.
+2. Apri **Impostazioni**, vai in **Funzioni** e scrivi il nome in **Dominio delle funzioni**.
+3. Salva.
+
+Da ora ogni funzione risponde a `https://fn.example.com/<nome>` e a ogni percorso sotto quell'indirizzo.
+Nell'evento, `path` è la parte dopo `/<nome>` (`/` se non c'è altro). Un nome che nessuna funzione usa
+risponde 404. Il dominio ha un solo certificato Let's Encrypt, per tutte le funzioni.
+
+Per toglierlo, svuota il campo e salva: le funzioni perdono l'indirizzo comune e il pannello elimina il
+certificato.
+
+Se manca l'email per Let's Encrypt, il pannello lo dice e non emette il certificato. Impostala in
+**Impostazioni** → **Certificati**, poi salva di nuovo il dominio.
+
+Dall'elenco **Funzioni**, finché non c'è un dominio, un avviso con **Imposta il dominio** ti porta qui.
+
+## Dai a una funzione un dominio suo {#own-domain}
+
+1. Crea nel DNS i record `A` e `AAAA` del nome, per esempio `api.example.com`.
+2. Apri la funzione e scegli la scheda **Indirizzi**.
+3. In **Domini propri** premi **Aggiungi dominio** e scrivi il nome. Ne puoi aggiungere fino a 10.
+4. Salva.
+
+Ogni dominio risponde solo per quella funzione, a `/` e a ogni percorso sotto: nell'evento, `path` è il
+percorso intero. Tutti i domini della funzione hanno un solo certificato. Il pannello rifiuta un nome
+già usato da un sito, da un alias, da un'altra funzione, dal dominio delle funzioni o dal pannello.
+
+## Controlla DNS e certificato {#check}
+
+Nella scheda **Indirizzi**, **Indirizzi pubblici** elenca dove risponde la funzione. **DNS e
+certificato** dice chi ha emesso il certificato e fino a quando vale. Finché il DNS non punta al
+server, o manca l'email per Let's Encrypt, il certificato non c'è. Il pannello lo chiede quando salvi un
+dominio e l'email c'è; poi lo rinnova da solo.
+
+Se salvi i domini prima di impostare l'email, rispondono con un certificato provvisorio: imposta
+l'email e salva di nuovo i domini.
+
+## Prossimo passo {#next}
+
+[Decidi chi può chiamare la funzione](/docs/functions/protect-a-function).
