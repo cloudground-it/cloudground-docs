@@ -44,7 +44,7 @@ La scansione usa ClamAV senza tenerlo residente.
   memoria. Aggiunge le regole PHP di Linux Malware Detect, che scarica sul server e non distribuisce.
   Le firme si aggiornano al massimo una volta al giorno, prima di una scansione.
 - **Le scansioni si spargono.** Una alla volta sul server, una volta a settimana per sito, ognuno a una
-  sua ora.
+  sua ora, così non pesano tutte insieme.
 - **La quarantena** copia il file in una cartella di root, fuori da ogni percorso che il sito, nginx, i
   backup o l'SFTP raggiungono, e poi lo toglie dal sito. Se non riesce a toglierlo, la copia resta e
   l'operazione fallisce.

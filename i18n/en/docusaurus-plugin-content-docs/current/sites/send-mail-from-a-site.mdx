@@ -55,7 +55,8 @@ A **staging copy sends no mail**, so a test never reaches a real customer.
 
 ## Check SPF, DKIM and DMARC {#checklist}
 
-The **SPF, DKIM and DMARC** card looks up three records of the sender's domain and shows each as
+Receivers trust mail more when the sender's domain says the relay may send for it. The
+**SPF, DKIM and DMARC** card looks up three records of the sender's domain and shows each as
 **found** or **missing**:
 
 - **SPF**, a TXT record starting `v=spf1`, on the domain;
