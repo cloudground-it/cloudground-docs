@@ -99,6 +99,8 @@ assegnati.
 | Attività pianificate | sì | sì | vede, con i comandi in forma ridotta |
 | Importare una migrazione | sì | sì, senza cambiare il limite di espansione | no |
 | Log di un sito | sì | sì | sì |
+| Funzioni: elenco, codice, esecuzioni, indirizzi | sì | no | vede |
+| Funzioni: creare, cambiare, rilasciare, provare, tornare indietro, eliminare, token, domini, dominio delle funzioni | sì | no | no |
 | Log del server, servizi, firewall, stato e metriche | sì | no | vede |
 | Riavviare servizi, regole del firewall | sì | no | no |
 | Attivare il firewall | sì, da una sessione | no | no |
@@ -117,6 +119,8 @@ assegnati.
 e attivazione del firewall, e i comandi in forma ridotta delle attività pianificate per la sola lettura.
 
 *Da v0.3.0.* Le righe su lista dei blocchi, regole di un sito, vulnerabilità, scansione malware, accesso a due fattori e protezione di WordPress. Le impostazioni **Controlla i siti WordPress per vulnerabilità note** e **Scansiona ogni settimana i file dei siti alla ricerca di malware** sono impostazioni del pannello: le cambia solo un amministratore. Le modifiche alla lista dei blocchi sono rotte solo per sessioni, come il firewall: un token API le rifiuta con **403**, e anche `cgctl blocklist` accede con email e password.
+
+*Da v0.9.0.* Le righe sulle [funzioni](/docs/functions): appartengono a tutto il server, quindi la regola è `global` per leggerle e `admin` per ogni modifica. Un operatore non vede nessuna funzione; un account in sola lettura le vede ma non può provarle, perché una prova esegue la funzione.
 
 ## Token API {#api-tokens}
 
