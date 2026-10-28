@@ -12,7 +12,7 @@ sidebar_position: 3.5
 ---
 
 Every site has a **Redirects** tab (under **More**). A redirect is live as soon as you save it, with
-nothing to restart, and is never cached: nginx decides it before it looks at the page cache.
+nothing to restart, and is not cached: nginx decides it before it looks at the page cache.
 
 ## Pick one name: with or without www {#canonical}
 
@@ -30,7 +30,7 @@ port 80 too, in one step. Choose **None** to serve each name as it is again.
 The site has to answer on the other name too, or there is nothing to redirect. If the panel says the site
 does not answer on the name with or without www yet, an administrator clicks **Also serve
 www.example.com**: the name is added as an alias and the Let's Encrypt certificate is issued again, so it
-covers both names (as in [domains and certificates](/docs/sites/domains-and-certificates)). With a custom
+covers both names (as in [Domains and certificates](/docs/sites/domains-and-certificates)). With a custom
 certificate the panel warns that it may not cover the new name.
 
 While a name is canonical, its alias cannot be removed from the site: change the canonical name first.
@@ -63,7 +63,7 @@ configuration. The panel refuses what it cannot write safely: spaces and special
 starting with `//`, a redirect to itself, two rules for one path and more than 200 rules. If the site's
 routing configuration already has a `location` for the same path, saving names it: remove it there.
 
-Every change empties the site's page cache and fills it again: a page the redirect was hiding does not
+Every change empties the site's page cache and fills it again, so a page the redirect was hiding does not
 come back from the cache when you remove it.
 
 ## From the command line {#cli}
@@ -86,4 +86,4 @@ cgctl redirects <site-id> rules '[{"match":"prefix","from":"/blog","to":"/news",
 
 ## Next step {#next}
 
-How the certificate covers several names: [domains and certificates](/docs/sites/domains-and-certificates).
+The certificate for several names: [Domains and certificates](/docs/sites/domains-and-certificates).

@@ -22,7 +22,7 @@ la risposta per sei ore.
 
 Per non controllare più, apri **Impostazioni**, riquadro **Aggiornamenti del pannello**, spegni
 **Controlla gli aggiornamenti quando apri il pannello** e premi **Salva**. Il controllo non installa
-mai nulla da solo.
+nulla da solo.
 
 Nello stesso riquadro, **Canale degli aggiornamenti** sceglie cosa ti viene proposto: **Stabile** solo
 le versioni finali, **Beta (anche versioni di prova)** anche quelle di prova.
@@ -42,7 +42,7 @@ cambia nulla.
    **Aggiornamenti del pannello**, premi **Aggiorna ora** e conferma.
 2. Il pannello dice **Aggiornamento avviato: il pannello si riavvierà.**
 
-Con l'API la richiesta è `POST /api/panel/update`, con `{"version": "<versione>"}` o `{}` per la più
+Con l'API: `POST /api/panel/update`, con `{"version": "<versione>"}` o `{}` per la più
 recente.
 
 ## Aggiorna con cgctl {#update-with-cgctl}
@@ -78,9 +78,9 @@ its state from <snapshot>`, uscita 1.
    Altrimenti la guardia rimette i binari, le unità e lo snapshot precedenti, e riavvia la release
    precedente.
 
-Il nuovo pannello migra il suo database in avanti al primo avvio, attraverso ogni passo tra le due
-release: puoi passare da una release a una qualsiasi più recente con un solo aggiornamento. La
-migrazione non va mai all'indietro, quindi la strada per tornare è lo snapshot, che un aggiornamento
+Al primo avvio il nuovo pannello migra il suo database in avanti, passo per passo tra le due
+release, quindi puoi passare a una release più recente qualsiasi con un solo aggiornamento. La
+migrazione non va mai all'indietro: per tornare c'è lo snapshot, che un aggiornamento
 fallito rimette da solo.
 
 ## I pacchetti di sistema nuovi {#packages}
@@ -103,8 +103,7 @@ file dell'unità che la nuova release installa.
 ## Cosa tiene {#what-it-keeps}
 
 Un aggiornamento sostituisce i binari e, quando la release le cambia, le unità systemd. Non tocca mai i
-file dei siti, i loro database, i certificati o i backup. I siti continuano a rispondere per tutto il
-tempo: nginx e il PHP dei siti non vengono riavviati. Solo il pannello risponde con un errore per i
+file dei siti, i loro database, i certificati o i backup. I siti continuano a rispondere: nginx e il PHP dei siti non vengono riavviati. Solo il pannello risponde con un errore per i
 pochi secondi del suo riavvio.
 
 Rifiuta, senza cambiare nulla:
@@ -137,4 +136,4 @@ release già installata ripara il server (vedi
 
 ## Prossimo passo {#next}
 
-Per togliere CloudGround da un server, vedi [disinstalla CloudGround](/docs/server/uninstall-cloudground).
+Per rimuovere CloudGround da un server, vedi [disinstalla CloudGround](/docs/server/uninstall-cloudground).

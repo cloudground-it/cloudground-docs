@@ -12,8 +12,7 @@ sidebar_position: 6.5
 
 Anyone who brute-forces passwords against SSH, `wp-login.php`, `xmlrpc.php` or the panel gets blocked
 for a while: the server drops their packets on every port. The **Blocking** page, under the
-**Server** group, lists blocked and always-allowed addresses and lets you change the settings. For
-how it works under the hood, see [address blocking](/docs/explanation/blocking).
+**Server** group, lists blocked and always-allowed addresses and lets you change the settings. How it works is in [address blocking](/docs/explanation/blocking).
 
 ## Automatic blocking {#automatic-blocking}
 
@@ -44,7 +43,7 @@ visitor Cloudflare sends through it). For a site behind Cloudflare, see
 
 ## Always allow your own address {#allow-yours}
 
-Do this first, so a few mistyped passwords can never lock you out.
+Do this first, so a few mistyped passwords don't lock you out.
 
 1. Open **Blocking**. The top of the page shows **Your address**.
 2. In the **Always allowed** box, press **Always allow it**, or enter an **Address or network** (an IP
@@ -75,7 +74,7 @@ cgctl blocklist unblock <address>
 ```
 
 `<address>` is your IP address. On the server, `cgctl` talks to the API socket, which has no address
-that could be blocked. The command works even when you're blocked from both the panel and SSH.
+that could be blocked, so the command works even if you're blocked from the panel and SSH.
 
 ## Use cgctl or the API {#with-cgctl-or-the-api}
 

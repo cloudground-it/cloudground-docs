@@ -11,8 +11,8 @@ sidebar_position: 1.5
 ---
 
 Un sito Node.js o Python fa girare la tua app come servizio a sé, con l'utente del sito e dentro i
-limiti di risorse e l'isolamento del sito, come avviene per il PHP di un sito PHP. nginx si occupa
-dell'HTTPS e passa ogni richiesta all'app attraverso un socket unix. Rilasci, rollback e git deploy
+limiti di risorse e l'isolamento del sito, come il PHP di un sito PHP. nginx gestisce
+l'HTTPS e passa ogni richiesta all'app attraverso un socket unix. Rilasci, rollback e git deploy
 funzionano come per i siti PHP.
 
 ## Crea il sito {#create}
@@ -51,8 +51,7 @@ Se l'app può ascoltare solo su una porta TCP, imposta la **Porta** nella scheda
 ascolta allora su 127.0.0.1 e `PORT` contiene il numero. Una porta su 127.0.0.1 è raggiungibile da
 qualunque processo del server, quindi usa il socket quando puoi.
 
-L'app gira con `/srv/sites/<dominio>/current` come cartella di lavoro. Vede i file del proprio sito
-e niente degli altri siti.
+L'app gira con `/srv/sites/<dominio>/current` come cartella di lavoro. Vede solo i file del proprio sito.
 
 ## Rilascio, rollback, git deploy {#deploy}
 
@@ -67,7 +66,7 @@ installa le dipendenze al suo interno, con l'utente del sito:
 
 Se questo passo fallisce, il rilascio fallisce con l'output di npm o pip, e la versione online non
 cambia. Attivare un rilascio, o tornare indietro, riavvia l'app sulla nuova versione. Ogni rilascio
-tiene le sue dipendenze, quindi un rollback torna esattamente a ciò con cui quella versione girava.
+tiene le sue dipendenze, quindi un rollback torna a ciò con cui quella versione girava.
 
 Il git deploy funziona allo stesso modo: prima il comando di build del repository, poi le
 dipendenze.
@@ -85,7 +84,7 @@ I nomi usano lettere maiuscole, cifre e `_`. Non si possono usare i nomi che il 
 come `PORT`, `PATH`, `HOME` e quelli che iniziano con `CG_` o `LD_`.
 
 Sul server i valori stanno solo in un file leggibile da root, che systemd legge quando avvia l'app.
-Non finiscono mai nel file dell'unità, nelle risposte del pannello, nel registro attività o nei log.
+Non finiscono nel file dell'unità, nelle risposte del pannello, nel registro attività o nei log.
 
 ## Stato, riavvii e log {#health}
 

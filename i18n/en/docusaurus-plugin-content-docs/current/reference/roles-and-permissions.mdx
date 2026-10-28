@@ -8,7 +8,7 @@ last_verified: unverified
 sidebar_position: 3
 ---
 
-Every account has exactly one of three roles. To assign roles, see [Users and roles](/docs/access/users-and-roles).
+Every account has one of three roles. To assign roles, see [Users and roles](/docs/access/users-and-roles).
 
 | Role | API value | Scope |
 | --- | --- | --- |
@@ -18,8 +18,7 @@ Every account has exactly one of three roles. To assign roles, see [Users and ro
 
 ## How a request is authorized {#how-the-panel-decides}
 
-Every request goes through these checks in order. The first check that fails determines the
-response.
+Every request goes through these checks in order. The first check that fails answers.
 
 ```mermaid
 flowchart TD
@@ -40,12 +39,12 @@ flowchart TD
   L -- yes --> H["Request runs"]
 ```
 
-A site outside an operator's scope returns **404**, not 403, so the panel does not reveal that it
+A site outside an operator's scope returns **404**, not 403, so the panel does not confirm that it
 exists.
 
 ## Route rules {#route-rules}
 
-Every API route has one of these rules.
+Every API route has one of these rules:
 
 | Rule | Administrator | Operator | Read-only |
 | --- | --- | --- | --- |
@@ -131,12 +130,11 @@ change them. Block list changes are session-only routes, like the firewall: an A
 
 An API token has no permissions of its own. It acts as the administrator who created it, for as
 long as that owner is an enabled administrator, and is subject to the same two-step verification
-rule. There are no tokens scoped to a single area. Only administrators can create tokens.
+rule. Tokens cannot be scoped to a single area. Only administrators can create tokens.
 
 A token can never reach session-only routes: your own account (password, 2FA, sessions, profile),
 users, tokens, the site shell, the routing editor, firewall rules and turning the firewall on, and
-the panel's certificate and updates. It also cannot add a "shell" key. All of these return **403**.
-A token cannot open Quarry either.
+the panel's certificate and updates. It cannot add a "shell" key or open Quarry. All of these return **403**.
 
 A database user signed in to Quarry with its own password has no panel role. Its MariaDB privileges
 decide what it can do (see [How Quarry works](/docs/explanation/quarry#mariadb-decides)).
@@ -148,8 +146,8 @@ verification is turned off, when the account is disabled, demoted or deleted, an
 ## Connector token {#connector-token}
 
 Each WordPress site has a connector token, separate from user accounts. The site's plugin uses it
-only to ask the panel to purge the site's pages from the cache. It grants access to nothing else.
+only to ask the panel to purge the site's pages from the cache. It gives no other access.
 
 ## Next step {#next}
 
-Create accounts with the right role: see [Users and roles](/docs/access/users-and-roles).
+Create accounts with the right role: [Users and roles](/docs/access/users-and-roles).

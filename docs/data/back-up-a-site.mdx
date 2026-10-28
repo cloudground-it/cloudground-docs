@@ -11,13 +11,13 @@ sidebar_position: 4
 ---
 
 Ogni backup è fatto di uno snapshot per ogni database del sito, con il suo dump, poi di uno snapshot
-dei suoi file. Un sito senza database salva solo i file. Appena fatto, il backup passa un [ripristino di prova](/docs/data/run-a-restore-test): finché
+dei suoi file. Un sito senza database salva solo i file. Poi il backup passa un [ripristino di prova](/docs/data/run-a-restore-test): finché
 la prova non è finita è *in attesa*, e conta solo quando è *riuscito*.
 
 ## I backup pianificati {#scheduled}
 
 Un sito di produzione nasce con i backup attivi: uno al giorno, conservati 30 giorni. Il pannello
-controlla ogni 5 minuti quali siti sono in scadenza e avvia il loro backup. Non serve fare altro.
+controlla ogni 5 minuti quali siti sono in scadenza e avvia il loro backup.
 
 - Partono solo per i siti attivi, e solo con repository e password impostati.
 - Le copie di staging non hanno backup pianificati.
@@ -34,12 +34,12 @@ Per cambiare la pianificazione, nella scheda **Backup** del sito, riquadro **Pia
    Un valore impostato in altro modo (con cgctl o l'API, da 0 a 3650 giorni) resta tra le scelte.
 3. Premi **Salva**.
 
-Con l'API è `PUT /api/sites/<site-id>/backups/policy` con `enabled`, `schedule` (`hourly`, `daily`,
+Con l'API: `PUT /api/sites/<site-id>/backups/policy` con `enabled`, `schedule` (`hourly`, `daily`,
 `weekly`), `retention_days` e `hour`. Manda solo i campi da cambiare: gli altri restano come sono.
 
 ### Scegli l'orario {#hour}
 
-*Da v0.2.0.* Un backup giornaliero o settimanale può partire a un'ora fissa, per esempio di notte.
+*Da v0.2.0.* Un backup giornaliero o settimanale può partire a un'ora fissa.
 
 1. In **Frequenza** scegli **Ogni giorno** o **Ogni settimana**. Compare il campo **Orario**.
 2. In **Orario** scegli l'ora. Sotto il campo il pannello mostra il fuso orario del server: l'ora è
@@ -47,7 +47,7 @@ Con l'API è `PUT /api/sites/<site-id>/backups/policy` con `enabled`, `schedule`
 3. Premi **Salva**.
 
 Il backup parte al primo controllo (ogni 5 minuti) dopo quell'ora. Un backup settimanale tiene il suo
-giorno della settimana. Se cambi l'ora, quel giorno non parte un secondo backup. Se il pannello era
+giorno della settimana. Cambiare l'ora non fa partire un secondo backup nello stesso giorno. Se il pannello era
 spento all'ora scelta, il backup parte al primo controllo dopo la riaccensione.
 
 Con **Qualsiasi ora** il backup parte un giorno o una settimana dopo il precedente, come prima della

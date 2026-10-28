@@ -24,8 +24,7 @@ serviva sempre una password.
 3. Se il sito non ha ancora chiavi SSH, incolla in **Chiave pubblica** quella che userai per accedere.
 4. Premi **Attiva con solo chiavi**.
 
-Con solo chiavi l'accesso non ha una password: il server non la chiede nemmeno, quindi non c'è
-niente da indovinare. Per aggiungere altre chiavi vedi [sotto](#add-a-key).
+Con solo chiavi non esiste una password da indovinare. Per aggiungere altre chiavi vedi [sotto](#add-a-key).
 
 ### Con una password {#enable-with-a-password}
 
@@ -35,7 +34,7 @@ niente da indovinare. Per aggiungere altre chiavi vedi [sotto](#add-a-key).
 
 :::caution[Una password si può indovinare]
 
-Gli utenti SFTP hanno la forma `cg-site-<id>`, quindi sono facili da indovinare. Contro i tentativi
+Gli utenti SFTP hanno la forma `cg-site-<id>`, facile da indovinare. Contro i tentativi
 ripetuti con password sbagliate, per ora valgono solo i limiti per connessione del server SSH:
 CloudGround non blocca ancora un indirizzo che continua a sbagliare. Usa una password lunga e
 casuale, oppure solo chiavi.
@@ -45,8 +44,8 @@ casuale, oppure solo chiavi.
 Per passare da un modo all'altro, sceglilo e premi **Passa a solo chiavi** o **Passa a una
 password**.
 
-Il riquadro **Dati di connessione** mostra quello che serve al client: **Host**, **Porta**,
-**Utente**, **Cartella** e il **Comando** pronto da copiare:
+Il riquadro **Dati di connessione** mostra **Host**, **Porta**,
+**Utente**, **Cartella** e il **Comando** da copiare:
 
 ```bash
 sftp cg-site-<id>@<host>
@@ -58,8 +57,6 @@ il comando contiene anche `-P <porta>`. Dentro la sessione la cartella del sito 
 Per cambiare la password di un accesso con password, scrivine una nuova e premi **Cambia password**.
 
 ## Aggiungi una chiave SSH {#add-a-key}
-
-Le chiavi sono il modo consigliato per chi sviluppa: niente password da condividere.
 
 1. Nella sezione **Chiavi SSH**, incolla in **Chiave pubblica** una sola riga, nella forma
    `<tipo> <base64> [commento]`.

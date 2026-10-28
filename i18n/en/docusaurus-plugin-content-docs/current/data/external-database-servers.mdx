@@ -11,9 +11,9 @@ last_verified: unverified
 sidebar_position: 10
 ---
 
-Every database lives in the MariaDB on this server unless you say otherwise. You can register other
-MariaDB and MySQL servers, and pick one when you create a database or a database user. The databases
-there are managed like any other: Quarry, export and import, backups and restores all work.
+Every database lives in the MariaDB on this server unless you choose otherwise. You can register other
+MariaDB and MySQL servers and pick one when you create a database or a database user. Databases
+there are managed like any other: Quarry, export and import, backups and restores work.
 
 ## Prepare the server {#prepare}
 
@@ -61,8 +61,8 @@ removes a server, which you can do only when no database or user is on it.
 3. Click **Create database**.
 
 The **Server** field appears once at least one server is registered. **This server** is the default.
-A database stays on the server you chose: it cannot be moved later, and its name stays unique across
-all servers. The database shows a badge with its server's name.
+A database stays on the server you chose and cannot be moved later. Its name is unique across
+all servers, and a badge shows the server's name.
 
 A database user is on one server too. In **Add a user**, choose the **Server** first: the privileges
 list then offers only the databases on that server. An account on an external server is made for any
@@ -95,4 +95,4 @@ server, so they never touch an external one.
 
 ## Next step {#next}
 
-Manage what each user can do: [manage databases](/docs/data/manage-databases).
+For user privileges, see [manage databases](/docs/data/manage-databases).

@@ -12,7 +12,7 @@ sidebar_position: 6.7
 
 Once a day, the panel looks up the installed versions of WordPress, its plugins and its themes in a
 public vulnerability database. Anything that affects your versions shows up on the site's **Security**
-tab and triggers an alert. The panel never updates anything on its own. Updating is always your call.
+tab and triggers an alert. The panel never updates anything on its own.
 
 ## Read the results {#read-the-results}
 
@@ -43,9 +43,9 @@ The check is on by default. To turn it off, open **Settings**, clear
 `cgctl settings set vulnerability_check 0` (use `1` to turn it back on). The **Security** tab then
 shows **off**.
 
-The only data the check sends off the server is the name and version of each component. It never
-sends the domain or anything else about the server. For how it works and where the data comes from,
-see [security checks](/docs/explanation/security-scans).
+The check sends only the name and version of each component off the server. It never
+sends the domain or anything else. How it works and where the data comes from is in
+[security checks](/docs/explanation/security-scans).
 
 ## Next step {#next}
 

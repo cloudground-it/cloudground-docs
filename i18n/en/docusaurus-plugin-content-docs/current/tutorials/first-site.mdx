@@ -14,8 +14,8 @@ meta:
   level: Basic
 ---
 
-In this tutorial you put a WordPress site online at `<domain>`, see the page cache in action and take
-your first backup. Throughout, `<domain>` stands for the domain you pointed at the server, such as
+You put a WordPress site online at `<domain>`, see the page cache in action and take
+your first backup. `<domain>` is the domain you pointed at the server, such as
 `blog.example.com`.
 
 ## Set the certificate email {#set-the-certificate-email}
@@ -72,7 +72,7 @@ The first response says `MISS`: PHP built the page and it was stored in the cach
 
 ## Connect a backup repository {#connect-the-repository}
 
-Backups are stored in a restic repository. For this tutorial, you use a folder on the same server.
+Backups are stored in a restic repository. Here you use a folder on the same server.
 
 1. Open **Settings** and find the **Off-site backups (restic)** card.
 2. In **Backup destination**, choose **This server (a local folder)**.
@@ -100,5 +100,5 @@ actually come back. When the restore test is done, its status changes to **passe
 
 ## Next step {#next}
 
-Your site is now cached and has a verified backup. To learn what happens each time a request comes
-in, read [The path of a request](/docs/explanation/request-path).
+What happens on each request is explained in
+[The path of a request](/docs/explanation/request-path).

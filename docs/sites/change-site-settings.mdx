@@ -9,8 +9,8 @@ last_verified: unverified
 sidebar_position: 2
 ---
 
-Ogni impostazione di un sito passa dalla stessa richiesta, `PATCH /api/sites/<id>`: le schede del
-pannello la usano, e puoi usarla anche tu. Ogni campo con il suo intervallo è nel
+Ogni impostazione di un sito passa da `PATCH /api/sites/<id>`: la usano le schede del
+pannello, e puoi usarla anche tu. Ogni campo con il suo intervallo è nel
 [riferimento delle impostazioni](/docs/reference/site-settings).
 
 ## Dalle schede del sito {#from-the-site-tabs}
@@ -22,12 +22,12 @@ Apri **Siti**, scegli il sito, poi la scheda:
 | **Panoramica**, riquadro **Domini e cartella** | **Alias** (solo un amministratore), **Cartella pubblica**; per un reverse proxy **URL upstream** al posto della cartella (solo un amministratore) | **Applica** |
 | **Cache** | **Profilo prestazioni**, **Cache di pagina**, **Durata (TTL)** in secondi (0 = quella del profilo) | **Applica** |
 | **PHP** (sotto **Altro**) | **Versione PHP**, **Limite di memoria**, **Dimensione massima upload**, **Tempo massimo di esecuzione**; nel riquadro **Worker**, **Worker PHP** (0 = automatico) | **Applica** |
-| **Risorse** (sotto **Altro**) | **Limite di memoria**, **Quota di CPU**, **Limite di processi** (solo un amministratore); le soglie degli **Avvisi sull'uso**. Vedi [risorse e limiti di un sito](/docs/sites/resource-usage-and-limits) | **Applica** |
+| **Risorse** (sotto **Altro**) | **Limite di memoria**, **Quota di CPU**, **Limite di processi** (solo un amministratore); le soglie degli **Avvisi sull'uso**. Vedi [Uso delle risorse e limiti](/docs/sites/resource-usage-and-limits) | **Applica** |
 | **SSL** | l'interruttore **HSTS** | — |
 | **WordPress** | l'interruttore **Object cache** | — |
 
 Ogni modifica avvia l'attività **Impostazioni sito**. Il server riscrive la configurazione del sito e
-la ricarica; se non ci riesce, il pannello rimette i valori di prima e l'attività mostra l'errore.
+la ricarica. Se non ci riesce, il pannello rimette i valori di prima e l'attività mostra l'errore.
 
 :::warning[HSTS]
 
@@ -45,7 +45,7 @@ La scheda **PHP** mostra, nel riquadro **Estensioni di PHP …**, le estensioni 
 del sito; quelle che mancano sono segnate **non installata**. **Tutti i moduli caricati** elenca ogni modulo
 che il PHP dei siti carica davvero.
 
-Le estensioni sono del server: tutti i siti su quella versione di PHP le condividono. Per questo solo
+Le estensioni sono del server: tutti i siti su quella versione di PHP le condividono. Solo
 un amministratore ne installa una.
 
 1. Nella scheda **PHP**, premi **Installa** accanto all'estensione.

@@ -15,8 +15,7 @@ meta:
   level: Base
 ---
 
-In questo tutorial installi CloudGround su un server nuovo e crei l'account amministratore. Alla
-fine apri il pannello nel browser.
+Installi CloudGround su un server nuovo, crei l'account amministratore e apri il pannello nel browser.
 
 :::warning[Usa un server dedicato]
 
@@ -85,11 +84,10 @@ Alla fine l'installer stampa un indirizzo come questo:
 ```
 
 Se il firewall del server (ufw) è spento, seguono altre due righe: l'installer non lo accende, stampa
-i comandi che lo accenderebbero con SSH, i siti e il pannello aperti. Per ora lasciali stare; la
-pagina [firewall](/docs/access/firewall#enable) li spiega.
+i comandi che lo accenderebbero con SSH, i siti e il pannello aperti. Per ora lasciali stare: sono spiegati nella
+pagina [firewall](/docs/access/firewall#enable).
 
-Apri il link nel browser. Il browser avvisa che il certificato non è valido: è autofirmato, ed è
-normale al primo avvio. Accetta l'avviso per questo indirizzo.
+Apri il link nel browser. Il browser avvisa che il certificato non è valido: è autofirmato, come previsto al primo avvio. Accetta l'avviso per questo indirizzo.
 
 ## Crea l'account amministratore {#create-the-administrator}
 
@@ -110,8 +108,8 @@ Sul server, controlla i due servizi del pannello:
 systemctl is-active cloudground-agent cloudground-api
 ```
 
-Entrambe le righe dicono `active`.
+Entrambe le righe devono dire `active`.
 
 ## Prossimo passo {#next}
 
-Il pannello è pronto. [Crea il tuo primo sito](./first-site.mdx).
+[Crea il tuo primo sito](./first-site.mdx).

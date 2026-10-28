@@ -14,7 +14,7 @@ sidebar_position: 11
 CloudGround non ha un server di posta. `mail()` di PHP e `wp_mail()` di WordPress consegnano ogni
 messaggio al pannello, che lo invia tramite un **relay** SMTP a tua scelta. Da lì escono le conferme
 d'ordine e le reimpostazioni di password dei tuoi siti, e le [email degli avvisi](/docs/server/alerts-and-notifications#email).
-La password del relay resta nel pannello: il sito non la vede mai.
+La password del relay resta nel pannello e il sito non la vede.
 
 ## Imposta il relay del server {#server-relay}
 
@@ -29,12 +29,12 @@ La password del relay resta nel pannello: il sito non la vede mai.
 
 | Scelta | Porta | Comportamento |
 | --- | --- | --- |
-| **STARTTLS** (predefinita) | 587 | La connessione parte in chiaro e viene resa sicura. Un relay che non lo offre viene rifiutato: il pannello non ripiega mai sul testo in chiaro. |
+| **STARTTLS** (predefinita) | 587 | La connessione parte in chiaro e viene resa sicura. Un relay che non lo offre viene rifiutato: il pannello non ripiega sul testo in chiaro. |
 | **TLS** | 465 | Cifrata dal primo byte. |
 | **Nessuna** | 25 | Nessuna cifratura. Il pannello rifiuta di mandare una password su questa connessione, a meno che il relay sia questo stesso server. |
 
-Lascia vuota la **Porta** per prendere quella della sicurezza scelta. Il messaggio di prova passa
-esattamente da dove passerà la posta di un sito; se il relay lo rifiuta, il pannello mostra la sua
+Lascia vuota la **Porta** per prendere quella della sicurezza scelta. Il messaggio di prova segue
+lo stesso percorso della posta di un sito; se il relay lo rifiuta, il pannello mostra la sua
 risposta.
 
 ## Dai a un sito impostazioni proprie {#per-site}
@@ -49,16 +49,15 @@ Ogni sito PHP invia tramite il relay del server. Per cambiarlo per un solo sito:
 4. Premi **Salva**.
 
 L'avviso in cima al riquadro dice dove va la posta: dal relay del sito, da quello del server, o da
-nessuna parte. Spegni **Invia la posta di questo sito** e `mail()` non riesce: non parte nulla.
+nessuna parte. Se spegni **Invia la posta di questo sito**, `mail()` non riesce e non parte nulla.
 Solo un amministratore salva queste impostazioni; un operatore assegnato al sito può inviare la
 prova.
 
-Una **copia di staging non invia posta**, così una prova non arriva mai a un cliente vero.
+Una **copia di staging non invia posta**, così una prova non arriva a un cliente vero.
 
 ## Controlla SPF, DKIM e DMARC {#checklist}
 
-I destinatari si fidano di più della posta quando il dominio del mittente dice che il relay può
-inviare per lui. Il riquadro **SPF, DKIM e DMARC** cerca tre record del dominio del mittente e
+Il riquadro **SPF, DKIM e DMARC** cerca tre record del dominio del mittente e
 mostra ciascuno come **presente** o **mancante**:
 
 - **SPF**, un record TXT che comincia con `v=spf1`, sul dominio;
@@ -66,7 +65,7 @@ mostra ciascuno come **presente** o **mancante**:
   dato il relay, salva e premi **Controlla di nuovo**;
 - **DMARC**, in `_dmarc.<dominio>`. Una policy come `p=none` è un buon inizio.
 
-Il pannello dice solo se i record ci sono. Cosa deve contenere ciascuno lo dice il provider del
+Il pannello dice solo se i record ci sono. Il contenuto di ciascuno lo indica il provider del
 relay.
 
 ## Limiti {#limits}
@@ -80,4 +79,4 @@ relay.
 
 ## Prossimo passo {#next}
 
-Fatti scrivere dal pannello quando qualcosa richiede attenzione: [ricevi gli avvisi per email](/docs/server/alerts-and-notifications#email).
+[Ricevi gli avvisi per email](/docs/server/alerts-and-notifications#email).

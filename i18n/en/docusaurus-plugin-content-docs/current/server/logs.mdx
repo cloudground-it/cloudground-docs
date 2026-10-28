@@ -12,7 +12,7 @@ sidebar_position: 3
 ---
 
 There are two sets of logs: server logs, on the **Logs** page, and per-site logs, on each site's
-**Logs** tab. The panel shows the most recent lines. Click **Refresh** to reload them.
+**Logs** tab. The panel shows the most recent lines: click **Refresh** to reload them.
 
 ## Server logs {#server-logs}
 
@@ -44,8 +44,8 @@ A log that doesn't exist yet shows *(log is empty or not created yet)*.
 
 ## Download a site's whole logs {#download}
 
-The panel shows only the last lines. For the whole file, open the site's **Logs** tab and look at the
-**Download the logs** card: it lists the access and error logs, the current ones (`access.log`,
+For the whole file, open the site's **Logs** tab: the
+**Download the logs** card lists the access and error logs, the current ones (`access.log`,
 `error.log`) and the rotated ones (`access.log.1`, `access.log.2.gz`, …), with their size and when they
 were last written. Click **Download** next to the file you need.
 
@@ -68,7 +68,7 @@ cgctl logs <site-id> error.log -        # to standard output
 ```
 
 The second command writes `access.log.2.gz` in the current folder (or to the file given as the third
-argument) and does not overwrite a file that exists. It works for files of any size.
+argument) and does not overwrite an existing file. Files of any size work.
 
 ## On the server {#on-the-server}
 
@@ -89,5 +89,5 @@ manage the site.
 
 ## Next step {#next}
 
-Don't rely on reading logs to spot problems. Set up
+To spot problems without reading logs, set up
 [alerts and notifications](./alerts-and-notifications.mdx).

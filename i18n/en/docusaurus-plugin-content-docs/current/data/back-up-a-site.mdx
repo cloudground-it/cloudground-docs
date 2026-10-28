@@ -11,15 +11,14 @@ sidebar_position: 4
 ---
 
 A backup is one snapshot per database (holding its dump), plus one snapshot of the site's files. Sites
-without a database get the files snapshot only. Every new backup then goes through a
-[restore test](/docs/data/run-a-restore-test). It shows as *pending* until the test finishes, and it
-only counts once it has *passed*.
+without a database get the files snapshot only. Each backup then goes through a
+[restore test](/docs/data/run-a-restore-test). It is *pending* until the test finishes and
+counts only once it has *passed*.
 
 ## Scheduled backups {#scheduled}
 
 Production sites are backed up daily out of the box, and each backup is kept for 30 days. Every 5
-minutes the panel looks for sites that are due and starts their backups. You don't need to set
-anything up.
+minutes the panel looks for sites that are due and starts their backups.
 
 - Scheduled backups run only for active sites, and only once a repository and password are set.
 - Staging copies are never backed up on a schedule.
@@ -36,13 +35,13 @@ To change the schedule, go to the site's **Backups** tab and use the **Schedule*
    some other way (cgctl and the API accept 0 to 3650 days), it still appears in the list.
 3. Click **Save**.
 
-The API equivalent is `PUT /api/sites/<site-id>/backups/policy` with `enabled`, `schedule` (`hourly`,
+In the API: `PUT /api/sites/<site-id>/backups/policy` with `enabled`, `schedule` (`hourly`,
 `daily`, `weekly`), `retention_days` and `hour`. Send only the fields you want to change. The rest
 keep their current values.
 
 ### Pick a start time {#hour}
 
-*Since v0.2.0.* Daily and weekly backups can start at a set hour, for example overnight.
+*Since v0.2.0.* Daily and weekly backups can start at a set hour.
 
 1. Under **Frequency**, pick **Every day** or **Every week**. A **Time** field appears.
 2. Under **Time**, pick the hour. The server's time zone is shown below the field, and the hour is
@@ -50,7 +49,7 @@ keep their current values.
 3. Click **Save**.
 
 The backup starts at the first 5-minute check after that hour. Weekly backups stay on the same
-weekday. Changing the hour never triggers a second backup on the same day. If the panel was down at
+weekday. Changing the hour doesn't trigger a second backup on the same day. If the panel was down at
 the chosen hour, the backup starts at the first check after it comes back.
 
 **Any time** keeps the pre-v0.2.0 behavior: each backup starts a day or a week after the previous

@@ -9,7 +9,7 @@ last_verified: unverified
 sidebar_position: 2
 ---
 
-All site settings go through a single API request, `PATCH /api/sites/<id>`. The panel's tabs use it,
+All site settings go through `PATCH /api/sites/<id>`. The panel's tabs use it,
 and you can call it yourself. The [site settings reference](/docs/reference/site-settings) lists
 every field and its allowed range.
 
@@ -45,8 +45,7 @@ On the **PHP** tab, the **PHP … extensions** card lists the common extensions 
 version. Missing ones are marked **not installed**. **All loaded modules** lists every module the
 sites' PHP actually loads.
 
-Extensions are installed server-wide, so every site on that PHP version shares them. For that reason,
-only administrators can install them.
+Extensions are installed server-wide, so every site on that PHP version shares them. Only administrators can install them.
 
 1. On the **PHP** tab, press **Install** next to the extension.
 2. Confirm. A task installs the `php<version>-<extension>` package on the server, then restarts PHP for
@@ -74,8 +73,7 @@ curl --unix-socket /run/cloudground/api.sock http://localhost/api/sites/<id> \
 - `CLOUDGROUND_TOKEN` holds an API token. See [API tokens and cgctl](/docs/access/api-tokens-and-cgctl).
 - Send only the fields you want to change. A request with no fields is rejected.
 
-The response is `202`, with the updated site and the task the change started. If there's something you
-should know, such as the certificate no longer covering every alias, the response also includes
+The response is `202`, with the updated site and the task the change started. When something needs your attention, such as the certificate no longer covering every alias, the response also includes
 `warnings`.
 
 ## Rejected requests {#if-it-is-refused}

@@ -15,8 +15,7 @@ meta:
   level: Basic
 ---
 
-This tutorial walks you through installing CloudGround on a new server and creating the
-administrator account. By the end, you have the panel open in your browser.
+You install CloudGround on a new server, create the administrator account and open the panel in your browser.
 
 :::warning[Use a dedicated server]
 
@@ -86,11 +85,10 @@ When it finishes, the installer prints a URL like this:
 
 If the server's firewall (ufw) is disabled, you also see two extra lines. The installer does not
 enable ufw for you. Instead, it prints the commands that would enable it with SSH, the sites and the
-panel allowed through. You can ignore them for now. The [firewall](/docs/access/firewall#enable)
-page covers them.
+panel allowed through. You can ignore them for now: the [firewall](/docs/access/firewall#enable)
+page explains them.
 
-Open the link in your browser. You get a certificate warning because the certificate is self-signed.
-That is expected on first boot, so accept the warning for this address.
+Open the link in your browser. The browser warns about the certificate because it is self-signed, as expected on first boot. Accept the warning for this address.
 
 ## Create the administrator account {#create-the-administrator}
 
@@ -116,4 +114,4 @@ You should see `active` on both lines.
 
 ## Next step {#next}
 
-The panel is ready. Now [create your first site](./first-site.mdx).
+[Create your first site](./first-site.mdx).

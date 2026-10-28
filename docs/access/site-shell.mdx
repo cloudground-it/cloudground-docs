@@ -12,21 +12,20 @@ sidebar_position: 2
 ---
 
 La shell del sito è `bash` nella cartella del sito, con l'utente del sito. Ci trovi `wp`, `composer`,
-`git` e `php`, e `node` se il server lo ha. I file che crei hanno subito il proprietario giusto. La
+`git` e `php`, e `node` se il server lo ha. La
 shell gira nello stesso sandbox e con gli stessi limiti di CPU e memoria del PHP del sito: gli altri
 siti e la configurazione del server non ci sono, e non c'è `sudo`.
 
 :::warning[Chi ha una chiave shell ha il sito]
 
 Una shell esegue qualsiasi comando come utente del sito: chi ha una chiave di tipo **Shell** può
-leggere e modificare i file del sito e le credenziali del suo database. Dai chiavi shell solo a chi
-ti fideresti a dare quei file.
+leggere e modificare i file del sito e le credenziali del suo database. Dai chiavi shell solo a chi daresti quei file.
 
 :::
 
 ## Attiva la shell {#turn-on-the-shell}
 
-Solo un amministratore può farlo, e solo da una sessione nel pannello: un token API non basta.
+Solo un amministratore può farlo, e solo da una sessione nel pannello, non con un token API.
 
 1. Apri il sito e vai alla scheda **SFTP / SSH**.
 2. Controlla che l'**Accesso SFTP** sia attivo: la shell accede solo mentre lo è.
@@ -53,8 +52,8 @@ ssh cg-shell-<id>@<host>
 ```
 
 Con SSH su una porta diversa dalla 22 il comando contiene `-p <porta>`. La sessione interattiva
-parte nella cartella `current` del sito, se esiste, altrimenti nella cartella del sito. Anche un
-comando singolo funziona, e parte nella cartella del sito: `ssh cg-shell-<id>@<host> wp --version`.
+parte nella cartella `current` del sito, se esiste, altrimenti nella cartella del sito. Un
+comando singolo parte nella cartella del sito: `ssh cg-shell-<id>@<host> wp --version`.
 
 La shell accetta solo chiavi, mai password. Ogni sito ha al massimo 8 sessioni aperte insieme.
 Tutto quello che una sessione avvia, anche con `nohup`, finisce con la sessione.

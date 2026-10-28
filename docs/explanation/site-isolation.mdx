@@ -8,8 +8,7 @@ last_verified: unverified
 sidebar_position: 5
 ---
 
-Su un server CloudGround ogni sito è un inquilino che non si fida degli altri. Un plugin compromesso su
-un sito non deve leggere i file di un altro, la sua cache o il suo database, e non deve arrivare al
+Su un server CloudGround un plugin compromesso su un sito non deve leggere i file di un altro sito, la sua cache o il suo database, e non deve arrivare al
 pannello. L'isolamento ha più strati, e ognuno regge anche se un altro cede.
 
 ## Un utente per sito {#one-user-per-site}
@@ -22,7 +21,7 @@ Lo scheletro della cartella (la radice, `releases/`, `.ssh/` e il link `current`
 del sito, il sito potrebbe sostituire un rilascio con un link simbolico e puntare `current`, e con lui la
 cartella servita da nginx, dove vuole. Il server rimette questi permessi prima di ogni rilascio e rollback.
 
-I database e gli utenti database di un sito sono solo suoi. L'agent tiene un suo registro di quale nome
+I database e gli utenti database di un sito sono solo suoi. L'agent tiene un registro di quale nome
 è di quale sito e rifiuta tutti gli altri; un utente riceve privilegi solo sui database del suo sito, con
 al massimo 50 connessioni, e nei privilegi `_` e `%` sono protetti: MariaDB li leggerebbe come jolly,
 che raggiungono anche i database di altri siti con nomi simili. Quarry gira con account limitati allo
@@ -30,7 +29,7 @@ stesso modo (vedi [Come funziona Quarry](/docs/explanation/quarry#mariadb-decide
 
 ## Un PHP per sito, in una sandbox {#one-php-per-site}
 
-Ogni sito con PHP ha un suo processo master PHP-FPM, che gira come l'utente del sito. Due motivi:
+Ogni sito con PHP ha un suo processo master PHP-FPM, che gira come l'utente del sito. Per due motivi:
 
 - OPcache e APCu vivono nella memoria condivisa del master. Con un master per più siti, ognuno potrebbe
   leggere e sovrascrivere gli oggetti in cache degli altri.
@@ -57,8 +56,6 @@ flowchart TB
     php -.->|non li vede| hidden
 ```
 
-In dettaglio:
-
 - `/srv/sites` e `/var/log/cloudground` sono, per il sito, cartelle vuote in memoria in cui è montata
   solo la sua cartella e la sua cartella dei log;
 - il resto del sistema è in sola lettura, e la configurazione del pannello, di nginx, dei certificati e
@@ -74,39 +71,38 @@ In dettaglio:
   disattivati.
 
 Le attività pianificate, i comandi wp-cli e la shell SSH del sito girano con la stessa sandbox, presa
-dalla stessa lista: non possono divergere. Tutti i processi del sito stanno in un suo slice di systemd,
+dalla stessa lista, quindi non possono divergere. Tutti i processi del sito stanno in un suo slice di systemd,
 `cg-site-<id>.slice`, così l'eliminazione del sito li ferma tutti insieme.
 
 ### Perché non open_basedir {#why-not-open-basedir}
 
-`open_basedir` è un controllo di PHP stesso sui percorsi che apre. Il confine qui è il namespace dei mount
-del servizio: quello che il sito non deve vedere non c'è proprio, per PHP e per qualsiasi programma che
-PHP potrebbe usare. Sul server di prova, `open_basedir` costava il 28% delle richieste non in cache al
-secondo. Il pannello non lo attiva.
+`open_basedir` è un controllo di PHP sui percorsi che apre. Qui il confine è il namespace dei mount
+del servizio: quello che il sito non deve vedere non c'è, per PHP e per qualsiasi programma che
+PHP potrebbe usare. Sul server di prova `open_basedir` costava il 28% delle richieste non in cache al
+secondo, e il pannello non lo attiva.
 
 ## Limiti di risorse {#resource-limits}
 
 *Da v0.2.0.* La slice del sito ha anche i suoi limiti, applicati dal kernel: memoria, quota di CPU e
 numero di processi. Un sito che supera il suo limite di memoria perde uno dei suoi processi; gli altri
-siti non ne risentono, e il suo PHP continua a servire. Così un sito molto carico o rotto non affama
+siti non ne risentono, e il suo PHP continua a servire. Un sito molto carico o rotto non affama quindi
 gli altri. I valori predefiniti, come cambiarli e come leggere l'uso di ogni sito sono in
-[uso delle risorse e limiti](/docs/sites/resource-usage-and-limits).
+[Uso delle risorse e limiti](/docs/sites/resource-usage-and-limits).
 
 ## nginx e i link simbolici {#nginx-and-symlinks}
 
-nginx può leggere ogni sito, perché è nel gruppo di tutti. Per questo il vhost di ogni sito ha
+nginx può leggere ogni sito, perché è nel gruppo di tutti. Il vhost di ogni sito ha
 `disable_symlinks if_not_owner`: nginx segue un link solo se il link e il suo bersaglio hanno lo stesso
 proprietario. Un link che il sito crea verso la cartella di un altro sito è suo, il bersaglio no, e nginx
 lo rifiuta. Con una cartella pubblica (`public_root`) il controllo parte da `current`, e il pannello
 rifiuta una cartella pubblica che passa per un link.
 
 Il routing che un amministratore scrive per un sito non può uscire dalla sua cartella, né fare proxy
-verso i servizi del server: lo spiega [Modifica il routing](/docs/sites/edit-routing).
+verso i servizi del server: è in [Modifica il routing](/docs/sites/edit-routing).
 
 ## I file lasciati nella cartella pubblica {#leftovers}
 
-*Da v0.2.0.* Copie di sicurezza, file di editor, dump e archivi dimenticati nella cartella pubblica non
-vengono mai serviti. nginx risponde **404** per:
+*Da v0.2.0.* nginx risponde **404** per copie di sicurezza, file di editor, dump e archivi dimenticati nella cartella pubblica:
 
 - i nomi che finiscono in `.bak`, `.old`, `.orig`, `.save`, `.swp`, `.swo` o `~`;
 - i dump SQL: `.sql`, `.sql.gz`, `.sql.bz2`, `.sql.xz`, `.sql.zst`, `.sql.zip`;
@@ -116,19 +112,19 @@ vengono mai serviti. nginx risponde **404** per:
   `.txz`, `.tar.zst`, `.zip`, `.7z`, `.rar`. Un archivio più in profondità, come un download di un plugin,
   viene servito.
 
-Maiuscole e minuscole non contano. La risposta è 404 e non 403, così non conferma che il file esista. Un
+Maiuscole e minuscole non contano. La risposta è 404 e non 403, per non confermare che il file esista. Un
 reverse proxy non ha una cartella pubblica e non cambia.
 
 ## Il server lavora dentro la cartella del sito {#root-inside-the-tree}
 
 Le operazioni del pannello sui file di un sito (rilasci, ripristini, permessi, copie per lo staging) le fa
 un processo con i privilegi di root. Il sito può rinominare o sostituire con un link qualsiasi cosa che
-possiede, anche mentre root ci sta lavorando. Per questo ogni operazione di root su una cartella di un
-sito apre i percorsi con `openat2` e `RESOLVE_BENEATH`: è il kernel a garantire, a ogni apertura, che il
+possiede, anche mentre root ci sta lavorando. Ogni operazione di root su una cartella di un
+sito apre i percorsi con `openat2` e `RESOLVE_BENEATH`: a ogni apertura il kernel garantisce che il
 percorso resti dentro la cartella. Un link che punta fuori viene rifiutato, non seguito. Senza `openat2`
-l'operazione fallisce, non ripiega su un'apertura normale.
+l'operazione fallisce e non ripiega su un'apertura normale.
 
-I link del sito stesso (`current`, `wp-config.php`, `wp-content/uploads`) sono relativi, così si risolvono
+I link del sito stesso (`current`, `wp-config.php`, `wp-content/uploads`) sono relativi e si risolvono
 dentro la cartella.
 
 ## SFTP {#sftp}

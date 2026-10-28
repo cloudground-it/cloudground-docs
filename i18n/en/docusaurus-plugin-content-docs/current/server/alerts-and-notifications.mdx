@@ -10,7 +10,7 @@ last_verified: unverified
 sidebar_position: 4
 ---
 
-An alert flags something that needs your attention. Alerts appear in the **Alerts** panel, which
+An alert flags something that needs attention. Alerts appear in the **Alerts** panel, which
 opens from the bell at the top right, and at the top of the **Dashboard**. The panel re-evaluates them
 every five minutes, and immediately after any related event: a task finishing, a site changing, a
 service stopping.
@@ -37,7 +37,7 @@ Operators only see alerts for their own sites. All other roles see every alert.
 any other alert, they go to the notification channels and the webhook.
 
 *Since v0.2.0.* **Task** alerts name the task in plain words, in your language (*Restore test*,
-*Scheduled backup*), the same way the task list does, rather than by its internal name.
+*Scheduled backup*), as the task list does, not by its internal name.
 
 ## Dismiss an alert {#dismiss}
 
@@ -129,11 +129,11 @@ is only one, otherwise "3 CloudGround alerts" (for three); the body has one line
 administrators' language.
 
 An alert counts as notified only once **every** configured channel has delivered it. If one channel
-fails, the alert goes out again on the next round on every channel: nobody misses it, at the cost of
-a repeat on the channel that worked.
+fails, the alert goes out again on the next round on every channel: no channel misses it, with a
+repeat on the channel that worked.
 
 {/* TODO(verify): the alert email as a real relay delivers it, its subject and text. */}
 
 ## Next step {#next}
 
-Keep the panel up to date: [Update CloudGround](./update-cloudground.mdx).
+Update the panel: [Update CloudGround](./update-cloudground.mdx).

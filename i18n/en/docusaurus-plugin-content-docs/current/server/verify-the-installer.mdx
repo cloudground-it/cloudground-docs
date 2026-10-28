@@ -10,9 +10,9 @@ last_verified: unverified
 sidebar_position: 6
 ---
 
-The one-line install trusts whatever address serves the script, and the script decides what runs. In
-this guide you download the script for a specific release, verify its signature against the release
-key published below, and run it only if the check passes.
+The one-line install trusts whatever address serves the script, and the script decides what runs.
+Here you download the script for a specific release, verify its signature against the release
+key published below and run it only if the check passes.
 
 ## The release key {#release-key}
 
@@ -65,7 +65,7 @@ From here on, the install is the same as in the [tutorial](/docs/tutorials/insta
 The script downloads the release's binaries from GitHub and only runs `cgctl` if its SHA-256 matches
 the one in the script. `cgctl` in turn installs nothing whose manifest fails verification.
 
-With the GitHub CLI, you can also check where the script was built:
+With the GitHub CLI you can also check where the script was built:
 
 ```bash prompt
 gh attestation verify install.sh --repo cloudground-it/cloudground
@@ -73,4 +73,4 @@ gh attestation verify install.sh --repo cloudground-it/cloudground
 
 ## Next step {#next}
 
-To see what each check protects against, read [what the installer does](/docs/explanation/installation#trust).
+What each check protects against is explained in [what the installer does](/docs/explanation/installation#trust).

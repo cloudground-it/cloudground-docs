@@ -9,9 +9,9 @@ sidebar_position: 2
 ---
 
 `install.sh` is a small bootstrap script. It downloads one release from GitHub, verifies it, and
-hands off to `cgctl install`, which sets up a blank Ubuntu server and starts the panel. All output
-from the programs it runs goes to `/var/log/cloudground-install.log`. The terminal shows only the
-nine steps and how long each one took.
+hands off to `cgctl install`, which sets up a blank Ubuntu server and starts the panel. The output
+of the programs it runs goes to `/var/log/cloudground-install.log`. The terminal shows only the
+nine steps and their duration.
 
 ## Steps {#steps}
 
@@ -39,7 +39,7 @@ flowchart TD
 
 ## Preflight check {#preflight}
 
-Before any step runs, the installer checks everything and reports all problems at once, so you
+The check runs before any step and reports all problems at once, so you
 can fix the machine in a single pass:
 
 - Ubuntu 24.04 or 26.04 LTS on amd64;
@@ -57,9 +57,9 @@ Redis is not installed, since the sites' object cache uses APCu. A server upgrad
 version keeps its Redis, stopped.
 
 The installer only installs packages that are missing. Re-running it does not upgrade packages
-already present. That is left to the system's security updates or your own `apt upgrade`.
+already present. The system's security updates or your own `apt upgrade` do that.
 
-restic 0.19.1, wp-cli 2.12.0 and composer 2.10.3 are downloaded at exactly those versions, and
+restic 0.19.1, wp-cli 2.12.0 and composer 2.10.3 are downloaded at those versions and
 installed only if their SHA-256 matches the hash hard-coded in the installer.
 
 ## Binaries {#binaries}
@@ -81,7 +81,7 @@ The systemd units ship inside `cgctl`, so once `cgctl` is verified, so are they.
 
 Once you run the genuine script, the host that served it has no further control. It holds neither
 the files the script's hash pins nor the signing key. That host could still serve you a different
-script, though, and a script can do anything. If you do not want to trust it, download the script
+script, though, and a script can do anything. To avoid trusting it, download the script
 for a specific release and check it against the signed manifest, using the release key published
 in these docs: [Verify the installer](/docs/server/verify-the-installer).
 
@@ -109,15 +109,15 @@ binaries.
 
 ## Re-running the installer {#rerun}
 
-Each step inspects the machine first and changes only what differs. So running the installer for
-the release that is already installed repairs the server: anything that still matches is left
+Each step inspects the machine first and changes only what differs. Running the installer for
+the release that is already installed therefore repairs the server: anything that still matches is left
 alone, and services restart only when a file they read has changed. `cgctl doctor` runs the same
 checks and reports differences without changing anything.
 
 The installer for a different release refuses to run over an existing panel and points you to
-`cgctl update --to <release>` instead. The installer takes no snapshot and cannot roll back; an
+`cgctl update --to <release>` instead. The installer takes no snapshot and cannot roll back. An
 update does both (see [Update CloudGround](/docs/server/update-cloudground)).
 
 ## Next step {#next}
 
-To try it on a server, follow the [Install CloudGround](/docs/tutorials/install) tutorial.
+To try it on a server, follow [Install CloudGround](/docs/tutorials/install).

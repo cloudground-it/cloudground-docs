@@ -9,8 +9,8 @@ last_verified: unverified
 sidebar_position: 1
 ---
 
-Il pannello è guidato interamente dalla sua API HTTP: l'interfaccia web è uno dei suoi client, come
-`cgctl`. L'elenco completo delle rotte, con il ruolo che ognuna richiede, è generato dal codice nel
+Tutto quello che fa il pannello passa dalla sua API HTTP. L'interfaccia web è un client, come
+`cgctl`. L'elenco completo delle rotte, con il ruolo di ognuna, è generato dal codice nel
 file `docs/api.md` del [repository del prodotto](https://github.com/cloudground-it/cloudground/blob/main/docs/api.md).
 
 ## Dove risponde {#where}
@@ -30,8 +30,6 @@ curl --unix-socket /run/cloudground/api.sock http://localhost/api/system/status 
 ```
 
 ## Autenticazione {#authentication}
-
-Ci sono due modi.
 
 **Token API.** Manda `Authorization: Bearer cgt_…`. Una richiesta con un token viene giudicata solo
 dal token, anche se porta un cookie. Un token sconosciuto, scaduto, revocato o di un account che
@@ -147,7 +145,7 @@ Ogni errore ha il corpo `{"error": "<messaggio>"}`.
 | `503` | Il pannello è occupato o l'agente non risponde: riprova. Può portare `Retry-After`. |
 | `504` | L'operazione sul server è andata oltre il tempo massimo. |
 
-Quando l'errore viene dall'agente, il messaggio non riporta mai i comandi o i percorsi del server.
+Quando l'errore viene dall'agente, il messaggio non riporta i comandi o i percorsi del server.
 
 ## Attività {#tasks}
 
@@ -170,4 +168,4 @@ rileggi lo stato.
 
 ## Prossimo passo {#next}
 
-Per gli script, `cgctl` fa già queste chiamate per te: vedi il [riferimento della CLI](/docs/cli).
+Per gli script, `cgctl` fa già queste chiamate: vedi il [riferimento della CLI](/docs/cli).

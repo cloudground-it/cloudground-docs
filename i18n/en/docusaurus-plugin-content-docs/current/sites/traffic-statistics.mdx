@@ -39,13 +39,13 @@ hours. **Top pages** lists the 20 most viewed paths. **Not found** lists the pat
 404: broken links, or scanners looking for files.
 
 Days are UTC days. The panel's own requests, such as the uptime check and cache warming, aren't
-counted at all.
+counted.
 
 ## Privacy {#privacy}
 
 The agent reads the log and keeps only totals per day. To count distinct visitors it keeps one
 small sketch per day, made from a salted hash of the address and browser. That sketch and its salt
-are deleted after two days, leaving only the number. The panel never receives an address. Nothing
+are deleted after two days, leaving only the number. The panel receives no addresses. Nothing
 is sent anywhere else.
 
 The access logs themselves are unchanged and rotate as before (14 days kept). The statistics keep

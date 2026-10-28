@@ -8,8 +8,7 @@ last_verified: 2026-10-10
 sidebar_position: 4
 ---
 
-These are the values the panel writes into the nginx configuration. They only change when new
-measurements justify it.
+These are the values the panel writes into the nginx configuration.
 
 ## Sites with a page cache {#which-sites}
 
@@ -21,7 +20,7 @@ measurements justify it.
 
 ## Profiles {#profiles}
 
-The site's **Performance profile** sets the cache lifetimes.
+Cache lifetimes depend on the site's **Performance profile**.
 
 | Profile | Fresh for | Served stale for up to | Disk space |
 | --- | --- | --- | --- |
@@ -90,7 +89,7 @@ them: `utm_*`, `fbclid`, `gclid`, `gbraid`, `wbraid`, `msclkid`, `dclid`, `mc_ci
 
 ## Automatic purges {#automatic-purges}
 
-On WordPress and WooCommerce, the panel's connector purges the affected pages automatically:
+On WordPress and WooCommerce, the panel's connector purges the affected pages:
 
 | Change | Purged |
 | --- | --- |

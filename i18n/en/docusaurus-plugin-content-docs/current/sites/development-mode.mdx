@@ -10,8 +10,8 @@ last_verified: unverified
 sidebar_position: 13
 ---
 
-With the page cache on, visitors, and you, get a stored copy of a page. While you edit code or
-templates that gets in the way. Development mode serves every request fresh for a set time, then
+With the page cache on, you and your visitors get a stored copy of a page, which gets in the way while you edit code or
+templates. Development mode serves every request fresh for a set time, then
 puts the cache back.
 
 ## Turn it on {#turn-on}
@@ -24,15 +24,14 @@ it runs to start the time over.
 
 ## Turn it off {#turn-off}
 
-Click **End now**, or wait. When the time is up, the panel puts the cache back by itself, empties it
-so that no page from before your work is served again, and warms it in the background. If putting
+Click **End now**, or wait. When the time is up, the panel puts the cache back, empties it
+(so no page from before your work is served again) and warms it in the background. If putting
 the cache back fails, the site stays in development mode and the panel tries again a minute later.
 
 ## Good to know {#notes}
 
 - A static site, a proxy and a site whose page cache is off have nothing to bypass: the card says so.
-- A [staging copy](/docs/data/staging-and-safe-push) never starts in development mode, whatever
-  its production site does.
+- A [staging copy](/docs/data/staging-and-safe-push) never starts in development mode, even if production is in it.
 - Only the page cache is bypassed. Other settings do not change, and a PHP site's own object cache
   is a separate setting.
 
@@ -47,4 +46,4 @@ The length is `15`, `30` or `60`; `off` ends the mode now.
 
 ## Next step {#next}
 
-See what the page cache stores and when it skips a request: [cache behaviour](/docs/reference/cache-behaviour).
+What the page cache stores and when it skips a request: [Cache behaviour](/docs/reference/cache-behaviour).

@@ -31,7 +31,7 @@ panel-api recover-admin --email <email>
 ```
 
 The command generates a new 24-character password and prints it **once**, alongside the account. You
-never type it, so it never ends up in your shell history. Sign in with that password, then change it
+don't type it, so it doesn't end up in your shell history. Sign in with that password, then change it
 from **Security**.
 
 The reset ends all of the account's sessions and revokes its API tokens. If the account had turned
@@ -48,7 +48,7 @@ panel-api recover-admin --email <email> --disable-2fa
 This also removes every second factor of the account (the authenticator app, its passkeys and its
 recovery codes) and lists what it removed. If you still have a recovery code, you don't need this:
 sign in with it and replace the lost factor from **Security**. Once you're signed in, set up two-step
-verification again from **Security**.
+verification again.
 
 ## Special cases {#special-cases}
 

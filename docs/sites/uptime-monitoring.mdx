@@ -13,7 +13,7 @@ sidebar_position: 7
 Con il controllo di disponibilità attivo, il pannello richiede il sito ogni minuto dal suo indirizzo
 pubblico, come farebbe un visitatore. Quando il sito smette di rispondere, ricevi un avviso.
 
-Il controllo parte spento su ogni sito: un sito il cui dominio non punta ancora qui sembrerebbe
+Il controllo parte spento su ogni sito, perché un sito il cui dominio non punta ancora qui sembrerebbe
 fuori servizio.
 
 ## Attiva il controllo {#turn-it-on}
@@ -36,19 +36,18 @@ Il percorso inizia con `/` ed è fatto di lettere, cifre e `. _ ~ -` tra le barr
 
 Il pannello chiede `GET https://<dominio><percorso>`, con un tempo massimo di 10 secondi.
 
-- **Risponde**: qualsiasi codice sotto 500, anche 401 o 404. Il sito sta rispondendo.
+- **Risponde**: qualsiasi codice sotto 500, anche 401 o 404.
 - **Errore**: un codice 5xx, una connessione rifiutata o interrotta, un certificato che un browser
   rifiuterebbe, nessuna risposta entro 10 secondi.
 
-Il pannello non segue i redirect: un 3xx conta come risposta, e il controllo non lascia mai
-l'indirizzo del sito.
+Il pannello non segue i redirect: un 3xx conta come risposta, e il controllo resta sull'indirizzo del sito.
 
 ## L'avviso {#the-alert}
 
 Due errori di fila generano un avviso di tipo **Disponibilità**, con livello errore e il motivo
 dell'ultimo errore. Un solo errore, come un pacchetto perso o un ricaricamento, non basta. L'avviso
 compare nel pannello **Avvisi** e va al webhook degli avvisi (vedi
-[avvisi e notifiche](/docs/server/alerts-and-notifications)). Si chiude da solo quando il sito torna a
+[Avvisi e notifiche](/docs/server/alerts-and-notifications)). Si chiude da solo quando il sito torna a
 rispondere.
 
 Un riavvio del pannello non chiude né riapre un avviso già aperto.

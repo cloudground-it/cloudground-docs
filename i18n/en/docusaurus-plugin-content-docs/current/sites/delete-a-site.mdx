@@ -45,16 +45,16 @@ The server removes these, in this order:
 7. The site's SSH shell, then its system user and group.
 8. The page cache, the logs and the site's folder.
 
-The server runs every step even if one fails, then reports all errors together at the end. Running
-the deletion again is safe, because each step only removes what's still there.
+The server runs every step even if one fails, then reports all errors together at the end. You can
+run the deletion again: each step only removes what is still there.
 
 The panel also drops the site's releases, backups, scheduled tasks and operator assignments.
 
 :::note[Snapshots stay in the repository]
 
 Deleting a site doesn't touch the restic repository. The site's snapshots remain there, but the panel
-no longer lists them and can't restore them. To free the space, remove them yourself with restic. On
-the server, as root:
+no longer lists them and can't restore them. To free the space, remove them yourself with restic, on
+the server as root:
 
 ```bash prompt
 export RESTIC_REPOSITORY=<repository> RESTIC_PASSWORD_FILE=<password-file>
@@ -78,5 +78,4 @@ production stays and returns to its previous status.
 
 ## Next step {#next}
 
-To see what happens to a site between creation and deletion, read
-[the lifecycle of a site](/docs/explanation/site-lifecycle).
+What happens between creation and deletion: [Site lifecycle](/docs/explanation/site-lifecycle).

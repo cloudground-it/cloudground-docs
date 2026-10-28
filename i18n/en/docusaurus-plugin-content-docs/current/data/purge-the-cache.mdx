@@ -10,7 +10,7 @@ last_verified: unverified
 sidebar_position: 1
 ---
 
-On WordPress and WooCommerce you'll rarely need this. The connector purges the pages affected by a
+On WordPress and WooCommerce you rarely need this. The connector purges the pages affected by a
 change on its own (see the list in the [cache reference](/docs/reference/cache-behaviour#automatic-purges)).
 Purge by hand when you change something the panel can't see, such as a theme file uploaded over
 SFTP, or when the site runs plain PHP or Laravel.
@@ -22,12 +22,12 @@ SFTP, or when the site runs plain PHP or Laravel.
    `https://<domain>/blog/post/`.
 3. Click **Purge**.
 
-The panel confirms with **URL purged**. Both `GET` and `HEAD` entries are removed, over HTTP and
+The panel replies **URL purged**. Both `GET` and `HEAD` entries are removed, over HTTP and
 HTTPS, for the site's domain and all its aliases.
 
 ## Purge the whole site {#purge-everything}
 
-In the **Cache** tab, click **Purge everything**. The panel confirms with **Cache purged**.
+In the **Cache** tab, click **Purge everything**. The panel replies **Cache purged**.
 
 You'll find the same **Purge the cache** command under **Actions** in the site's **Overview** tab,
 and in each site's menu in the site list.
@@ -69,4 +69,4 @@ the site's Zone ID and a Cloudflare purge token, every purge above empties that 
 
 ## Next step {#next}
 
-To see which pages are never cached, read the [cache behaviour reference](/docs/reference/cache-behaviour).
+The pages that are never cached are listed in the [cache behaviour reference](/docs/reference/cache-behaviour).

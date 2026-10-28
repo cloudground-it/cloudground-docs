@@ -8,8 +8,8 @@ last_verified: 2026-10-10
 sidebar_position: 8
 ---
 
-CloudGround never edits a site's code in place. Every deploy creates a new **release**, a
-directory that is never modified afterwards. The site always serves whichever release a single
+A site's code is never edited in place. Every deploy creates a new **release**, a
+directory that is never modified afterwards. The site serves the release a single
 symlink points to.
 
 ## Site directory layout {#layout}
@@ -27,8 +27,8 @@ nginx and PHP serve the site through `current`. Activating a release swaps that 
 one in a single atomic operation, so every request sees either the old release or the new one,
 never a mix. PHP then reloads so the opcode cache serves the new code.
 
-Every release symlinks `wp-config.php` and the uploaded files to the copies in `shared/`. That is
-why a rollback changes the code but leaves the configuration, the database and the uploads alone.
+Every release symlinks `wp-config.php` and the uploaded files to the copies in `shared/`. A
+rollback therefore changes the code but leaves the configuration, the database and the uploads alone.
 
 `releases/` is owned by root, not by the site user. If the site user owned it, they could replace
 a release with a symlink and make nginx serve any directory on the server.
@@ -40,7 +40,7 @@ release and the 5 most recent older ones.
 ## Release states {#states}
 
 The panel records every deploy and moves it through the states below. It rejects any transition
-not shown in the diagram.
+not in the diagram.
 
 ```mermaid
 stateDiagram-v2
@@ -94,8 +94,8 @@ goes live, the previous one becomes *superseded* in the same database write.
 Before each activation, the panel asks the agent which release is live at that moment and records
 it as the return point. A rollback with no explicit target goes back to that point. If the return
 point is unknown, it goes to the most recent *superseded* release. The panel never lets the agent
-pick "the release before the current one", because that could be a release that was built but
-never activated, and therefore never tested.
+pick "the release before the current one": that could be a release that was built but
+never activated, and so never tested.
 
 Only a release that has been live before can go live again. A release that Safe Push rolled back
 because it made the site worse is marked as regressed and is never used as a rollback target.
@@ -113,7 +113,7 @@ re-reads `current` and brings its records into line:
   site serves this release; the records said another was live*, and an alert appears.
 
 If you cancel the post-Safe Push verification by hand, the release stays *live* with the note
-*unverified* and an alert is raised. The panel never marks a release as good without running the
+*unverified* and an alert is raised. The panel does not mark a release as good without the
 check.
 
 ## Next step {#next}

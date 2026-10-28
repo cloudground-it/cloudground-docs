@@ -11,7 +11,7 @@ sidebar_position: 3
 ---
 
 All sites store their backups in a single restic repository. Data is encrypted on the server with the
-repository password before it leaves. You configure both in **Settings**, in the **Off-site backups
+repository password before it leaves. You set both in **Settings**, in the **Off-site backups
 (restic)** panel.
 
 ## Choose a destination {#destination}
@@ -46,7 +46,7 @@ server, credentials in the address, a different path), it shows up as **Other re
 
 :::warning[A folder on this server is not an off-site backup]
 
-If you lose the server, you lose the backups with it. For real off-site backups, use object storage.
+If you lose the server, you lose the backups with it. For an off-site backup, use object storage.
 
 :::
 
@@ -63,7 +63,7 @@ If you lose the server, you lose the backups with it. For real off-site backups,
 
 ## Set the repository password {#password}
 
-The repository password encrypts every snapshot. Without it, nobody can restore a backup, not even
+The repository password encrypts every snapshot. Without it no backup can be restored, not even by
 the panel. Keep a copy somewhere other than this server.
 
 1. Next to **Repository password**, click **Generate**. The panel creates a 32-character password and
@@ -72,15 +72,13 @@ the panel. Keep a copy somewhere other than this server.
    `cloudground-backup-password.txt`, which holds the password and the repository.
 3. Store it off this server.
 
-You can also type your own password instead of generating one. Once saved, the password is never
-shown again. **Generate** disappears and the field reads **Set**. Only change the password when you
+You can type your own password instead of generating one. Once saved, the password is never
+shown again, **Generate** disappears and the field reads **Set**. Only change the password when you
 switch to a new, empty repository: existing snapshots open only with the old one.
 
 ## Save the settings {#save}
 
-Click **Save**.
-
-When you change the repository or the password, the panel tests them together before saving. If the
+Click **Save**. When you change the repository or the password, the panel tests them together before saving. If the
 repository doesn't exist yet, the panel creates it. If it exists and the password doesn't open it, the
 panel refuses to save, because the existing backups would become unreadable.
 

@@ -10,8 +10,8 @@ last_verified: unverified
 sidebar_position: 13
 ---
 
-Con la cache di pagina attiva, i visitatori, e tu, ricevono una copia salvata della pagina. Mentre
-modifichi codice o template, è d'intralcio. La modalità sviluppo serve ogni richiesta da zero per un
+Con la cache di pagina attiva, tu e i visitatori ricevete una copia salvata della pagina, e mentre
+modifichi codice o template è d'intralcio. La modalità sviluppo serve ogni richiesta da zero per un
 tempo stabilito, poi rimette la cache.
 
 ## Attivala {#turn-on}
@@ -24,8 +24,8 @@ pulsante mentre la modalità è attiva per far ripartire il tempo.
 
 ## Disattivala {#turn-off}
 
-Premi **Termina ora**, oppure aspetta. Scaduto il tempo, il pannello rimette la cache da solo, la
-svuota perché nessuna pagina di prima del tuo lavoro venga servita di nuovo, e la riscalda in
+Premi **Termina ora**, oppure aspetta. Scaduto il tempo, il pannello rimette la cache, la
+svuota (così nessuna pagina di prima del tuo lavoro viene servita di nuovo) e la riscalda in
 background. Se rimettere la cache non riesce, il sito resta in modalità sviluppo e il pannello
 riprova un minuto dopo.
 
@@ -33,8 +33,7 @@ riprova un minuto dopo.
 
 - Un sito statico, un proxy e un sito con la cache di pagina spenta non hanno nulla da saltare: il
   riquadro lo dice.
-- Una [copia di staging](/docs/data/staging-and-safe-push) non parte mai in modalità sviluppo, qualunque
-  cosa faccia il sito di produzione.
+- Una [copia di staging](/docs/data/staging-and-safe-push) non parte mai in modalità sviluppo, anche se la produzione lo è.
 - Si salta solo la cache di pagina. Le altre impostazioni non cambiano, e la object cache di un sito
   PHP è un'impostazione a parte.
 
@@ -49,4 +48,4 @@ La durata è `15`, `30` o `60`; `off` termina la modalità subito.
 
 ## Prossimo passo {#next}
 
-Vedi cosa conserva la cache di pagina e quando salta una richiesta: [comportamento della cache](/docs/reference/cache-behaviour).
+Cosa conserva la cache di pagina e quando salta una richiesta: [Comportamento della cache](/docs/reference/cache-behaviour).

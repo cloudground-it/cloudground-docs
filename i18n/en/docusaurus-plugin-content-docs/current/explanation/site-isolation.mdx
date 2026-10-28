@@ -8,9 +8,9 @@ last_verified: unverified
 sidebar_position: 5
 ---
 
-CloudGround treats every site on a server as an untrusted tenant. A compromised plugin on one site
-must not be able to read another site's files, cache or database, or reach the panel. Isolation
-is built in several layers, and each layer holds even if another one fails.
+On a CloudGround server every site is an untrusted tenant. A compromised plugin on one site
+must not read another site's files, cache or database, or reach the panel. Isolation
+has several layers, and each holds even if another fails.
 
 ## One user per site {#one-user-per-site}
 
@@ -23,7 +23,7 @@ by root. If the site owned it, it could replace a release with a symlink and poi
 therefore the directory nginx serves, anywhere it liked. The server re-applies this ownership
 before every release and every rollback.
 
-A site's databases and database users belong to that site alone. The agent keeps its own record
+A site's databases and database users belong to that site alone. The agent keeps a record
 of which name belongs to which site and refuses everything else. A database user only gets
 privileges on its own site's databases, with a limit of 50 connections. `_` and `%` are escaped in
 grants, because MariaDB would otherwise treat them as wildcards that also match other sites'
@@ -32,14 +32,13 @@ works](/docs/explanation/quarry#mariadb-decides)).
 
 ## One PHP per site, sandboxed {#one-php-per-site}
 
-Every site that runs PHP has its own PHP-FPM master process, running as the site user. There are
-two reasons for this:
+Every site that runs PHP has its own PHP-FPM master process, running as the site user, for two reasons:
 
 - OPcache and APCu live in the master's shared memory. If several sites shared a master, each
   could read and overwrite the others' cached objects.
 - Those caches are sized per master, so one master per site lets you size them per site.
 
-The master runs as a systemd service inside a sandbox. Here is what the site can see:
+The master runs as a systemd service inside a sandbox. The site sees this:
 
 ```mermaid
 flowchart TB
@@ -59,8 +58,6 @@ flowchart TB
     php -.->|cannot see| hidden
 ```
 
-In detail:
-
 - from the site's point of view, `/srv/sites` and `/var/log/cloudground` are empty in-memory
   directories with only its own site directory and log directory mounted inside;
 - the rest of the system is read-only, and the configuration for the panel, nginx, certificates
@@ -76,13 +73,13 @@ In detail:
   disabled.
 
 The site's scheduled tasks, wp-cli commands and SSH shell run in the same sandbox, built from the
-same list of settings, so they cannot drift apart. Every process belonging to the site lives in
+same list of settings, so they cannot diverge. Every process belonging to the site lives in
 its own systemd slice, `cg-site-<id>.slice`, so deleting the site stops all of them at once.
 
 ### Why not open_basedir {#why-not-open-basedir}
 
 `open_basedir` is PHP policing the paths it opens. Here the boundary is the service's mount
-namespace instead: anything the site must not see simply does not exist, for PHP and for any
+namespace: anything the site must not see does not exist, for PHP and for any
 program PHP might call. On the test server, `open_basedir` cut uncached requests per second by
 28%. The panel leaves it off.
 
@@ -91,12 +88,12 @@ program PHP might call. On the test server, `open_basedir` cut uncached requests
 *Since v0.2.0.* Each site's slice also has its own kernel-enforced limits: memory, CPU quota and
 number of processes. If a site goes over its memory limit, one of its own processes is killed.
 Other sites are unaffected, and the site's PHP keeps serving. A busy or broken site cannot starve
-the others. For defaults, how to change them and how to read each site's usage, see [Resource
+the others. Defaults, how to change them and how to read each site's usage are in [Resource
 usage and limits](/docs/sites/resource-usage-and-limits).
 
 ## nginx and symlinks {#nginx-and-symlinks}
 
-nginx can read every site, since it belongs to every site's group. That is why every site's vhost
+nginx can read every site, since it belongs to every site's group. Every site's vhost therefore
 sets `disable_symlinks if_not_owner`: nginx only follows a symlink if the link and its target have
 the same owner. A symlink a site creates pointing at another site's directory is owned by the
 site, but its target is not, so nginx refuses it. With a public directory (`public_root`), the
@@ -108,8 +105,7 @@ to the server's own services. See [Edit the routing](/docs/sites/edit-routing).
 
 ## Leftover files in the public directory {#leftovers}
 
-*Since v0.2.0.* Backup copies, editor files, dumps and archives left behind in the public directory
-are never served. nginx returns **404** for:
+*Since v0.2.0.* nginx returns **404** for backup copies, editor files, dumps and archives left in the public directory:
 
 - names ending in `.bak`, `.old`, `.orig`, `.save`, `.swp`, `.swo` or `~`;
 - SQL dumps: `.sql`, `.sql.gz`, `.sql.bz2`, `.sql.xz`, `.sql.zst`, `.sql.zip`;
@@ -119,20 +115,20 @@ are never served. nginx returns **404** for:
   `.tbz2`, `.tar.xz`, `.txz`, `.tar.zst`, `.zip`, `.7z`, `.rar`. Archives further down the tree,
   such as a plugin's downloadable file, are still served.
 
-Matching is case-insensitive. The response is 404 rather than 403, so it does not confirm that the
+Matching is case-insensitive. The response is 404 rather than 403, to avoid confirming that the
 file exists. A reverse proxy has no public directory, so nothing changes for it.
 
 ## Root operations inside the site directory {#root-inside-the-tree}
 
 The panel's operations on a site's files (releases, restores, ownership fixes, copies for staging)
-run with root privileges. Meanwhile, the site can rename anything it owns, or replace it with a
-symlink, even while root is working on it. So every root operation inside a site directory opens
-paths with `openat2` and `RESOLVE_BENEATH`. On every open, the kernel guarantees that the path
+run with root privileges. The site can rename anything it owns, or replace it with a
+symlink, even while root is working on it. Every root operation inside a site directory opens
+paths with `openat2` and `RESOLVE_BENEATH`. On every open, the kernel checks that the path
 stays inside the directory. A symlink pointing outside is rejected, not followed. If `openat2` is
 unavailable, the operation fails rather than falling back to a plain open.
 
-The site's own symlinks (`current`, `wp-config.php`, `wp-content/uploads`) are relative, so they
-resolve inside the directory.
+The site's own symlinks (`current`, `wp-config.php`, `wp-content/uploads`) are relative and resolve
+inside the directory.
 
 ## SFTP {#sftp}
 
@@ -148,4 +144,4 @@ keys](/docs/access/sftp-and-ssh-keys).
 
 ## Next step {#next}
 
-[Site lifecycle](./site-lifecycle.mdx) explains how all of these pieces are created and removed.
+[Site lifecycle](./site-lifecycle.mdx): how these pieces are created and removed.

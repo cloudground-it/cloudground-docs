@@ -10,7 +10,7 @@ last_verified: unverified
 sidebar_position: 7
 ---
 
-The **Runs** tab tells you what happened when the function was called, and why a call went wrong.
+The **Runs** tab shows what happened on each call and why a call went wrong.
 
 ## Look at the calls {#runs}
 
@@ -21,7 +21,7 @@ to an address, **Schedule** for a scheduled run and **Test** for the **Test** bu
 A function that has never been called shows *No runs yet*. The **Functions** list also shows when each
 function last ran.
 
-The statuses mean this:
+Statuses:
 
 - **200** and any other status the function picks: the function answered;
 - **500**: the handler threw, is missing, or returned something that can't be sent;
@@ -34,9 +34,9 @@ are in the table in [functions: values and limits](/docs/reference/functions#sta
 ## Read the output {#output}
 
 Below the list, **Output** shows what the function printed (`console.log`, `print`) and its errors,
-with the stack trace of anything the handler threw. To track down a particular call, take its time
+with the stack trace of anything the handler threw. To find a particular call, take its time
 from the list and look for it in the output.
 
 ## Next step {#next}
 
-[Look up the values and limits of functions](/docs/reference/functions).
+[Values and limits of functions](/docs/reference/functions).

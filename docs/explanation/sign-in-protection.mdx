@@ -9,8 +9,8 @@ sidebar_position: 10
 ---
 
 Chiunque raggiunga l'indirizzo del pannello può provare ad accedere. CloudGround non blocca un account
-dopo un certo numero di password sbagliate: un blocco permetterebbe a chiunque conosca il tuo indirizzo
-email di tenerti fuori dal tuo pannello, solo scrivendo password sbagliate. Rallenta invece i
+dopo un certo numero di password sbagliate: chiunque conosca il tuo indirizzo
+email potrebbe tenerti fuori dal pannello scrivendo password sbagliate. Rallenta i
 tentativi, e rallenta **la rete da cui arrivano**, non l'account.
 
 ## In parole semplici {#plain-words}
@@ -21,15 +21,15 @@ tentativi, e rallenta **la rete da cui arrivano**, non l'account.
 - Mandare i tentativi in parallelo non serve: ognuno aspetta il suo turno dopo quello precedente dalla
   stessa rete. Un tentativo che dovrebbe aspettare più di un minuto viene rifiutato subito, quindi una
   rete che sbaglia ha circa un tentativo al minuto su un account.
-- L'utente vero, che accede da un'altra parte, aspetta al massimo 2 secondi, e non viene mai rifiutato
+- L'utente vero, che accede da un'altra rete, aspetta al massimo 2 secondi e non viene mai rifiutato
   per colpa dei tentativi di altri.
-- L'account non viene mai bloccato, e la password giusta entra sempre. *Da v0.3.0.* Un indirizzo che continua a sbagliare può essere bloccato dal server per un po', su tutte le porte: vedi [il blocco degli indirizzi](/docs/explanation/blocking).
+- L'account non viene mai bloccato, e la password giusta entra sempre. *Da v0.3.0.* Un indirizzo che continua a sbagliare può essere bloccato dal server per un po', su tutte le porte: vedi [Il blocco degli indirizzi](/docs/explanation/blocking).
 - La risposta è la stessa che l'email esista o no: *invalid credentials*, dopo la stessa attesa. Le
-  attese non dicono a chi attacca quali account esistono.
+  attese non rivelano quali account esistono.
 
 Una *rete* è un indirizzo IPv4, oppure un /64 IPv6: un singolo host o cliente di solito riceve un /64
 intero, e contare ogni indirizzo IPv6 da solo darebbe a chi attacca miliardi di ripartenze. Un
-indirizzo IPv6 conta anche per il suo /48, quindi spostarsi tra i /64 di una stessa assegnazione non
+indirizzo IPv6 conta anche per il suo /48, quindi spostarsi tra i /64 della stessa assegnazione non
 serve.
 
 ## Il pannello {#panel}
@@ -53,9 +53,9 @@ qualsiasi parte.
 - *L'attesa da qualsiasi parte.* Gli errori di tutte le reti insieme aggiungono al massimo **2
   secondi**, e non rifiutano mai un tentativo.
 
-Un tentativo aspetta la più lunga delle due. L'attesa non occupa nulla oltre alla richiesta stessa.
+Un tentativo aspetta la più lunga delle due.
 
-*Da v0.2.0.* Anche l'attesa più lunga, fino a 60 secondi, arriva in fondo: il tentativo riceve poi la
+*Da v0.2.0.* Anche l'attesa più lunga, fino a 60 secondi, viene portata a termine: il tentativo riceve poi la
 sua risposta normale, accesso riuscito o *invalid credentials*. Se il client se ne va prima (una pagina
 chiusa, un client con un suo tempo massimo più breve), il tentativo finisce come troppi tentativi
 (**429**, *too many attempts — wait a minute and try again*): la password non viene controllata, e il
@@ -78,10 +78,10 @@ un'ora dal primo dei dieci: *too many wrong two-factor codes for this account �
 Un codice giusto non azzera il conteggio. Il decimo codice sbagliato finisce nel **Registro attività**
 come `login.2fa_brute`.
 
-Per arrivare al tetto serve prima la password, quindi vuol dire che qualcuno ha la tua password. Se sei
+Per arrivare al tetto serve la password, quindi qualcuno ha la tua password. Se sei
 tu (un telefono con l'orologio sbagliato, un telefono perso), aspetta l'ora, oppure sul server, da
 root, reimposta la password e spegni la verifica in due passaggi con `panel-api recover-admin --email
-<email> --disable-2fa`: vedi [recupera l'accesso amministratore](/docs/access/recover-admin-access). Poi
+<email> --disable-2fa`: vedi [Recupera l'accesso amministratore](/docs/access/recover-admin-access). Poi
 attivala di nuovo. Se non sei tu, cambia subito la password.
 
 ## Quarry {#quarry}
@@ -99,9 +99,9 @@ L'accesso a Quarry con un utente database segue le stesse regole, con numeri suo
 - ogni rifiuto, qualunque sia il motivo, è lo stesso *Utente database o password errati.*, e dura
   almeno 300 millisecondi, così il tempo non distingue un utente che esiste da uno che non esiste.
 
-Qui conta più che nel pannello: il nome di un utente database, come `site_<id>`, è facile da
+Qui il rischio è maggiore che nel pannello: il nome di un utente database, come `site_<id>`, è facile da
 indovinare, e il sito stesso accede a MariaDB con quell'utente. Un blocco permetterebbe a uno
-sconosciuto di mettere offline il sito. Per questo l'attesa vale solo per gli accessi a Quarry, e il
+sconosciuto di mettere offline il sito. L'attesa vale quindi solo per gli accessi a Quarry, e il
 limite di MariaDB sulle password sbagliate, che bloccherebbe l'utente, resta spento: il sito non se ne
 accorge.
 
@@ -109,14 +109,13 @@ accorge.
 
 - I tentativi sparsi su molte reti vengono rallentati ognuno solo dagli errori della propria rete: il
   loro ritmo totale è di circa uno al minuto per rete (e per /48) su un account, frenato ancora da
-  quanti controlli di password il server fa insieme. Una password lunga e unica resta la vera difesa,
+  quanti controlli di password il server fa insieme. La difesa vera è una password lunga e unica,
   con la verifica in due passaggi per il pannello.
 - Dietro un solo indirizzo o un solo /48 IPv6, la connessione condivisa di un ufficio per esempio, chi
   attacca e l'utente vero condividono l'attesa della stessa rete.
-- Un accesso rifiutato finisce nel **Registro attività** con il suo indirizzo: è lì che guardi quando
-  qualcuno continua a provare.
+- Un accesso rifiutato finisce nel **Registro attività** con il suo indirizzo.
 
 ## Prossimo passo {#next}
 
 Aggiungi il secondo fattore al tuo account del pannello:
-[verifica in due passaggi](/docs/access/two-step-verification).
+[Verifica in due passaggi](/docs/access/two-step-verification).

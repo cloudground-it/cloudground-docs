@@ -11,8 +11,7 @@ sidebar_position: 10
 ---
 
 Quarry is CloudGround's database manager. It runs as a separate service on the panel's address, at
-`/quarry`. You can open it from the panel, or sign in with a database user's name and password. For
-how the two ways in and the limits work, read [How Quarry works](/docs/explanation/quarry).
+`/quarry`. Open it from the panel, or sign in with a database user's name and password. The two ways in and the limits are in [How Quarry works](/docs/explanation/quarry).
 
 ## Open Quarry from the panel {#from-the-panel}
 
@@ -46,7 +45,7 @@ What you can do depends on your panel role:
   privileges. A write by a read-only user fails with the server's error,
   `ERROR 1142 … command denied`.
 - Every refusal reads *Wrong database user or password.*, whatever the actual reason. Wrong passwords
-  slow down further attempts from the same network, but never lock the user out. If a network keeps
+  slow down further attempts from the same network, but don't lock the user out. If a network keeps
   failing, an attempt may be refused with *too many attempts for this database user at once*. Wait
   and try again. See [sign-in protection](/docs/explanation/sign-in-protection#quarry).
 
@@ -139,7 +138,7 @@ Quarry answers **Not simulated**, with the reason, when the statement:
 
 A simulation gets 60 seconds in total, and waits at most 5 seconds for a row the live site has
 locked. Afterwards, an `AUTO_INCREMENT` counter may have moved forward, as with any rolled-back
-write. For the reasons behind these refusals, see [Simulate](/docs/explanation/quarry#simulate).
+write. The reasons for these refusals are in [Simulate](/docs/explanation/quarry#simulate).
 
 ## Export {#export}
 
@@ -171,7 +170,7 @@ first if you might need it back.
 :::
 
 As a database user, you only see and import the files you uploaded in this session. Uploading a file
-with a name that already exists is refused, so rename your file.
+with a name that already exists is refused: rename your file.
 
 ## Empty or drop a table {#operations}
 
@@ -194,5 +193,5 @@ the panel.
 
 ## Next step {#next}
 
-To understand the two ways in and what Simulate protects you from, read
+The two ways in and what Simulate protects you from are explained in
 [How Quarry works](/docs/explanation/quarry).

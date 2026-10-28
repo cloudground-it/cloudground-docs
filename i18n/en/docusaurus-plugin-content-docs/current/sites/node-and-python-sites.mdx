@@ -11,7 +11,7 @@ sidebar_position: 1.5
 ---
 
 A Node.js or Python site runs your app as a service of its own, under the site's user and inside
-the site's resource limits and sandbox, the same way a PHP site's PHP runs. nginx handles HTTPS and
+the site's resource limits and sandbox, like the PHP of a PHP site. nginx handles HTTPS and
 proxies every request to the app over a unix socket. Deploys, rollbacks and git deploy work the way
 they do for PHP sites.
 
@@ -51,8 +51,7 @@ If your app can only listen on a TCP port, set **Port** on the **App** tab. The 
 127.0.0.1 and `PORT` holds the number. Any process on the server can reach a loopback port, so use
 the socket whenever you can.
 
-The app runs with `/srv/sites/<domain>/current` as its working directory. It sees its own site's
-files and nothing of the other sites.
+The app runs with `/srv/sites/<domain>/current` as its working directory. It sees only its own site's files.
 
 ## Deploy, roll back, git deploy {#deploy}
 
@@ -67,7 +66,7 @@ installs its dependencies inside it, as the site's user:
 
 If that step fails, the deploy fails with npm's or pip's output, and the live release isn't
 changed. Promoting a release, or rolling back, restarts the app on the new release. Each release
-keeps its own dependencies, so a rollback goes back to exactly what that release ran with.
+keeps its own dependencies, so a rollback goes back to what that release ran with.
 
 Git deploy works the same way: the repository's build command runs first, then the dependency step.
 
@@ -84,7 +83,7 @@ Variable names use capital letters, digits and `_`. Names the server sets itself
 `PATH`, `HOME` and anything starting with `CG_` or `LD_`, can't be used.
 
 On the server, the values are only in a file readable by root, which systemd reads when it starts
-the app. They're never in the unit file, the panel's answers, the audit log or the logs.
+the app. They are not in the unit file, the panel's answers, the audit log or the logs.
 
 ## Health, restarts and logs {#health}
 

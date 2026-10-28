@@ -40,7 +40,7 @@ changes nothing.
    **Update now** and confirm.
 2. The panel shows **Update started: the panel will restart.**
 
-The API equivalent is `POST /api/panel/update`, with `{"version": "<version>"}`, or `{}` for the
+In the API: `POST /api/panel/update`, with `{"version": "<version>"}`, or `{}` for the
 latest release.
 
 ## Update with cgctl {#update-with-cgctl}
@@ -78,9 +78,9 @@ with its state from <snapshot>` and exits 1.
    Otherwise the guard restores the previous binaries, units and snapshot, and starts the previous
    release again.
 
-On first start, the new panel migrates its database forward through every step between the two
-releases, so you can jump from any release to any newer one in a single update. Migrations never run
-backwards. The way back is the snapshot, which a failed update restores automatically.
+On first start the new panel migrates its database forward, step by step between the two
+releases, so you can jump to any newer release in a single update. Migrations never run
+backwards: the way back is the snapshot, which a failed update restores automatically.
 
 ## New system packages {#packages}
 
@@ -101,7 +101,7 @@ the new release installs.
 ## What an update leaves alone {#what-it-keeps}
 
 An update replaces the binaries and, if the release changes them, the systemd units. It never touches
-the sites' files, databases, certificates or backups. Sites keep serving throughout, because nginx
+the sites' files, databases, certificates or backups. Sites keep serving: nginx
 and the sites' PHP aren't restarted. Only the panel returns errors, for the few seconds it takes to
 restart.
 

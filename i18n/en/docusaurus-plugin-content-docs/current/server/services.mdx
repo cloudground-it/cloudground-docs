@@ -48,8 +48,8 @@ agent stops any units left over from a previous run.
 
 The `cloudground-agent.service` unit has its own memory limit: above 768 MB the kernel throttles it,
 and above 1 GB it kills the process that went over. Transient units only show up in
-`systemctl list-units 'cg-helper-*'` while they're working. For why they live outside the agent's
-unit, see [the architecture](/docs/explanation/architecture#the-agent).
+`systemctl list-units 'cg-helper-*'` while they're working. Why they live outside the agent's
+unit is explained in [the architecture](/docs/explanation/architecture#the-agent).
 
 ## Restart a service {#restart}
 
@@ -72,4 +72,4 @@ returns **409**. Every restart is recorded in the **Audit log**.
 
 ## Next step {#next}
 
-When a service stops, the [logs](./logs.mdx) tell you why.
+The reason a service stopped is in the [logs](./logs.mdx).

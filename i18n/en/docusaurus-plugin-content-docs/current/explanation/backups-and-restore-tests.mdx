@@ -8,8 +8,7 @@ last_verified: unverified
 sidebar_position: 7
 ---
 
-You do not know a backup works until you have restored it. So CloudGround test-restores every
-backup before trusting it. The test does everything a real restore does, except touch the site.
+A backup counts only after a test restore. The test does everything a real restore does, except touch the site.
 
 ## What a backup contains {#anatomy}
 
@@ -23,7 +22,7 @@ repository password. Each backup is made of two snapshots:
    the database snapshot, and the panel records the files snapshot.
 
 If the dump fails, or a single file cannot be read, the whole backup fails and restic forgets the
-partial snapshots. The repository never fills up with half-finished backups.
+partial snapshots.
 
 Only one restic process works on a repository at a time. If a backup is interrupted, it releases
 its repository lock before exiting so the next backup can run.
@@ -57,7 +56,7 @@ the tables (for WordPress, the options table must be present). Then it drops the
 database. Finally, `restic check` re-reads 10% of the repository data. The time taken up to the
 end of the import is the estimate of how long a real restore would take.
 
-This leads to a few rules:
+Rules:
 
 - every backup starts as *pending*, and only the test can mark it *passed* or *failed*;
 - the test runs in the same job as the backup and finishes even if the job is interrupted; each
@@ -80,13 +79,13 @@ After that:
 - the site's PHP restarts (clearing the opcode and object caches) and nginx reloads;
 - if the site does not come back up, files and databases are put back the way they were.
 
-Finally the page cache is emptied but not removed. Its directory has to stay, because without it
+Finally the page cache is emptied. Its directory stays, because without it
 the site would stop caching.
 
 ## Before a migration {#before-a-migration}
 
-*Since v0.2.0.* A migration import also replaces the site's uploads and database tables, and an
-old or wrong archive imports without any error. So an import starts the same way as a restore:
+*Since v0.2.0.* A migration import replaces the site's uploads and database tables, and an
+old or wrong archive imports without any error. An import therefore starts like a restore:
 with a `pre-migration` safety snapshot, checked by the restore test. If the test fails, the import
 stops before the site changes.
 
@@ -94,7 +93,7 @@ The task log names the snapshot (`safety snapshot <id> retained`). If the import
 snapshot is kept, and restoring it puts the site back to how it was before the migration.
 
 If no backup repository is configured, the import still runs, because a freshly installed server
-has to be able to migrate its first site. In that case the task warns you before touching
+has to be able to migrate its first site. The task warns you before touching
 anything: *No backup repository is configured: no safety snapshot is taken, and this import cannot
 be undone*.
 

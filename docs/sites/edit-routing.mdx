@@ -12,7 +12,7 @@ sidebar_position: 4
 Il routing è il blocco di `location` che decide cosa serve ogni URL del sito: un front controller, le
 route lato client di una SPA, vere pagine 404, un `/api` in proxy, i redirect. È l'unica parte del vhost
 che puoi modificare. TLS, certificati, log, limiti, la cache di pagina e le sue regole di bypass, gli
-header di sicurezza e il collegamento a PHP-FPM restano del pannello.
+header di sicurezza e il collegamento a PHP-FPM restano al pannello.
 
 ## Apri l'editor {#open-the-editor}
 
@@ -33,7 +33,7 @@ sotto l'editor. Nell'editor c'è il routing attuale: all'inizio è quello predef
 1. Scrivi i blocchi nell'editor.
 2. Scegli **Salva**.
 
-Il pannello controlla il blocco con le sue regole, poi scrive il vhost e fa verificare la configurazione
+Il pannello controlla il blocco con le sue regole, poi scrive il vhost e lo fa verificare
 a nginx (`nginx -t`). Se nginx la accetta, la ricarica e mostra **Routing salvato e attivo**. Se la
 rifiuta, rimette i file di prima, mostra l'errore con la riga del blocco e il sito continua a servire con
 il routing precedente.

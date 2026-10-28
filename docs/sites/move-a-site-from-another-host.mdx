@@ -11,9 +11,9 @@ last_verified: unverified
 sidebar_position: 7.5
 ---
 
-Il pannello può andare a prendere da solo un vecchio sito dal suo server: gli dai l'account SSH o SFTP
-e la cartella del sito, lui misura il sito, lo copia e lo importa in un sito di questo pannello come
-nuovo rilascio. Prima di cambiare qualsiasi cosa fa un backup del sito e lo verifica, così
+Il pannello può prendere un vecchio sito dal suo server: gli dai l'account SSH o SFTP
+e la cartella del sito, e lui misura il sito, lo copia e lo importa in un sito di questo pannello come
+nuovo rilascio. Prima di cambiare qualcosa fa un backup del sito e lo verifica, così
 l'importazione si può annullare.
 
 ## Prendi il sito dal vecchio server {#pull}
@@ -45,7 +45,7 @@ presenta un'altra, si ferma.
 ## La password o la chiave si usa una volta {#credentials}
 
 La password o la chiave privata che inserisci serve per questa importazione e poi viene dimenticata.
-Non finisce mai nel database del pannello, nel log dell'attività o nel **Registro attività**, e il
+Non finisce nel database del pannello, nel log dell'attività o nel **Registro attività**, e il
 server non ne tiene copia. Per importare di nuovo, inseriscila di nuovo. Il registro attività annota chi
 ha importato, da quale account, server e cartella.
 
@@ -59,7 +59,7 @@ Lo snapshot di sicurezza resta nella scheda **Backup**: per annullare lo spostam
 
 I file vengono copiati prima nella cartella `tmp/` del sito, esclusa dai backup, e cancellati alla fine
 dell'attività. Sul server serve spazio libero per circa il doppio del vecchio sito: **Misura** ti avvisa
-se non c'è.
+se manca.
 
 ## Importa un archivio caricato {#upload}
 
@@ -69,4 +69,4 @@ clic su **Verifica e importa**.
 
 ## Prossimo passo {#next}
 
-Punta il dominio su questo server e [proteggilo con un certificato](/docs/sites/domains-and-certificates).
+Punta il dominio su questo server e [aggiungi un certificato](/docs/sites/domains-and-certificates).

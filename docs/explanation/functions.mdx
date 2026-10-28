@@ -8,8 +8,7 @@ last_verified: unverified
 sidebar_position: 9
 ---
 
-Una funzione è codice che esiste solo mentre risponde. Questa pagina spiega come ci si arriva, e che
-prezzo ha.
+Una funzione è codice che esiste solo mentre risponde.
 
 ## Un processo per richiesta {#one-process-per-request}
 
@@ -27,20 +26,20 @@ flowchart LR
     sched["pianificazione del pannello"] -->|"esecuzione a orari"| nginx
 ```
 
-Il prezzo è che ogni richiesta carica il codice da capo. Una funzione non ricorda niente tra una
+Ogni richiesta carica il codice da capo. Una funzione non ricorda niente tra una
 chiamata e l'altra: variabili in memoria, connessioni aperte e file temporanei spariscono con il
 processo. Quello che deve restare va scritto altrove, per esempio in un database. In cambio una
 funzione ferma non occupa memoria né processore, e due chiamate non si influenzano.
 
 ## Chi la protegge da chi la chiama {#protection}
 
-La difesa sta davanti alla funzione, in nginx, perché sia prima che si avvii un processo:
+I controlli stanno in nginx, prima che si avvii un processo:
 
 - il token, se la funzione lo chiede: senza quello giusto la risposta è 401 e non parte niente;
 - i limiti per client e per funzione, che rispondono 429 e 503 oltre le soglie;
-- il socket accetta al massimo 32 connessioni alla volta, qualunque cosa succeda a monte.
+- il socket accetta al massimo 32 connessioni alla volta.
 
-Sono i valori della tabella in [funzioni: valori e limiti](/docs/reference/functions#limits). Il
+I valori sono nella tabella di [Funzioni: valori e limiti](/docs/reference/functions#limits). Il
 controllo dell'origine per i browser (CORS) sta nello stesso posto, e il controllo preliminare non
 chiede il token.
 
@@ -53,20 +52,20 @@ root.
 
 Memoria e tempo sono limiti di systemd su ogni processo: oltre la memoria impostata, senza swap,
 o oltre il tempo massimo, il processo viene fermato. Tutte le funzioni insieme stanno in un gruppo
-che non supera il 50% della memoria del server, come ogni sito ha il suo gruppo di risorse. Per
-il confine tra i siti vedi [l'isolamento dei siti](/docs/explanation/site-isolation).
+che non supera il 50% della memoria del server, come ogni sito ha il suo gruppo di risorse. Il
+confine tra i siti è in [L'isolamento dei siti](/docs/explanation/site-isolation).
 
 ## Rilasci e dipendenze {#releases}
 
 Un rilascio è una cartella con il codice e le sue dipendenze, installate dal server. `current` è un
-link al rilascio attivo, e ogni processo parte da lì. Per questo cambiare rilascio non riavvia niente,
+link al rilascio attivo, e ogni processo parte da lì. Cambiare rilascio non riavvia niente,
 e il rollback è un cambio di link che riporta anche le dipendenze di allora. Un'installazione che
 fallisce non lascia un rilascio a metà: la funzione continua con quello di prima.
 
 ## Senza indirizzo, la funzione non si raggiunge {#no-address}
 
 nginx conosce una funzione solo attraverso il dominio delle funzioni o un suo dominio. Un nome che
-nessun blocco rivendica finisce nel server predefinito, che chiude la connessione. Per questo una
+nessun blocco rivendica finisce nel server predefinito, che chiude la connessione. Una
 funzione senza indirizzo non si raggiunge da Internet. **Prova** e le esecuzioni a orari passano da un
 socket interno che solo root può aprire, e non chiedono il token.
 

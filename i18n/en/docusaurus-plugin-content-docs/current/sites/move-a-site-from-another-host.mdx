@@ -11,8 +11,8 @@ last_verified: unverified
 sidebar_position: 7.5
 ---
 
-The panel can fetch an old site from its host by itself: you give it the SSH or SFTP account and the
-site's folder, it measures the site, copies it, and imports it into a site of this panel as a new
+The panel can pull an old site from its host: you give it the SSH or SFTP account and the
+site's folder, and it measures the site, copies it and imports it into a site of this panel as a new
 release. Before it changes anything it takes a backup of the site and tests it, so the import can be
 undone.
 
@@ -42,7 +42,7 @@ stops.
 
 ## The password or key is used once {#credentials}
 
-The password or private key you enter is used for this pull and then forgotten. It's never stored in
+The password or private key you enter is used for this pull and then forgotten. It is not stored in
 the panel's database, the task log or the **Audit log**, and the server keeps no copy of the key. To
 pull again, enter it again. The audit log records who pulled, from which account, host and folder.
 
@@ -55,7 +55,7 @@ is cleared. If the import fails, the site is put back as it was. The safety snap
 
 The files are copied into the site's `tmp/` folder first, which is left out of backups, and deleted
 when the task ends. The server needs free space for about twice the old site's size; **Measure**
-tells you if it isn't there.
+warns you if it is missing.
 
 ## Import an archive you uploaded {#upload}
 
@@ -65,4 +65,4 @@ and click **Validate and import**.
 
 ## Next step {#next}
 
-Point the domain at this server and [secure it with a certificate](/docs/sites/domains-and-certificates).
+Point the domain at this server and [add a certificate](/docs/sites/domains-and-certificates).

@@ -11,9 +11,9 @@ last_verified: unverified
 sidebar_position: 10
 ---
 
-Ogni database vive nel MariaDB di questo server, a meno che tu non dica altro. Puoi registrare altri
-server MariaDB e MySQL, e sceglierne uno quando crei un database o un utente database. I database lì
-si gestiscono come gli altri: Quarry, esportazione e importazione, backup e ripristini funzionano tutti.
+Ogni database sta nel MariaDB di questo server, salvo diversa scelta. Puoi registrare altri
+server MariaDB e MySQL e sceglierne uno quando crei un database o un utente database. I database lì
+si gestiscono come gli altri: Quarry, esportazione e importazione, backup e ripristini funzionano.
 
 ## Prepara il server {#prepare}
 
@@ -27,7 +27,7 @@ CREATE USER 'cloudground'@'<indirizzo di questo server>' IDENTIFIED BY '<una pas
 GRANT ALL PRIVILEGES ON *.* TO 'cloudground'@'<indirizzo di questo server>' WITH GRANT OPTION;
 ```
 
-Sostituisci i segnaposto con l'indirizzo pubblico di questa macchina e con una tua password. Togli
+Sostituisci i segnaposto con l'indirizzo pubblico di questa macchina e una tua password. Togli
 `REQUIRE SSL` solo se disattiverai il TLS in CloudGround.
 
 ## Registra il server {#register}
@@ -62,8 +62,8 @@ rimuove un server, cosa possibile solo quando non ci sono database né utenti.
 3. Premi **Crea database**.
 
 Il campo **Server** compare quando c'è almeno un server registrato. **Questo server** è il valore
-predefinito. Un database resta sul server che hai scelto: non si può spostare in seguito, e il suo
-nome resta unico tra tutti i server. Il database mostra un badge con il nome del suo server.
+predefinito. Un database resta sul server scelto e non si sposta in seguito. Il suo
+nome è unico tra tutti i server e un badge mostra il nome del server.
 
 Anche un utente database sta su un solo server. In **Aggiungi un utente** scegli prima il **Server**:
 l'elenco dei privilegi propone allora solo i database di quel server. Un account su un server
@@ -97,4 +97,4 @@ sempre su questo server, quindi non toccano mai uno esterno.
 
 ## Prossimo passo {#next}
 
-Gestisci cosa può fare ogni utente: [gestisci i database](/docs/data/manage-databases).
+Per i privilegi degli utenti, vedi [gestisci i database](/docs/data/manage-databases).

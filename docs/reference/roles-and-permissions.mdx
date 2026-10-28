@@ -8,7 +8,7 @@ last_verified: unverified
 sidebar_position: 3
 ---
 
-Ogni account ha esattamente uno di tre ruoli. Per assegnarli vedi [utenti e ruoli](/docs/access/users-and-roles).
+Ogni account ha un ruolo, uno dei tre. Per assegnarli vedi [Utenti e ruoli](/docs/access/users-and-roles).
 
 | Ruolo | Valore API | Raggio |
 | --- | --- | --- |
@@ -39,12 +39,12 @@ flowchart TD
   L -- sì --> H["La richiesta viene eseguita"]
 ```
 
-Un sito fuori dalla portata di un operatore risponde **404**, non 403: il pannello non conferma che
+Un sito fuori dalla portata di un operatore risponde **404** e non 403, per non confermare che
 esista.
 
 ## Le regole delle rotte {#route-rules}
 
-Ogni rotta dell'API ha una di queste regole.
+Ogni rotta dell'API ha una di queste regole:
 
 | Regola | Amministratore | Operatore | Sola lettura |
 | --- | --- | --- | --- |
@@ -126,12 +126,12 @@ e attivazione del firewall, e i comandi in forma ridotta delle attività pianifi
 
 Un token API non ha permessi propri: agisce come l'amministratore che l'ha creato, finché quel
 proprietario è un amministratore attivo, e segue la sua stessa regola sulla verifica in due passaggi.
-Non ci sono token limitati a un'area. Solo un amministratore crea token.
+Non esistono token limitati a un'area. Solo un amministratore crea token.
 
 Un token non raggiunge mai le rotte solo per sessioni: il proprio account (password, 2FA, sessioni,
 profilo), gli utenti, i token, la shell dei siti, l'editor del routing, le regole del firewall e la
-sua attivazione, il certificato e l'aggiornamento del pannello. Non può nemmeno aggiungere una chiave di tipo
-"shell". Questi rifiuti rispondono **403**. Un token non apre nemmeno Quarry.
+sua attivazione, il certificato e l'aggiornamento del pannello. Non può aggiungere una chiave di tipo
+"shell" e non apre Quarry. Questi rifiuti rispondono **403**.
 
 Un utente database che accede a Quarry con la sua password non ha un ruolo del pannello: decidono i
 suoi privilegi in MariaDB (vedi [Come funziona Quarry](/docs/explanation/quarry#mariadb-decides)).
@@ -143,8 +143,8 @@ spegne la verifica in due passaggi, quando viene disattivato, declassato o elimi
 ## Il token del connettore {#connector-token}
 
 Ogni sito WordPress ha un token del connettore, separato dagli account, che serve solo al plugin del
-sito per chiedere al pannello di svuotare la cache delle sue pagine. Non dà accesso a nient'altro.
+sito per chiedere al pannello di svuotare la cache delle sue pagine. Non dà altri accessi.
 
 ## Prossimo passo {#next}
 
-Crea gli account con il ruolo giusto: [utenti e ruoli](/docs/access/users-and-roles).
+Crea gli account con il ruolo giusto: [Utenti e ruoli](/docs/access/users-and-roles).

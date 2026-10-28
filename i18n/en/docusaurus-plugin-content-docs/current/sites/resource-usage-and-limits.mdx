@@ -12,7 +12,7 @@ sidebar_position: 6
 
 Every process that belongs to a site (its PHP, scheduled tasks, wp-cli and the shell) runs in the
 site's systemd slice, `cg-site-<id>.slice`. The **Resources** tab shows what those processes use and
-lets you cap how much they can take from other sites on the same server.
+lets you cap how much they can take from the other sites on the same server.
 
 ## Check a site's usage {#see-the-usage}
 
@@ -36,8 +36,7 @@ Anyone whose account can see the site can see this tab.
 
 ## Set resource limits {#set-the-limits}
 
-You need an administrator account, since limits decide how much one site can take from all the
-others.
+You need an administrator account.
 
 1. On the **Resources** tab, in the **Limits** card, enter:
    - **Memory limit**, in MB.
@@ -55,8 +54,7 @@ Entering 0 in a field uses the default:
 
 The kernel enforces these limits on this site only. When the site reaches nine tenths of its memory
 limit, it gets throttled. At the limit, the kernel ends one of the site's own processes, never one
-from another site, and the site's PHP keeps serving requests. New limits take effect immediately,
-without restarting anything.
+from another site, and the site's PHP keeps serving requests. New limits take effect immediately, with no restart.
 
 There is no disk limit. You can only set an alert for disk usage (see below).
 
@@ -74,7 +72,7 @@ There is no disk limit. You can only set an alert for disk usage (see below).
 
 Short spikes don't trigger an alert. The alert type is **Resources**. It appears in the **Alerts**
 panel and goes to the alert webhook like any other alert (see
-[alerts and notifications](/docs/server/alerts-and-notifications)). Changing thresholds doesn't touch
+[Alerts and notifications](/docs/server/alerts-and-notifications)). Changing thresholds doesn't touch
 the site's configuration.
 
 ## Use the API {#with-the-api}
@@ -92,9 +90,9 @@ latest sample. Limits and thresholds are fields of `PATCH /api/sites/<id>`:
 ```
 
 Only administrators can send `memory_max_mb`, `cpu_quota_pct` and `tasks_max`. From any other account
-the request returns **403**. `usage_alerts` is replaced as a whole. The
-[site settings reference](/docs/reference/site-settings) covers every field.
+the request returns **403**. `usage_alerts` is replaced as a whole. Every field is in the
+[site settings reference](/docs/reference/site-settings).
 
 ## Next step {#next}
 
-[Monitor the site's uptime](/docs/sites/uptime-monitoring) from the outside.
+[Monitor the site's uptime](/docs/sites/uptime-monitoring) from outside.

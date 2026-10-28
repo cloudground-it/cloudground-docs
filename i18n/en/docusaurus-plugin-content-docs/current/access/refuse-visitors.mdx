@@ -9,9 +9,9 @@ last_verified: unverified
 sidebar_position: 6.6
 ---
 
-You can make any site turn visitors away with **403** without affecting other sites. Rules are set per
-site and take effect as soon as you save. Sites with no rules pay no performance cost. For how nginx
-applies the rules, see [address blocking](/docs/explanation/blocking#site-rules).
+Any site can refuse visitors with **403**. Rules are set per
+site and take effect as soon as you save. A site with no rules has no added cost. How nginx
+applies them is in [address blocking](/docs/explanation/blocking#site-rules).
 
 ## Write the rules {#write-the-rules}
 
@@ -42,8 +42,7 @@ To clear everything, press **Remove all rules**.
 
 :::note
 
-Anyone can send any User-Agent. The user agent rule stops crawlers that identify themselves, not a
-determined attacker.
+Anyone can send any User-Agent. The user agent rule stops crawlers that identify themselves, not an attacker.
 
 :::
 

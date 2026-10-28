@@ -12,7 +12,7 @@ sidebar_position: 8
 ---
 
 A push to the branch you choose builds a new release from your repository and activates it. The
-release is an ordinary one: it appears in the **Releases** tab and you can
+release is like any other: it appears in the **Releases** tab and you can
 [roll it back](/docs/data/roll-back-a-release) in one click. For a one-off release from a folder,
 see [Deploy a release](/docs/data/deploy-a-release).
 
@@ -47,10 +47,10 @@ Create a webhook for push events, with the **Webhook URL** from the card. Send i
 | Gitea | Settings → Webhooks → Add webhook | **Secret** |
 
 Use the card's **Secret** in that field. The panel checks every request against it and answers `401`
-to anything else, whether the URL is wrong, the hook is off or the signature does not match. Click
-the eye button to show the secret and the copy button to copy it.
+to anything else, whether the URL is wrong, the hook is off or the signature does not match. The
+eye button shows the secret and the copy button copies it.
 
-Send a test delivery. The panel answers a ping with `pong`, and it appears under **Recent
+Send a test delivery: the panel answers a ping with `pong` and the delivery appears under **Recent
 deliveries**.
 
 ## Read a private repository {#deploy-key}

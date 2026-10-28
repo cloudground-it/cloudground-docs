@@ -13,8 +13,8 @@ sidebar_position: 7
 When uptime monitoring is on, the panel requests the site from its public address every minute, the
 same way a visitor would. If the site stops responding, you get an alert.
 
-Monitoring is off by default on every site. Otherwise a site whose domain doesn't point here yet
-would look like it was down.
+Monitoring is off by default on every site, because a site whose domain doesn't point here yet
+would look down.
 
 ## Turn on monitoring {#turn-it-on}
 
@@ -36,11 +36,11 @@ strings aren't allowed.
 
 The panel sends `GET https://<domain><path>` with a 10-second timeout.
 
-- **Answering**: any status code below 500, including 401 and 404. The site is responding.
+- **Answering**: any status code below 500, including 401 and 404.
 - **Failure**: a 5xx status code, a refused or reset connection, a certificate a browser would
   reject, or no response within 10 seconds.
 
-The panel doesn't follow redirects. A 3xx counts as a response, and the check never leaves the
+The panel doesn't follow redirects. A 3xx counts as a response, and the check stays on the
 site's own address.
 
 ## Alerts {#the-alert}
@@ -48,7 +48,7 @@ site's own address.
 Two failures in a row trigger an **Uptime** alert at error level, with the reason for the latest
 failure. A single failure, such as a dropped packet or a reload, isn't enough. The alert appears in
 the **Alerts** panel and goes to the alert webhook (see
-[alerts and notifications](/docs/server/alerts-and-notifications)). It closes automatically once the
+[Alerts and notifications](/docs/server/alerts-and-notifications)). It closes automatically once the
 site responds again.
 
 Restarting the panel doesn't close or reopen an alert that's already open.

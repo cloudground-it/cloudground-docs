@@ -9,7 +9,7 @@ sidebar_position: 8
 ---
 
 Il codice di un sito non si modifica sul posto. Ogni pubblicazione crea un **rilascio** nuovo,
-una cartella che dopo non cambia più, e il sito serve sempre quello indicato da un unico
+una cartella che dopo non cambia più. Il sito serve il rilascio indicato da un unico
 collegamento.
 
 ## La cartella di un sito {#layout}
@@ -27,8 +27,8 @@ nginx e PHP servono il sito attraverso `current`. Attivare un rilascio vuol dire
 quel collegamento con uno nuovo, in una sola operazione: ogni richiesta vede il rilascio vecchio
 o quello nuovo, mai un misto. Poi PHP ricarica, così la cache del codice serve il codice nuovo.
 
-Ogni rilascio collega `wp-config.php` e i file caricati a quelli in `shared/`. Per questo un
-rollback cambia il codice ma non la configurazione, né il database, né i file caricati.
+Ogni rilascio collega `wp-config.php` e i file caricati a quelli in `shared/`. Un
+rollback cambia quindi il codice ma non la configurazione, né il database, né i file caricati.
 
 `releases/` appartiene a root, non all'utente del sito: se fosse sua, potrebbe sostituire un
 rilascio con un collegamento e far servire a nginx qualsiasi cartella del server.
@@ -40,7 +40,7 @@ recenti, e i 5 più recenti tra quelli più vecchi.
 ## Gli stati di un rilascio {#states}
 
 Ogni pubblicazione è registrata nel pannello e passa per questi stati. Il pannello rifiuta
-qualsiasi passaggio che non è nel diagramma.
+ogni passaggio che non è nel diagramma.
 
 ```mermaid
 stateDiagram-v2
@@ -93,8 +93,8 @@ precedente diventa *sostituito* nella stessa scrittura.
 
 Prima di ogni attivazione il pannello chiede all'agente quale rilascio è attivo in quel momento,
 e lo annota come punto di ritorno. Un rollback senza destinazione torna lì; se il punto non è
-noto, torna all'ultimo rilascio *sostituito*. Il pannello non lascia mai scegliere all'agente
-"il rilascio più vecchio di quello attuale", perché potrebbe essere un rilascio creato e mai
+noto, torna all'ultimo rilascio *sostituito*. Il pannello non fa mai scegliere all'agente
+"il rilascio più vecchio di quello attuale": potrebbe essere un rilascio creato e mai
 attivato, cioè mai provato.
 
 Un rilascio può tornare online solo se è già stato attivo. Un rilascio che Safe Push ha annullato
@@ -114,7 +114,7 @@ pubblicazione, il pannello rilegge `current` e allinea i suoi dati:
   avviso.
 
 Una verifica dopo Safe Push interrotta a mano lascia il rilascio *attivo* con la nota *non
-verificato* e un avviso: il pannello non lo dichiara mai buono senza il controllo.
+verificato* e un avviso: il pannello non lo dichiara buono senza il controllo.
 
 ## Prossimo passo {#next}
 

@@ -35,7 +35,7 @@ Per tornare a una funzione aperta a tutti, scegli di nuovo **Pubblica** e salva.
 
 ## Rinnova il token {#renew}
 
-Se perdi il token o pensi che sia trapelato:
+Se perdi il token o sospetti che sia trapelato:
 
 1. Nella scheda **Indirizzi**, in **Accesso**, premi **Genera nuovo token** e conferma.
 2. Copia il token nuovo.
@@ -52,7 +52,7 @@ Una pagina web può chiamare la funzione solo se la funzione risponde con gli he
    eventualmente porta, senza percorso). Al massimo 20.
 2. Salva.
 
-Vuoto, nessun header CORS. Il controllo preliminare del browser (`OPTIONS`) lo risponde nginx
+Se resta vuoto, la funzione non manda header CORS. Alla richiesta preliminare del browser (`OPTIONS`) risponde nginx,
 senza token e senza far partire la funzione.
 
 :::warning

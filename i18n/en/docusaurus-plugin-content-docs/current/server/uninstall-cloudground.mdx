@@ -11,7 +11,7 @@ sidebar_position: 7
 ---
 
 `cgctl uninstall` removes CloudGround from the server. By default it keeps the sites' files, their
-databases and every backup. Options let you delete the sites too, and remove the packages the
+databases and every backup. Options also delete the sites and remove the packages the
 installer added. You can't uninstall from the panel.
 
 ## Preview the changes {#plan}
@@ -107,7 +107,7 @@ Before removing anything, the uninstall copies these to `/root/cloudground-unins
 
 :::warning[`backup.env` is plain text]
 
-It contains the repository password. Store it somewhere safe, off the server, then delete it.
+It contains the repository password. Store it off the server, then delete it.
 
 :::
 
@@ -123,9 +123,9 @@ never overwritten.
 ## If it stops partway {#rerun}
 
 When an action fails, it's reported and the rest carry on. The command then exits with 1 and lists the
-failures. Fix the cause and run `cgctl uninstall` again: every action is safe to repeat. On a server
+failures. Fix the cause and run `cgctl uninstall` again: every action can be repeated. On a server
 with nothing of CloudGround left, it prints `CloudGround is not installed here: nothing to remove`.
 
 ## Next step {#next}
 
-To install CloudGround again, follow the [installation tutorial](/docs/tutorials/install).
+To reinstall CloudGround, follow the [installation tutorial](/docs/tutorials/install).

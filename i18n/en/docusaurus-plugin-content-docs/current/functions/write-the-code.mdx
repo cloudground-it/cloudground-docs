@@ -10,7 +10,7 @@ last_verified: unverified
 sidebar_position: 2
 ---
 
-A function's code is a set of files. One of them is the entry file, and it holds the handler: the
+A function's code is a set of files. The entry file holds the handler, the
 function that takes the request and returns the answer.
 
 ## Lay out the files {#files}
@@ -23,7 +23,7 @@ stay.
 - Don't add `node_modules/` or `.venv/` folders. Dependencies are installed when you deploy.
 
 The entry file is `index.js` for Node.js and `main.py` for Python. Import your other files from the
-handler the way you would in any project.
+handler as in any project.
 
 ## Write the handler {#handler}
 
@@ -77,7 +77,7 @@ The function finds them in its environment: `process.env.NAME` in Node.js, `os.e
 Python. Secrets are stored encrypted and the panel never shows them again. Variables and secrets
 together are limited to 100.
 
-Saving the settings doesn't make a new release.
+Saving the settings doesn't make a release.
 
 ## Read the output {#output}
 

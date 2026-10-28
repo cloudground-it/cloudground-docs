@@ -9,8 +9,8 @@ last_verified: unverified
 sidebar_position: 1
 ---
 
-Everything the panel does goes through its HTTP API. The web interface is just one client, like
-`cgctl`. The full list of routes, with the role each one requires, is generated from the code into
+Everything the panel does goes through its HTTP API. The web interface is one client, like
+`cgctl`. The full list of routes, with each one's role, is generated from the code into
 `docs/api.md` in the [product repository](https://github.com/cloudground-it/cloudground/blob/main/docs/api.md).
 
 ## Endpoints {#where}
@@ -30,8 +30,6 @@ curl --unix-socket /run/cloudground/api.sock http://localhost/api/system/status 
 ```
 
 ## Authentication {#authentication}
-
-There are two ways to authenticate.
 
 **API token.** Send `Authorization: Bearer cgt_…`. A request with a token is authorized by the token
 alone, even if it also carries a cookie. A token that is unknown, expired or revoked, or whose
@@ -147,7 +145,7 @@ Every error has the body `{"error": "<message>"}`.
 | `503` | The panel is busy or the agent isn't responding. Try again. May include `Retry-After`. |
 | `504` | The operation on the server exceeded its time limit. |
 
-Errors that come from the agent never expose the server's commands or paths.
+Errors that come from the agent don't expose the server's commands or paths.
 
 ## Tasks {#tasks}
 
@@ -170,4 +168,4 @@ reload the state.
 
 ## Next step {#next}
 
-For scripting, `cgctl` already wraps these calls. See the [CLI reference](/docs/cli).
+For scripting, `cgctl` already makes these calls: see the [CLI reference](/docs/cli).
