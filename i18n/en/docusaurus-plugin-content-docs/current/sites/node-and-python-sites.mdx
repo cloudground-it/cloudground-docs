@@ -49,7 +49,8 @@ of a unix socket, which only nginx can reach:
 
 If your app can only listen on a TCP port, set **Port** on the **App** tab. The app then listens on
 127.0.0.1 and `PORT` holds the number. Any process on the server can reach a loopback port, so use
-the socket whenever you can.
+the socket whenever you can. Pick a port from 1024 to 32767: the server uses the ports from 32768
+up for its own outgoing connections, and the panel refuses them.
 
 The app runs with `/srv/sites/<domain>/current` as its working directory. It sees only its own site's files.
 

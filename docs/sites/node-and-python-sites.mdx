@@ -49,7 +49,9 @@ socket unix, che raggiunge solo nginx:
 
 Se l'app può ascoltare solo su una porta TCP, imposta la **Porta** nella scheda **App**: l'app
 ascolta allora su 127.0.0.1 e `PORT` contiene il numero. Una porta su 127.0.0.1 è raggiungibile da
-qualunque processo del server, quindi usa il socket quando puoi.
+qualunque processo del server, quindi usa il socket quando puoi. Scegli una porta tra 1024 e
+32767: quelle da 32768 in su il server le usa per le proprie connessioni in uscita, e il pannello
+le rifiuta.
 
 L'app gira con `/srv/sites/<dominio>/current` come cartella di lavoro. Vede solo i file del proprio sito.
 
