@@ -34,14 +34,12 @@ Move the repository when you:
    as now, which is always the case with **Already copied**.
 5. For an `s3:` repository you also get **Access key**, **Secret key** and **Region**; for a `b2:`
    one, **B2 key ID** and **B2 application key**. Leave them empty to keep the ones in Settings.
-6. Click **Move** and follow the *Backup move* task.
+6. For an `sftp:` repository, the dialog shows the panel's public SSH key. Click **Copy** and add it
+   to `~/.ssh/authorized_keys` for that account on the SFTP server.
+7. Click **Move** and follow the *Backup move* task.
 
 While the move runs, backups, restore tests and site restores wait for it to finish. If the panel
 restarts during the move, the task fails: start it again.
-
-{/* TODO(verify): moving to an SFTP repository from a non-SFTP one. The panel's key is shown only while
-the destination field holds an sftp: address, and Move is disabled with unsaved changes: check how to
-get the public key onto the SFTP server first. */}
 
 ## The panel copies them {#copy}
 

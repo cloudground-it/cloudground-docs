@@ -13,16 +13,42 @@ A backup counts only after a test restore. The test does everything a real resto
 ## What a backup contains {#anatomy}
 
 Backups for all sites go to a single restic repository off the server, encrypted with the
-repository password. Each backup is made of two snapshots:
+repository password. Each backup is made of several snapshots:
 
-1. **Database.** `mariadb-dump` writes to a pipe that restic reads directly. The dump never lands
-   on disk. In particular, it never lands in the site directory, which the site user owns and
-   where the file could be swapped out between the dump and the backup.
-2. **Files.** The whole site directory except `tmp/`. The files snapshot is tagged with the ID of
-   the database snapshot, and the panel records the files snapshot.
+1. **Databases.** One snapshot per database of the site, holding its dump. `mariadb-dump` writes
+   to a pipe that restic reads directly. The dump never lands on disk. In particular, it never
+   lands in the site directory, which the site user owns and where the file could be swapped out
+   between the dump and the backup.
+2. **The site's description** (*since v1.0.0*). A file called `cloudground-site.json` (see
+   [below](#site-description)).
+3. **Files.** The whole site directory except `tmp/`. The files snapshot is tagged with the ID of
+   each database snapshot and of the description, and the panel records the files snapshot.
 
-If the dump fails, or a single file cannot be read, the whole backup fails and restic forgets the
-partial snapshots.
+If a dump fails, or a single file cannot be read, the whole backup fails and restic forgets the
+partial snapshots. Deleting a backup, or retention, removes all its parts together.
+
+### The site's description {#site-description}
+
+It holds what another server needs to recreate the site before restoring it:
+
+- the CloudGround release that took the backup;
+- the site's ID, domain, aliases, type, cache profile and PHP version;
+- for a Node.js or Python site, the runtime version and the start command;
+- the page cache and object cache settings;
+- the site's directory;
+- each database in the backup, with its engine (MariaDB or PostgreSQL), whether it's the main one
+  and whether it lives on an external server;
+- the site's database users on this server, with their passwords and privileges.
+
+The passwords are there on purpose. An application's configuration (`wp-config.php`, a `.env` file)
+holds its database name, user and password. A site
+[restored on another server](/docs/data/restore-on-a-new-server) gets the same users with the same
+passwords, so it connects to its database without changes. The description is encrypted with the
+repository key like every other snapshot, and the backup already holds the databases' data and, for
+WordPress, `wp-config.php`.
+
+The restore test also checks that the description can be read. Backups taken before 1.0 have none
+and are tested as before.
 
 Only one restic process works on a repository at a time. If a backup is interrupted, it releases
 its repository lock before exiting so the next backup can run.

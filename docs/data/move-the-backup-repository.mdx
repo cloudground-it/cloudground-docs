@@ -34,14 +34,12 @@ Serve quando:
 5. Per un repository `s3:` compaiono **Access key**, **Secret key** e **Regione**; per uno `b2:`,
    **ID della chiave B2** e **Chiave applicativa B2**. Lasciali vuoti per tenere quelli delle
    impostazioni.
-6. Premi **Sposta** e segui l'attività *Spostamento dei backup*.
+6. Per un repository `sftp:` la finestra mostra la chiave SSH pubblica del pannello. Premi **Copia** e
+   aggiungila a `~/.ssh/authorized_keys` dell'account sul server SFTP.
+7. Premi **Sposta** e segui l'attività *Spostamento dei backup*.
 
 Mentre lo spostamento gira, i backup, i ripristini di prova e i ripristini dei siti aspettano che
 finisca. Se il pannello si riavvia durante lo spostamento, l'attività fallisce: rilanciala.
-
-{/* TODO(verify): moving to an SFTP repository from a non-SFTP one. The panel's key is shown only while
-the destination field holds an sftp: address, and Move is disabled with unsaved changes: check how to
-get the public key onto the SFTP server first. */}
 
 ## Li copia il pannello {#copy}
 
