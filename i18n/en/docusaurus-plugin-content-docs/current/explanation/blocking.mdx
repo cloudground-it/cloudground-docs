@@ -43,6 +43,12 @@ threshold, the panel records the block and sends the list to the agent. The agen
 netfilter table owned by the panel (`inet cloudground`) and re-sends it every 10 minutes, because a
 reboot clears netfilter.
 
+**Why WordPress blocks only the sites.** *Since v1.0.0.* A failed WordPress sign-in is marked by the
+site's own PHP code, and a site can put that mark on any response it sends. It could therefore get
+anyone who posts to it shut out of SSH and the panel, including the admin who is editing it. So a
+block caused by WordPress drops packets to the sites only (ports 80 and 443, TCP plus UDP for
+HTTP/3). Blocks from SSH, from the panel and by hand cover the whole server.
+
 **Why netfilter.** A dropped packet costs sshd and nginx nothing, and a single table covers SSH,
 the sites and the panel. It does not rely on ufw, which may be turned off. So `nftables`
 is one of the packages the installer sets up, and an [update](/docs/server/update-cloudground)

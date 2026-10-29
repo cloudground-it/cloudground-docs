@@ -41,6 +41,12 @@ tutta la sua /64, perché un singolo cliente di solito riceve un /64 intero. Sup
 pannello salva il blocco e manda la lista all'agent, che la applica in una tabella netfilter del pannello
 (`inet cloudground`). La rimanda ogni 10 minuti, perché un riavvio svuota netfilter.
 
+**Perché WordPress blocca solo i siti.** *Da v1.0.0.* L'errore di accesso a WordPress lo segna il codice
+PHP del sito, e un sito può segnarlo su qualunque sua risposta. Potrebbe quindi far chiudere fuori da
+SSH e dal pannello chiunque gli scriva, compreso l'amministratore che lo sta modificando. Per questo un
+blocco nato da WordPress scarta i pacchetti solo verso i siti (porte 80 e 443, TCP e UDP per HTTP/3).
+I blocchi da SSH, dal pannello e a mano valgono per tutto il server.
+
 **Perché netfilter.** Un pacchetto scartato non costa niente a sshd né a nginx, e una sola tabella copre
 SSH, i siti e il pannello. Non dipende da ufw, che può essere spento. Il pacchetto `nftables`
 è tra quelli dell'installer, e un [aggiornamento](/docs/server/update-cloudground) installa i pacchetti
