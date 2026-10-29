@@ -13,6 +13,8 @@ hide_table_of_contents: true
   <Card to="/docs/data/back-up-a-site" title="Fai il backup di un sito" />
   <Card to="/docs/data/restore-a-backup" title="Ripristina un backup" />
   <Card to="/docs/data/run-a-restore-test" title="Esegui un ripristino di prova" />
+  <Card to="/docs/data/move-the-backup-repository" title="Sposta il repository dei backup" />
+  <Card to="/docs/data/restore-on-a-new-server" title="Ripristina i siti su un server nuovo" />
   <Card to="/docs/data/deploy-a-release" title="Pubblica un rilascio" />
   <Card to="/docs/data/deploy-from-git" title="Pubblica da Git a ogni push" />
   <Card to="/docs/data/roll-back-a-release" title="Torna a un rilascio precedente" />

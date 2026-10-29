@@ -15,4 +15,5 @@ hide_table_of_contents: true
   <Card to="/docs/reference/functions" title="Funzioni: valori e limiti" />
   <Card to="/docs/reference/database-names-and-passwords" title="Nomi e password dei database" />
   <Card to="/docs/reference/licence" title="Licenza" />
+  <Card to="/docs/reference/compatibility" title="Compatibilità nella 1.x" />
 </Cards>
