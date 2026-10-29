@@ -40,12 +40,16 @@ curl -fsSL https://get.cloudground.it | bash
 
 :::note[L'indirizzo dell'installer]
 
-Lo stesso script risponde anche a `https://cloudground-it.github.io/cloudground/install.sh`, l'indirizzo
-di GitHub Pages da cui `get.cloudground.it` è servito.
+È lo stesso script allegato all'ultima release su GitHub. Se `get.cloudground.it` non risponde,
+scaricalo da lì:
+
+```bash
+curl -fsSL https://github.com/cloudground-it/cloudground/releases/latest/download/install.sh | bash
+```
 
 :::
 
-Lo script installa CloudGround v0.9.0. Scarica la release da GitHub, lancia il suo `cgctl` solo se
+Lo script installa l'ultima versione stabile di CloudGround. Scarica la release da GitHub, lancia il suo `cgctl` solo se
 ha lo SHA-256 che lo script indica, e `cgctl` non installa nulla il cui manifesto firmato non si
 verifica. Per controllare lo script stesso prima di lanciarlo, vedi
 [verifica l'installer](/docs/server/verify-the-installer).
