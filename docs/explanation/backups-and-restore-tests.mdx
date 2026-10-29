@@ -14,16 +14,43 @@ ripristino vero, tranne toccare il sito.
 ## Com'è fatto un backup {#anatomy}
 
 I backup di tutti i siti vanno in un solo repository restic, fuori dal server, cifrati con la
-password del repository. Un backup è fatto di due snapshot:
+password del repository. Un backup è fatto di più snapshot:
 
-1. **il database**: `mariadb-dump` scrive in un canale che restic legge direttamente. Il dump non
-   tocca mai il disco, e in particolare la cartella del sito, che appartiene all'utente del sito:
-   lì potrebbe essere sostituito tra il dump e il backup;
-2. **i file**: tutta la cartella del sito tranne `tmp/`. Lo snapshot dei file porta un'etichetta
-   con l'identificativo dello snapshot del database, e il pannello registra lo snapshot dei file.
+1. **i database**: uno snapshot per ogni database del sito, con il suo dump. `mariadb-dump` scrive in
+   un canale che restic legge direttamente. Il dump non tocca mai il disco, e in particolare la
+   cartella del sito, che appartiene all'utente del sito: lì potrebbe essere sostituito tra il dump e
+   il backup;
+2. **la descrizione del sito** (*da v1.0.0*): un file `cloudground-site.json` (vedi
+   [sotto](#site-description));
+3. **i file**: tutta la cartella del sito tranne `tmp/`. Lo snapshot dei file porta un'etichetta con
+   l'identificativo di ogni snapshot dei database e della descrizione, e il pannello registra lo
+   snapshot dei file.
 
-Se il dump fallisce, o anche un solo file non si legge, il backup fallisce e restic dimentica gli
-snapshot parziali.
+Se un dump fallisce, o anche un solo file non si legge, il backup fallisce e restic dimentica gli
+snapshot parziali. Eliminazione e conservazione tolgono tutte le parti insieme.
+
+### La descrizione del sito {#site-description}
+
+Contiene quello che serve a un altro server per creare di nuovo il sito prima di ripristinarlo:
+
+- la release di CloudGround che ha fatto il backup;
+- ID, dominio, alias, tipo, profilo della cache e versione PHP del sito;
+- per un sito Node.js o Python, la versione del runtime e il comando di avvio;
+- le impostazioni della cache di pagina e della object cache;
+- la cartella del sito;
+- ogni database del backup, con il motore (MariaDB o PostgreSQL), se è il principale e se sta su un
+  server esterno;
+- gli utenti database del sito su questo server, con password e privilegi.
+
+Le password ci sono apposta. La configurazione di un'applicazione (`wp-config.php`, un `.env`)
+contiene il nome del database, l'utente e la password. Un sito
+[ripristinato su un altro server](/docs/data/restore-on-a-new-server) riceve gli stessi utenti con le
+stesse password, quindi si collega al database senza modifiche. La descrizione è cifrata con la
+chiave del repository come ogni altro snapshot, e il backup contiene comunque già i dati dei database
+e, per WordPress, `wp-config.php`.
+
+Il ripristino di prova controlla anche che la descrizione si legga. Un backup fatto prima della 1.0 non
+ne ha una e viene provato come prima.
 
 Un solo processo restic lavora su un repository alla volta, e un backup interrotto toglie il suo
 blocco dal repository prima di uscire, così il backup successivo parte.

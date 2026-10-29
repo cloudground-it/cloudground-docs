@@ -1,0 +1,64 @@
+---
+title: Compatibilità nella 1.x
+description: Cosa resta compatibile tra le release 1.x (API, cgctl, server MCP, aggiornamenti e backup) e cosa può cambiare solo con la 2.0.
+type: reference
+prerequisites: []
+version: v1.0.0
+last_verified: unverified
+sidebar_position: 7.5
+---
+
+Dalla 1.0, CloudGround segue il versionamento semantico: le versioni sono `vX.Y.Z`, le beta
+`vX.Y.Z-beta.N`.
+
+## Le versioni {#versions}
+
+| Release | Esempio | Cosa può fare |
+| --- | --- | --- |
+| patch (`Z`) | `v1.0.1` | correggere. Non cambia lo schema del database del pannello, le unità systemd o il protocollo tra pannello e agent. |
+| minor (`Y`) | `v1.1.0` | aggiungere: rotte, campi, comandi, impostazioni con un valore predefinito, unità systemd, passi dello schema del database (solo in avanti). |
+| major (`X`) | `v2.0.0` | togliere o cambiare quello che offre una release precedente della stessa major. |
+
+Prima della 1.0 era la minor a fare da major.
+
+## API, cgctl e server MCP {#api-cgctl-mcp}
+
+Dentro la 1.x vale lo stesso per l'[API](/docs/api), i comandi e le opzioni di [cgctl](/docs/cli) e
+gli strumenti del [server MCP](/docs/access/ai-assistants).
+
+Una release 1.x può aggiungere:
+
+- rotte;
+- campi nelle risposte;
+- campi facoltativi nelle richieste;
+- valori nuovi dove la descrizione di un campo dice che ne possono arrivare altri.
+
+Non può:
+
+- togliere o rinominare una rotta o un campo;
+- cambiare il significato o il tipo di un campo;
+- rifiutare una richiesta che una 1.x precedente accettava, salvo per chiudere una falla di sicurezza.
+
+Un client deve ignorare i campi che non conosce: dentro la 1.x le risposte ne guadagnano. Quello che
+la 2.0 toglierà viene segnato come deprecato nel changelog almeno una minor prima.
+
+## Aggiornamenti {#updates}
+
+- Dentro la 1.x passi da una release a una qualsiasi più recente con un solo aggiornamento (vedi
+  [Aggiorna CloudGround](/docs/server/update-cloudground)).
+- Il database del pannello migra solo in avanti. Per tornare indietro c'è lo snapshot preso prima
+  dell'aggiornamento, che un aggiornamento fallito rimette da solo.
+- La 2.0 si aggiorna dall'ultima minor della 1.x: prima porta il server alla 1.x più recente.
+- Le correzioni di sicurezza escono solo come nuova release dell'ultima 1.x.
+
+## Backup {#backups}
+
+- Ogni release ripristina i backup di ogni release precedente, in ogni modalità. Una prova end-to-end
+  lo controlla su backup fatti da release precedenti vere.
+- I backup fatti prima della 1.0 non hanno la descrizione del sito: per [ripristinarli su un altro
+  server](/docs/data/restore-on-a-new-server#before-1-0) il pannello chiede il tipo del sito e la
+  versione PHP.
+
+## Prossimo passo {#next}
+
+[Aggiorna CloudGround](/docs/server/update-cloudground).

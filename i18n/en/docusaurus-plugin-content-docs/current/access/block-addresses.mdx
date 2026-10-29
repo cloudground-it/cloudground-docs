@@ -11,7 +11,8 @@ sidebar_position: 6.5
 ---
 
 Anyone who brute-forces passwords against SSH, `wp-login.php`, `xmlrpc.php` or the panel gets blocked
-for a while: the server drops their packets on every port. The **Blocking** page, under the
+for a while: the server drops their packets on every port. A block caused by WordPress failures
+keeps the address away from the sites only (ports 80 and 443). The **Blocking** page, under the
 **Server** group, lists blocked and always-allowed addresses and lets you change the settings. How it works is in [address blocking](/docs/explanation/blocking).
 
 ## Automatic blocking {#automatic-blocking}

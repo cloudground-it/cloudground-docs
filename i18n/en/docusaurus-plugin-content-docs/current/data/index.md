@@ -13,6 +13,8 @@ hide_table_of_contents: true
   <Card to="/docs/data/back-up-a-site" title="Back up a site" />
   <Card to="/docs/data/restore-a-backup" title="Restore a backup" />
   <Card to="/docs/data/run-a-restore-test" title="Run a restore test" />
+  <Card to="/docs/data/move-the-backup-repository" title="Move the backup repository" />
+  <Card to="/docs/data/restore-on-a-new-server" title="Restore sites on a new server" />
   <Card to="/docs/data/deploy-a-release" title="Deploy a release" />
   <Card to="/docs/data/deploy-from-git" title="Deploy from Git on every push" />
   <Card to="/docs/data/roll-back-a-release" title="Roll back a release" />

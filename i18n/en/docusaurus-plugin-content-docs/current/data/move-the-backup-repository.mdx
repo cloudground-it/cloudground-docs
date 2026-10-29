@@ -1,0 +1,111 @@
+---
+title: Move the backup repository
+description: Move every backup to another repository, either copied by the panel or copied by you. The panel switches over only once it has found every backup there.
+type: how-to
+prerequisites:
+  - An administrator account
+  - A connected backup repository
+  - The new storage, with its keys
+version: v1.0.0
+last_verified: unverified
+sidebar_position: 6.3
+---
+
+Changing the repository in **Settings** only sends new backups there: the ones taken before stay
+recorded in the old repository. A move takes the existing backups along too, and the panel switches
+to the new repository only once it finds all of them there.
+
+Move the repository when you:
+
+- change provider or bucket;
+- go from a folder on the server to object storage;
+- shut down the old repository and want to keep the backups in it.
+
+## Move the backups {#move}
+
+1. Open **Settings** and, in the **Off-site backups (restic)** panel, click **Move backups**. The
+   button is available only when there are no unsaved changes.
+2. Under **New repository**, enter the address as restic writes it: a folder on the server, or
+   `s3:…`, `b2:…`, `sftp:…`, `rest:…`. The
+   [destination table](/docs/data/connect-a-backup-repository#destination) gives the address for each
+   provider.
+3. Under **How**, choose **The panel copies them** or **Already copied** (see below).
+4. Under **Repository password**, enter the new repository's password. Leave it empty if it's the same
+   as now, which is always the case with **Already copied**.
+5. For an `s3:` repository you also get **Access key**, **Secret key** and **Region**; for a `b2:`
+   one, **B2 key ID** and **B2 application key**. Leave them empty to keep the ones in Settings.
+6. For an `sftp:` repository, the dialog shows the panel's public SSH key. Click **Copy** and add it
+   to `~/.ssh/authorized_keys` for that account on the SFTP server.
+7. Click **Move** and follow the *Backup move* task.
+
+While the move runs, backups, restore tests and site restores wait for it to finish. If the panel
+restarts during the move, the task fails: start it again.
+
+## The panel copies them {#copy}
+
+The panel copies every snapshot with `restic copy`. If the new repository doesn't exist, it creates
+it first with the same parameters as the old one, so the copied data still deduplicates. Large
+repositories take hours, and a copy stops after 12 hours. If a copy stops part way, start the move
+again: restic skips the snapshots it has already copied.
+
+restic copies with a single set of credentials, so the panel refuses to copy:
+
+- between two S3 or B2 repositories that need different keys or regions;
+- between two different SFTP servers.
+
+In those cases, copy the files yourself, then move with **Already copied**. Copying from a folder on
+the server to a bucket works, and so does copying between two buckets with the same keys and region.
+
+## Already copied {#already-copied}
+
+You copied the repository's files to the new place yourself, for example with rsync, rclone or your
+provider's own tool. The panel copies nothing and only checks.
+
+## What the panel checks {#checks}
+
+Before switching to the new repository, the panel checks that:
+
+1. the new repository exists (**Already copied** only; otherwise
+   `the new repository does not exist: copy the backups there first, or let the panel copy them`);
+2. it is a copy of the current repository (**Already copied** only). restic gives each repository an
+   ID when it creates it, and a copy of the files keeps that ID. A different repository is refused:
+   `this is another repository (ID <id>), not a copy of the current one (ID <id>)`;
+3. it holds the snapshot of every recorded backup. If even one is missing, the move fails and names
+   up to three of them: `<n> recorded backups are not in the new repository (<id>…)`.
+
+If a check fails, the panel stays on the old repository with every backup. Whatever a copy already
+wrote to the new repository stays there and does no harm.
+
+## What happens to the backups {#after}
+
+- The settings and every recorded backup switch to the new repository in a single step. Each backup
+  keeps its ID, and restores, restore tests and downloads read from the new repository.
+- The newest backup of each site gets a new restore test, from the new repository.
+- The old repository is left as it was: the panel neither changes nor deletes it. Delete it yourself
+  once the restore tests have passed.
+
+## Move with cgctl {#cli}
+
+```bash
+cgctl --wait backup move '<repository>' --copy
+cgctl --wait backup move '<repository>' --already-copied
+```
+
+`<repository>` is the new repository, as restic writes it. Give exactly one of `--copy` (the panel
+copies) and `--already-copied`. To keep secrets off the command line:
+
+- `--repository-password-file <file>`: the new repository's password, if it isn't the current one;
+- `--credentials-file <file>`: a JSON object with the new repository's keys, any of
+  `s3_access_key`, `s3_secret_key`, `s3_region`, `b2_account_id` and `b2_account_key`.
+
+```json
+{"s3_access_key": "<access-key>", "s3_secret_key": "<secret-key>", "s3_region": "eu-central-1"}
+```
+
+The command signs in with email and password (`CLOUDGROUND_EMAIL`, `CLOUDGROUND_PASSWORD` and, with
+2FA, `CLOUDGROUND_TOTP`): the API doesn't accept a token for a move. In the API, the request is
+`POST /api/backups/repository/move` with `{"mode": "copy"}` or `{"mode": "moved"}` and `repository`.
+
+## Next step {#next}
+
+[Restore sites on a new server](/docs/data/restore-on-a-new-server) from the same repository.

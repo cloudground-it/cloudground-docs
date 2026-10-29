@@ -82,6 +82,12 @@ Click **Save**. When you change the repository or the password, the panel tests 
 repository doesn't exist yet, the panel creates it. If it exists and the password doesn't open it, the
 panel refuses to save, because the existing backups would become unreadable.
 
+If you change the repository, only backups from then on go there: the ones already taken stay recorded
+in the previous one. To take them along, [move the repository](/docs/data/move-the-backup-repository)
+instead. On a new
+server, connect the repository of a server you've lost with its password, then
+[restore its sites](/docs/data/restore-on-a-new-server).
+
 ### Passwords in the repository address {#password-in-the-address}
 
 *Since v0.2.0.* An advanced repository address can include a password, for example

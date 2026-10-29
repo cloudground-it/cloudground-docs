@@ -1,0 +1,111 @@
+---
+title: Sposta il repository dei backup
+description: Porta tutti i backup in un altro repository, copiati dal pannello o già copiati da te. Il pannello passa al nuovo solo dopo averci trovato ogni backup.
+type: how-to
+prerequisites:
+  - Un account amministratore
+  - Un repository di backup collegato
+  - Il nuovo spazio di archiviazione, con le sue chiavi
+version: v1.0.0
+last_verified: unverified
+sidebar_position: 6.3
+---
+
+Se cambi il repository nelle **Impostazioni**, solo i backup nuovi vanno lì: quelli fatti prima
+restano registrati nel vecchio repository. Lo spostamento porta nel nuovo repository anche i backup
+già fatti, e il pannello ci passa solo quando li trova tutti.
+
+Serve quando:
+
+- cambi provider o bucket;
+- passi da una cartella sul server a un object storage;
+- chiudi il vecchio repository e vuoi tenere i backup che contiene.
+
+## Sposta i backup {#move}
+
+1. Apri **Impostazioni** e, nel riquadro **Backup off-site (restic)**, premi **Sposta i backup**. Il
+   pulsante è attivo solo se non ci sono modifiche da salvare.
+2. In **Nuovo repository** scrivi l'indirizzo come lo scrive restic: una cartella sul server, oppure
+   `s3:…`, `b2:…`, `sftp:…`, `rest:…`. L'indirizzo di ogni provider è nella
+   [tabella delle destinazioni](/docs/data/connect-a-backup-repository#destination).
+3. In **Come** scegli **Li copia il pannello** oppure **Già copiati** (vedi sotto).
+4. In **Password del repository** scrivi la password del nuovo repository. Lasciala vuota se è la
+   stessa di adesso, come succede sempre con **Già copiati**.
+5. Per un repository `s3:` compaiono **Access key**, **Secret key** e **Regione**; per uno `b2:`,
+   **ID della chiave B2** e **Chiave applicativa B2**. Lasciali vuoti per tenere quelli delle
+   impostazioni.
+6. Per un repository `sftp:` la finestra mostra la chiave SSH pubblica del pannello. Premi **Copia** e
+   aggiungila a `~/.ssh/authorized_keys` dell'account sul server SFTP.
+7. Premi **Sposta** e segui l'attività *Spostamento dei backup*.
+
+Mentre lo spostamento gira, i backup, i ripristini di prova e i ripristini dei siti aspettano che
+finisca. Se il pannello si riavvia durante lo spostamento, l'attività fallisce: rilanciala.
+
+## Li copia il pannello {#copy}
+
+Il pannello copia ogni snapshot con `restic copy`. Se il nuovo repository non esiste, lo crea prima
+con gli stessi parametri del vecchio, così i dati copiati restano deduplicati. Con repository grandi
+servono ore, e una copia si ferma dopo 12 ore. Se la copia si interrompe, rilancia lo spostamento:
+restic salta gli snapshot già copiati.
+
+restic copia con un solo insieme di credenziali, quindi il pannello rifiuta la copia:
+
+- tra due repository S3 o B2 con chiavi o regione diverse;
+- tra due server SFTP diversi.
+
+In questi casi copia tu i file, poi sposta con **Già copiati**. Da una cartella sul server a un bucket,
+o tra due bucket con le stesse chiavi e la stessa regione, la copia funziona.
+
+## Già copiati {#already-copied}
+
+Hai copiato tu i file del repository nel nuovo posto, per esempio con rsync, rclone o lo strumento del
+provider. Il pannello non copia niente: controlla soltanto.
+
+## Cosa controlla {#checks}
+
+Prima di passare al nuovo repository, il pannello controlla che:
+
+1. il nuovo repository esista (solo con **Già copiati**; altrimenti
+   `the new repository does not exist: copy the backups there first, or let the panel copy them`);
+2. sia una copia del repository attuale (solo con **Già copiati**). restic dà a ogni repository un ID
+   quando lo crea, e una copia dei file lo conserva. Un altro repository viene rifiutato:
+   `this is another repository (ID <id>), not a copy of the current one (ID <id>)`;
+3. contenga lo snapshot di ogni backup registrato. Se ne manca anche uno, lo spostamento fallisce e
+   ne nomina fino a tre: `<n> recorded backups are not in the new repository (<id>…)`.
+
+Se un controllo fallisce, il pannello resta sul vecchio repository, con tutti i backup. Quello che una
+copia ha già scritto nel nuovo repository resta lì e non dà fastidio.
+
+## Cosa succede ai backup {#after}
+
+- Le impostazioni e tutti i backup registrati passano al nuovo repository in un solo passo. Ogni backup
+  tiene il suo ID: ripristini, ripristini di prova e download leggono dal nuovo repository.
+- Il backup più recente di ogni sito rifà il ripristino di prova, dal nuovo repository.
+- Il vecchio repository resta com'è: il pannello non lo cambia e non lo cancella. Cancellalo tu quando
+  i ripristini di prova sono passati.
+
+## Con cgctl {#cli}
+
+```bash
+cgctl --wait backup move '<repository>' --copy
+cgctl --wait backup move '<repository>' --already-copied
+```
+
+`<repository>` è il nuovo repository, come lo scrive restic. Scegli una sola tra `--copy` (lo copia il
+pannello) e `--already-copied` (già copiato). Per non mettere segreti sulla riga di comando:
+
+- `--repository-password-file <file>`: la password del nuovo repository, se non è quella attuale;
+- `--credentials-file <file>`: un oggetto JSON con le chiavi del nuovo repository, tra
+  `s3_access_key`, `s3_secret_key`, `s3_region`, `b2_account_id` e `b2_account_key`.
+
+```json
+{"s3_access_key": "<access-key>", "s3_secret_key": "<secret-key>", "s3_region": "eu-central-1"}
+```
+
+Il comando accede con email e password (`CLOUDGROUND_EMAIL`, `CLOUDGROUND_PASSWORD` e, con la 2FA,
+`CLOUDGROUND_TOTP`): l'API non accetta un token per spostare i backup. Nell'API la richiesta è
+`POST /api/backups/repository/move` con `{"mode": "copy"}` o `{"mode": "moved"}` e `repository`.
+
+## Prossimo passo {#next}
+
+[Ripristina i siti su un server nuovo](/docs/data/restore-on-a-new-server) dallo stesso repository.

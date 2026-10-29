@@ -1,0 +1,64 @@
+---
+title: Compatibility in 1.x
+description: What stays compatible across 1.x releases (the API, cgctl, the MCP server, updates and backups) and what only 2.0 may change.
+type: reference
+prerequisites: []
+version: v1.0.0
+last_verified: unverified
+sidebar_position: 7.5
+---
+
+From 1.0, CloudGround follows semantic versioning. Versions are `vX.Y.Z`, and betas
+`vX.Y.Z-beta.N`.
+
+## Versions {#versions}
+
+| Release | Example | What it may do |
+| --- | --- | --- |
+| patch (`Z`) | `v1.0.1` | fix bugs. It doesn't change the panel's database schema, the systemd units or the protocol between the panel and the agent. |
+| minor (`Y`) | `v1.1.0` | add things: routes, fields, commands, settings with a default, systemd units, database schema steps (forward only). |
+| major (`X`) | `v2.0.0` | remove or change what an earlier release of the same major offers. |
+
+Before 1.0, the minor version played the role of the major.
+
+## API, cgctl and MCP server {#api-cgctl-mcp}
+
+Within 1.x the same rules hold for the [API](/docs/api), [cgctl](/docs/cli)'s commands and flags, and
+the tools of the [MCP server](/docs/access/ai-assistants).
+
+A 1.x release may add:
+
+- routes;
+- fields in responses;
+- optional fields in requests;
+- new values where a field's description says more may come.
+
+It may not:
+
+- remove or rename a route or a field;
+- change what a field means or its type;
+- start refusing a request that an earlier 1.x accepted, except to close a security hole.
+
+Clients should ignore fields they don't recognise: responses gain fields within 1.x. Anything 2.0
+will remove is marked deprecated in the changelog at least one minor release earlier.
+
+## Updates {#updates}
+
+- Within 1.x you can go from any release to any newer one in a single update (see
+  [Update CloudGround](/docs/server/update-cloudground)).
+- The panel's database only migrates forward. The way back is the snapshot taken before the update,
+  which a failed update restores on its own.
+- 2.0 updates from the last 1.x minor release: bring the server to the newest 1.x first.
+- Security fixes ship only as a new release of the latest 1.x.
+
+## Backups {#backups}
+
+- Every release restores the backups of every earlier release, in every mode. An end-to-end test
+  checks this on backups made by real older releases.
+- Backups taken before 1.0 have no description of the site: to [restore them on another
+  server](/docs/data/restore-on-a-new-server#before-1-0), the panel asks for the site's type and PHP
+  version.
+
+## Next step {#next}
+
+[Update CloudGround](/docs/server/update-cloudground).
