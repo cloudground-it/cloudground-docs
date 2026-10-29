@@ -1,0 +1,53 @@
+---
+title: Immagini WebP e AVIF su WordPress
+description: "Fai generare a WordPress le miniature in WebP o AVIF con un filtro di poche righe, poi converti le immagini già caricate. Nessun plugin, e funziona anche dietro Cloudflare."
+type: how-to
+prerequisites:
+  - Un sito WordPress o WooCommerce, WordPress 6.5 o successivo per AVIF
+  - Il file manager del pannello, oppure SFTP
+  - Per convertire le immagini già caricate, la shell del sito
+version: v1.0.1
+last_verified: unverified
+sidebar_position: 10.5
+---
+
+CloudGround non converte le immagini sul server. WordPress lo fa già da sé: con il PHP che il pannello
+installa (Imagick) scrive le miniature in WebP e in AVIF. Sulle nostre prove le immagini pesano circa il
+55 % in meno, e l'HTML punta direttamente ai file nuovi. La cache delle pagine e Cloudflare quindi li
+servono senza nessuna regola in più.
+
+## Attiva WebP o AVIF {#enable}
+
+1. Nel file manager del sito apri `wp-content/mu-plugins` (creala se manca).
+2. Crea il file `cg-image-format.php` con questo contenuto:
+
+   ```php
+   <?php
+   // Le miniature delle nuove immagini in WebP. Per AVIF scrivi 'image/avif'.
+   add_filter( 'image_editor_output_format', function ( $formats ) {
+   	$formats['image/jpeg'] = 'image/webp';
+   	$formats['image/png']  = 'image/webp';
+   	return $formats;
+   } );
+   ```
+
+3. Carica un'immagine dalla Libreria media e controlla che le miniature finiscano in `.webp`.
+
+L'originale caricato resta com'è. Ogni caricamento di una foto da 12 megapixel costa circa un secondo
+in più in WebP, circa tre in AVIF, una volta sola. AVIF pesa meno di WebP, ma qualche browser vecchio
+non lo mostra.
+
+## Converti le immagini già caricate {#existing}
+
+Il filtro vale per i caricamenti nuovi. Per rifare le miniature di quelle già nella Libreria media,
+apri la [shell del sito](/docs/access/site-shell) ed esegui:
+
+```bash
+wp media regenerate --yes
+```
+
+Su una libreria grande ci vuole tempo. Il comando gira con l'utente del sito e dentro i suoi limiti di
+CPU e memoria, quindi gli altri siti non lo sentono. Fai prima un backup.
+
+Se preferisci un plugin, Performance Lab di WordPress (il modulo «Modern Image Formats») fa la stessa
+cosa con un'interfaccia.
