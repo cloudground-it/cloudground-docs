@@ -1,0 +1,57 @@
+---
+title: WebP and AVIF images on WordPress
+description: "Have WordPress write its image sizes as WebP or AVIF with a few lines of code, then convert the images you already have. No plugin, and it works behind Cloudflare."
+type: how-to
+prerequisites:
+  - A WordPress or WooCommerce site, on WordPress 6.5 or later for AVIF
+  - The panel's file manager, or SFTP
+  - The site shell, to convert existing images
+version: v1.0.1
+last_verified: unverified
+sidebar_position: 10.5
+---
+
+CloudGround does not convert images on the server, because WordPress already can. With the PHP the
+panel installs (Imagick), it writes its image sizes as WebP or AVIF. In our tests the images came out
+about 55 % smaller, and the HTML links the new files directly, so the page cache and Cloudflare serve
+them with no extra rules.
+
+## Turn on WebP or AVIF {#enable}
+
+1. In the site's file manager, open `wp-content/mu-plugins` (create it if it is missing).
+2. Create `cg-image-format.php` with this content:
+
+   ```php
+   <?php
+   // New uploads get WebP image sizes. Use 'image/avif' for AVIF.
+   add_filter( 'image_editor_output_format', function ( $formats ) {
+   	$formats['image/jpeg'] = 'image/webp';
+   	$formats['image/png']  = 'image/webp';
+   	return $formats;
+   } );
+   ```
+
+3. Upload an image to the Media Library and check that its sizes end in `.webp`.
+
+The original upload is kept as it is. A 12-megapixel photo takes about a second longer to upload with
+WebP, and about three seconds with AVIF, once. AVIF files are smaller than WebP, but some older
+browsers can't show them.
+
+## Convert the images you already have {#existing}
+
+The filter applies to new uploads. To rebuild the sizes of the images already in the Media Library,
+open the [site shell](/docs/access/site-shell) and run:
+
+```bash
+wp media regenerate --yes
+```
+
+A large library takes a while. The command runs as the site's user, within its CPU and memory limits,
+so other sites don't notice it. Take a backup first.
+
+If you'd rather use a plugin, WordPress's Performance Lab (its "Modern Image Formats" module) does the
+same thing with a settings screen.
+
+## Next step {#next}
+
+To see what your pages weigh and where the traffic comes from: [See a site's traffic](/docs/sites/traffic-statistics).
